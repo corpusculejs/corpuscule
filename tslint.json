@@ -1,0 +1,19 @@
+{
+  "extends": ["tslint-config-poetez"],
+  "rules": {
+    "naming-convention": [
+      true,
+      {"type": "default", "format": "camelCase", "leadingUnderscore": "forbid", "trailingUnderscore": "forbid"},
+      {"type": "variable", "modifiers": ["global", "const"], "format": ["camelCase", "UPPER_CASE"]},
+      {"type": "variable", "modifiers": ["local"], "format": null, "leadingUnderscore": "allow", "regex": "^(?:_{1,2})?[a-z][a-zA-Z]*$"},
+      {"type": "parameter", "modifiers": "unused", "leadingUnderscore": "require"},
+      {"type": "functionVariable", "modifiers": ["const"], "format": ["camelCase", "PascalCase"]},
+      {"type": "member", "modifiers": "private", "format": null, "leadingUnderscore": "require", "regex": "^__[a-zA-Z]+$"},
+      {"type": "member", "modifiers": "protected", "leadingUnderscore": "require"},
+      {"type": "type", "format": "PascalCase"},
+      {"type": "genericTypeParameter", "regex": "^(?:[A-Z]|T[a-zA-Z]+)$"},
+      {"type": "enumMember", "format": "PascalCase"}
+    ],
+    "no-multiline-string": false
+  }
+}

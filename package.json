@@ -1,0 +1,24 @@
+{
+  "name": "corpuscule",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/build.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/corpusculejs/corpuscule.git"
+  },
+  "author": "Vlad Rindevich <rindevich.vs@gmail.com> (https://github.com/Lodin)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/corpusculejs/corpuscule/issues"
+  },
+  "homepage": "https://github.com/corpusculejs/corpuscule#readme",
+  "devDependencies": {
+    "lerna": "^2.10.2",
+    "rimraf": "^2.6.2",
+    "tslint": "^5.9.1",
+    "tslint-config-poetez": "^1.0.0",
+    "typescript": "^2.8.1"
+  }
+}
