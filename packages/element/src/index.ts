@@ -1,6 +1,7 @@
 import {TemplateResult} from 'lit-html';
 import {render} from 'lit-html/lib/shady-render';
 import {attributeMap} from './decorators';
+import schedule from './scheduler';
 import {InvalidationType, PropertiesList} from './types';
 
 export * from './decorators';
@@ -116,45 +117,45 @@ export default class CorpusculeElement extends HTMLElement {
 
     this.__isValid = false;
 
-    await Promise.resolve();
+    schedule(() => {
+      const {
+        is,
+        _getDerivedStateFromProps,
+        _shouldComponentUpdate,
+      } = this.constructor as typeof CorpusculeElement;
 
-    const {
-      is,
-      _getDerivedStateFromProps,
-      _shouldComponentUpdate,
-    } = this.constructor as typeof CorpusculeElement;
+      if (
+        _getDerivedStateFromProps
+        && (__toUpdate.props || __toUpdate.mounting)
+      ) {
+        Object.assign(
+          this.__state,
+          _getDerivedStateFromProps(this.__props, this.__prevProps, this.__prevState),
+        );
+      }
 
-    if (
-      _getDerivedStateFromProps
-      && (__toUpdate.props || __toUpdate.mounting)
-    ) {
-      Object.assign(
+      const shouldUpdate = _shouldComponentUpdate(
+        this.__props,
         this.__state,
-        _getDerivedStateFromProps(this.__props, this.__prevProps, this.__prevState),
+        this.__prevProps,
+        this.__prevState,
       );
-    }
 
-    const shouldUpdate = _shouldComponentUpdate(
-      this.__props,
-      this.__state,
-      this.__prevProps,
-      this.__prevState,
-    );
+      if (shouldUpdate) {
+        render(this._render(), this.__root, is);
+      }
 
-    if (shouldUpdate) {
-      render(this._render(), this.__root, is);
-    }
+      Object.assign(this.__prevProps, this.__props);
+      Object.assign(this.__prevState, this.__state);
 
-    Object.assign(this.__prevProps, this.__props);
-    Object.assign(this.__prevState, this.__state);
+      this.__isValid = true;
 
-    this.__isValid = true;
+      if (shouldUpdate && !__toUpdate.mounting && this._componentDidUpdate) {
+        this._componentDidUpdate();
+      }
 
-    if (shouldUpdate && !__toUpdate.mounting && this._componentDidUpdate) {
-      this._componentDidUpdate();
-    }
-
-    __toUpdate.mounting = false;
-    __toUpdate.props = false;
+      __toUpdate.mounting = false;
+      __toUpdate.props = false;
+    });
   }
 }
