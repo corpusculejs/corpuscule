@@ -4,14 +4,14 @@ import {
   CreateLinkElementAndUrlConstructor,
   CustomElementBase,
   LocationDescriptor,
-  RouteDataDecorator, RouterMixin, RouterPush,
+  RouteDataDecorator, RouterDecorator, RouterPush,
 } from './types';
 
 const createRouterMixin = (
   routes: Route | ReadonlyArray<Route>,
   options?: Options,
 ): [
-  RouterMixin,
+  RouterDecorator,
   RouterPush,
   RouteDataDecorator,
   CreateLinkElementAndUrlConstructor
@@ -32,34 +32,48 @@ const createRouterMixin = (
     routeDataMap.set(target, propertyName);
   };
 
-  const withRouter: RouterMixin = base => class WithRouter extends base {
-    public async connectedCallback(): Promise<void> {
+  async function updateRoute(this: any, e: PopStateEvent | string): Promise<void> {
+    const propertyName = routeDataMap.get(this.constructor.prototype)!;
+    (this as any)[propertyName] = await router.resolve(
+      typeof e === 'string'
+        ? e
+        : (
+          e.state
+            ? e.state.path
+            : ''
+        )
+    );
+  }
+
+  const Router: RouterDecorator = target => {
+    const routeUpdaters = new WeakMap<any, (e: PopStateEvent) => Promise<void>>();
+
+    const {
+      connectedCallback: superConnectedCallback,
+      disconnectedCallback: superDisconnectedCallback,
+    } = target.prototype;
+
+    target.prototype.connectedCallback = async function connectedCallback(this: any): Promise<void> {
+      const boundRouteUpdater = updateRoute.bind(this);
+      routeUpdaters.set(this, boundRouteUpdater);
+
       if (routeDataMap.has(this.constructor.prototype)) {
-        window.addEventListener('popstate', this.__handlePopstate);
+        window.addEventListener('popstate', boundRouteUpdater);
       }
 
-      if (super.connectedCallback) {
-        super.connectedCallback();
+      if (superConnectedCallback) {
+        superConnectedCallback.call(this);
       }
 
-      await this.__updateRoute(location.pathname);
-    }
-
-    public disconnectedCallback(): void {
-      window.removeEventListener('popstate', this.__handlePopstate);
-
-      if (super.disconnectedCallback) {
-        super.disconnectedCallback();
-      }
-    }
-
-    private __handlePopstate = async ({state: {path}}: PopStateEvent): Promise<void> => {
-      await this.__updateRoute(path);
+      await updateRoute.call(this, location.pathname);
     };
 
-    private async __updateRoute(path: string): Promise<void> {
-      const propertyName = routeDataMap.get(this.constructor.prototype)!;
-      (this as any)[propertyName] = await router.resolve(path);
+    target.prototype.disconnectedCallback = function disconnectedCallback(this: any): void {
+      window.removeEventListener('popstate', routeUpdaters.get(this)!);
+
+      if (superDisconnectedCallback) {
+        superDisconnectedCallback.call(this);
+      }
     }
   };
 
@@ -120,7 +134,7 @@ const createRouterMixin = (
       return [Link, createUrl];
     };
 
-  return [withRouter, push, RouteData, createLinkElementAndUrlConstructor];
+  return [Router, push, RouteData, createLinkElementAndUrlConstructor];
 };
 
 export default createRouterMixin;

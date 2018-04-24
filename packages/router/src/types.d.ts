@@ -23,8 +23,7 @@ export interface CustomElementBase extends HTMLElement {
 }
 // tslint:enable:no-method-signature
 
-// export type RouterMixin = <T extends Constructor<CustomElementBase>>(base: T) => T;
-export type RouterMixin = <T extends Constructor<CustomElementBase>>(base: T) => T;
+export type RouterDecorator = (target: any) => void;
 export type RouterPush = (path: string, title?: string) => void;
 export type RouteDataDecorator = (target: any, propertyName: string) => void;
 export type CreateLinkElementAndUrlConstructor = (name: string, opts?: UrlCreatorOptions) => [
