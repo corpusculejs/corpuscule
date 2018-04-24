@@ -12,6 +12,6 @@ export interface CustomElementBase extends HTMLElement {
 // tslint:enable:no-method-signature
 
 export type PropertyGetter<S> = (state: S) => any;
-export type ReduxMixin = <T extends Constructor<CustomElementBase>>(base: T) => T;
+export type ReduxDecorator = (target: any) => any;
 export type StoredDecorator<S> = (getter: PropertyGetter<S>) => (prototype: any, propertyName: string) => void
 export type DispatcherDecorator = (prototype: any, propertyName: string) => any;

@@ -3,13 +3,13 @@ import {Action, Store, Unsubscribe} from 'redux';
 import {
   DispatcherDecorator,
   PropertyGetter,
-  ReduxMixin,
+  ReduxDecorator,
   StoredDecorator
 } from './types';
 
 const createReduxMixin =
   <S, A extends Action>(store: Store<S, A>): [
-    ReduxMixin,
+    ReduxDecorator,
     StoredDecorator<S>,
     DispatcherDecorator
   ] => {
@@ -47,49 +47,52 @@ const createReduxMixin =
     };
   };
 
-  const withRedux: ReduxMixin = base =>
-    class WithRedux extends base {
-      private __unsubscribe?: Unsubscribe;
+  function updateStoredProperties(this: any, map: Map<string, PropertyGetter<S>>): void {
+    for (const [property, getter] of map) {
+      const nextValue = getter(store.getState());
 
-      public connectedCallback(): void {
-        const map = getters.get(this.constructor.prototype);
-
-        if (map) {
-          this.__updateStoredProperties(map);
-
-          this.__unsubscribe = store.subscribe(() => {
-            this.__updateStoredProperties(map);
-          });
-        }
-
-        if (super.connectedCallback) {
-          super.connectedCallback();
-        }
+      if (nextValue !== (this as any)[property]) {
+        (this as any)[property] = nextValue;
       }
+    }
+  }
 
-      public disconnectedCallback(): void {
-        if (this.__unsubscribe) {
-          this.__unsubscribe();
-        }
+  const Redux: ReduxDecorator = target => {
+    const targetGetters = getters.get(target.prototype);
 
-        if (super.disconnectedCallback) {
-          super.disconnectedCallback();
-        }
-      }
+    if (!targetGetters) {
+      return;
+    }
 
-      private __updateStoredProperties(map: Map<string, PropertyGetter<S>>): void {
-        for (const [property, getter] of map) {
-          const nextValue = getter(store.getState());
+    const unsubscribers = new WeakMap<any, Unsubscribe>();
 
-          if (nextValue !== (this as any)[property]) {
-            (this as any)[property] = nextValue;
-          }
-        }
+    const {
+      connectedCallback: superConnectedCallback,
+      disconnectedCallback: superDisconnectedCallback,
+    } = target.prototype;
+
+    target.prototype.connectedCallback = function connectedCallback(): void {
+      updateStoredProperties.call(this, targetGetters);
+
+      unsubscribers.set(this, store.subscribe(() => {
+        updateStoredProperties.call(this, targetGetters);
+      }));
+
+      if (superConnectedCallback) {
+        superConnectedCallback.call(this);
       }
     };
 
+    target.prototype.disconnectedCallback = function disconnectedCallback(): void {
+      unsubscribers.get(this)!();
 
-  return [withRedux, Stored, Dispatcher];
+      if (superDisconnectedCallback) {
+        superDisconnectedCallback.call(this);
+      }
+    }
+  };
+
+  return [Redux, Stored, Dispatcher];
 };
 
 export default createReduxMixin;
