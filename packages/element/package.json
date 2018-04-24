@@ -1,0 +1,8 @@
+{
+  "name": "@corpuscule/element",
+  "version": "0.1.0",
+  "description": "Custom element base class for Corpuscule",
+  "dependencies": {
+    "lit-html": "^0.9.0"
+  }
+}

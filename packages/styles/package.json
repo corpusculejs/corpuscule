@@ -1,0 +1,5 @@
+{
+  "name": "@corpuscule/styles",
+  "version": "0.1.0",
+  "description": "Decorator to load styles for Corpuscule"
+}
