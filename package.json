@@ -2,6 +2,7 @@
   "name": "corpuscule",
   "private": true,
   "scripts": {
+    "bootstrap": "lerna bootstrap",
     "build": "node scripts/build.js"
   },
   "repository": {
