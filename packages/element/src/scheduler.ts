@@ -19,36 +19,32 @@ declare global {
   }
 }
 
-const queue: Array<() => void> = [];
-let initialRender = true;
+const sheduledTasksQueue: Array<() => void> = [];
 
 const next = (deadline: RequestIdleCallbackDeadline): void => {
-  while (queue.length !== 0) {
-    if (deadline.didTimeout) {
+  while (sheduledTasksQueue.length !== 0) {
+    if (deadline.timeRemaining() <= 0) {
       window.requestIdleCallback(next);
       break;
     }
 
-    const scheduled = queue.shift()!;
-    scheduled();
+    const task = sheduledTasksQueue.shift()!;
+    task();
   }
 };
 
-const schedule = async (callback: () => void) => {
-  const isEmpty = queue.length === 0;
-  queue.push(callback);
+const schedule = async (callback: () => void, shouldBeRenderedImmediately: boolean) => {
+  if (shouldBeRenderedImmediately) {
+    await null;
+    callback();
+    return;
+  }
+
+  const isEmpty = sheduledTasksQueue.length === 0;
+  sheduledTasksQueue.push(callback);
 
   if (isEmpty) {
-    if (initialRender) {
-      await Promise.resolve();
-      for (const scheduled of queue) {
-        scheduled();
-      }
-      queue.length = 0;
-      initialRender = false;
-    } else {
-      window.requestIdleCallback(next);
-    }
+    window.requestIdleCallback(next);
   }
 };
 

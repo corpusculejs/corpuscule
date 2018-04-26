@@ -32,6 +32,7 @@ export default class CorpusculeElement extends HTMLElement {
     return true;
   }
 
+  private __isFirstRender: boolean = true; // tslint:disable-line:readonly-keyword
   private __isValid: boolean = true; // tslint:disable-line:readonly-keyword
   private readonly __prevProps: PropertiesList = {};
   private readonly __prevState: PropertiesList = {};
@@ -156,6 +157,7 @@ export default class CorpusculeElement extends HTMLElement {
 
       __toUpdate.mounting = false;
       __toUpdate.props = false;
-    });
+      this.__isFirstRender = false;
+    }, this.__isFirstRender);
   }
 }
