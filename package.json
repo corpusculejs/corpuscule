@@ -4,7 +4,7 @@
   "scripts": {
     "bootstrap": "lerna bootstrap",
     "build": "node scripts/build.js",
-    "lint:packages": "tslint \"packages/**/*.+(ts|tsx)\" -c tslint.json -p tsconfig.json -t verbose",
+    "lint:packages": "tslint \"packages/**/*.+(ts|tsx)\" -e \"packages/**/(node_modules|dist)/**/*.ts\" -c tslint.json -p tsconfig.json -t verbose",
     "prepare": "npm run lint:packages && npm run build",
     "precommit": "lint-staged"
   },

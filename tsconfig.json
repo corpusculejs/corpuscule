@@ -25,6 +25,7 @@
     "packages/**/*.ts"
   ],
   "exclude": [
+    "packages/**/dist",
     "node_modules"
   ]
 }
