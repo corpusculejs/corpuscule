@@ -62,8 +62,15 @@ const removeDist = async (pack) => {
 };
 
 const compileTypescript = (pack) => {
+  const config = {
+    ...tsconfig,
+    include: [
+      'src/**/*.ts',
+    ],
+  };
+
   const parsed = tsc.parseJsonConfigFileContent(
-    tsconfig,
+    config,
     parseConfigHost,
     `packages/${pack}`,
   );
