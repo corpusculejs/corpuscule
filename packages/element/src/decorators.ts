@@ -25,7 +25,7 @@ export const Attribute =
       get(this: any): any {
         return this.__props[propertyName];
       },
-      set(this: any, value: any): void {
+      async set(this: any, value: any): Promise<void> {
         if (pure && value === this.__props[propertyName]) {
           return;
         }
@@ -42,7 +42,7 @@ export const Attribute =
           this.setAttribute(attributeName, value);
         }
 
-        this._invalidate(InvalidationType.Props);
+        await this._invalidate(InvalidationType.Props);
       },
     };
   };
@@ -51,13 +51,13 @@ export const Property = (pure: boolean = true) => (_prototype: any, propertyName
   get(this: any): any {
     return this.__props[propertyName];
   },
-  set(this: any, value: any): void {
+  async set(this: any, value: any): Promise<void> {
     if (pure && value === this.__props[propertyName]) {
       return;
     }
 
     this.__props[propertyName] = value;
-    this._invalidate(InvalidationType.Props);
+    await this._invalidate(InvalidationType.Props);
   },
 });
 
@@ -65,9 +65,9 @@ export const State = (_prototype: any, propertyName: string): any => ({
   get(this: any): any {
     return this.__state[propertyName];
   },
-  set(this: any, value: any): void {
+  async set(this: any, value: any): Promise<void> {
     this.__state[propertyName] = value;
-    this._invalidate(InvalidationType.State);
+    await this._invalidate(InvalidationType.State);
   },
 });
 
@@ -112,6 +112,7 @@ export const CustomElement = (name: string) => (target: any): any => {
     });
   }
 
+  // tslint:disable-next-line:no-floating-promises
   Promise.resolve().then(() => {
     customElements.define(name, target);
   });

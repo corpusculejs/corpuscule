@@ -1,24 +1,4 @@
-declare global {
-  type RequestIdleCallbackCancellationToken = any;
-
-  interface RequestIdleCallbackOptions {
-    timeout: number;
-  }
-
-  interface RequestIdleCallbackDeadline {
-    readonly didTimeout: boolean;
-    timeRemaining: () => number;
-  }
-
-  interface Window {
-    readonly requestIdleCallback: (
-      callback: (deadline: RequestIdleCallbackDeadline) => void,
-      opts?: RequestIdleCallbackOptions,
-    ) => RequestIdleCallbackCancellationToken;
-    readonly cancelIdleCallback: (cancellationToken: RequestIdleCallbackCancellationToken) => void;
-  }
-}
-
+// tslint:disable-next-line:readonly-array
 const sheduledTasksQueue: Array<() => void> = [];
 
 const next = (deadline: RequestIdleCallbackDeadline): void => {
@@ -35,8 +15,10 @@ const next = (deadline: RequestIdleCallbackDeadline): void => {
 
 const schedule = async (callback: () => void, shouldBeRenderedImmediately: boolean) => {
   if (shouldBeRenderedImmediately) {
+    // tslint:disable-next-line await-promise
     await null;
     callback();
+
     return;
   }
 

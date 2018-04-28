@@ -1,5 +1,5 @@
 export interface PropertiesList {
-  [name: string]: any;
+  [name: string]: any; // tslint:disable-line:readonly-keyword
 }
 
 export interface Constructor<T> {

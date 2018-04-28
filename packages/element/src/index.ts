@@ -10,8 +10,7 @@ export * from './decorators';
 interface ToUpdate {
   mounting: boolean;
   props: boolean;
-}
-// tslint:enable:readonly-keyword
+} // tslint:enable:readonly-keyword
 
 export default class CorpusculeElement extends HTMLElement {
   public static readonly is: string;
@@ -54,7 +53,7 @@ export default class CorpusculeElement extends HTMLElement {
     this.__root = this.attachShadow({mode: 'open'});
   }
 
-  public attributeChangedCallback(attrName: string, oldVal: string, newVal: string): void {
+  public async attributeChangedCallback(attrName: string, oldVal: string, newVal: string): Promise<void> {
     if (oldVal === newVal) {
       return;
     }
@@ -67,7 +66,7 @@ export default class CorpusculeElement extends HTMLElement {
       this.__props[propertyName] = convert ? convert(newVal) : newVal;
     }
 
-    this._invalidate(InvalidationType.Props);
+    await this._invalidate(InvalidationType.Props);
   }
 
   public async connectedCallback(): Promise<void> {
@@ -118,7 +117,7 @@ export default class CorpusculeElement extends HTMLElement {
 
     this.__isValid = false;
 
-    schedule(() => {
+    await schedule(() => {
       const {
         is,
         _getDerivedStateFromProps,
