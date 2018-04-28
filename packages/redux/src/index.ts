@@ -7,7 +7,7 @@ import {
   StoredDecorator
 } from './types';
 
-const createReduxMixin =
+const createReduxBindings =
   <S, A extends Action>(store: Store<S, A>): [
     ReduxDecorator,
     StoredDecorator<S>,
@@ -51,13 +51,13 @@ const createReduxMixin =
     for (const [property, getter] of map) {
       const nextValue = getter(store.getState());
 
-      if (nextValue !== (this as any)[property]) {
-        (this as any)[property] = nextValue;
+      if (nextValue !== this[property]) {
+        this[property] = nextValue;
       }
     }
   }
 
-  const Redux: ReduxDecorator = target => {
+  const Redux: ReduxDecorator = (target) => {
     const targetGetters = getters.get(target.prototype);
 
     if (!targetGetters) {
@@ -89,10 +89,10 @@ const createReduxMixin =
       if (superDisconnectedCallback) {
         superDisconnectedCallback.call(this);
       }
-    }
+    };
   };
 
   return [Redux, Stored, Dispatcher];
 };
 
-export default createReduxMixin;
+export default createReduxBindings;

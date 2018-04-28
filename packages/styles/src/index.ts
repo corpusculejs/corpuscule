@@ -7,7 +7,7 @@ const Styles = (path: string) => (target: any) => {
     link.type = 'text/css';
     link.href = path;
 
-    const promise = new Promise((resolve) => {
+    const promise = new Promise<void>((resolve) => {
       link.onload = resolve as any;
     });
 
