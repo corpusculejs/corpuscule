@@ -15,6 +15,7 @@
       {"type": "enumMember", "format": "PascalCase"}
     ],
     "no-multiline-string": false,
+    "no-single-line-block-comment": false,
     "no-unsafe-any": false
   }
 }
