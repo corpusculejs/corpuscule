@@ -4,7 +4,7 @@
   "scripts": {
     "bootstrap": "lerna bootstrap",
     "build": "node scripts/build.js",
-    "lint:packages": "tslint \"packages/**/*.+(ts|tsx)\" -e \"packages/**/(node_modules|dist)/**/*.ts\" -c tslint.json -p tsconfig.json -t verbose",
+    "lint:packages": "tslint \"packages/**/*.+(ts|tsx)\" -e \"packages/**/+(node_modules|dist)/**/*.ts\" -c tslint.json -p tsconfig.json -t verbose",
     "prepare": "npm run lint:packages && npm run build",
     "precommit": "lint-staged"
   },
@@ -19,10 +19,13 @@
   },
   "homepage": "https://github.com/corpusculejs/corpuscule#readme",
   "devDependencies": {
+    "dts-bundle-generator": "^1.1.0",
     "husky": "^0.14.3",
     "lerna": "^2.10.2",
     "lint-staged": "^7.0.5",
     "rimraf": "^2.6.2",
+    "rollup": "^0.58.2",
+    "rollup-plugin-typescript2": "^0.13.0",
     "tslint": "^5.9.1",
     "tslint-config-poetez": "^1.0.0",
     "typescript": "^2.8.1"

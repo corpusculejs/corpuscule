@@ -2,6 +2,7 @@ const {exec} = require('child_process');
 const {
   copyFile,
   existsSync,
+  mkdir,
   readdir,
   readFile,
   readFileSync,
@@ -13,6 +14,7 @@ const {promisify} = require('util');
 
 const copyFileAsync = promisify(copyFile);
 const execAsync = promisify(exec);
+const mkdirAsync = promisify(mkdir);
 const readdirAsync = promisify(readdir);
 const readFileAsync = promisify(readFile);
 const rimrafAsync = promisify(rimraf);
@@ -25,7 +27,7 @@ const packages = [
   'styles',
 ];
 
-const commonPackageInfo = (() => {
+const createCommonPackageInfo = (pack) => {
   const {
     author,
     bugs,
@@ -39,11 +41,13 @@ const commonPackageInfo = (() => {
     bugs,
     homepage,
     license,
-    main: 'dist/index.js',
+    main: `${pack}.js`,
+    modules: `${pack}.js`,
+    esnext: `${pack}.js`,
     repository,
-    typings: 'dist/index.d.ts',
+    typings: `${pack}.d.ts`,
   }
-})();
+};
 
 const root = (pack, file) => `packages/${pack}/${file}`;
 const src = (pack, file) => `packages/${pack}/src/${file}`;
@@ -57,26 +61,9 @@ const parseConfigHost = {
   useCaseSensitiveFileNames: true
 };
 
-const removeDist = async (pack) => {
+const recreateDist = async (pack) => {
   await rimrafAsync(root(pack, 'dist'));
-};
-
-const compileTypescript = (pack) => {
-  const config = {
-    ...tsconfig,
-    include: [
-      'src/**/*.ts',
-    ],
-  };
-
-  const parsed = tsc.parseJsonConfigFileContent(
-    config,
-    parseConfigHost,
-    `packages/${pack}`,
-  );
-
-  const program = tsc.createProgram(parsed.fileNames, parsed.options);
-  program.emit();
+  await mkdirAsync(root(pack, 'dist'));
 };
 
 const dtsPattern = /\.d\.ts/;
@@ -95,7 +82,7 @@ const copyProjectFiles = async (pack) => {
   const packageJson = await readFileAsync(root(pack, 'package.json'), 'utf8');
   const result = {
     ...JSON.parse(packageJson),
-    ...commonPackageInfo,
+    ...createCommonPackageInfo(pack),
   };
 
   await Promise.all([
@@ -105,12 +92,12 @@ const copyProjectFiles = async (pack) => {
 };
 
 const build = async (pack) => {
-  await removeDist(pack);
-  compileTypescript(pack);
+  await recreateDist(pack);
 
   await Promise.all([
-    copyDts(pack),
+    execAsync(`rollup -c rollup.config.js`),
     copyProjectFiles(pack),
+    execAsync(`dts-bundle-generator --project tsconfig.json -o packages/${pack}/dist/${pack}.d.ts packages/${pack}/src/index.ts`),
   ]);
 
   await execAsync(`cd ${root(pack, 'dist')} && npm pack`);
