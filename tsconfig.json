@@ -18,15 +18,14 @@
     "strictFunctionTypes": true,
     "stripInternal": true,
     "target": "esnext",
-    "typeRoots": [
-      "node_modules/@types"
-    ]
+    "types": []
   },
   "include": [
     "packages/**/*.ts"
   ],
   "exclude": [
     "packages/**/dist",
+    "packages/**/node_modules",
     "node_modules"
   ]
 }
