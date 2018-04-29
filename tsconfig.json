@@ -16,6 +16,7 @@
     "sourceRoot": "src",
     "strict": true,
     "strictFunctionTypes": true,
+    "stripInternal": true,
     "target": "esnext",
     "typeRoots": [
       "node_modules/@types"

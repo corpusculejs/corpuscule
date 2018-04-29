@@ -31,13 +31,21 @@ export default abstract class CorpusculeElement extends HTMLElement {
     return true;
   }
 
+  /** @internal */
   private __isFirstRender: boolean = true; // tslint:disable-line:readonly-keyword
+  /** @internal */
   private __isValid: boolean = true; // tslint:disable-line:readonly-keyword
+  /** @internal */
   private readonly __prevProps: PropertiesList = {};
+  /** @internal */
   private readonly __prevState: PropertiesList = {};
+  /** @internal */
   private readonly __props: PropertiesList = {};
+  /** @internal */
   private readonly __root: ShadowRoot | HTMLDivElement;
+  /** @internal */
   private readonly __state: PropertiesList = {};
+  /** @internal */
   private readonly __toUpdate: ToUpdate = {
     mounting: false,
     props: false,
