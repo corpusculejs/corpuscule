@@ -12,7 +12,7 @@ interface ToUpdate {
   props: boolean;
 } // tslint:enable:readonly-keyword
 
-export default class CorpusculeElement extends HTMLElement {
+export default abstract class CorpusculeElement extends HTMLElement {
   public static readonly is: string;
   public static readonly observedAttributes: ReadonlyArray<string>;
 
@@ -43,7 +43,7 @@ export default class CorpusculeElement extends HTMLElement {
     props: false,
   };
 
-  public constructor() {
+  protected constructor() {
     super();
 
     if (!(this.constructor as typeof CorpusculeElement).is) {
@@ -98,9 +98,7 @@ export default class CorpusculeElement extends HTMLElement {
 
   protected _componentWillUnmount?(): void;
 
-  protected _render(): TemplateResult {
-    throw new Error('_render() is not implemented');
-  }
+  protected abstract _render(): TemplateResult;
 
   protected async _invalidate(type: InvalidationType): Promise<void> {
     const {__toUpdate} = this;
