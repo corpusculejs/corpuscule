@@ -21,6 +21,7 @@ export default packages.reduce((acc, pack) => {
         tsconfigOverride: {
           compilerOptions: {
             declaration: false,
+            types: [],
           },
           include: [
             `packages/${pack}/src/**/*.ts`,

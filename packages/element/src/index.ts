@@ -4,7 +4,7 @@ import {attributeMap} from './decorators';
 import schedule from './scheduler';
 import {InvalidationType, PropertiesList} from './types';
 
-export * from './decorators';
+export {Computed, CustomElement, Attribute, Property, State} from './decorators';
 
 // tslint:disable:readonly-keyword
 interface ToUpdate {
