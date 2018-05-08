@@ -70,11 +70,11 @@ export const initProperties = (
 };
 
 export const initStates = (
-  target: typeof CorpusculeElement,
+  {prototype}: typeof CorpusculeElement,
   states: ReadonlyArray<string>,
 ): void => {
   for (const propertyName of states) {
-    Object.defineProperty(target.prototype, propertyName, {
+    Object.defineProperty(prototype, propertyName, {
       get(this: any): any {
         return this.__states[propertyName];
       },
@@ -88,11 +88,11 @@ export const initStates = (
 };
 
 export const initComputed = (
-  target: typeof CorpusculeElement,
+  {prototype}: typeof CorpusculeElement,
   computed: PropertyList<ComputedDescriptor>,
 ): void => {
   for (const [propertyName, watchings] of Object.entries(computed)) {
-    const descriptor = Object.getOwnPropertyDescriptor(target.prototype, propertyName);
+    const descriptor = Object.getOwnPropertyDescriptor(prototype, propertyName);
 
     if (!descriptor || !descriptor.get) {
       throw new Error(`Property ${propertyName} is not defined or is not a getter`);
@@ -108,7 +108,7 @@ export const initComputed = (
     let value: any;
     let isValueUpdated = false;
 
-    Object.defineProperty(target.prototype, propertyName, {
+    Object.defineProperty(prototype, propertyName, {
       get(this: any): any {
         for (const watching of watchings) {
           if (this[watching] !== cache[watching]) {
