@@ -1,7 +1,8 @@
 // tslint:disable:await-promise
 import {TemplateResult} from 'lit-html';
 import {html} from 'lit-html/lib/lit-extended';
-import CorpusculeElement, {CustomElement} from '../src';
+import CorpusculeElement from '../src';
+import {CustomElement} from '../src/decorators';
 
 describe('CorpusculeElement', () => {
   it('should allow to create custom element using CustomElement decorator', async () => {

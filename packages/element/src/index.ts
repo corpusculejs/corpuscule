@@ -1,168 +1,198 @@
 import {TemplateResult} from 'lit-html';
 import {render} from 'lit-html/lib/shady-render';
-import {attributeMap} from './decorators';
+import {initAttributes, initComputed, initProperties, initStates} from './initializers';
 import schedule from './scheduler';
-import {InvalidationType, PropertiesList} from './types';
-
-export {Computed, CustomElement, Attribute, Property, State} from './decorators';
-
-// tslint:disable:readonly-keyword
-interface ToUpdate {
-  mounting: boolean;
-  props: boolean;
-} // tslint:enable:readonly-keyword
+import {
+  AttributeDescriptor,
+  AttributeGuard,
+  ComputedDescriptor,
+  PropertyGuard,
+  PropertyList,
+  Scheduler,
+  UpdateType
+} from './types';
 
 export default abstract class CorpusculeElement extends HTMLElement {
   public static readonly is: string;
-  public static readonly observedAttributes: ReadonlyArray<string>;
+  public static get observedAttributes(): ReadonlyArray<string> {
+    initProperties(this, this._properties);
+    initStates(this, this._states);
+    initComputed(this, this._computed);
 
-  protected static _getDerivedStateFromProps?(
-    nextProps: PropertiesList,
-    prevProps: PropertiesList,
-    prevState: PropertiesList,
-  ): PropertiesList;
+    return initAttributes(this, this._attributes);
+  }
 
-  protected static _shouldComponentUpdate(
-    _nextProps: PropertiesList,
-    _nextState: PropertiesList,
-    _prevProps: PropertiesList,
-    _prevState: PropertiesList,
+  protected static readonly _attributes: PropertyList<AttributeDescriptor> = {};
+  protected static readonly _properties: PropertyList<PropertyGuard> = {};
+  protected static readonly _states: ReadonlyArray<string> = [];
+  protected static readonly _computed: PropertyList<ComputedDescriptor> = {};
+
+  private static readonly __attributesRegistry: Map<string, [string, AttributeGuard]> = new Map();
+
+  protected static _deriveStateFromProps(
+    _nextProps: PropertyList<any>,
+    _prevProps: PropertyList<any>,
+    _prevState: PropertyList<any>,
+  ): PropertyList<any> | null {
+    return null;
+  }
+
+  protected static _shouldUpdate(
+    _nextProps: PropertyList<any>,
+    _nextState: PropertyList<any>,
+    _prevProps: PropertyList<any>,
+    _prevState: PropertyList<any>,
   ): boolean {
     return true;
   }
 
-  /** @internal */
-  private __isFirstRender: boolean = true; // tslint:disable-line:readonly-keyword
-  /** @internal */
-  private __isValid: boolean = true; // tslint:disable-line:readonly-keyword
-  /** @internal */
-  private readonly __prevProps: PropertiesList = {};
-  /** @internal */
-  private readonly __prevState: PropertiesList = {};
-  /** @internal */
-  private readonly __props: PropertiesList = {};
-  /** @internal */
-  private readonly __root: ShadowRoot | HTMLDivElement;
-  /** @internal */
-  private readonly __state: PropertiesList = {};
-  /** @internal */
-  private readonly __toUpdate: ToUpdate = {
+  private static __parseAttributeValue(value: string | null, guard: AttributeGuard): boolean | number | string {
+    switch (guard) {
+      case Boolean:
+        return (value !== null);
+      case Number:
+        return Number(value);
+      default:
+        return String(value);
+    }
+  }
+
+  private readonly __prevProperties: PropertyList<any> = {};
+  private readonly __prevStates: PropertyList<any> = {};
+  private readonly __properties: PropertyList<any> = {};
+  private readonly __states: PropertyList<any> = {};
+
+  private readonly __root: Element | DocumentFragment = this._createRoot();
+  private readonly __scheduler: Scheduler = {
+    force: false,
+    initial: true,
     mounting: false,
     props: false,
+    valid: false,
   };
-
-  protected constructor() {
-    super();
-
-    if (!(this.constructor as typeof CorpusculeElement).is) {
-      throw new Error('@element() decorator is missing');
-    }
-
-    this.__root = this.attachShadow({mode: 'open'});
-  }
 
   public async attributeChangedCallback(attrName: string, oldVal: string, newVal: string): Promise<void> {
     if (oldVal === newVal) {
       return;
     }
 
-    const attributes = attributeMap.get(this.constructor.prototype)!;
-    const data = attributes.get(attrName);
+    const {
+      __attributesRegistry,
+      __parseAttributeValue,
+    } = this.constructor as typeof CorpusculeElement;
 
-    if (data) {
-      const [propertyName, convert] = data;
-      this.__props[propertyName] = convert ? convert(newVal) : newVal;
-    }
+    const [propertyName, guard] = __attributesRegistry.get(attrName)!;
+    this.__properties[propertyName] = __parseAttributeValue(newVal, guard);
 
-    await this._invalidate(InvalidationType.Props);
+    await this.__invalidate(UpdateType.Props);
   }
 
   public async connectedCallback(): Promise<void> {
-    const map = attributeMap.get(this.constructor.prototype);
+    const {
+      __attributesRegistry,
+      __parseAttributeValue,
+    } = this.constructor as typeof CorpusculeElement;
 
-    if (map) {
-      for (const [attribute, [propertyName, convert]] of map) {
-        const value = this.getAttribute(attribute);
-        this.__props[propertyName] = convert ? convert(value) : value;
-      }
+    for (const [attributeName, [propertyName, guard]] of __attributesRegistry) {
+      const attributeValue = this.getAttribute(attributeName);
+      this.__properties[propertyName] = __parseAttributeValue(attributeValue, guard);
     }
 
-    await this._invalidate(InvalidationType.Mounting);
-
-    if (this._componentDidMount) {
-      this._componentDidMount();
-    }
+    await this.__invalidate(UpdateType.Mounting);
   }
 
   public disconnectedCallback(): void {
-    if (this._componentWillUnmount) {
-      this._componentWillUnmount();
-    }
+    this._didUnmount();
   }
 
-  protected _componentDidMount?(): void;
+  public async forceUpdate(): Promise<void> {
+    return this.__invalidate(UpdateType.Force);
+  }
 
-  protected _componentDidUpdate?(): void;
+  protected _createRoot(): Element | DocumentFragment {
+    return this.attachShadow({mode: 'open'});
+  }
 
-  protected _componentWillUnmount?(): void;
+  // tslint:disable:no-empty
+  protected _didMount(): void {}
+
+  protected _didUpdate(
+    _prevProperties: PropertyList<any>,
+    _prevStates: PropertyList<any>,
+  ): void {}
+
+  protected _didUnmount(): void {}
+  // tslint:enable:no-empty
 
   protected abstract _render(): TemplateResult;
 
-  protected async _invalidate(type: InvalidationType): Promise<void> {
-    const {__toUpdate} = this;
+  private async __invalidate(type: UpdateType): Promise<void> {
+    const {__scheduler: scheduler} = this;
 
-    if (type === InvalidationType.Mounting) {
-      __toUpdate.mounting = true;
-    } else if (type === InvalidationType.Props) {
-      __toUpdate.props = true;
+    switch (type) {
+      case UpdateType.Force:
+        scheduler.force = true;
+        break;
+      case UpdateType.Mounting:
+        scheduler.mounting = true;
+        scheduler.valid = true;
+        break;
+      case UpdateType.Props:
+        scheduler.props = true;
+        break;
+      default:
+        break;
     }
 
-    if (!this.__isValid) {
+    if (!scheduler.valid) {
       return;
     }
 
-    this.__isValid = false;
+    scheduler.valid = false;
 
-    await schedule(() => {
+    return schedule(() => {
       const {
         is,
-        _getDerivedStateFromProps,
-        _shouldComponentUpdate,
+        _deriveStateFromProps,
+        _shouldUpdate,
       } = this.constructor as typeof CorpusculeElement;
 
-      if (
-        _getDerivedStateFromProps
-        && (__toUpdate.props || __toUpdate.mounting)
-      ) {
+      if (scheduler.mounting || scheduler.props || scheduler.force) {
         Object.assign(
-          this.__state,
-          _getDerivedStateFromProps(this.__props, this.__prevProps, this.__prevState),
+          this.__states,
+          _deriveStateFromProps(this.__properties, this.__prevProperties, this.__prevStates),
         );
       }
 
-      const shouldUpdate = _shouldComponentUpdate(
-        this.__props,
-        this.__state,
-        this.__prevProps,
-        this.__prevState,
-      );
+      const shouldUpdate = !scheduler.force && !scheduler.mounting
+        ? _shouldUpdate(
+          this.__properties,
+          this.__states,
+          this.__prevProperties,
+          this.__prevStates,
+        )
+        : true;
 
       if (shouldUpdate) {
         render(this._render(), this.__root, is);
       }
 
-      Object.assign(this.__prevProps, this.__props);
-      Object.assign(this.__prevState, this.__state);
-
-      this.__isValid = true;
-
-      if (shouldUpdate && !__toUpdate.mounting && this._componentDidUpdate) {
-        this._componentDidUpdate();
+      if (scheduler.mounting) {
+        this._didMount();
       }
 
-      __toUpdate.mounting = false;
-      __toUpdate.props = false;
-      this.__isFirstRender = false;
-    }, this.__isFirstRender);
+      if (shouldUpdate && !scheduler.mounting) {
+        this._didUpdate(this.__prevProperties, this.__prevStates);
+      }
+
+      Object.assign(this.__prevProperties, this.__properties);
+      Object.assign(this.__prevStates, this.__states);
+
+      scheduler.valid = true;
+
+      scheduler.initial = false;
+      scheduler.mounting = false;
+      scheduler.props = false;
+    }, scheduler.initial);
   }
 }

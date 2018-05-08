@@ -32,10 +32,8 @@ const next = (deadline: RequestIdleCallbackDeadline): void => {
   }
 };
 
-const schedule = async (callback: () => void, shouldBeRenderedImmediately: boolean) => {
-  if (shouldBeRenderedImmediately) {
-    // tslint:disable-next-line await-promise
-    await null;
+const schedule = async (callback: () => void, immediately: boolean) => {
+  if (immediately) {
     callback();
 
     return;
