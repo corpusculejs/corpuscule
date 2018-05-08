@@ -5,22 +5,21 @@ const {
   readFile,
   writeFile,
 } = require('fs');
+const {join} = require('path');
 const rimraf = require('rimraf');
+const {file: createTmpFile} = require('tmp');
 const {promisify} = require('util');
+const packages = require('./project');
 
 const copyFileAsync = promisify(copyFile);
+const createTmpFileAsync = promisify(createTmpFile);
 const execAsync = promisify(exec);
 const mkdirAsync = promisify(mkdir);
 const readFileAsync = promisify(readFile);
 const rimrafAsync = promisify(rimraf);
 const writeFileAsync = promisify(writeFile);
 
-const packages = [
-  'element',
-  'redux',
-  'router',
-  'styles',
-];
+const cwd = process.cwd();
 
 const createCommonPackageInfo = (pack) => {
   const {
@@ -36,11 +35,11 @@ const createCommonPackageInfo = (pack) => {
     bugs,
     homepage,
     license,
-    main: `${pack}.js`,
-    modules: `${pack}.js`,
-    esnext: `${pack}.js`,
+    main: `index.js`,
+    modules: `index.js`,
+    esnext: `index.js`,
     repository,
-    typings: `${pack}.d.ts`,
+    typings: `index.d.ts`,
   }
 };
 
@@ -65,13 +64,34 @@ const copyProjectFiles = async (pack) => {
   ]);
 };
 
+const tmpFileData = (async () => {
+  const tsconfig = require('../tsconfig');
+
+  const tmpPath = await createTmpFileAsync();
+
+  await writeFileAsync(tmpPath, JSON.stringify({
+    ...tsconfig,
+    compilerOptions: {
+      ...tsconfig.compilerOptions,
+      types: [],
+    },
+  }), 'utf8');
+
+  return tmpPath;
+})();
+
 const build = async (pack) => {
   await recreateDist(pack);
 
+  const tmpPath = await tmpFileData;
+
   await Promise.all([
-    execAsync(`rollup -c rollup.config.js`),
+    execAsync(`rollup -c scripts/rollup.config.js`),
     copyProjectFiles(pack),
-    execAsync(`dts-bundle-generator --project tsconfig.build.json -o packages/${pack}/dist/${pack}.d.ts packages/${pack}/src/index.ts`),
+
+    ...packages[pack].map(
+      entry => execAsync(`dts-bundle-generator --project ${tmpPath} -o packages/${pack}/dist/${entry}.d.ts packages/${pack}/src/${entry}.ts`)
+    ),
   ]);
 
   await execAsync(`cd ${root(pack, 'dist')} && npm pack`);
@@ -79,6 +99,6 @@ const build = async (pack) => {
   console.log(`✓ "${pack}" is built`);
 };
 
-for (const pack of packages) {
+for (const pack of Object.keys(packages)) {
   build(pack);
 }
