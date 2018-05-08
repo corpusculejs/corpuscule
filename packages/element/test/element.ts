@@ -2,11 +2,11 @@
 import {TemplateResult} from 'lit-html';
 import {html} from 'lit-html/lib/lit-extended';
 import CorpusculeElement from '../src';
-import {CustomElement} from '../src/decorators';
+import {element} from '../src/decorators';
 
 describe('CorpusculeElement', () => {
   it('should allow to create custom element using CustomElement decorator', async () => {
-    @CustomElement('test-element')
+    @element('test-element')
     class TestElement extends CorpusculeElement {
       protected _render(): TemplateResult {
         return html`<span id="test">Test</span>`;
@@ -15,10 +15,10 @@ describe('CorpusculeElement', () => {
 
     await null;
 
-    const element = document.createElement('test-element');
-    document.body.appendChild(element);
+    const el = document.createElement('test-element');
+    document.body.appendChild(el);
 
-    expect(element instanceof TestElement).toBeTruthy();
-    expect(element.shadowRoot).not.toBeNull();
+    expect(el instanceof TestElement).toBeTruthy();
+    expect(el.shadowRoot).not.toBeNull();
   });
 });
