@@ -1,6 +1,5 @@
 import {TemplateResult} from 'lit-html';
 import {render} from 'lit-html/lib/shady-render';
-import {initAttributes, initComputed, initProperties, initStates} from './initializers';
 import schedule from './scheduler';
 import {
   AttributeDescriptor,
@@ -11,6 +10,7 @@ import {
   Scheduler,
   UpdateType
 } from './types';
+import {initAttributes, initComputed, initProperties, initStates} from './utils';
 
 export default abstract class CorpusculeElement extends HTMLElement {
   public static readonly is: string;
