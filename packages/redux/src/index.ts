@@ -1,98 +1,43 @@
 // tslint:disable:no-invalid-this
-import {Action, Store, Unsubscribe} from 'redux';
-import {
-  DispatcherDecorator,
-  PropertyGetter,
-  ReduxDecorator,
-  StoredDecorator
-} from './types';
+import {Action, Store} from 'redux';
+import {PropertyGetter} from './types';
+import {initDispatchers, updateStoredProperties} from './utils';
 
-const createReduxBindings =
-  <S, A extends Action>(store: Store<S, A>): [
-    ReduxDecorator,
-    StoredDecorator<S>,
-    DispatcherDecorator
-  ] => {
-  const getters = new WeakMap<any, Map<string, PropertyGetter<S>>>();
+const redux = <S, A extends Action>(store: Store<S, A>) => <T = any>(target: any): T => {
+  const {
+    connectedCallback: superConnectedCallback,
+    disconnectedCallback: superDisconnectedCallback,
+  } = target.prototype;
 
-  const Stored: StoredDecorator<S> = getter => (prototype, propertyName) => {
-    const map = getters.get(prototype);
-
-    if (!map) {
-      getters.set(prototype, new Map([[propertyName, getter]]));
-    } else {
-      map.set(propertyName, getter);
-    }
-  };
-
-  const Dispatcher: DispatcherDecorator = (prototype, propertyName) => {
-    const method = prototype[propertyName];
-
-    if (!method) {
-      return {
-        set(this: any, value: Function): void {
-          Object.defineProperty(this, propertyName, {
-            value(...args: any[]): void {
-              store.dispatch(value(...args));
-            },
-          });
-        },
-      };
-    }
-
-    return {
-      value(...args: any[]): void {
-        store.dispatch(method(...args));
-      },
-    };
-  };
-
-  function updateStoredProperties(this: any, map: Map<string, PropertyGetter<S>>): void {
-    for (const [property, getter] of map) {
-      const nextValue = getter(store.getState());
-
-      if (nextValue !== this[property]) {
-        this[property] = nextValue;
-      }
-    }
+  if (target._dispatchers) {
+    initDispatchers(target, store, target._dispatchers);
   }
 
-  const Redux: ReduxDecorator = (target) => {
-    const targetGetters = getters.get(target.prototype);
+  if (target._stored) {
+    const registry: ReadonlyArray<[string, PropertyGetter<S>]> = Object.entries(target._stored);
 
-    if (!targetGetters) {
-      return;
-    }
+    target.prototype.connectedCallback = function connectedCallback(this: any): void {
+      updateStoredProperties(this, store, registry);
 
-    const unsubscribers = new WeakMap<any, Unsubscribe>();
-
-    const {
-      connectedCallback: superConnectedCallback,
-      disconnectedCallback: superDisconnectedCallback,
-    } = target.prototype;
-
-    target.prototype.connectedCallback = function connectedCallback(): void {
-      updateStoredProperties.call(this, targetGetters);
-
-      unsubscribers.set(this, store.subscribe(() => {
-        updateStoredProperties.call(this, targetGetters);
-      }));
+      this.__unsubscribe = store.subscribe(() => {
+        updateStoredProperties(this, store, registry);
+      });
 
       if (superConnectedCallback) {
         superConnectedCallback.call(this);
       }
     };
 
-    target.prototype.disconnectedCallback = function disconnectedCallback(): void {
-      unsubscribers.get(this)!();
+    target.prototype.disconnectedCallback = function disconnectedCallback(this: any): void {
+      this.__unsubscribe();
 
       if (superDisconnectedCallback) {
         superDisconnectedCallback.call(this);
       }
     };
-  };
+  }
 
-  return [Redux, Stored, Dispatcher];
+  return target;
 };
 
-export default createReduxBindings;
+export default redux;

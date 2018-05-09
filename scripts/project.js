@@ -3,7 +3,10 @@ const packages = {
     'index',
     'decorators',
   ],
-  redux: ['index'],
+  redux: [
+    'index',
+    'decorators',
+  ],
   router: ['index'],
   styles: ['index'],
 };
