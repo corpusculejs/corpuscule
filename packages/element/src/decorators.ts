@@ -9,18 +9,36 @@ export const element = (name: string) => (target: any): void => {
 };
 
 export const attribute = (name: string, guard: AttributeGuard) => ({constructor}: any, propertyName: string): void => {
-  constructor._attributes[propertyName] = [name, guard];
+  const value = [name, guard];
+
+  if (!constructor._attributes) {
+    constructor._attributes = {[propertyName]: value};
+  } else {
+    constructor._attributes[propertyName] = value;
+  }
 };
 
 export const property = (guard: PropertyGuard = null) => ({constructor}: any, propertyName: string): void => {
-  constructor._properties[propertyName] = guard;
+  if (!constructor._properties) {
+    constructor._properties = {[propertyName]: guard};
+  } else {
+    constructor._properties[propertyName] = guard;
+  }
 };
 
 export const state = ({constructor}: any, propertyName: string): void => {
-  constructor._states.push(propertyName);
+  if (!constructor._states) {
+    constructor._states = [propertyName];
+  } else {
+    constructor._states.push(propertyName);
+  }
 };
 
 // tslint:disable-next-line:readonly-array
 export const computed = (...watchings: string[]) => ({constructor}: any, propertyName: string): void => {
-  constructor._computed[propertyName] = watchings;
+  if (!constructor._computed) {
+    constructor._computed = {[propertyName]: watchings};
+  } else {
+    constructor._computed[propertyName] = watchings;
+  }
 };
