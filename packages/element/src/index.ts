@@ -15,17 +15,27 @@ import {initAttributes, initComputed, initProperties, initStates} from './utils'
 export default abstract class CorpusculeElement extends HTMLElement {
   public static readonly is: string;
   public static get observedAttributes(): ReadonlyArray<string> {
-    initProperties(this, this._properties);
-    initStates(this, this._states);
-    initComputed(this, this._computed);
+    if (this._properties) {
+      initProperties(this, this._properties);
+    }
 
-    return initAttributes(this, this._attributes);
+    if (this._states) {
+      initStates(this, this._states);
+    }
+
+    if (this._computed) {
+      initComputed(this, this._computed);
+    }
+
+    return this._attributes
+      ? initAttributes(this, this._attributes)
+      : [];
   }
 
-  protected static readonly _attributes: PropertyList<AttributeDescriptor> = {};
-  protected static readonly _properties: PropertyList<PropertyGuard> = {};
-  protected static readonly _states: ReadonlyArray<string> = [];
-  protected static readonly _computed: PropertyList<ComputedDescriptor> = {};
+  protected static readonly _attributes?: PropertyList<AttributeDescriptor>;
+  protected static readonly _properties?: PropertyList<PropertyGuard>;
+  protected static readonly _states?: ReadonlyArray<string> = [];
+  protected static readonly _computed?: PropertyList<ComputedDescriptor>;
 
   private static readonly __attributesRegistry: Map<string, [string, AttributeGuard]> = new Map();
 

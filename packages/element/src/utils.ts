@@ -11,6 +11,7 @@ export const initAttributes = (
     (target as any).__attributesRegistry.set(attributeName, [propertyName, guard]);
 
     Object.defineProperty(target.prototype, propertyName, {
+      configurable: true,
       get(this: any): any {
         return this.__properties[propertyName];
       },
@@ -49,6 +50,7 @@ export const initProperties = (
 ): void => {
   for (const [propertyName, guard] of Object.entries(properties)) {
     Object.defineProperty(target.prototype, propertyName, {
+      configurable: true,
       get(this: any): any {
         return this.__properties[propertyName];
       },
@@ -75,6 +77,7 @@ export const initStates = (
 ): void => {
   for (const propertyName of states) {
     Object.defineProperty(prototype, propertyName, {
+      configurable: true,
       get(this: any): any {
         return this.__states[propertyName];
       },
@@ -109,6 +112,7 @@ export const initComputed = (
     let isValueUpdated = false;
 
     Object.defineProperty(prototype, propertyName, {
+      configurable: true,
       get(this: any): any {
         for (const watching of watchings) {
           if (this[watching] !== cache[watching]) {
