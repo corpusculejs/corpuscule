@@ -1,27 +1,23 @@
 const {exec} = require('child_process');
 const {
   copyFile,
-  mkdir,
+  readdir,
   readFile,
   writeFile,
 } = require('fs');
-const {join} = require('path');
 const rimraf = require('rimraf');
-const {file: createTmpFile} = require('tmp');
 const {promisify} = require('util');
+const dtsOnly = require('./dtsOnly');
 const packages = require('./project');
 
 const copyFileAsync = promisify(copyFile);
-const createTmpFileAsync = promisify(createTmpFile);
 const execAsync = promisify(exec);
-const mkdirAsync = promisify(mkdir);
+const readdirAsync = promisify(readdir);
 const readFileAsync = promisify(readFile);
 const rimrafAsync = promisify(rimraf);
 const writeFileAsync = promisify(writeFile);
 
-const cwd = process.cwd();
-
-const createCommonPackageInfo = (pack) => {
+const createCommonPackageInfo = () => {
   const {
     author,
     bugs,
@@ -44,18 +40,18 @@ const createCommonPackageInfo = (pack) => {
 };
 
 const root = (pack, file) => `packages/${pack}/${file}`;
+const src = (pack, file) => `packages/${pack}/src/${file}`;
 const dist = (pack, file) => `packages/${pack}/dist/${file}`;
 
 const recreateDist = async (pack) => {
   await rimrafAsync(root(pack, 'dist'));
-  await mkdirAsync(root(pack, 'dist'));
 };
 
 const copyProjectFiles = async (pack) => {
   const packageJson = await readFileAsync(root(pack, 'package.json'), 'utf8');
   const result = {
     ...JSON.parse(packageJson),
-    ...createCommonPackageInfo(pack),
+    ...createCommonPackageInfo(),
   };
 
   await Promise.all([
@@ -64,34 +60,25 @@ const copyProjectFiles = async (pack) => {
   ]);
 };
 
-const tmpFileData = (async () => {
-  const tsconfig = require('../tsconfig');
+const dtsPattern = /\.d\.ts/;
 
-  const tmpPath = await createTmpFileAsync();
-
-  await writeFileAsync(tmpPath, JSON.stringify({
-    ...tsconfig,
-    compilerOptions: {
-      ...tsconfig.compilerOptions,
-      types: [],
-    },
-  }), 'utf8');
-
-  return tmpPath;
-})();
+const copyDtsFiles = async (pack) => {
+  const files = await readdirAsync(root(pack, 'src'));
+  await Promise.all(
+    files
+      .filter(file => dtsPattern.test(file))
+      .map(file => copyFileAsync(src(pack, file), dist(pack, file)))
+  );
+};
 
 const build = async (pack) => {
   await recreateDist(pack);
 
-  const tmpPath = await tmpFileData;
-
   await Promise.all([
     execAsync(`rollup -c scripts/rollup.config.js`),
     copyProjectFiles(pack),
-
-    ...packages[pack].map(
-      entry => execAsync(`dts-bundle-generator --project ${tmpPath} -o packages/${pack}/dist/${entry}.d.ts packages/${pack}/src/${entry}.ts`)
-    ),
+    dtsOnly(pack),
+    copyDtsFiles(pack),
   ]);
 
   await execAsync(`cd ${root(pack, 'dist')} && npm pack`);
