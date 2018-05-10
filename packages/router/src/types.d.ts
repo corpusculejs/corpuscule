@@ -1,32 +1,36 @@
-import {Params} from 'universal-router';
-import {Options as UrlCreatorOptions} from 'universal-router/generateUrls';
+import {Params, Route} from 'universal-router';
+import {Options} from 'universal-router/generateUrls';
 
-export interface Constructor<T> {
-  new (...args: any[]): T; // tslint:disable-line:readonly-array
-}
-
-export interface LocationDescriptor {
-  readonly routeName: string;
-  readonly params: Params;
-}
-
-export interface CustomElementBaseIdentifier {
+export interface LinkConstructor {
   readonly is: string;
+  new (...args: any[]): CustomElement; // tslint:disable-line:readonly-array
+}
+
+export interface RouterConstructor {
+  readonly _routeNode?: string;
+  new (...args: any[]): CustomElement; // tslint:disable-line:readonly-array
 }
 
 // tslint:disable:no-method-signature
-export interface CustomElementBase extends HTMLElement {
+export interface CustomElement extends HTMLElement {
   attributeChangedCallback?(attrName: string, oldVal: string, newVal: string): void;
   connectedCallback?(): void;
   disconnectedCallback?(): void;
   adoptedCallback?(): void;
-}
-// tslint:enable:no-method-signature
+} // tslint:enable:no-method-signature
 
-export type RouterDecorator = (target: any) => void;
+export type RouterConnector = (routes: ReadonlyArray<Route>) => <T extends RouterConstructor>(target: T) => T;
+
+export interface RouterUtils {
+  readonly createUrlUtils: UrlUtilsCreator;
+  readonly push: RouterPush;
+}
+
+export interface UrlUtils {
+  readonly Link: LinkConstructor;
+  readonly createUrl: (routeName: string, params: Params) => string;
+}
+
 export type RouterPush = (path: string, title?: string) => void;
-export type RouteDataDecorator = (target: any, propertyName: string) => void;
-export type CreateLinkElementAndUrlConstructor = (name: string, opts?: UrlCreatorOptions) => [
-  Constructor<CustomElementBase> & CustomElementBaseIdentifier,
-  (routeName: string, params: Params) => string
-];
+
+export type UrlUtilsCreator = (name: string, opts?: Options) => UrlUtils;
