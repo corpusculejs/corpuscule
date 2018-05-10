@@ -7,8 +7,10 @@ export const initAttributes = (
   target: typeof CorpusculeElement,
   attributes: PropertyList<AttributeDescriptor>,
 ): ReadonlyArray<string> => {
+  const {__attributesRegistry} = target as any;
+
   for (const [propertyName, [attributeName, guard]] of Object.entries(attributes)) {
-    (target as any).__attributesRegistry.set(attributeName, [propertyName, guard]);
+    __attributesRegistry.set(attributeName, [propertyName, guard]);
 
     Object.defineProperty(target.prototype, propertyName, {
       configurable: true,
@@ -41,7 +43,7 @@ export const initAttributes = (
     });
   }
 
-  return Object.keys(attributes);
+  return Array.from(__attributesRegistry.keys());
 };
 
 export const initProperties = (
