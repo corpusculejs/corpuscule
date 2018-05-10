@@ -1,15 +1,25 @@
-export interface PropertiesList {
-  [name: string]: any; // tslint:disable-line:readonly-keyword
+export type AttributeGuard = BooleanConstructor | NumberConstructor | StringConstructor;
+export type AttributeDescriptor = [string, AttributeGuard];
+export type PropertyGuard = ((value: any) => boolean) | null;
+export type ComputedDescriptor = ReadonlyArray<string>;
+
+export interface PropertyList<T> {
+  [name: string]: T; // tslint:disable-line:readonly-keyword
 }
 
-export interface Constructor<T> {
-  new (...args: any[]): T; // tslint:disable-line:readonly-array
+// tslint:disable:readonly-keyword
+export interface Scheduler {
+  force: boolean;
+  initial: boolean;
+  mounting: boolean;
+  props: boolean;
+  valid: boolean;
 }
+// tslint:enable:readonly-keyword
 
-export const enum InvalidationType {
-  Mounting = 'mounting',
-  Props = 'props',
-  State = 'state',
+export const enum UpdateType {
+  Force,
+  Mounting,
+  Props,
+  State,
 }
-
-export type AttributeConverter = (value: string | null) => any;

@@ -17,8 +17,7 @@
     "strict": true,
     "strictFunctionTypes": true,
     "stripInternal": true,
-    "target": "esnext",
-    "types": []
+    "target": "esnext"
   },
   "include": [
     "packages/**/*.ts"
