@@ -85,11 +85,52 @@ export const initStates = (
       },
       async set(this: any, value: any): Promise<void> {
         this.__states[propertyName] = value;
-
         await this.__invalidate(UpdateType.State);
       },
     });
   }
+};
+
+// tslint:disable:readonly-keyword
+interface ComputedData {
+  readonly cache: Map<string, any>;
+  value: any;
+} // tslint:enable:readonly-keyword
+
+const prepareComputed = (
+  instance: any,
+  propertyName: string,
+  // tslint:disable-next-line:readonly-keyword
+  registry: WeakMap<any, Map<string, ComputedData>>,
+  watchings: ReadonlyArray<string>,
+  get: () => any,
+) => {
+  let map = registry.get(instance);
+
+  if (!map) {
+    map = new Map();
+    registry.set(instance, map);
+  }
+
+  let computedData = map.get(propertyName);
+
+  if (!computedData) {
+    const value = get.call(instance);
+    const cache = watchings.reduce<Map<string, any>>((acc, watchingProperty) => {
+      acc.set(watchingProperty, instance[watchingProperty]);
+
+      return acc;
+    }, new Map());
+
+    computedData = {
+      cache,
+      value,
+    };
+
+    map.set(propertyName, computedData);
+  }
+
+  return computedData;
 };
 
 export const initComputed = (
@@ -104,32 +145,37 @@ export const initComputed = (
     }
 
     const {get} = descriptor;
-    const cache = watchings.reduce<{[key: string]: any}>((acc, key) => {
-      acc[key] = undefined;
 
-      return acc;
-    }, {});
-
-    let value: any;
-    let isValueUpdated = false;
+    const registry = new WeakMap();
 
     Object.defineProperty(prototype, propertyName, {
       configurable: true,
       get(this: any): any {
-        for (const watching of watchings) {
-          if (this[watching] !== cache[watching]) {
+        const computedData = prepareComputed(
+          this,
+          propertyName,
+          registry,
+          watchings,
+          get,
+        );
+
+        const {cache} = computedData;
+        let isValueUpdated = false;
+
+        for (const [watchingProperty, watchingValue] of cache) {
+          if (this[watchingProperty] !== watchingValue) {
             if (!isValueUpdated) {
-              value = get.call(this);
+              computedData.value = get.call(this);
               isValueUpdated = true;
             }
 
-            cache[watching] = this[watching];
+            cache.set(watchingProperty, this[watchingProperty]);
           }
         }
 
         isValueUpdated = false;
 
-        return value;
+        return computedData.value;
       },
     });
   }
