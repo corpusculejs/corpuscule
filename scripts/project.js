@@ -7,7 +7,10 @@ const packages = {
     'index',
     'decorators',
   ],
-  router: ['index'],
+  router: [
+    'index',
+    'decorators',
+  ],
   styles: ['index'],
 };
 
