@@ -12,6 +12,14 @@ import {
 } from './types';
 import {initAttributes, initComputed, initProperties, initStates} from './utils';
 
+export {
+  AttributeDescriptor,
+  AttributeGuard,
+  ComputedDescriptor,
+  PropertyList,
+  PropertyGuard,
+};
+
 export default abstract class CorpusculeElement extends HTMLElement {
   public static readonly is: string;
   public static get observedAttributes(): ReadonlyArray<string> {
