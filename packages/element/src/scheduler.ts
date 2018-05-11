@@ -18,33 +18,40 @@ declare const requestIdleCallback: (
 declare const cancelIdleCallback: (cancellationToken: RequestIdleCallbackCancellationToken) => void;
 
 // tslint:disable-next-line:readonly-array
-const sheduledTasksQueue: Array<() => void> = [];
+const scheduledTasks: Array<[() => void, () => void]> = [];
 
 const next = (deadline: RequestIdleCallbackDeadline): void => {
-  while (sheduledTasksQueue.length !== 0) {
+  while (scheduledTasks.length !== 0) {
     if (deadline.timeRemaining() <= 0) {
       requestIdleCallback(next);
       break;
     }
 
-    const task = sheduledTasksQueue.shift()!;
+    const [task, resolve] = scheduledTasks.shift()!;
     task();
+    resolve();
   }
 };
 
-const schedule = async (callback: () => void, immediately: boolean) => {
-  if (immediately) {
-    callback();
+const schedule = async (callback: () => void, immediately: boolean) =>
+  new Promise<void>((resolve, reject) => {
+    try {
+      if (immediately) {
+        callback();
+        resolve();
 
-    return;
-  }
+        return;
+      }
 
-  const isEmpty = sheduledTasksQueue.length === 0;
-  sheduledTasksQueue.push(callback);
+      const isEmpty = scheduledTasks.length === 0;
+      scheduledTasks.push([callback, resolve]);
 
-  if (isEmpty) {
-    requestIdleCallback(next);
-  }
-};
+      if (isEmpty) {
+        requestIdleCallback(next);
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
 
 export default schedule;
