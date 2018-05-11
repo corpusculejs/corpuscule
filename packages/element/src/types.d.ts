@@ -1,10 +1,10 @@
-export type AttributeGuard = BooleanConstructor | NumberConstructor | StringConstructor;
 export type AttributeDescriptor = [string, AttributeGuard];
-export type PropertyGuard = ((value: any) => boolean) | null;
+export type AttributeGuard = BooleanConstructor | NumberConstructor | StringConstructor;
 export type ComputedDescriptor = ReadonlyArray<string>;
+export type PropertyGuard = ((value: any) => boolean) | null;
 
 export interface PropertyList<T> {
-  [name: string]: T; // tslint:disable-line:readonly-keyword
+  [propertyName: string]: T; // tslint:disable-line:readonly-keyword
 }
 
 // tslint:disable:readonly-keyword
