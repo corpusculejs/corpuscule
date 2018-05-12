@@ -89,6 +89,8 @@ export default abstract class CorpusculeElement extends HTMLElement {
     valid: false,
   };
 
+  private __isMount: boolean = false; // tslint:disable-line:readonly-keyword
+
   public async attributeChangedCallback(attrName: string, oldVal: string, newVal: string): Promise<void> {
     if (oldVal === newVal) {
       return;
@@ -123,6 +125,7 @@ export default abstract class CorpusculeElement extends HTMLElement {
 
   public disconnectedCallback(): void {
     this._didUnmount();
+    this.__isMount = false;
   }
 
   public async forceUpdate(): Promise<void> {
@@ -199,6 +202,7 @@ export default abstract class CorpusculeElement extends HTMLElement {
 
       if (scheduler.mounting) {
         this._didMount();
+        this.__isMount = true;
       }
 
       if (shouldUpdate && !scheduler.mounting) {
