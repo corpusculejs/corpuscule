@@ -75,8 +75,10 @@ export default abstract class CorpusculeElement extends HTMLElement {
     }
   }
 
-  private readonly __prevProperties: PropertyList<any> = {};
-  private readonly __prevStates: PropertyList<any> = {};
+  public get rendering(): Promise<void> {
+    return this.__rendering || Promise.resolve();
+  }
+
   private readonly __properties: PropertyList<any> = {};
   private readonly __states: PropertyList<any> = {};
 
@@ -90,6 +92,7 @@ export default abstract class CorpusculeElement extends HTMLElement {
   };
 
   private __isMount: boolean = false; // tslint:disable-line:readonly-keyword
+  private __rendering?: Promise<void>; // tslint:disable-line:readonly-keyword
 
   public async attributeChangedCallback(attrName: string, oldVal: string, newVal: string): Promise<void> {
     if (oldVal === newVal) {
@@ -173,7 +176,7 @@ export default abstract class CorpusculeElement extends HTMLElement {
 
     scheduler.valid = false;
 
-    return schedule(() => {
+    this.__rendering = schedule(() => {
       const {
         is,
         _deriveStateFromProps,
@@ -218,5 +221,7 @@ export default abstract class CorpusculeElement extends HTMLElement {
       scheduler.mounting = false;
       scheduler.props = false;
     }, scheduler.initial);
+
+    return this.__rendering;
   }
 }
