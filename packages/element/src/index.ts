@@ -45,7 +45,7 @@ export default abstract class CorpusculeElement extends HTMLElement {
   protected static readonly _states?: ReadonlyArray<string> = [];
   protected static readonly _computed?: PropertyList<ComputedDescriptor>;
 
-  private static readonly __attributesRegistry: Map<string, [string, AttributeGuard]> = new Map();
+  private static readonly __attributesRegistry: Map<string, [string, AttributeGuard]>;
 
   protected static _deriveStateFromProps(
     _nextProps: PropertyList<any>,
@@ -111,9 +111,11 @@ export default abstract class CorpusculeElement extends HTMLElement {
       __parseAttributeValue,
     } = this.constructor as typeof CorpusculeElement;
 
-    for (const [attributeName, [propertyName, guard]] of __attributesRegistry) {
-      const attributeValue = this.getAttribute(attributeName);
-      this.__properties[propertyName] = __parseAttributeValue(attributeValue, guard);
+    if (__attributesRegistry) {
+      for (const [attributeName, [propertyName, guard]] of __attributesRegistry) {
+        const attributeValue = this.getAttribute(attributeName);
+        this.__properties[propertyName] = __parseAttributeValue(attributeValue, guard);
+      }
     }
 
     await this.__invalidate(UpdateType.Mounting);
