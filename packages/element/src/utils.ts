@@ -1,7 +1,32 @@
-import CorpusculeElement from './index';
+import CorpusculeElement from '.';
 
 // tslint:disable:no-invalid-this
-import {AttributeDescriptor, ComputedDescriptor, PropertyGuard, PropertyList, UpdateType} from './types';
+import {
+  AttributeDescriptor,
+  ComputedDescriptor,
+  PropertyGuard,
+  PropertyList,
+  UpdateType
+} from './types';
+
+const {hasOwnProperty: has} = Object;
+
+export const getBasePrototype = (
+  target: typeof CorpusculeElement,
+  property: '_attributes' | '_properties' | '_states' | '_computed',
+): typeof CorpusculeElement | null => {
+  let t: any | null = target;
+
+  while (t !== null) {
+    if (has.call(t, property)) {
+      return t;
+    }
+
+    t = Object.getPrototypeOf(t);
+  }
+
+  return null;
+};
 
 export const initAttributes = (
   target: typeof CorpusculeElement,
