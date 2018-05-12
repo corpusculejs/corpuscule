@@ -53,14 +53,16 @@ export const initAttributes = (
 
         this.__properties[propertyName] = value;
 
-        if (guard === Boolean) {
-          if (value) {
-            this.setAttribute(attributeName, '');
+        if (this.__isMount) {
+          if (guard === Boolean) {
+            if (value) {
+              this.setAttribute(attributeName, '');
+            } else {
+              this.removeAttribute(attributeName);
+            }
           } else {
-            this.removeAttribute(attributeName);
+            this.setAttribute(attributeName, value);
           }
-        } else {
-          this.setAttribute(attributeName, value);
         }
 
         await this.__invalidate(UpdateType.Props);
