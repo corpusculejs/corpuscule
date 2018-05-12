@@ -80,7 +80,6 @@ export default abstract class CorpusculeElement extends HTMLElement {
   }
 
   private readonly __properties: PropertyList<any> = {};
-  private readonly __states: PropertyList<any> = {};
 
   private readonly __root: Element | DocumentFragment = this._createRoot();
   private readonly __scheduler: Scheduler = {
@@ -91,8 +90,13 @@ export default abstract class CorpusculeElement extends HTMLElement {
     valid: false,
   };
 
-  private __isMount: boolean = false; // tslint:disable-line:readonly-keyword
-  private __rendering?: Promise<void>; // tslint:disable-line:readonly-keyword
+  // tslint:disable:readonly-keyword
+  private __isMount: boolean = false;
+  private __prevProperties: PropertyList<any> = {};
+  private __prevStates: PropertyList<any> = {};
+  private __rendering?: Promise<void>;
+  private __states: PropertyList<any> = {};
+  // tslint:enable:readonly-keyword
 
   public async attributeChangedCallback(attrName: string, oldVal: string, newVal: string): Promise<void> {
     if (oldVal === newVal) {
@@ -184,10 +188,10 @@ export default abstract class CorpusculeElement extends HTMLElement {
       } = this.constructor as typeof CorpusculeElement;
 
       if (scheduler.mounting || scheduler.props || scheduler.force) {
-        Object.assign(
-          this.__states,
-          _deriveStateFromProps(this.__properties, this.__prevProperties, this.__prevStates),
-        );
+        this.__states = {
+          ...this.__states,
+          ..._deriveStateFromProps(this.__properties, this.__prevProperties, this.__prevStates),
+        };
       }
 
       const shouldUpdate = !scheduler.force && !scheduler.mounting
@@ -212,8 +216,15 @@ export default abstract class CorpusculeElement extends HTMLElement {
         this._didUpdate(this.__prevProperties, this.__prevStates);
       }
 
-      Object.assign(this.__prevProperties, this.__properties);
-      Object.assign(this.__prevStates, this.__states);
+      this.__prevProperties = {
+        ...this.__prevProperties,
+        ...this.__properties,
+      };
+
+      this.__prevStates = {
+        ...this.__prevStates,
+        ...this.__states,
+      };
 
       scheduler.valid = true;
 
