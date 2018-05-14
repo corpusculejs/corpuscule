@@ -10,7 +10,13 @@ import {
   Scheduler,
   UpdateType
 } from './types';
-import {getBasePrototype, initAttributes, initComputed, initProperties, initStates} from './utils';
+import {
+  getAllPropertyDescriptors,
+  initAttributes,
+  initComputed,
+  initProperties,
+  initStates,
+} from './utils';
 
 export {
   AttributeDescriptor,
@@ -24,19 +30,19 @@ export default abstract class CorpusculeElement extends HTMLElement {
   public static readonly is: string;
   public static get observedAttributes(): ReadonlyArray<string> {
     if (this._properties) {
-      initProperties(getBasePrototype(this, '_properties')!, this._properties);
+      initProperties(this, getAllPropertyDescriptors(this, '_properties'));
     }
 
     if (this._states) {
-      initStates(getBasePrototype(this, '_states')!, this._states);
+      initStates(this, getAllPropertyDescriptors(this, '_states'));
     }
 
     if (this._computed) {
-      initComputed(getBasePrototype(this, '_computed')!, this._computed);
+      initComputed(this, getAllPropertyDescriptors(this, '_computed'));
     }
 
     return this._attributes
-      ? initAttributes(getBasePrototype(this, '_attributes')!, this._attributes)
+      ? initAttributes(this, getAllPropertyDescriptors(this, '_attributes'))
       : [];
   }
 
