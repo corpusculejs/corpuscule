@@ -14,7 +14,6 @@
     "noImplicitReturns": true,
     "outDir": "dist",
     "sourceMap": true,
-    "sourceRoot": "src",
     "strict": true,
     "strictFunctionTypes": true,
     "stripInternal": true,
