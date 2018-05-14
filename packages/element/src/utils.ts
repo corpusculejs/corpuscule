@@ -36,6 +36,22 @@ export const getAllPropertyDescriptors = (
   return descriptors;
 };
 
+export const toAttribute = (
+  instance: CorpusculeElement,
+  attributeName: string,
+  value: boolean | number | string,
+): void => {
+  if (typeof value === 'boolean') {
+    if (value) {
+      instance.setAttribute(attributeName, '');
+    } else {
+      instance.removeAttribute(attributeName);
+    }
+  } else {
+    instance.setAttribute(attributeName, value.toString());
+  }
+};
+
 export const initAttributes = (
   target: typeof CorpusculeElement,
   attributes: PropertyList<AttributeDescriptor>,
@@ -62,15 +78,7 @@ export const initAttributes = (
         this.__properties[propertyName] = value;
 
         if (this.__isMount) {
-          if (guard === Boolean) {
-            if (value) {
-              this.setAttribute(attributeName, '');
-            } else {
-              this.removeAttribute(attributeName);
-            }
-          } else {
-            this.setAttribute(attributeName, value);
-          }
+          toAttribute(this, attributeName, value);
         }
 
         await this.__invalidate(UpdateType.Props);

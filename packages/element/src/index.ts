@@ -16,6 +16,7 @@ import {
   initComputed,
   initProperties,
   initStates,
+  toAttribute,
 } from './utils';
 
 export {
@@ -129,7 +130,13 @@ export default abstract class CorpusculeElement extends HTMLElement {
     if (__attributesRegistry) {
       for (const [attributeName, [propertyName, guard]] of __attributesRegistry) {
         const attributeValue = this.getAttribute(attributeName);
-        this.__properties[propertyName] = __parseAttributeValue(attributeValue, guard);
+        const property = this.__properties[propertyName];
+
+        if (attributeValue !== null) {
+          this.__properties[propertyName] = __parseAttributeValue(attributeValue, guard);
+        } else if (property !== undefined && property !== null) {
+          toAttribute(this, attributeName, property);
+        }
       }
     }
 
