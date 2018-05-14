@@ -4,7 +4,7 @@ const cwd = process.cwd();
 const root = path => resolve(cwd, path);
 
 module.exports = {
-  devtool: 'eval',
+  devtool: 'inline-source-map',
   mode: 'development',
   resolve: {
     extensions: [
@@ -16,11 +16,24 @@ module.exports = {
     rules: [
       {
         test: /\.ts/,
-        loader: 'ts-loader',
+        loader: 'istanbul-instrumenter-loader',
+        enforce: 'post',
         options: {
-          configFile: root('tsconfig.test.json'),
-        }
-      }
-    ]
-  }
+          esModules: true,
+        },
+        exclude: /node_modules|__tests__/,
+      },
+      {
+        test: /\.ts/,
+        use: [
+          {
+            loader: 'ts-loader',
+            options: {
+              configFile: root('tsconfig.test.json'),
+            },
+          },
+        ],
+      },
+    ],
+  },
 };

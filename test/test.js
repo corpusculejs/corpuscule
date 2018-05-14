@@ -1,1 +1,1 @@
-import '../packages/element/test/element';
+import '../packages/element/__tests__';
