@@ -10,34 +10,29 @@ const createRouterConnector = (router: UniversalRouter): RouterConnector => {
       throw new Error('routerNode is not specified');
     }
 
-    const {
-      connectedCallback: superConnectedCallback,
-      disconnectedCallback: superDisconnectedCallback,
-    } = target.prototype;
+    return class WithRouter extends target {
+      public async connectedCallback(): Promise<void> {
+        window.addEventListener('popstate', this.__updateRoute);
 
-    target.prototype.connectedCallback = async function connectedCallback(this: any): Promise<void> {
-      this.__updateRoute =
+        if (super.connectedCallback) {
+          super.connectedCallback();
+        }
+
+        await this.__updateRoute(location.pathname);
+      }
+
+      public disconnectedCallback(): void {
+        window.removeEventListener('popstate', this.__updateRoute);
+
+        if (super.disconnectedCallback) {
+          super.disconnectedCallback();
+        }
+      }
+
+      private __updateRoute =
         async (e: PopStateEvent | string) =>
-          updateRoute(router, routes, this, routeNode, e);
-
-      window.addEventListener('popstate', this.__updateRoute);
-
-      if (superConnectedCallback) {
-        superConnectedCallback.call(this);
-      }
-
-      await this.__updateRoute(location.pathname);
+          updateRoute(router, routes, this, routeNode!, e);
     };
-
-    target.prototype.disconnectedCallback = function disconnectedCallback(this: any): void {
-      window.removeEventListener('popstate', this.__updateRoute);
-
-      if (superDisconnectedCallback) {
-        superDisconnectedCallback.call(this);
-      }
-    };
-
-    return target;
   };
 
   // tslint:disable-next-line:no-var-before-return
