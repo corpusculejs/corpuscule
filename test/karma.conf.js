@@ -1,7 +1,6 @@
 // Karma configuration
 // Generated on Sun Apr 29 2018 20:36:45 GMT+0300 (RTZ 2 (зима))
 const {resolve} = require('path');
-const ts = require('typescript');
 const webpack = require('./webpack.config');
 
 process.env.CHROME_BIN = require('puppeteer').executablePath();
@@ -9,14 +8,13 @@ process.env.CHROME_BIN = require('puppeteer').executablePath();
 module.exports = (config) => {
   config.set({
     // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: '',
+    basePath: '..',
 
     plugins: [
       require('karma-webpack'),
       require('karma-jasmine'),
       require('karma-chrome-launcher'),
-      require('karma-sourcemap-loader'),
-      require('karma-coverage'),
+      require('karma-coverage-istanbul-reporter'),
     ],
 
     // frameworks to use
@@ -25,7 +23,7 @@ module.exports = (config) => {
 
     // list of files / patterns to load in the browser
     files: [
-      'test.js',
+      'test/test.js',
     ],
 
     // list of files / patterns to exclude
@@ -35,13 +33,13 @@ module.exports = (config) => {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      'test.js': ['webpack', 'sourcemap'],
+      'test/test.js': ['webpack'],
     },
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress'],
+    reporters: ['progress', 'coverage-istanbul'],
 
     // web server port
     port: 9876,
@@ -68,25 +66,22 @@ module.exports = (config) => {
     // how many browser should be started simultaneous
     concurrency: Infinity,
 
-    coverageReporter: {
-      dir : '.coverage',
-      instrumenterOptions: {
-        istanbul: {noCompact: true},
-      },
-      reporters: [
-        // reporters not supporting the `file` property
-        {type: 'html', subdir: 'html'},
-        {type: 'lcov', subdir: 'lcov'},
-      ],
-    },
-
     webpack,
+
+    coverageIstanbulReporter: {
+      reports: ['html', 'lcovonly'],
+      dir: '.coverage',
+      combineBrowserReports: true,
+      fixWebpackSourcePaths: true,
+      skipFilesWithNoCoverage: true,
+      'report-config': {
+        html: {subdir: 'html'},
+        lcovonly: {subdir: 'lcov'},
+      },
+    },
 
     client: {
       captureConsole: true,
-      mocha: {
-        bail: true
-      }
     },
   });
 };
