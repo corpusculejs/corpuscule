@@ -11,21 +11,29 @@ import {
 
 const {hasOwnProperty: has} = Object;
 
-export const getBasePrototype = (
+export const getAllPropertyDescriptors = (
   target: typeof CorpusculeElement,
-  property: '_attributes' | '_properties' | '_states' | '_computed',
-): typeof CorpusculeElement | null => {
-  let t: any | null = target;
+  getter: '_attributes' | '_properties' | '_states' | '_computed',
+): any => {
+  const isArray = getter === '_states';
+  let descriptors  = isArray ? [] : {};
+  let t: any  = target;
 
-  while (t !== null) {
-    if (has.call(t, property)) {
-      return t;
+  while (t !== HTMLElement) {
+    if (has.call(t, getter)) {
+      descriptors = isArray ? [
+        ...descriptors as any[],
+        ...target[getter]! as any[],
+      ] : {
+        ...descriptors,
+        ...target[getter]!,
+      };
     }
 
     t = Object.getPrototypeOf(t);
   }
 
-  return null;
+  return descriptors;
 };
 
 export const initAttributes = (
