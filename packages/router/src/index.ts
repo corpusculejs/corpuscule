@@ -1,3 +1,5 @@
+export {default as createUrl} from 'universal-router/generateUrls';
 export {default as createRouter} from './createRouter';
-export {default as createRouterConnector} from './createRouterConnector';
-export {default as createRouterUtils} from './createRouterUtils';
+export {provide, connect, createRouterConnectionUtils} from './routerConnectionUtils';
+export {default as Link} from './Link';
+export {default as push} from './push';
