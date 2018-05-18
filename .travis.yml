@@ -1,0 +1,11 @@
+language: node_js
+dist: trusty
+node_js:
+  - '10'
+  - '8'
+cache:
+  directories:
+  - $HOME/.npm
+script: npm test
+after_success:
+  - ./node_modules/.bin/codecov -e TRAVIS_NODE_VERSION -f .coverage/lcov.info
