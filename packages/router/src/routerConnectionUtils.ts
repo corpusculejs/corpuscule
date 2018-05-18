@@ -1,6 +1,5 @@
-import UniversalRouter, {Route} from 'universal-router';
+import UniversalRouter, {ActionContext, Route} from 'universal-router';
 import {RouterConstructor} from './types';
-import {updateRoute} from './utils';
 
 export const createRouterConnectionUtils = () => {
   let currentRouter: UniversalRouter;
@@ -39,14 +38,23 @@ export const createRouterConnectionUtils = () => {
         }
       }
 
-      private __updateRoute = async (e: PopStateEvent | string) =>
-        updateRoute(
-          currentRouter,
-          routes,
-          this,
-          routeNode!,
-          e,
-        );
+      private __updateRoute = async (e: PopStateEvent | string) => {
+        const path = typeof e !== 'string'
+          ? (e.state ? e.state.path : '')
+          : e;
+
+        const resolved: [any, ActionContext] | undefined = await currentRouter.resolve(path);
+
+        if (resolved === undefined) {
+          return;
+        }
+
+        const [result, context] = resolved;
+
+        if (routes.includes(context.route)) {
+          (this as any)[routeNode!] = result;
+        }
+      };
     };
   };
 
