@@ -3,13 +3,16 @@ import {render} from 'lit-html/lib/shady-render';
 import schedule from './scheduler';
 import {
   AttributeDescriptor,
+  AttributeDescriptorMap,
   AttributeGuard,
   ComputedDescriptor,
+  ComputedDescriptorMap,
   PropertyDescriptor,
+  PropertyDescriptorMap,
   PropertyGuard,
-  PropertyList,
   Scheduler,
-  UpdateType
+  StateDescriptorMap,
+  UpdateType,
 } from './types';
 import {
   getAllPropertyDescriptors,
@@ -22,10 +25,14 @@ import {
 
 export {
   AttributeDescriptor,
+  AttributeDescriptorMap,
   AttributeGuard,
   ComputedDescriptor,
-  PropertyList,
+  ComputedDescriptorMap,
+  PropertyDescriptor,
+  PropertyDescriptorMap,
   PropertyGuard,
+  StateDescriptorMap,
 };
 
 export default abstract class CorpusculeElement extends HTMLElement {
@@ -48,26 +55,26 @@ export default abstract class CorpusculeElement extends HTMLElement {
       : [];
   }
 
-  protected static readonly _attributes?: PropertyList<AttributeDescriptor>;
-  protected static readonly _properties?: PropertyList<PropertyDescriptor>;
-  protected static readonly _states?: ReadonlyArray<string> = [];
-  protected static readonly _computed?: PropertyList<ComputedDescriptor>;
+  protected static readonly _attributes?: AttributeDescriptorMap<{}>;
+  protected static readonly _properties?: PropertyDescriptorMap<{}>;
+  protected static readonly _states?: StateDescriptorMap<{}>;
+  protected static readonly _computed?: ComputedDescriptorMap<{}>;
 
   private static readonly __attributesRegistry: Map<string, [string, AttributeGuard]>;
 
   protected static _deriveStateFromProps(
-    _nextProps: PropertyList<any>,
-    _prevProps: PropertyList<any>,
-    _prevState: PropertyList<any>,
-  ): PropertyList<any> | null {
+    _nextProps: {},
+    _prevProps: {},
+    _prevState: {},
+  ): {} | null {
     return null;
   }
 
   protected static _shouldUpdate(
-    _nextProps: PropertyList<any>,
-    _nextState: PropertyList<any>,
-    _prevProps: PropertyList<any>,
-    _prevState: PropertyList<any>,
+    _nextProps: {},
+    _nextState: {},
+    _prevProps: {},
+    _prevState: {},
   ): boolean {
     return true;
   }
@@ -87,7 +94,7 @@ export default abstract class CorpusculeElement extends HTMLElement {
     return this.__rendering || Promise.resolve();
   }
 
-  private readonly __properties: PropertyList<any> = {};
+  private readonly __properties: {[propertyName: string]: any} = {}; // tslint:disable-line:readonly-keyword
 
   private readonly __root: Element | DocumentFragment = this._createRoot();
   private readonly __scheduler: Scheduler = {
@@ -100,10 +107,10 @@ export default abstract class CorpusculeElement extends HTMLElement {
 
   // tslint:disable:readonly-keyword
   private __isMount: boolean = false;
-  private __prevProperties: PropertyList<any> = {};
-  private __prevStates: PropertyList<any> = {};
+  private __prevProperties: {[propertyName: string]: any} = {}; // tslint:disable-line:readonly-keyword
+  private __prevStates: {[propertyName: string]: any} = {}; // tslint:disable-line:readonly-keyword
   private __rendering?: Promise<void>;
-  private __states: PropertyList<any> = {};
+  private __states: {[propertyName: string]: any} = {}; // tslint:disable-line:readonly-keyword
   // tslint:enable:readonly-keyword
 
   public async attributeChangedCallback(attrName: string, oldVal: string, newVal: string): Promise<void> {
@@ -161,8 +168,8 @@ export default abstract class CorpusculeElement extends HTMLElement {
   protected _didMount(): void {}
 
   protected _didUpdate(
-    _prevProperties: PropertyList<any>,
-    _prevStates: PropertyList<any>,
+    _prevProperties: {},
+    _prevStates: {},
   ): void {}
 
   protected _didUnmount(): void {}

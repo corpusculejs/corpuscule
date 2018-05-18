@@ -15,9 +15,19 @@ export type PropertyDescriptor =
   | PropertyGuard
   | null;
 
-export interface PropertyList<T> {
-  [propertyName: string]: T; // tslint:disable-line:readonly-keyword
-}
+export type AttributeDescriptorMap<T> = {
+  [P in keyof T]: AttributeDescriptor;
+};
+
+export type ComputedDescriptorMap<T> = {
+  [P in keyof T]: ComputedDescriptor;
+};
+
+export type PropertyDescriptorMap<T> = {
+  [P in keyof T]: PropertyDescriptor;
+};
+
+export type StateDescriptorMap<T> = ReadonlyArray<T extends {} ? string : keyof T>;
 
 // tslint:disable:readonly-keyword
 export interface Scheduler {
