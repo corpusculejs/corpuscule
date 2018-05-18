@@ -1,7 +1,19 @@
-export type AttributeDescriptor = [string, AttributeGuard];
+export interface PropertyOptions {
+  readonly pure?: boolean;
+}
+
 export type AttributeGuard = BooleanConstructor | NumberConstructor | StringConstructor;
+export type AttributeDescriptor =
+  | [string, AttributeGuard]
+  | [string, AttributeGuard, PropertyOptions];
+
 export type ComputedDescriptor = ReadonlyArray<string>;
-export type PropertyGuard = ((value: any) => boolean) | null;
+
+export type PropertyGuard = (value: any) => boolean;
+export type PropertyDescriptor =
+  | [PropertyGuard, PropertyOptions]
+  | PropertyGuard
+  | null;
 
 export interface PropertyList<T> {
   [propertyName: string]: T; // tslint:disable-line:readonly-keyword
