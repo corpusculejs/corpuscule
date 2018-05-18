@@ -1,12 +1,9 @@
-import CorpusculeElement from '.';
+import CorpusculeElement, {ComputedDescriptorMap, PropertyDescriptorMap} from '.';
 
 // tslint:disable:no-invalid-this
 import {
   AttributeGuard,
-  ComputedDescriptor,
-  PropertyDescriptor,
   PropertyGuard,
-  PropertyList,
   PropertyOptions,
   UpdateType
 } from './types';
@@ -60,7 +57,7 @@ const defaultPropertyOptions: Required<PropertyOptions> = {pure: true};
 
 export const initAttributes = (
   target: typeof CorpusculeElement,
-  attributes: PropertyList<CommonAttributeDescriptor>,
+  attributes: {readonly [propertyName: string]: CommonAttributeDescriptor},
 ): ReadonlyArray<string> => {
   const attributesRegistry = new Map();
 
@@ -106,7 +103,7 @@ export const initAttributes = (
 
 export const initProperties = (
   target: typeof CorpusculeElement,
-  properties: PropertyList<PropertyDescriptor>,
+  properties: PropertyDescriptorMap<any>,
 ): void => {
   for (const [propertyName, descriptor] of Object.entries(properties)) {
     let guard: PropertyGuard | null = null;
@@ -204,7 +201,7 @@ const prepareComputed = (
 
 export const initComputed = (
   {prototype}: typeof CorpusculeElement,
-  computed: PropertyList<ComputedDescriptor>,
+  computed: ComputedDescriptorMap<any>,
 ): void => {
   for (const [propertyName, watchings] of Object.entries(computed)) {
     const descriptor = Object.getOwnPropertyDescriptor(prototype, propertyName);
