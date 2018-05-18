@@ -207,7 +207,7 @@ export const initComputed = (
     const descriptor = Object.getOwnPropertyDescriptor(prototype, propertyName);
 
     if (!descriptor || !descriptor.get) {
-      throw new Error(`Property ${propertyName} is not defined or is not a getter`);
+      throw new Error(`Property ${prototype.constructor.name}.${propertyName} is not defined or is not a getter`);
     }
 
     const {get} = descriptor;
