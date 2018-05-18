@@ -1,6 +1,5 @@
 // Karma configuration
 // Generated on Sun Apr 29 2018 20:36:45 GMT+0300 (RTZ 2 (зима))
-const {resolve} = require('path');
 const webpack = require('./webpack.config');
 
 process.env.CHROME_BIN = require('puppeteer').executablePath();
@@ -77,6 +76,13 @@ module.exports = (config) => {
       'report-config': {
         html: {subdir: 'html'},
         lcovonly: {subdir: 'lcov'},
+      },
+    },
+
+    customLaunchers: {
+      Chrome_travis_ci: {
+        base: 'ChromeHeadless',
+        flags: ['--no-sandbox'],
       },
     },
 
