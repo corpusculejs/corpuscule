@@ -5,6 +5,7 @@ import {
   AttributeDescriptor,
   AttributeGuard,
   ComputedDescriptor,
+  PropertyDescriptor,
   PropertyGuard,
   PropertyList,
   Scheduler,
@@ -48,7 +49,7 @@ export default abstract class CorpusculeElement extends HTMLElement {
   }
 
   protected static readonly _attributes?: PropertyList<AttributeDescriptor>;
-  protected static readonly _properties?: PropertyList<PropertyGuard>;
+  protected static readonly _properties?: PropertyList<PropertyDescriptor>;
   protected static readonly _states?: ReadonlyArray<string> = [];
   protected static readonly _computed?: PropertyList<ComputedDescriptor>;
 

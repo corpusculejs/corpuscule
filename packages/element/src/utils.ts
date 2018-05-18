@@ -2,10 +2,12 @@ import CorpusculeElement from '.';
 
 // tslint:disable:no-invalid-this
 import {
-  AttributeDescriptor,
+  AttributeGuard,
   ComputedDescriptor,
+  PropertyDescriptor,
   PropertyGuard,
   PropertyList,
+  PropertyOptions,
   UpdateType
 } from './types';
 
@@ -52,13 +54,20 @@ export const toAttribute = (
   }
 };
 
+type CommonAttributeDescriptor = [string, AttributeGuard, PropertyOptions | undefined];
+
+const defaultPropertyOptions: Required<PropertyOptions> = {pure: true};
+
 export const initAttributes = (
   target: typeof CorpusculeElement,
-  attributes: PropertyList<AttributeDescriptor>,
+  attributes: PropertyList<CommonAttributeDescriptor>,
 ): ReadonlyArray<string> => {
   const attributesRegistry = new Map();
 
-  for (const [propertyName, [attributeName, guard]] of Object.entries(attributes)) {
+  for (const [
+    propertyName,
+    [attributeName, guard, {pure} = defaultPropertyOptions],
+  ] of Object.entries(attributes)) {
     attributesRegistry.set(attributeName, [propertyName, guard]);
 
     Object.defineProperty(target.prototype, propertyName, {
@@ -66,13 +75,13 @@ export const initAttributes = (
       get(this: any): any {
         return this.__properties[propertyName];
       },
-      async set(this: any, value: any): Promise<void> {
-        if (value === this.__properties[propertyName]) {
+      set(this: any, value: any): void {
+        if (pure && value === this.__properties[propertyName]) {
           return;
         }
 
         if (typeof value !== guard.name.toLowerCase()) {
-          throw new TypeError(`Value applied to ${propertyName} is not ${guard.name}`);
+          throw new TypeError(`Value applied to ${this.constructor.name}.${propertyName} is not ${guard.name}`);
         }
 
         this.__properties[propertyName] = value;
@@ -81,10 +90,12 @@ export const initAttributes = (
           toAttribute(this, attributeName, value);
         }
 
-        await this.__invalidate(UpdateType.Props);
+        this.__invalidate(UpdateType.Props);
       },
     });
   }
+
+  (target as any).__attributesRegistry = attributesRegistry;
 
   Object.defineProperty(target, '__attributesRegistry', {
     value: attributesRegistry,
@@ -95,26 +106,37 @@ export const initAttributes = (
 
 export const initProperties = (
   target: typeof CorpusculeElement,
-  properties: PropertyList<PropertyGuard>,
+  properties: PropertyList<PropertyDescriptor>,
 ): void => {
-  for (const [propertyName, guard] of Object.entries(properties)) {
+  for (const [propertyName, descriptor] of Object.entries(properties)) {
+    let guard: PropertyGuard | null = null;
+    let pure = true;
+
+    if (descriptor !== null) {
+      if (typeof descriptor === 'function') {
+        guard = descriptor;
+      } else {
+        [guard, {pure = defaultPropertyOptions.pure}] = descriptor;
+      }
+    }
+
     Object.defineProperty(target.prototype, propertyName, {
       configurable: true,
       get(this: any): any {
         return this.__properties[propertyName];
       },
-      async set(this: any, value: any): Promise<void> {
-        if (value === this.__properties[propertyName]) {
+      set(this: any, value: any): void {
+        if (pure && value === this.__properties[propertyName]) {
           return;
         }
 
         if (guard && !guard(value)) {
-          throw new TypeError(`Value applied to ${propertyName} has wrong type`);
+          throw new TypeError(`Value applied to ${this.constructor.name}.${propertyName} has wrong type`);
         }
 
         this.__properties[propertyName] = value;
 
-        await this.__invalidate(UpdateType.Props);
+        this.__invalidate(UpdateType.Props);
       },
     });
   }
@@ -130,9 +152,9 @@ export const initStates = (
       get(this: any): any {
         return this.__states[propertyName];
       },
-      async set(this: any, value: any): Promise<void> {
+      set(this: any, value: any): void {
         this.__states[propertyName] = value;
-        await this.__invalidate(UpdateType.State);
+        this.__invalidate(UpdateType.State);
       },
     });
   }
