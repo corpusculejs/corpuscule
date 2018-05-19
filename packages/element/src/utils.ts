@@ -19,10 +19,10 @@ export const getAllPropertyDescriptors = (
 ): any => {
   const isArray = getter === '_states';
   let descriptors  = isArray ? [] : {};
-  let t: any  = target;
+  let proto: any  = target;
 
-  while (t !== HTMLElement) {
-    if (has.call(t, getter)) {
+  while (proto !== HTMLElement) {
+    if (has.call(proto, getter)) {
       descriptors = isArray ? [
         ...descriptors as any[],
         ...target[getter]! as any[],
@@ -32,7 +32,7 @@ export const getAllPropertyDescriptors = (
       };
     }
 
-    t = Object.getPrototypeOf(t);
+    proto = Object.getPrototypeOf(proto);
   }
 
   return descriptors;
@@ -202,22 +202,38 @@ const prepareComputed = (
   return computedData;
 };
 
+const getPropertyDescriptor = <T>(prototype: T, propertyName: string): PropertyDescriptor | undefined => {
+  let proto: any = prototype;
+
+  while (proto.constructor.name !== 'CorpusculeElement') {
+    const descriptor = Object.getOwnPropertyDescriptor(proto, propertyName);
+
+    if (descriptor) {
+      return descriptor;
+    }
+
+    proto = Object.getPrototypeOf(proto);
+  }
+
+  return undefined;
+};
+
 export const initComputed = (
-  {prototype}: typeof CorpusculeElement,
+  target: typeof CorpusculeElement,
   computed: ComputedDescriptorMap<any>,
 ): void => {
   for (const [propertyName, watchings] of Object.entries(computed)) {
-    const descriptor = Object.getOwnPropertyDescriptor(prototype, propertyName);
+    const descriptor = getPropertyDescriptor(target.prototype, propertyName);
 
     if (!descriptor || !descriptor.get) {
-      throw new Error(`Property ${prototype.constructor.name}.${propertyName} is not defined or is not a getter`);
+      throw new Error(`Property ${target.name}.${propertyName} is not defined or is not a getter`);
     }
 
     const {get} = descriptor;
 
     const registry = new WeakMap();
 
-    Object.defineProperty(prototype, propertyName, {
+    Object.defineProperty(target.prototype, propertyName, {
       configurable: true,
       get(this: any): any {
         const computedData = prepareComputed(
