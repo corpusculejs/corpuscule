@@ -9,6 +9,9 @@ import {
 } from './types';
 
 const {hasOwnProperty: has} = Object;
+const handleError = (e: Error) => {
+  throw e;
+};
 
 export const getAllPropertyDescriptors = (
   target: typeof CorpusculeElement,
@@ -87,7 +90,7 @@ export const initAttributes = (
           toAttribute(this, attributeName, value);
         }
 
-        this.__invalidate(UpdateType.Props);
+        this.__invalidate(UpdateType.Props).catch(handleError);
       },
     });
   }
@@ -133,7 +136,7 @@ export const initProperties = (
 
         this.__properties[propertyName] = value;
 
-        this.__invalidate(UpdateType.Props);
+        this.__invalidate(UpdateType.Props).catch(handleError);
       },
     });
   }
@@ -151,7 +154,7 @@ export const initStates = (
       },
       set(this: any, value: any): void {
         this.__states[propertyName] = value;
-        this.__invalidate(UpdateType.State);
+        this.__invalidate(UpdateType.State).catch(handleError);
       },
     });
   }
