@@ -19,10 +19,10 @@ export const getAllPropertyDescriptors = (
 ): any => {
   const isArray = getter === '_states';
   let descriptors  = isArray ? [] : {};
-  let proto: any  = target;
+  let t: any = target;
 
-  while (proto !== HTMLElement) {
-    if (has.call(proto, getter)) {
+  while (t !== HTMLElement) {
+    if (has.call(t, getter)) {
       descriptors = isArray ? [
         ...descriptors as any[],
         ...target[getter]! as any[],
@@ -32,7 +32,7 @@ export const getAllPropertyDescriptors = (
       };
     }
 
-    proto = Object.getPrototypeOf(proto);
+    t = Object.getPrototypeOf(t);
   }
 
   return descriptors;
@@ -199,16 +199,16 @@ const prepareComputed = (
 };
 
 const getPropertyDescriptor = <T>(prototype: T, propertyName: string): PropertyDescriptor | undefined => {
-  let proto: any = prototype;
+  let p: any = prototype;
 
-  while (proto.constructor.name !== 'CorpusculeElement') {
-    const descriptor = Object.getOwnPropertyDescriptor(proto, propertyName);
+  while (p.constructor !== HTMLElement) {
+    const descriptor = Object.getOwnPropertyDescriptor(p, propertyName);
 
     if (descriptor) {
       return descriptor;
     }
 
-    proto = Object.getPrototypeOf(proto);
+    p = Object.getPrototypeOf(p);
   }
 
   return undefined;
