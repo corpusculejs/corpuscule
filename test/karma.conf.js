@@ -53,7 +53,7 @@ module.exports = (config) => {
     logLevel: config.LOG_INFO,
 
     // enable / disable watching file and executing test whenever any file changes
-    autoWatch: true,
+    autoWatch: !isCI,
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
@@ -61,7 +61,7 @@ module.exports = (config) => {
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the test and exits
-    singleRun: false,
+    singleRun: isCI,
 
     // Concurrency level
     // how many browser should be started simultaneous
