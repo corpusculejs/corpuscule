@@ -4,6 +4,8 @@ const webpack = require('./webpack.config');
 
 process.env.CHROME_BIN = require('puppeteer').executablePath();
 
+const isCI = !!process.env.CI;
+
 module.exports = (config) => {
   config.set({
     // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -55,7 +57,7 @@ module.exports = (config) => {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['ChromeHeadless'],
+    browsers: [isCI ? 'ChromeHeadless' : 'ChromeHeadlessNoSandbox'],
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the test and exits
@@ -80,7 +82,7 @@ module.exports = (config) => {
     },
 
     customLaunchers: {
-      Chrome_travis_ci: {
+      ChromeHeadlessNoSandbox: {
         base: 'ChromeHeadless',
         flags: ['--no-sandbox'],
       },
