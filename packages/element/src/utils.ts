@@ -97,10 +97,6 @@ export const initAttributes = (
 
   (target as any).__attributesRegistry = attributesRegistry;
 
-  Object.defineProperty(target, '__attributesRegistry', {
-    value: attributesRegistry,
-  });
-
   return Array.from(attributesRegistry.keys());
 };
 
