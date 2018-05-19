@@ -6,6 +6,8 @@ node_js:
 cache:
   directories:
   - $HOME/.npm
+before_install:
+  - cd $TRAVIS_BUILD_DIR/packages/element && npm i lit-html --no-save
 script: npm test
 after_success:
   - ./node_modules/.bin/codecov -e TRAVIS_NODE_VERSION -f .coverage/lcov.info
