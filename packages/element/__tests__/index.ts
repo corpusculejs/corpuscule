@@ -1,3 +1,4 @@
+import './decorators';
 import lifecycle from './lifecycle';
 import observableFields from './observableFields';
 
