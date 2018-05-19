@@ -33,6 +33,7 @@
     "karma-webpack": "^3.0.0",
     "lerna": "^2.10.2",
     "lint-staged": "^7.0.5",
+    "lit-html": "^0.10.0",
     "polyserve": "^0.27.8",
     "puppeteer": "^1.3.0",
     "rimraf": "^2.6.2",
