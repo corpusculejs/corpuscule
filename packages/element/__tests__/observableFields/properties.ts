@@ -56,7 +56,7 @@ const properties = () => {
 
       expect(() => {
         (el as any).str = 1;
-      }).toThrow(new TypeError('Value applied to Test.str has wrong type'));
+      }).toThrow(new TypeError('Value applied to "str" has wrong type'));
     });
 
     it('should avoid re-render if property values are identical and pureness is not disabled', () => {

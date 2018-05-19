@@ -81,7 +81,7 @@ export const initAttributes = (
         }
 
         if (typeof value !== guard.name.toLowerCase()) {
-          throw new TypeError(`Value applied to ${this.constructor.name}.${propertyName} is not ${guard.name}`);
+          throw new TypeError(`Value applied to "${propertyName}" is not ${guard.name}`);
         }
 
         this.__properties[propertyName] = value;
@@ -131,7 +131,7 @@ export const initProperties = (
         }
 
         if (guard && !guard(value)) {
-          throw new TypeError(`Value applied to ${this.constructor.name}.${propertyName} has wrong type`);
+          throw new TypeError(`Value applied to "${propertyName}" has wrong type`);
         }
 
         this.__properties[propertyName] = value;
@@ -226,7 +226,7 @@ export const initComputed = (
     const descriptor = getPropertyDescriptor(target.prototype, propertyName);
 
     if (!descriptor || !descriptor.get) {
-      throw new Error(`Property ${target.name}.${propertyName} is not defined or is not a getter`);
+      throw new Error(`Property "${propertyName}" is not defined or is not a getter`);
     }
 
     const {get} = descriptor;
