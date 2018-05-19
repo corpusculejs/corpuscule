@@ -219,7 +219,7 @@ const attributes = () => {
 
       expect(() => {
         (el as any).index = 'string';
-      }).toThrow(new TypeError('Value applied to Test.index is not Number'));
+      }).toThrow(new TypeError('Value applied to "index" is not Number'));
     });
   });
 };

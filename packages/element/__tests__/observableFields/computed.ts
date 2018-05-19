@@ -103,7 +103,7 @@ const computed = () => {
       }
 
       expect(() => createAndMount(Test.is, Test))
-        .toThrowError('Property Test.comp is not defined or is not a getter');
+        .toThrowError('Property "comp" is not defined or is not a getter');
     });
 
     it('should throw an error if computed variable is not a getter', () => {
@@ -130,7 +130,7 @@ const computed = () => {
       }
 
       expect(() => createAndMount(Test.is, Test))
-        .toThrowError('Property Test.comp is not defined or is not a getter');
+        .toThrowError('Property "comp" is not defined or is not a getter');
     });
 
     it('should allow to define property in any place of prototype chain', () => {
