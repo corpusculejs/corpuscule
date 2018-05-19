@@ -57,7 +57,7 @@ module.exports = (config) => {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: [isCI ? 'ChromeHeadless' : 'ChromeHeadlessNoSandbox'],
+    browsers: isCI ? ['ChromeHeadlessNoSandbox'] : ['ChromeHeadless'],
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the test and exits
