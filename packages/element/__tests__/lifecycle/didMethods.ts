@@ -4,7 +4,7 @@ import {html} from 'lit-html/lib/lit-extended';
 // tslint:disable-next-line:no-implicit-dependencies
 import uuid from 'uuid/v4';
 import CorpusculeElement from '../../src';
-import {createAndMount} from '../utils';
+import {registerAndMount} from '../utils';
 
 const didMethods = () => {
   describe('didMethods', () => {
@@ -23,7 +23,7 @@ const didMethods = () => {
         }
       }
 
-      createAndMount(Test.is, Test);
+      registerAndMount(Test.is, Test);
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
@@ -42,7 +42,7 @@ const didMethods = () => {
         }
       }
 
-      const el = createAndMount(Test.is, Test);
+      const el = registerAndMount(Test.is, Test);
       document.body.removeChild(el);
 
       expect(spy).toHaveBeenCalledTimes(1);
@@ -65,7 +65,7 @@ const didMethods = () => {
         }
       }
 
-      const el = createAndMount(Test.is, Test);
+      const el = registerAndMount(Test.is, Test);
       el.num = 2;
 
       await el.forceUpdate();
