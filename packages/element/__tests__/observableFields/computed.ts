@@ -4,7 +4,7 @@ import {html} from 'lit-html/lib/lit-extended';
 // tslint:disable-next-line:no-implicit-dependencies
 import uuid from 'uuid/v4';
 import CorpusculeElement, {ComputedDescriptorMap} from '../../src';
-import {createAndMount} from '../utils';
+import {registerAndMount} from '../utils';
 
 const computed = () => {
   describe('computed', () => {
@@ -35,7 +35,7 @@ const computed = () => {
         }
       }
 
-      const el = createAndMount(Test.is, Test);
+      const el = registerAndMount(Test.is, Test);
 
       expect(el.comp).toBe(3);
       expect(el.comp).toBe(3);
@@ -70,7 +70,7 @@ const computed = () => {
         }
       }
 
-      const el = createAndMount(Test.is, Test);
+      const el = registerAndMount(Test.is, Test);
 
       expect(el.comp).toBe(3);
 
@@ -102,7 +102,7 @@ const computed = () => {
         }
       }
 
-      expect(() => createAndMount(Test.is, Test))
+      expect(() => registerAndMount(Test.is, Test))
         .toThrowError('Property "comp" is not defined or is not a getter');
     });
 
@@ -129,7 +129,7 @@ const computed = () => {
         }
       }
 
-      expect(() => createAndMount(Test.is, Test))
+      expect(() => registerAndMount(Test.is, Test))
         .toThrowError('Property "comp" is not defined or is not a getter');
     });
 
@@ -156,7 +156,7 @@ const computed = () => {
 
       class Child extends Parent {}
 
-      const el = createAndMount(Child.is, Child);
+      const el = registerAndMount(Child.is, Child);
 
       expect(el.comp).toBe(3);
     });

@@ -4,7 +4,7 @@ import {html} from 'lit-html/lib/lit-extended';
 // tslint:disable-next-line:no-implicit-dependencies
 import uuid from 'uuid/v4';
 import CorpusculeElement, {AttributeDescriptorMap} from '../../src';
-import {createAndMount} from '../utils';
+import {registerAndMount} from '../utils';
 
 const attributes = () => {
   describe('attributes', () => {
@@ -29,7 +29,7 @@ const attributes = () => {
         }
       }
 
-      const el = createAndMount(Test.is, Test);
+      const el = registerAndMount(Test.is, Test);
 
       const node = el.shadowRoot!.getElementById('node')!;
 
@@ -57,7 +57,7 @@ const attributes = () => {
         }
       }
 
-      const el = createAndMount(Test.is, Test);
+      const el = registerAndMount(Test.is, Test);
       expect(el.getAttribute('idx')).toBe('2');
 
       const node = el.shadowRoot!.getElementById('node')!;
@@ -81,7 +81,7 @@ const attributes = () => {
         }
       }
 
-      const el = createAndMount(Test.is, Test, (e) => {
+      const el = registerAndMount(Test.is, Test, (e) => {
         e.setAttribute('idx', '2');
       });
 
@@ -105,7 +105,7 @@ const attributes = () => {
         }
       }
 
-      const el = createAndMount(Test.is, Test);
+      const el = registerAndMount(Test.is, Test);
 
       el.index = 2;
 
@@ -133,7 +133,7 @@ const attributes = () => {
         }
       }
 
-      const el = createAndMount(Test.is, Test);
+      const el = registerAndMount(Test.is, Test);
 
       el.index = 1;
 
@@ -161,7 +161,7 @@ const attributes = () => {
         }
       }
 
-      const el = createAndMount(Test.is, Test);
+      const el = registerAndMount(Test.is, Test);
 
       el.index = 1;
 
@@ -185,7 +185,7 @@ const attributes = () => {
         }
       }
 
-      const el = createAndMount(Test.is, Test);
+      const el = registerAndMount(Test.is, Test);
 
       expect(el.hasAttribute('has')).not.toBeTruthy();
 
@@ -215,7 +215,7 @@ const attributes = () => {
         }
       }
 
-      const el = createAndMount(Test.is, Test);
+      const el = registerAndMount(Test.is, Test);
 
       expect(() => {
         (el as any).index = 'string';

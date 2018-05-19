@@ -4,7 +4,7 @@ import {html} from 'lit-html/lib/lit-extended';
 // tslint:disable-next-line:no-implicit-dependencies
 import uuid from 'uuid/v4';
 import CorpusculeElement, {StateDescriptorMap} from '../../src';
-import {createAndMount} from '../utils';
+import {registerAndMount} from '../utils';
 
 const states = () => {
   describe('states', () => {
@@ -27,7 +27,7 @@ const states = () => {
         }
       }
 
-      const el = createAndMount(Test.is, Test);
+      const el = registerAndMount(Test.is, Test);
       const node = el.shadowRoot!.getElementById('node')!;
 
       expect(node.textContent).toBe('#1');

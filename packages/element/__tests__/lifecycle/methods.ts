@@ -4,7 +4,7 @@ import {html} from 'lit-html/lib/lit-extended';
 // tslint:disable-next-line:no-implicit-dependencies
 import uuid from 'uuid/v4';
 import CorpusculeElement, {PropertyDescriptorMap, StateDescriptorMap} from '../../src';
-import {createAndMount} from '../utils';
+import {registerAndMount} from '../utils';
 
 const methods = () => {
   describe('static methods', () => {
@@ -33,7 +33,7 @@ const methods = () => {
         }
       }
 
-      const el = createAndMount(Test.is, Test);
+      const el = registerAndMount(Test.is, Test);
 
       el.num = 2;
 
@@ -65,7 +65,7 @@ const methods = () => {
         }
       }
 
-      const el = createAndMount(Test.is, Test);
+      const el = registerAndMount(Test.is, Test);
 
       await el.forceUpdate();
 
@@ -101,7 +101,7 @@ const methods = () => {
         }
       }
 
-      const el = createAndMount(Test.is, Test);
+      const el = registerAndMount(Test.is, Test);
 
       el.prop = 3;
 
@@ -121,7 +121,7 @@ const methods = () => {
         }
       }
 
-      const el = createAndMount(Test.is, Test);
+      const el = registerAndMount(Test.is, Test);
 
       el.forceUpdate(); // tslint:disable-line:no-floating-promises
 
@@ -137,7 +137,7 @@ const methods = () => {
         }
       }
 
-      createAndMount(Test.is, Test, (e) => {
+      registerAndMount(Test.is, Test, (e) => {
         expect(e.rendering).toEqual(jasmine.any(Promise));
       });
     });

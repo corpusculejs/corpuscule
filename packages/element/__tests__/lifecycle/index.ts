@@ -4,7 +4,7 @@ import {html} from 'lit-html/lib/lit-extended';
 // tslint:disable-next-line:no-implicit-dependencies
 import uuid from 'uuid/v4';
 import CorpusculeElement from '../../src';
-import {createAndMount} from '../utils';
+import {registerAndMount} from '../utils';
 import didMethods from './didMethods';
 import methods from './methods';
 
@@ -19,7 +19,7 @@ const lifecycle = () => {
         }
       }
 
-      createAndMount(Test.is, Test);
+      registerAndMount(Test.is, Test);
 
       const collection = document.body.getElementsByTagName(Test.is);
       expect(collection.length).toBe(1);
@@ -46,7 +46,7 @@ const lifecycle = () => {
         }
       }
 
-      const el = createAndMount(Test.is, Test);
+      const el = registerAndMount(Test.is, Test);
 
       const node = el.shadowRoot!.getElementById('node')!;
       expect(node.textContent).toBe('Test content #1');

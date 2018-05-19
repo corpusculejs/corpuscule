@@ -2,7 +2,7 @@ export interface Constructor<T> {
   new (...args: any[]): T; // tslint:disable-line:readonly-array
 }
 
-export const createAndMount = <T extends HTMLElement>(
+export const registerAndMount = <T extends HTMLElement>(
   name: string,
   element: Constructor<T>,
   beforeMount: (el: T) => void = () => void 0,
