@@ -132,6 +132,34 @@ const computed = () => {
       expect(() => createAndMount(Test.is, Test))
         .toThrowError('Property Test.comp is not defined or is not a getter');
     });
+
+    it('should allow to define property in any place of prototype chain', () => {
+      class Parent extends CorpusculeElement {
+        public static is: string = `x-${uuid()}`;
+
+        protected static get _computed(): ComputedDescriptorMap<any> {
+          return {
+            comp: ['first'],
+          };
+        }
+
+        public first: number = 1;
+
+        public get comp(): number {
+          return this.first + 2;
+        }
+
+        protected _render(): TemplateResult {
+          return html`<span id="node">Test content</span>`;
+        }
+      }
+
+      class Child extends Parent {}
+
+      const el = createAndMount(Child.is, Child);
+
+      expect(el.comp).toBe(3);
+    });
   });
 };
 
