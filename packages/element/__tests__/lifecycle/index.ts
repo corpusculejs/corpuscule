@@ -60,6 +60,22 @@ const lifecycle = () => {
       expect(node.textContent).toBe('Test content #2');
     });
 
+    it('should allow to return null in _render()', () => {
+      class Test extends CorpusculeElement {
+        public static is: string = `x-${uuid()}`;
+
+        public num: number = 1;
+
+        protected _render(): null {
+          return null;
+        }
+      }
+
+      const el = registerAndMount(Test.is, Test);
+
+      expect(el.shadowRoot!.innerHTML).toBe('');
+    });
+
     didMethods();
     methods();
   });
