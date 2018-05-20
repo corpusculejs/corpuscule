@@ -175,7 +175,7 @@ export default abstract class CorpusculeElement extends HTMLElement {
   protected _didUnmount(): void {}
   // tslint:enable:no-empty
 
-  protected abstract _render(): TemplateResult;
+  protected abstract _render(): TemplateResult | null;
 
   private async __invalidate(type: UpdateType): Promise<void> {
     const {__scheduler: scheduler} = this;
@@ -225,7 +225,11 @@ export default abstract class CorpusculeElement extends HTMLElement {
         : true;
 
       if (shouldUpdate) {
-        render(this._render(), this.__root, is);
+        const rendered = this._render();
+
+        if (rendered) {
+          render(rendered, this.__root, is);
+        }
       }
 
       if (scheduler.mounting) {
