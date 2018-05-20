@@ -1,6 +1,8 @@
 // tslint:disable:max-classes-per-file
 import {StyleConstructor} from './types';
 
+export {createUrl} from './utils';
+
 const stylePattern = /[{}]/;
 
 // tslint:disable-next-line:readonly-array
