@@ -39,6 +39,17 @@ export {
 
 export * from './tokens/lifecycle';
 
+const parseAttributeValue = (value: string | null, guard: AttributeGuard): boolean | number | string => {
+  switch (guard) {
+    case Boolean:
+      return (value !== null);
+    case Number:
+      return Number(value);
+    default:
+      return String(value);
+  }
+};
+
 export default abstract class CorpusculeElement extends HTMLElement {
   public static readonly is: string;
   public static get observedAttributes(): ReadonlyArray<string> {
@@ -84,18 +95,6 @@ export default abstract class CorpusculeElement extends HTMLElement {
     return true;
   }
 
-  // tslint:disable-next-line:no-unused-variable
-  private static [$$.parseAttributeValue](value: string | null, guard: AttributeGuard): boolean | number | string {
-    switch (guard) {
-      case Boolean:
-        return (value !== null);
-      case Number:
-        return Number(value);
-      default:
-        return String(value);
-    }
-  }
-
   public get rendering(): Promise<void> {
     return this[$$.rendering] || Promise.resolve();
   }
@@ -124,23 +123,16 @@ export default abstract class CorpusculeElement extends HTMLElement {
       return;
     }
 
-    const {
-      [$$.attributesRegistry]: registry,
-      [$$.parseAttributeValue]: parse,
-    } = this.constructor as typeof CorpusculeElement;
+    const {[$$.attributesRegistry]: registry} = this.constructor as typeof CorpusculeElement;
 
     const [propertyName, guard] = registry.get(attrName)!;
-    this[$$.properties][propertyName] = parse(newVal, guard);
+    this[$$.properties][propertyName] = parseAttributeValue(newVal, guard);
 
     await this[$$.invalidate](UpdateType.Props);
   }
 
   public async connectedCallback(): Promise<void> {
-    const {
-      [$$.attributesRegistry]: registry,
-      [$$.parseAttributeValue]: parse,
-    } = this.constructor as typeof CorpusculeElement;
-
+    const {[$$.attributesRegistry]: registry} = this.constructor as typeof CorpusculeElement;
     const {[$$.properties]: props} = this;
 
     if (registry) {
@@ -149,7 +141,7 @@ export default abstract class CorpusculeElement extends HTMLElement {
         const property = props[propertyName];
 
         if (attributeValue !== null) {
-          props[propertyName] = parse(attributeValue, guard);
+          props[propertyName] = parseAttributeValue(attributeValue, guard);
         } else if (property !== undefined && property !== null) {
           toAttribute(this, attributeName, property);
         }

@@ -1,7 +1,6 @@
 export const attributesRegistry = Symbol();
 export const invalidate = Symbol();
 export const isMount = Symbol();
-export const parseAttributeValue = Symbol();
 export const previousProperties = Symbol();
 export const previousStates = Symbol();
 export const properties = Symbol();
