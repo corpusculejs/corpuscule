@@ -1,3 +1,5 @@
+import {dispatcherMap, storedMap} from './tokens';
+
 export type DispatcherRegistry = ReadonlyArray<string>;
 export type PropertyGetter<S> = (state: S) => any;
 
@@ -10,7 +12,7 @@ export interface CustomElement extends HTMLElement {
 } // tslint:enable:no-method-signature
 
 export interface ReduxConstructor<S> {
-  readonly _dispatchers?: DispatcherRegistry;
-  readonly _stored?: {readonly [propertyName: string]: PropertyGetter<S>};
+  readonly [dispatcherMap]?: DispatcherRegistry;
+  readonly [storedMap]?: {readonly [propertyName: string]: PropertyGetter<S>};
   new (...args: any[]): CustomElement; // tslint:disable-line:readonly-array
 }
