@@ -1,49 +1,50 @@
 import push from './push';
+import {a, to} from './tokens';
 import {CustomElement} from './types';
 
 export default class Link extends HTMLElement implements CustomElement {
   public static readonly is: string = 'corpuscule-link';
   public static readonly observedAttributes: ReadonlyArray<string> = ['to'];
 
-  private readonly __a: HTMLAnchorElement = document.createElement('a');
-  private __to: string = ''; // tslint:disable-line:readonly-keyword
+  private readonly [a]: HTMLAnchorElement = document.createElement('a');
+  private [to]: string = ''; // tslint:disable-line:readonly-keyword
 
   public constructor() {
     super();
     const root = this.attachShadow({mode: 'open'});
-    root.appendChild(this.__a);
-    this.__a.appendChild(document.createElement('slot'));
+    root.appendChild(this[a]);
+    this[a].appendChild(document.createElement('slot'));
   }
 
   public attributeChangedCallback(_attrName: string, oldVal: string, newVal: string): void {
     if (oldVal !== newVal) {
-      this.__to = newVal;
-      this.__a.href = this.__to;
+      this[to] = newVal;
+      this[a].href = this[to];
     }
   }
 
   public connectedCallback(): void {
-    this.__to = this.getAttribute('to') || '';
-    this.__a.href = this.__to;
-    this.__a.addEventListener('click', this.__handleClick);
+    this[to] = this.getAttribute('to') || '';
+    this[a].href = this[to];
+    this[a].addEventListener('click', this.__handleClick);
   }
 
   public disconnectedCallback(): void {
-    this.__a.removeEventListener('click', this.__handleClick);
+    this[a].removeEventListener('click', this.__handleClick);
   }
 
   public get to(): string {
-    return this.__to;
+    return this[to];
   }
 
   public set to(value: string) {
-    this.__to = value;
-    this.setAttribute('to', this.__to);
+    this[to] = value;
+    this.setAttribute('to', this[to]);
   }
 
   private readonly __handleClick = (e: Event) => {
     e.preventDefault();
-    push(this.__to);
+    push(this[to]);
   };
 }
 

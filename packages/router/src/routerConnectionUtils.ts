@@ -1,4 +1,5 @@
 import UniversalRouter, {ActionContext, Route} from 'universal-router';
+import {routeNode, updateRoute} from './tokens';
 import {RouterConstructor} from './types';
 
 export const createRouterConnectionUtils = () => {
@@ -13,32 +14,32 @@ export const createRouterConnectionUtils = () => {
       throw new Error('Router is not provided');
     }
 
-    const routeNode = target._routeNode;
+    const node = target[routeNode];
 
-    if (!routeNode) {
+    if (!node) {
       throw new Error('routerNode is not specified');
     }
 
     return class WithRouter extends target {
       public async connectedCallback(): Promise<void> {
-        window.addEventListener('popstate', this.__updateRoute);
+        window.addEventListener('popstate', this[updateRoute]);
 
         if (super.connectedCallback) {
           super.connectedCallback();
         }
 
-        await this.__updateRoute(location.pathname);
+        await this[updateRoute](location.pathname);
       }
 
       public disconnectedCallback(): void {
-        window.removeEventListener('popstate', this.__updateRoute);
+        window.removeEventListener('popstate', this[updateRoute]);
 
         if (super.disconnectedCallback) {
           super.disconnectedCallback();
         }
       }
 
-      private __updateRoute = async (e: PopStateEvent | string) => {
+      private [updateRoute] = async (e: PopStateEvent | string) => {
         const path = typeof e !== 'string'
           ? (e.state ? e.state.path : '')
           : e;
@@ -52,7 +53,7 @@ export const createRouterConnectionUtils = () => {
         const [result, context] = resolved;
 
         if (routes.includes(context.route)) {
-          (this as any)[routeNode!] = result;
+          (this as any)[node!] = result;
         }
       };
     };
