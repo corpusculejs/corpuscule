@@ -3,7 +3,7 @@ import {TemplateResult} from 'lit-html';
 import {html} from 'lit-html/lib/lit-extended';
 // tslint:disable-next-line:no-implicit-dependencies
 import uuid from 'uuid/v4';
-import CorpusculeElement, {PropertyDescriptorMap} from '../../src';
+import CorpusculeElement, {PropertyDescriptorMap, propertyMap, render} from '../../src';
 import {registerAndMount} from '../utils';
 
 const properties = () => {
@@ -12,7 +12,7 @@ const properties = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        protected static get _properties(): PropertyDescriptorMap<any> {
+        protected static get [propertyMap](): PropertyDescriptorMap<any> {
           return {
             index: null,
           };
@@ -20,7 +20,7 @@ const properties = () => {
 
         public index: number = 1;
 
-        protected _render(): TemplateResult {
+        protected [render](): TemplateResult {
           return html`<span id="node">#${this.index}</span>`;
         }
       }
@@ -39,7 +39,7 @@ const properties = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        protected static get _properties(): PropertyDescriptorMap<any> {
+        protected static get [propertyMap](): PropertyDescriptorMap<any> {
           return {
             str: value => typeof value === 'string',
           };
@@ -47,7 +47,7 @@ const properties = () => {
 
         public str: string = '';
 
-        protected _render(): TemplateResult {
+        protected [render](): TemplateResult {
           return html`<span id="node">Test content</span>`;
         }
       }
@@ -65,7 +65,7 @@ const properties = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        protected static get _properties(): PropertyDescriptorMap<any> {
+        protected static get [propertyMap](): PropertyDescriptorMap<any> {
           return {
             str: value => typeof value === 'string',
           };
@@ -73,7 +73,7 @@ const properties = () => {
 
         public str: string = '1';
 
-        protected _render(): TemplateResult {
+        protected [render](): TemplateResult {
           spy();
 
           return html`<span id="node">Test content</span>`;
@@ -93,7 +93,7 @@ const properties = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        protected static get _properties(): PropertyDescriptorMap<any> {
+        protected static get [propertyMap](): PropertyDescriptorMap<any> {
           return {
             str: [value => typeof value === 'string', {pure: false}],
           };
@@ -101,7 +101,7 @@ const properties = () => {
 
         public str: string = '1';
 
-        protected _render(): TemplateResult {
+        protected [render](): TemplateResult {
           spy();
 
           return html`<span id="node">Test content</span>`;

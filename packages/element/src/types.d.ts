@@ -7,7 +7,7 @@ export type AttributeDescriptor =
   | [string, AttributeGuard]
   | [string, AttributeGuard, PropertyOptions];
 
-export type ComputedDescriptor = ReadonlyArray<string>;
+export type ComputedDescriptor = ReadonlyArray<string | symbol>;
 
 export type PropertyGuard = (value: any) => boolean;
 export type PropertyDescriptor =
@@ -27,7 +27,7 @@ export type PropertyDescriptorMap<T> = {
   [P in keyof T]: PropertyDescriptor;
 };
 
-export type StateDescriptorMap<T> = ReadonlyArray<T extends {} ? string : keyof T>;
+export type StateDescriptorMap<T> = ReadonlyArray<keyof T>;
 
 // tslint:disable:readonly-keyword
 export interface Scheduler {

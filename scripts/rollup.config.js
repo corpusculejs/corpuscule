@@ -23,6 +23,9 @@ module.exports = Object.entries(packages).reduce((acc, [pack, entries]) => {
         file: `packages/${pack}/dist/${file}.js`,
         format: 'es',
       },
+      external: [
+        '.'
+      ],
       plugins: [ts],
     });
   }
