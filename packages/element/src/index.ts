@@ -1,8 +1,20 @@
 import {TemplateResult} from 'lit-html';
-import {render} from 'lit-html/lib/shady-render';
+import {render as r} from 'lit-html/lib/shady-render';
 import schedule from './scheduler';
 import * as $$ from './tokens/internal';
-import * as $ from './tokens/lifecycle';
+import {
+  attributeMap,
+  computedMap,
+  createRoot,
+  deriveStateFromProps,
+  didMount,
+  didUnmount,
+  didUpdate,
+  propertyMap,
+  render,
+  shouldUpdate,
+  stateMap,
+} from './tokens/lifecycle';
 import {
   AttributeDescriptor,
   AttributeDescriptorMap,
@@ -53,32 +65,32 @@ const parseAttributeValue = (value: string | null, guard: AttributeGuard): boole
 export default abstract class CorpusculeElement extends HTMLElement {
   public static readonly is: string;
   public static get observedAttributes(): ReadonlyArray<string> {
-    if (this[$.propertyMap]) {
-      initProperties(this, getAllPropertyDescriptors(this, $.propertyMap));
+    if (this[propertyMap]) {
+      initProperties(this, getAllPropertyDescriptors(this, propertyMap));
     }
 
-    if (this[$.stateMap]) {
-      initStates(this, getAllPropertyDescriptors(this, $.stateMap));
+    if (this[stateMap]) {
+      initStates(this, getAllPropertyDescriptors(this, stateMap));
     }
 
-    if (this[$.computedMap]) {
-      initComputed(this, getAllPropertyDescriptors(this, $.computedMap));
+    if (this[computedMap]) {
+      initComputed(this, getAllPropertyDescriptors(this, computedMap));
     }
 
-    return this[$.attributeMap]
-      ? initAttributes(this, getAllPropertyDescriptors(this, $.attributeMap))
+    return this[attributeMap]
+      ? initAttributes(this, getAllPropertyDescriptors(this, attributeMap))
       : [];
   }
 
-  protected static readonly [$.attributeMap]?: AttributeDescriptorMap<{}>;
-  protected static readonly [$.propertyMap]?: PropertyDescriptorMap<{}>;
-  protected static readonly [$.stateMap]?: StateDescriptorMap<any>;
-  protected static readonly [$.computedMap]?: ComputedDescriptorMap<{}>;
+  protected static readonly [attributeMap]?: AttributeDescriptorMap<{}>;
+  protected static readonly [propertyMap]?: PropertyDescriptorMap<{}>;
+  protected static readonly [stateMap]?: StateDescriptorMap<any>;
+  protected static readonly [computedMap]?: ComputedDescriptorMap<{}>;
 
   // tslint:disable-next-line:no-unused-variable
   private static readonly [$$.attributesRegistry]: Map<string, [string, AttributeGuard]>;
 
-  protected static [$.deriveStateFromProps](
+  protected static [deriveStateFromProps](
     _nextProps: {},
     _prevProps: {},
     _prevState: {},
@@ -86,7 +98,7 @@ export default abstract class CorpusculeElement extends HTMLElement {
     return null;
   }
 
-  protected static [$.shouldUpdate](
+  protected static [shouldUpdate](
     _nextProps: {},
     _nextState: {},
     _prevProps: {},
@@ -99,7 +111,7 @@ export default abstract class CorpusculeElement extends HTMLElement {
     return this[$$.rendering] || Promise.resolve();
   }
 
-  private readonly [$$.root]: Element | DocumentFragment = this[$.createRoot]();
+  private readonly [$$.root]: Element | DocumentFragment = this[createRoot]();
 
   // tslint:disable:readonly-keyword no-unused-variable
   private readonly [$$.properties]: {[propertyName: string]: any} = {};
@@ -152,7 +164,7 @@ export default abstract class CorpusculeElement extends HTMLElement {
   }
 
   public disconnectedCallback(): void {
-    this[$.didUnmount]();
+    this[didUnmount]();
     this[$$.isMount] = false;
   }
 
@@ -160,22 +172,22 @@ export default abstract class CorpusculeElement extends HTMLElement {
     return this[$$.invalidate](UpdateType.Force);
   }
 
-  protected [$.createRoot](): Element | DocumentFragment {
+  protected [createRoot](): Element | DocumentFragment {
     return this.attachShadow({mode: 'open'});
   }
 
   // tslint:disable:no-empty
-  protected [$.didMount](): void {}
+  protected [didMount](): void {}
 
-  protected [$.didUpdate](
+  protected [didUpdate](
     _prevProperties: {},
     _prevStates: {},
   ): void {}
 
-  protected [$.didUnmount](): void {}
+  protected [didUnmount](): void {}
   // tslint:enable:no-empty
 
-  protected abstract [$.render](): TemplateResult | null;
+  protected abstract [render](): TemplateResult | null;
 
   private async [$$.invalidate](type: UpdateType): Promise<void> {
     const {[$$.scheduler]: scheduler} = this;
@@ -204,8 +216,8 @@ export default abstract class CorpusculeElement extends HTMLElement {
     this[$$.rendering] = schedule(() => {
       const {
         is,
-        [$.deriveStateFromProps]: derive,
-        [$.shouldUpdate]: shouldUpdate,
+        [deriveStateFromProps]: derive,
+        [shouldUpdate]: should,
       } = this.constructor as typeof CorpusculeElement;
 
       const {
@@ -222,8 +234,8 @@ export default abstract class CorpusculeElement extends HTMLElement {
         };
       }
 
-      const should = !scheduler.force && !scheduler.mounting
-        ? shouldUpdate(
+      const s = !scheduler.force && !scheduler.mounting
+        ? should(
           props,
           states,
           prevProps,
@@ -231,21 +243,21 @@ export default abstract class CorpusculeElement extends HTMLElement {
         )
         : true;
 
-      if (should) {
-        const rendered = this[$.render]();
+      if (s) {
+        const rendered = this[render]();
 
         if (rendered) {
-          render(rendered, this[$$.root], is);
+          r(rendered, this[$$.root], is);
         }
       }
 
       if (scheduler.mounting) {
-        this[$.didMount]();
+        this[didMount]();
         this[$$.isMount] = true;
       }
 
-      if (should && !scheduler.mounting) {
-        this[$.didUpdate](prevProps, prevStates);
+      if (s && !scheduler.mounting) {
+        this[didUpdate](prevProps, prevStates);
       }
 
       this[$$.previousProperties] = {
