@@ -1,5 +1,7 @@
+import {routeNode} from './tokens';
+
 export interface RouterConstructor {
-  readonly _routeNode?: string;
+  readonly [routeNode]?: string;
   new (...args: any[]): CustomElement; // tslint:disable-line:readonly-array
 }
 
