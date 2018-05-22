@@ -3,7 +3,7 @@ import {TemplateResult} from 'lit-html';
 import {html} from 'lit-html/lib/lit-extended';
 // tslint:disable-next-line:no-implicit-dependencies
 import uuid from 'uuid/v4';
-import CorpusculeElement from '../../src';
+import CorpusculeElement, {render} from '../../src';
 import {registerAndMount} from '../utils';
 import didMethods from './didMethods';
 import methods from './methods';
@@ -14,7 +14,7 @@ const lifecycle = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        protected _render(): TemplateResult {
+        protected [render](): TemplateResult {
           return html`<span id="node">Test content</span>`;
         }
       }
@@ -41,7 +41,7 @@ const lifecycle = () => {
 
         public num: number = 1;
 
-        protected _render(): TemplateResult {
+        protected [render](): TemplateResult {
           return html`<span id="node">Test content #${this.num}</span>`;
         }
       }
@@ -60,13 +60,13 @@ const lifecycle = () => {
       expect(node.textContent).toBe('Test content #2');
     });
 
-    it('should allow to return null in _render()', () => {
+    it('should allow to return null in [render]()', () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
         public num: number = 1;
 
-        protected _render(): null {
+        protected [render](): null {
           return null;
         }
       }

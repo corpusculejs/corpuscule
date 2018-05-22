@@ -1,3 +1,4 @@
+import {attributeMap, computedMap, propertyMap, stateMap} from '.';
 import {AttributeGuard, PropertyDescriptor, PropertyOptions} from './types';
 
 export const element = (name: string) => (target: any): void => {
@@ -7,44 +8,44 @@ export const element = (name: string) => (target: any): void => {
 
 export const attribute =
   (name: string, guard: AttributeGuard, options?: PropertyOptions) =>
-    ({constructor}: any, propertyName: string): void => {
+    ({constructor}: any, propertyName: string | symbol): void => {
       const value = options ? [name, guard, options] : [name, guard];
 
-      if (!constructor._attributes) {
-        constructor._attributes = {[propertyName]: value};
+      if (!constructor[attributeMap]) {
+        constructor[attributeMap] = {[propertyName]: value};
       } else {
-        constructor._attributes[propertyName] = value;
+        constructor[attributeMap][propertyName] = value;
       }
     };
 
 export const property =
   (guard: PropertyDescriptor = null, options?: PropertyOptions) =>
-    ({constructor}: any, propertyName: string): void => {
+    ({constructor}: any, propertyName: string | symbol): void => {
       const value = guard !== null && options
         ? [guard, options]
         : guard;
 
-      if (!constructor._properties) {
-        constructor._properties = {[propertyName]: value};
+      if (!constructor[propertyMap]) {
+        constructor[propertyMap] = {[propertyName]: value};
       } else {
-        constructor._properties[propertyName] = value;
+        constructor[propertyMap][propertyName] = value;
       }
     };
 
-export const state = ({constructor}: any, propertyName: string): void => {
-  if (!constructor._states) {
-    constructor._states = [propertyName];
+export const state = ({constructor}: any, propertyName: string | symbol): void => {
+  if (!constructor[stateMap]) {
+    constructor[stateMap] = [propertyName];
   } else {
-    constructor._states.push(propertyName);
+    constructor[stateMap].push(propertyName);
   }
 };
 
 export const computed =
-  (...watchings: string[]) => // tslint:disable-line:readonly-array
-    ({constructor}: any, propertyName: string): void => {
-      if (!constructor._computed) {
-        constructor._computed = {[propertyName]: watchings};
+  (...watchings: Array<string | symbol>) => // tslint:disable-line:readonly-array
+    ({constructor}: any, propertyName: string | symbol): void => {
+      if (!constructor[computedMap]) {
+        constructor[computedMap] = {[propertyName]: watchings};
       } else {
-        constructor._computed[propertyName] = watchings;
+        constructor[computedMap][propertyName] = watchings;
       }
     };

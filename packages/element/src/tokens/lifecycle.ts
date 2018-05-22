@@ -1,0 +1,11 @@
+export const attributeMap = Symbol('attributeMap');
+export const computedMap = Symbol('computedMap');
+export const createRoot = Symbol('createRoot');
+export const didMount = Symbol('didMount');
+export const didUpdate = Symbol('didUpdate');
+export const didUnmount = Symbol('didUnmount');
+export const deriveStateFromProps = Symbol('deriveStateFromProps');
+export const propertyMap = Symbol('propertyMap');
+export const render = Symbol('render');
+export const shouldUpdate = Symbol('shouldUpdate');
+export const stateMap = Symbol('stateMap');

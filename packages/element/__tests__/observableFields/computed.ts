@@ -3,7 +3,11 @@ import {TemplateResult} from 'lit-html';
 import {html} from 'lit-html/lib/lit-extended';
 // tslint:disable-next-line:no-implicit-dependencies
 import uuid from 'uuid/v4';
-import CorpusculeElement, {ComputedDescriptorMap} from '../../src';
+import CorpusculeElement, {
+  ComputedDescriptorMap,
+  computedMap,
+  render,
+} from '../../src';
 import {registerAndMount} from '../utils';
 
 const computed = () => {
@@ -14,7 +18,7 @@ const computed = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        protected static get _computed(): ComputedDescriptorMap<any> {
+        protected static get [computedMap](): ComputedDescriptorMap<any> {
           return {
             comp: ['first', 'second'],
           };
@@ -30,7 +34,7 @@ const computed = () => {
           return this.first + this.second;
         }
 
-        protected _render(): TemplateResult {
+        protected [render](): TemplateResult {
           return html`<span id="node">Test content</span>`;
         }
       }
@@ -49,7 +53,7 @@ const computed = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        protected static get _computed(): ComputedDescriptorMap<any> {
+        protected static get [computedMap](): ComputedDescriptorMap<any> {
           return {
             comp: ['first', 'second'],
           };
@@ -65,7 +69,7 @@ const computed = () => {
           return this.first + this.second;
         }
 
-        protected _render(): TemplateResult {
+        protected [render](): TemplateResult {
           return html`<span id="node">Test content</span>`;
         }
       }
@@ -87,7 +91,7 @@ const computed = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        protected static get _computed(): ComputedDescriptorMap<any> {
+        protected static get [computedMap](): ComputedDescriptorMap<any> {
           return {
             comp: ['first', 'second'],
           };
@@ -97,7 +101,7 @@ const computed = () => {
 
         public second: number = 2;
 
-        protected _render(): TemplateResult {
+        protected [render](): TemplateResult {
           return html`<span id="node">Test content</span>`;
         }
       }
@@ -110,7 +114,7 @@ const computed = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        protected static get _computed(): ComputedDescriptorMap<any> {
+        protected static get [computedMap](): ComputedDescriptorMap<any> {
           return {
             comp: ['first', 'second'],
           };
@@ -124,7 +128,7 @@ const computed = () => {
           return this.first + this.second;
         }
 
-        protected _render(): TemplateResult {
+        protected [render](): TemplateResult {
           return html`<span id="node">Test content</span>`;
         }
       }
@@ -137,7 +141,7 @@ const computed = () => {
       class Parent extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        protected static get _computed(): ComputedDescriptorMap<any> {
+        protected static get [computedMap](): ComputedDescriptorMap<any> {
           return {
             comp: ['first'],
           };
@@ -149,7 +153,7 @@ const computed = () => {
           return this.first + 2;
         }
 
-        protected _render(): TemplateResult {
+        protected [render](): TemplateResult {
           return html`<span id="node">Test content</span>`;
         }
       }

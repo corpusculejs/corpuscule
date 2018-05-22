@@ -3,7 +3,7 @@ import {TemplateResult} from 'lit-html';
 import {html} from 'lit-html/lib/lit-extended';
 // tslint:disable-next-line:no-implicit-dependencies
 import uuid from 'uuid/v4';
-import CorpusculeElement from '../../src';
+import CorpusculeElement, {didMount, didUnmount, didUpdate, render} from '../../src';
 import {registerAndMount} from '../utils';
 
 const didMethods = () => {
@@ -14,11 +14,11 @@ const didMethods = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        protected _didMount(): void {
+        protected [didMount](): void {
           spy();
         }
 
-        protected _render(): TemplateResult {
+        protected [render](): TemplateResult {
           return html`<span>Test content</span>`;
         }
       }
@@ -33,11 +33,11 @@ const didMethods = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        protected _didUnmount(): void {
+        protected [didUnmount](): void {
           spy();
         }
 
-        protected _render(): TemplateResult {
+        protected [render](): TemplateResult {
           return html`<span>Test content</span>`;
         }
       }
@@ -56,11 +56,11 @@ const didMethods = () => {
 
         public num: number = 1;
 
-        protected _didUpdate(): void {
+        protected [didUpdate](): void {
           spy();
         }
 
-        protected _render(): TemplateResult {
+        protected [render](): TemplateResult {
           return html`<span id="node">Test content #${this.num}</span>`;
         }
       }
