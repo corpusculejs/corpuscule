@@ -1,4 +1,5 @@
 import CorpusculeElement, {ComputedDescriptorMap, PropertyDescriptorMap} from '.';
+import * as i from './tokens/internal';
 
 // tslint:disable:no-invalid-this
 import {
@@ -73,10 +74,12 @@ export const initAttributes = (
     Object.defineProperty(target.prototype, propertyName, {
       configurable: true,
       get(this: any): any {
-        return this.__properties[propertyName];
+        return this[i.properties][propertyName];
       },
       set(this: any, value: any): void {
-        if (pure && value === this.__properties[propertyName]) {
+        const {[i.properties]: props} = this;
+
+        if (pure && value === props[propertyName]) {
           return;
         }
 
@@ -84,18 +87,18 @@ export const initAttributes = (
           throw new TypeError(`Value applied to "${propertyName}" is not ${guard.name}`);
         }
 
-        this.__properties[propertyName] = value;
+        props[propertyName] = value;
 
-        if (this.__isMount) {
+        if (this[i.isMount]) {
           toAttribute(this, attributeName, value);
         }
 
-        this.__invalidate(UpdateType.Props).catch(handleError);
+        this[i.invalidate](UpdateType.Props).catch(handleError);
       },
     });
   }
 
-  (target as any).__attributesRegistry = attributesRegistry;
+  (target as any)[i.attributesRegistry] = attributesRegistry;
 
   return Array.from(attributesRegistry.keys());
 };
@@ -119,10 +122,12 @@ export const initProperties = (
     Object.defineProperty(target.prototype, propertyName, {
       configurable: true,
       get(this: any): any {
-        return this.__properties[propertyName];
+        return this[i.properties][propertyName];
       },
       set(this: any, value: any): void {
-        if (pure && value === this.__properties[propertyName]) {
+        const {[i.properties]: props} = this;
+
+        if (pure && value === props[propertyName]) {
           return;
         }
 
@@ -130,9 +135,9 @@ export const initProperties = (
           throw new TypeError(`Value applied to "${propertyName}" has wrong type`);
         }
 
-        this.__properties[propertyName] = value;
+        props[propertyName] = value;
 
-        this.__invalidate(UpdateType.Props).catch(handleError);
+        this[i.invalidate](UpdateType.Props).catch(handleError);
       },
     });
   }
@@ -146,11 +151,11 @@ export const initStates = (
     Object.defineProperty(prototype, propertyName, {
       configurable: true,
       get(this: any): any {
-        return this.__states[propertyName];
+        return this[i.states][propertyName];
       },
       set(this: any, value: any): void {
-        this.__states[propertyName] = value;
-        this.__invalidate(UpdateType.State).catch(handleError);
+        this[i.states][propertyName] = value;
+        this[i.invalidate](UpdateType.State).catch(handleError);
       },
     });
   }
