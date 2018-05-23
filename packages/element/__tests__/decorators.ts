@@ -3,7 +3,7 @@ import {TemplateResult} from 'lit-html';
 import {html} from 'lit-html/lib/lit-extended';
 // tslint:disable-next-line:no-implicit-dependencies
 import uuid from 'uuid/v4';
-import CorpusculeElement from '../src';
+import CorpusculeElement, {attributeMap, computedMap, propertyMap, render, stateMap} from '../src';
 import {attribute, computed, element, property, state} from '../src/decorators';
 import {mount} from './utils';
 
@@ -14,7 +14,7 @@ describe('Decorators', () => {
 
       @element(is)
       class Test extends CorpusculeElement {
-        protected _render(): TemplateResult {
+        protected [render](): TemplateResult {
           return html`<span id="node">Test content</span>`;
         }
       }
@@ -35,7 +35,7 @@ describe('Decorators', () => {
 
       @element(is)
       class Test extends CorpusculeElement {
-        protected _render(): TemplateResult {
+        protected [render](): TemplateResult {
           return html`<span id="node">Test content</span>`;
         }
       }
@@ -53,12 +53,12 @@ describe('Decorators', () => {
         @attribute('t2', Boolean, {pure: false})
         public test2: boolean = false;
 
-        protected _render(): TemplateResult {
+        protected [render](): TemplateResult {
           return html`<span id="node">Test content</span>`;
         }
       }
 
-      expect((Test as any)._attributes).toEqual({
+      expect((Test as any)[attributeMap]).toEqual({
         test: ['t', Number],
         test2: ['t2', Boolean, {pure: false}],
       });
@@ -80,12 +80,12 @@ describe('Decorators', () => {
         @property(guard2, {pure: false})
         public test3: number = 2;
 
-        protected _render(): TemplateResult {
+        protected [render](): TemplateResult {
           return html`<span id="node">Test content</span>`;
         }
       }
 
-      expect((Test as any)._properties).toEqual({
+      expect((Test as any)[propertyMap]).toEqual({
         test: null,
         test2: guard1,
         test3: [guard2, {pure: false}],
@@ -102,12 +102,12 @@ describe('Decorators', () => {
         @state
         public test2: number = 2;
 
-        protected _render(): TemplateResult {
+        protected [render](): TemplateResult {
           return html`<span id="node">Test content</span>`;
         }
       }
 
-      expect((Test as any)._states).toEqual([
+      expect((Test as any)[stateMap]).toEqual([
         'test',
         'test2',
       ]);
@@ -130,12 +130,12 @@ describe('Decorators', () => {
           return this.second - this.first;
         }
 
-        protected _render(): TemplateResult {
+        protected [render](): TemplateResult {
           return html`<span id="node">Test content</span>`;
         }
       }
 
-      expect((Test as any)._computed).toEqual({
+      expect((Test as any)[computedMap]).toEqual({
         test: ['first', 'second'],
         test2: ['first', 'second'],
       });

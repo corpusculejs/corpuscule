@@ -1,4 +1,6 @@
 import CorpusculeElement, {ComputedDescriptorMap, PropertyDescriptorMap} from '.';
+import * as $$ from './tokens/internal';
+import * as $ from './tokens/lifecycle';
 
 // tslint:disable:no-invalid-this
 import {
@@ -15,9 +17,13 @@ const handleError = (e: Error) => {
 
 export const getAllPropertyDescriptors = (
   target: typeof CorpusculeElement,
-  getter: '_attributes' | '_properties' | '_states' | '_computed',
+  getter:
+    | typeof $.attributeMap
+    | typeof $.propertyMap
+    | typeof $.computedMap
+    | typeof $.stateMap,
 ): any => {
-  const isArray = getter === '_states';
+  const isArray = getter === $.stateMap;
   let descriptors  = isArray ? [] : {};
   let t: any = target;
 
@@ -73,10 +79,12 @@ export const initAttributes = (
     Object.defineProperty(target.prototype, propertyName, {
       configurable: true,
       get(this: any): any {
-        return this.__properties[propertyName];
+        return this[$$.properties][propertyName];
       },
       set(this: any, value: any): void {
-        if (pure && value === this.__properties[propertyName]) {
+        const {[$$.properties]: props} = this;
+
+        if (pure && value === props[propertyName]) {
           return;
         }
 
@@ -84,18 +92,18 @@ export const initAttributes = (
           throw new TypeError(`Value applied to "${propertyName}" is not ${guard.name}`);
         }
 
-        this.__properties[propertyName] = value;
+        props[propertyName] = value;
 
-        if (this.__isMount) {
+        if (this[$$.isMount]) {
           toAttribute(this, attributeName, value);
         }
 
-        this.__invalidate(UpdateType.Props).catch(handleError);
+        this[$$.invalidate](UpdateType.Props).catch(handleError);
       },
     });
   }
 
-  (target as any).__attributesRegistry = attributesRegistry;
+  (target as any)[$$.attributesRegistry] = attributesRegistry;
 
   return Array.from(attributesRegistry.keys());
 };
@@ -119,10 +127,12 @@ export const initProperties = (
     Object.defineProperty(target.prototype, propertyName, {
       configurable: true,
       get(this: any): any {
-        return this.__properties[propertyName];
+        return this[$$.properties][propertyName];
       },
       set(this: any, value: any): void {
-        if (pure && value === this.__properties[propertyName]) {
+        const {[$$.properties]: props} = this;
+
+        if (pure && value === props[propertyName]) {
           return;
         }
 
@@ -130,9 +140,9 @@ export const initProperties = (
           throw new TypeError(`Value applied to "${propertyName}" has wrong type`);
         }
 
-        this.__properties[propertyName] = value;
+        props[propertyName] = value;
 
-        this.__invalidate(UpdateType.Props).catch(handleError);
+        this[$$.invalidate](UpdateType.Props).catch(handleError);
       },
     });
   }
@@ -140,17 +150,17 @@ export const initProperties = (
 
 export const initStates = (
   {prototype}: typeof CorpusculeElement,
-  states: ReadonlyArray<string>,
+  states: ReadonlyArray<string | symbol>,
 ): void => {
   for (const propertyName of states) {
     Object.defineProperty(prototype, propertyName, {
       configurable: true,
       get(this: any): any {
-        return this.__states[propertyName];
+        return this[$$.states][propertyName];
       },
       set(this: any, value: any): void {
-        this.__states[propertyName] = value;
-        this.__invalidate(UpdateType.State).catch(handleError);
+        this[$$.states][propertyName] = value;
+        this[$$.invalidate](UpdateType.State).catch(handleError);
       },
     });
   }
@@ -158,16 +168,16 @@ export const initStates = (
 
 // tslint:disable:readonly-keyword
 interface ComputedData {
-  readonly cache: Map<string, any>;
+  readonly cache: Map<string | symbol, any>;
   value: any;
 } // tslint:enable:readonly-keyword
 
 const prepareComputed = (
   instance: any,
-  propertyName: string,
+  propertyName: string | symbol,
   // tslint:disable-next-line:readonly-keyword
-  registry: WeakMap<any, Map<string, ComputedData>>,
-  watchings: ReadonlyArray<string>,
+  registry: WeakMap<any, Map<string | symbol, ComputedData>>,
+  watchings: ReadonlyArray<string | symbol>,
   get: () => any,
 ) => {
   let map = registry.get(instance);
@@ -181,7 +191,7 @@ const prepareComputed = (
 
   if (!computedData) {
     const value = get.call(instance);
-    const cache = watchings.reduce<Map<string, any>>((acc, watchingProperty) => {
+    const cache = watchings.reduce<Map<string | symbol, any>>((acc, watchingProperty) => {
       acc.set(watchingProperty, instance[watchingProperty]);
 
       return acc;

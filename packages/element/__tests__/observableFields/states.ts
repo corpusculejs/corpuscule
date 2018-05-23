@@ -3,7 +3,7 @@ import {TemplateResult} from 'lit-html';
 import {html} from 'lit-html/lib/lit-extended';
 // tslint:disable-next-line:no-implicit-dependencies
 import uuid from 'uuid/v4';
-import CorpusculeElement, {StateDescriptorMap} from '../../src';
+import CorpusculeElement, {render, StateDescriptorMap, stateMap} from '../../src';
 import {registerAndMount} from '../utils';
 
 const states = () => {
@@ -12,7 +12,7 @@ const states = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        protected static get _states(): StateDescriptorMap<any> {
+        protected static get [stateMap](): StateDescriptorMap<any> {
           return ['__index'];
         }
 
@@ -22,7 +22,7 @@ const states = () => {
           this.__index = i;
         }
 
-        protected _render(): TemplateResult {
+        protected [render](): TemplateResult {
           return html`<span id="node">#${this.__index}</span>`;
         }
       }

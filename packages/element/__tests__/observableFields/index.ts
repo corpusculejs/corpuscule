@@ -3,7 +3,16 @@ import {TemplateResult} from 'lit-html';
 import {html} from 'lit-html/lib/lit-extended';
 // tslint:disable-next-line:no-implicit-dependencies
 import uuid from 'uuid/v4';
-import CorpusculeElement, {AttributeDescriptorMap, PropertyDescriptorMap, StateDescriptorMap} from '../../src';
+import CorpusculeElement, {
+  AttributeDescriptorMap,
+  attributeMap,
+  didUpdate,
+  PropertyDescriptorMap,
+  propertyMap,
+  render,
+  StateDescriptorMap,
+  stateMap,
+} from '../../src';
 import {registerAndMount} from '../utils';
 import attributes from './attributes';
 import computed from './computed';
@@ -23,19 +32,19 @@ const observableFields = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        protected static get _attributes(): AttributeDescriptorMap<any> {
+        protected static get [attributeMap](): AttributeDescriptorMap<any> {
           return {
             attr: ['attr', String],
           };
         }
 
-        protected static get _properties(): PropertyDescriptorMap<any> {
+        protected static get [propertyMap](): PropertyDescriptorMap<any> {
           return {
             prop: null,
           };
         }
 
-        protected static get _states(): StateDescriptorMap<any> {
+        protected static get [stateMap](): StateDescriptorMap<any> {
           return ['__state'];
         }
 
@@ -48,11 +57,11 @@ const observableFields = () => {
           this.__state = str;
         }
 
-        protected _didUpdate(...args: any[]): void {
+        protected [didUpdate](...args: any[]): void {
           spy(...args);
         }
 
-        protected _render(): TemplateResult {
+        protected [render](): TemplateResult {
           return html`<span id="node">Test content</span>`;
         }
       }

@@ -1,30 +1,30 @@
-// tslint:disable:max-classes-per-file
-import {StyleConstructor} from './types';
+import CorpusculeElement, {createRoot} from '@corpuscule/element';
+import {loading} from './tokens';
+import {Constructor} from './types';
 
 export {createUrl} from './utils';
 
 const stylePattern = /[{}]/;
 
 // tslint:disable-next-line:readonly-array
-const styles = (...pathsOrStyles: string[]) => <T extends StyleConstructor>(target: T): T =>
-  class WithStyles extends target {
-    private __loading?: Promise<void[]>;
+const styles = (...pathsOrStyles: string[]) => <T extends Constructor<CorpusculeElement>>(target: T): T => {
+  abstract class WithStyles extends target {
+    private [loading]?: Promise<void[]>;
 
     public async connectedCallback(): Promise<void> {
-      if (this.__loading) {
-        await this.__loading;
+      if (this[loading]) {
+        await this[loading];
       }
 
       if (super.connectedCallback) {
-        super.connectedCallback();
+        await super.connectedCallback();
       }
     }
 
-    protected _createRoot(): HTMLDivElement {
-      // @ts-ignore
-      const root = super._createRoot();
+    protected [createRoot](): HTMLDivElement {
+      const root = super[createRoot]();
       const layout = document.createElement('div');
-      const loadingPromises: Array<Promise<void>> = [];
+      const loadingProcesses: Array<Promise<void>> = [];
 
       for (const pathOrStyle of pathsOrStyles) {
         if (stylePattern.test(pathOrStyle)) {
@@ -37,7 +37,7 @@ const styles = (...pathsOrStyles: string[]) => <T extends StyleConstructor>(targ
           link.type = 'text/css';
           link.href = pathOrStyle;
 
-          loadingPromises.push(new Promise<void>((resolve) => {
+          loadingProcesses.push(new Promise<void>((resolve) => {
             link.onload = resolve as any;
           }));
 
@@ -45,14 +45,17 @@ const styles = (...pathsOrStyles: string[]) => <T extends StyleConstructor>(targ
         }
       }
 
-      if (loadingPromises.length > 0) {
-        this.__loading = Promise.all(loadingPromises);
+      if (loadingProcesses.length > 0) {
+        this[loading] = Promise.all(loadingProcesses);
       }
 
       root.appendChild(layout);
 
       return layout;
     }
-  };
+  }
+
+  return WithStyles;
+};
 
 export default styles;

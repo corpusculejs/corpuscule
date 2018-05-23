@@ -6,6 +6,6 @@ export interface CustomElement extends HTMLElement {
   adoptedCallback?(): void;
 } // tslint:enable:no-method-signature
 
-export interface StyleConstructor {
-  new (...args: any[]): CustomElement; // tslint:disable-line:readonly-array
+export interface Constructor<T> {
+  new (...args: any[]): T; // tslint:disable-line:readonly-array
 }

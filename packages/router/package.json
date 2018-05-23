@@ -1,6 +1,6 @@
 {
   "name": "@corpuscule/router",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Router mixin for Corpuscule",
   "dependencies": {
     "universal-router": "https://github.com/nobabel/universal-router/releases/download/6.0.0-nobabel.2/universal-router-6.0.0-nobabel.2.tgz"

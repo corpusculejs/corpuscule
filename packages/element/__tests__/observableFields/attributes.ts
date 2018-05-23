@@ -3,7 +3,11 @@ import {TemplateResult} from 'lit-html';
 import {html} from 'lit-html/lib/lit-extended';
 // tslint:disable-next-line:no-implicit-dependencies
 import uuid from 'uuid/v4';
-import CorpusculeElement, {AttributeDescriptorMap} from '../../src';
+import CorpusculeElement, {
+  AttributeDescriptorMap,
+  attributeMap,
+  render,
+} from '../../src';
 import {registerAndMount} from '../utils';
 
 const attributes = () => {
@@ -12,7 +16,7 @@ const attributes = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        protected static get _attributes(): AttributeDescriptorMap<any> {
+        protected static get [attributeMap](): AttributeDescriptorMap<any> {
           return {
             index: ['idx', Number, {pure: true}],
           };
@@ -20,7 +24,7 @@ const attributes = () => {
 
         public index?: number;
 
-        protected _render(): TemplateResult {
+        protected [render](): TemplateResult {
           return html`<span id="node">${
             this.index !== undefined
               ? `#${this.index}`
@@ -44,7 +48,7 @@ const attributes = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        protected static get _attributes(): AttributeDescriptorMap<any> {
+        protected static get [attributeMap](): AttributeDescriptorMap<any> {
           return {
             index: ['idx', Number],
           };
@@ -52,7 +56,7 @@ const attributes = () => {
 
         public index: number = 2;
 
-        protected _render(): TemplateResult {
+        protected [render](): TemplateResult {
           return html`<span id="node">#${this.index}</span>`;
         }
       }
@@ -68,7 +72,7 @@ const attributes = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        protected static get _attributes(): AttributeDescriptorMap<any> {
+        protected static get [attributeMap](): AttributeDescriptorMap<any> {
           return {
             index: ['idx', Number],
           };
@@ -76,7 +80,7 @@ const attributes = () => {
 
         public index: number = 1;
 
-        protected _render(): TemplateResult {
+        protected [render](): TemplateResult {
           return html`<span id="node">#${this.index}</span>`;
         }
       }
@@ -92,7 +96,7 @@ const attributes = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        protected static get _attributes(): AttributeDescriptorMap<any> {
+        protected static get [attributeMap](): AttributeDescriptorMap<any> {
           return {
             index: ['idx', Number],
           };
@@ -100,7 +104,7 @@ const attributes = () => {
 
         public index: number = 1;
 
-        protected _render(): TemplateResult {
+        protected [render](): TemplateResult {
           return html`<span id="node">#${this.index}</span>`;
         }
       }
@@ -118,7 +122,7 @@ const attributes = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        protected static get _attributes(): AttributeDescriptorMap<any> {
+        protected static get [attributeMap](): AttributeDescriptorMap<any> {
           return {
             index: ['idx', Number],
           };
@@ -126,7 +130,7 @@ const attributes = () => {
 
         public index: number = 1;
 
-        protected _render(): TemplateResult {
+        protected [render](): TemplateResult {
           spy();
 
           return html`<span id="node">#${this.index}</span>`;
@@ -146,7 +150,7 @@ const attributes = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        protected static get _attributes(): AttributeDescriptorMap<any> {
+        protected static get [attributeMap](): AttributeDescriptorMap<any> {
           return {
             index: ['idx', Number, {pure: false}],
           };
@@ -154,7 +158,7 @@ const attributes = () => {
 
         public index: number = 1;
 
-        protected _render(): TemplateResult {
+        protected [render](): TemplateResult {
           spy();
 
           return html`<span id="node">#${this.index}</span>`;
@@ -172,7 +176,7 @@ const attributes = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        protected static get _attributes(): AttributeDescriptorMap<any> {
+        protected static get [attributeMap](): AttributeDescriptorMap<any> {
           return {
             has: ['has', Boolean],
           };
@@ -180,7 +184,7 @@ const attributes = () => {
 
         public has: boolean = false;
 
-        protected _render(): TemplateResult {
+        protected [render](): TemplateResult {
           return html`<span id="node">Test content</span>`;
         }
       }
@@ -202,7 +206,7 @@ const attributes = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        protected static get _attributes(): AttributeDescriptorMap<any> {
+        protected static get [attributeMap](): AttributeDescriptorMap<any> {
           return {
             index: ['idx', Number],
           };
@@ -210,7 +214,7 @@ const attributes = () => {
 
         public index: number = 1;
 
-        protected _render(): TemplateResult {
+        protected [render](): TemplateResult {
           return html`<span id="node">#${this.index}</span>`;
         }
       }

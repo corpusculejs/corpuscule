@@ -1,0 +1,10 @@
+export const attributesRegistry = Symbol();
+export const invalidate = Symbol();
+export const isMount = Symbol();
+export const previousProperties = Symbol();
+export const previousStates = Symbol();
+export const properties = Symbol();
+export const rendering = Symbol();
+export const root = Symbol();
+export const scheduler = Symbol();
+export const states = Symbol();
