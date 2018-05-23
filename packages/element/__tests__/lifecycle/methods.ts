@@ -119,7 +119,7 @@ const methods = () => {
       expect(el.state).toBeTruthy();
     });
 
-    it('should get the promise to wait until component\'s rendering is done', () => {
+    it('should get the promise to wait until component\'s renderingProcess is done', () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
@@ -132,10 +132,10 @@ const methods = () => {
 
       el.forceUpdate(); // tslint:disable-line:no-floating-promises
 
-      expect(el.rendering).toEqual(jasmine.any(Promise));
+      expect(el.renderingProcess).toEqual(jasmine.any(Promise));
     });
 
-    it('should get the promise even if there is no rendering yet', () => {
+    it('should get the promise even if there is no renderingProcess yet', () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
@@ -145,7 +145,7 @@ const methods = () => {
       }
 
       registerAndMount(Test.is, Test, (e) => {
-        expect(e.rendering).toEqual(jasmine.any(Promise));
+        expect(e.renderingProcess).toEqual(jasmine.any(Promise));
       });
     });
   });
