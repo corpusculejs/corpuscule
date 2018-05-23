@@ -1,7 +1,10 @@
 // tslint:disable:no-invalid-this
 import {Action, Store, Unsubscribe} from 'redux';
+import {dispatcherMap, storedMap, unsubscribe} from './tokens';
 import {PropertyGetter, ReduxConstructor} from './types';
 import {initDispatchers, updateStoredProperties} from './utils';
+
+export {dispatcherMap, storedMap};
 
 const createReduxConnectionUtils = () => {
   let currentStore: Store<any, any>;
@@ -15,20 +18,20 @@ const createReduxConnectionUtils = () => {
       throw new Error('Store is not provided');
     }
 
-    if (target._dispatchers) {
-      initDispatchers(target, currentStore, target._dispatchers);
+    if (target[dispatcherMap]) {
+      initDispatchers(target, currentStore, target[dispatcherMap]);
     }
 
-    if (target._stored) {
-      const registry: ReadonlyArray<[string, PropertyGetter<S>]> = Object.entries(target._stored);
+    if (target[storedMap]) {
+      const registry: ReadonlyArray<[string, PropertyGetter<S>]> = Object.entries(target[storedMap]!);
 
       return class WithRedux extends target {
-        private __unsubscribe?: Unsubscribe;
+        private [unsubscribe]?: Unsubscribe;
 
         public connectedCallback(): void {
           updateStoredProperties(this, currentStore, registry);
 
-          this.__unsubscribe = currentStore.subscribe(() => {
+          this[unsubscribe] = currentStore.subscribe(() => {
             updateStoredProperties(this, currentStore, registry);
           });
 
@@ -38,7 +41,7 @@ const createReduxConnectionUtils = () => {
         }
 
         public disconnectedCallback(): void {
-          this.__unsubscribe!();
+          this[unsubscribe]!();
 
           if (super.disconnectedCallback) {
             super.disconnectedCallback();

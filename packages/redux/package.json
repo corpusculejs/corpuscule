@@ -1,6 +1,6 @@
 {
   "name": "@corpuscule/redux",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Redux mixin for Corpuscule",
   "dependencies": {
     "redux": "https://github.com/nobabel/redux/releases/download/4.0.0-nobabel/redux-4.0.0-nobabel.tgz"

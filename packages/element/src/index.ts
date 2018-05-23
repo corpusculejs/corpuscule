@@ -1,6 +1,20 @@
 import {TemplateResult} from 'lit-html';
-import {render} from 'lit-html/lib/shady-render';
+import {render as r} from 'lit-html/lib/shady-render';
 import schedule from './scheduler';
+import * as $$ from './tokens/internal';
+import {
+  attributeMap,
+  computedMap,
+  createRoot,
+  deriveStateFromProps,
+  didMount,
+  didUnmount,
+  didUpdate,
+  propertyMap,
+  render,
+  shouldUpdate,
+  stateMap,
+} from './tokens/lifecycle';
 import {
   AttributeDescriptor,
   AttributeDescriptorMap,
@@ -35,34 +49,48 @@ export {
   StateDescriptorMap,
 };
 
+export * from './tokens/lifecycle';
+
+const parseAttributeValue = (value: string | null, guard: AttributeGuard): boolean | number | string => {
+  switch (guard) {
+    case Boolean:
+      return (value !== null);
+    case Number:
+      return Number(value);
+    default:
+      return String(value);
+  }
+};
+
 export default abstract class CorpusculeElement extends HTMLElement {
   public static readonly is: string;
   public static get observedAttributes(): ReadonlyArray<string> {
-    if (this._properties) {
-      initProperties(this, getAllPropertyDescriptors(this, '_properties'));
+    if (this[propertyMap]) {
+      initProperties(this, getAllPropertyDescriptors(this, propertyMap));
     }
 
-    if (this._states) {
-      initStates(this, getAllPropertyDescriptors(this, '_states'));
+    if (this[stateMap]) {
+      initStates(this, getAllPropertyDescriptors(this, stateMap));
     }
 
-    if (this._computed) {
-      initComputed(this, getAllPropertyDescriptors(this, '_computed'));
+    if (this[computedMap]) {
+      initComputed(this, getAllPropertyDescriptors(this, computedMap));
     }
 
-    return this._attributes
-      ? initAttributes(this, getAllPropertyDescriptors(this, '_attributes'))
+    return this[attributeMap]
+      ? initAttributes(this, getAllPropertyDescriptors(this, attributeMap))
       : [];
   }
 
-  protected static readonly _attributes?: AttributeDescriptorMap<{}>;
-  protected static readonly _properties?: PropertyDescriptorMap<{}>;
-  protected static readonly _states?: StateDescriptorMap<{}>;
-  protected static readonly _computed?: ComputedDescriptorMap<{}>;
+  protected static readonly [attributeMap]?: AttributeDescriptorMap<{}>;
+  protected static readonly [propertyMap]?: PropertyDescriptorMap<{}>;
+  protected static readonly [stateMap]?: StateDescriptorMap<any>;
+  protected static readonly [computedMap]?: ComputedDescriptorMap<{}>;
 
-  private static readonly __attributesRegistry: Map<string, [string, AttributeGuard]>;
+  // tslint:disable-next-line:no-unused-variable
+  private static readonly [$$.attributesRegistry]: Map<string, [string, AttributeGuard]>;
 
-  protected static _deriveStateFromProps(
+  protected static [deriveStateFromProps](
     _nextProps: {},
     _prevProps: {},
     _prevState: {},
@@ -70,7 +98,7 @@ export default abstract class CorpusculeElement extends HTMLElement {
     return null;
   }
 
-  protected static _shouldUpdate(
+  protected static [shouldUpdate](
     _nextProps: {},
     _nextState: {},
     _prevProps: {},
@@ -79,25 +107,15 @@ export default abstract class CorpusculeElement extends HTMLElement {
     return true;
   }
 
-  private static __parseAttributeValue(value: string | null, guard: AttributeGuard): boolean | number | string {
-    switch (guard) {
-      case Boolean:
-        return (value !== null);
-      case Number:
-        return Number(value);
-      default:
-        return String(value);
-    }
+  public get renderingProcess(): Promise<void> {
+    return this[$$.rendering] || Promise.resolve();
   }
 
-  public get rendering(): Promise<void> {
-    return this.__rendering || Promise.resolve();
-  }
+  private readonly [$$.root]: Element | DocumentFragment = this[createRoot]();
 
-  private readonly __properties: {[propertyName: string]: any} = {}; // tslint:disable-line:readonly-keyword
-
-  private readonly __root: Element | DocumentFragment = this._createRoot();
-  private readonly __scheduler: Scheduler = {
+  // tslint:disable:readonly-keyword no-unused-variable
+  private readonly [$$.properties]: {[propertyName: string]: any} = {};
+  private readonly [$$.scheduler]: Scheduler = {
     force: false,
     initial: true,
     mounting: false,
@@ -105,12 +123,11 @@ export default abstract class CorpusculeElement extends HTMLElement {
     valid: false,
   };
 
-  // tslint:disable:readonly-keyword
-  private __isMount: boolean = false;
-  private __prevProperties: {[propertyName: string]: any} = {}; // tslint:disable-line:readonly-keyword
-  private __prevStates: {[propertyName: string]: any} = {}; // tslint:disable-line:readonly-keyword
-  private __rendering?: Promise<void>;
-  private __states: {[propertyName: string]: any} = {}; // tslint:disable-line:readonly-keyword
+  private [$$.isMount]: boolean = false;
+  private [$$.previousProperties]: {[propertyName: string]: any} = {};
+  private [$$.previousStates]: {[propertyName: string]: any} = {};
+  private [$$.rendering]?: Promise<void>;
+  private [$$.states]: {[propertyName: string]: any} = {};
   // tslint:enable:readonly-keyword
 
   public async attributeChangedCallback(attrName: string, oldVal: string, newVal: string): Promise<void> {
@@ -118,67 +135,62 @@ export default abstract class CorpusculeElement extends HTMLElement {
       return;
     }
 
-    const {
-      __attributesRegistry,
-      __parseAttributeValue,
-    } = this.constructor as typeof CorpusculeElement;
+    const {[$$.attributesRegistry]: registry} = this.constructor as typeof CorpusculeElement;
 
-    const [propertyName, guard] = __attributesRegistry.get(attrName)!;
-    this.__properties[propertyName] = __parseAttributeValue(newVal, guard);
+    const [propertyName, guard] = registry.get(attrName)!;
+    this[$$.properties][propertyName] = parseAttributeValue(newVal, guard);
 
-    await this.__invalidate(UpdateType.Props);
+    await this[$$.invalidate](UpdateType.Props);
   }
 
   public async connectedCallback(): Promise<void> {
-    const {
-      __attributesRegistry,
-      __parseAttributeValue,
-    } = this.constructor as typeof CorpusculeElement;
+    const {[$$.attributesRegistry]: registry} = this.constructor as typeof CorpusculeElement;
+    const {[$$.properties]: props} = this;
 
-    if (__attributesRegistry) {
-      for (const [attributeName, [propertyName, guard]] of __attributesRegistry) {
+    if (registry) {
+      for (const [attributeName, [propertyName, guard]] of registry) {
         const attributeValue = this.getAttribute(attributeName);
-        const property = this.__properties[propertyName];
+        const property = props[propertyName];
 
         if (attributeValue !== null) {
-          this.__properties[propertyName] = __parseAttributeValue(attributeValue, guard);
+          props[propertyName] = parseAttributeValue(attributeValue, guard);
         } else if (property !== undefined && property !== null) {
           toAttribute(this, attributeName, property);
         }
       }
     }
 
-    await this.__invalidate(UpdateType.Mounting);
+    await this[$$.invalidate](UpdateType.Mounting);
   }
 
   public disconnectedCallback(): void {
-    this._didUnmount();
-    this.__isMount = false;
+    this[didUnmount]();
+    this[$$.isMount] = false;
   }
 
   public async forceUpdate(): Promise<void> {
-    return this.__invalidate(UpdateType.Force);
+    return this[$$.invalidate](UpdateType.Force);
   }
 
-  protected _createRoot(): Element | DocumentFragment {
+  protected [createRoot](): Element | DocumentFragment {
     return this.attachShadow({mode: 'open'});
   }
 
   // tslint:disable:no-empty
-  protected _didMount(): void {}
+  protected [didMount](): void {}
 
-  protected _didUpdate(
+  protected [didUpdate](
     _prevProperties: {},
     _prevStates: {},
   ): void {}
 
-  protected _didUnmount(): void {}
+  protected [didUnmount](): void {}
   // tslint:enable:no-empty
 
-  protected abstract _render(): TemplateResult | null;
+  protected abstract [render](): TemplateResult | null;
 
-  private async __invalidate(type: UpdateType): Promise<void> {
-    const {__scheduler: scheduler} = this;
+  private async [$$.invalidate](type: UpdateType): Promise<void> {
+    const {[$$.scheduler]: scheduler} = this;
 
     switch (type) {
       case UpdateType.Force:
@@ -201,54 +213,61 @@ export default abstract class CorpusculeElement extends HTMLElement {
 
     scheduler.valid = false;
 
-    this.__rendering = schedule(() => {
+    this[$$.rendering] = schedule(() => {
       const {
         is,
-        _deriveStateFromProps,
-        _shouldUpdate,
+        [deriveStateFromProps]: derive,
+        [shouldUpdate]: should,
       } = this.constructor as typeof CorpusculeElement;
 
+      const {
+        [$$.previousProperties]: prevProps,
+        [$$.previousStates]: prevStates,
+        [$$.properties]: props,
+        [$$.states]: states,
+      } = this;
+
       if (scheduler.mounting || scheduler.props || scheduler.force) {
-        this.__states = {
-          ...this.__states,
-          ..._deriveStateFromProps(this.__properties, this.__prevProperties, this.__prevStates),
+        this[$$.states] = {
+          ...states,
+          ...derive(props, prevProps, prevStates),
         };
       }
 
-      const shouldUpdate = !scheduler.force && !scheduler.mounting
-        ? _shouldUpdate(
-          this.__properties,
-          this.__states,
-          this.__prevProperties,
-          this.__prevStates,
+      const s = !scheduler.force && !scheduler.mounting
+        ? should(
+          props,
+          states,
+          prevProps,
+          prevStates,
         )
         : true;
 
-      if (shouldUpdate) {
-        const rendered = this._render();
+      if (s) {
+        const rendered = this[render]();
 
         if (rendered) {
-          render(rendered, this.__root, is);
+          r(rendered, this[$$.root], is);
         }
       }
 
       if (scheduler.mounting) {
-        this._didMount();
-        this.__isMount = true;
+        this[didMount]();
+        this[$$.isMount] = true;
       }
 
-      if (shouldUpdate && !scheduler.mounting) {
-        this._didUpdate(this.__prevProperties, this.__prevStates);
+      if (s && !scheduler.mounting) {
+        this[didUpdate](prevProps, prevStates);
       }
 
-      this.__prevProperties = {
-        ...this.__prevProperties,
-        ...this.__properties,
+      this[$$.previousProperties] = {
+        ...prevProps,
+        ...props,
       };
 
-      this.__prevStates = {
-        ...this.__prevStates,
-        ...this.__states,
+      this[$$.previousStates] = {
+        ...prevStates,
+        ...states,
       };
 
       scheduler.valid = true;
@@ -258,6 +277,6 @@ export default abstract class CorpusculeElement extends HTMLElement {
       scheduler.props = false;
     }, scheduler.initial);
 
-    return this.__rendering;
+    return this[$$.rendering];
   }
 }

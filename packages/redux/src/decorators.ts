@@ -1,17 +1,18 @@
+import {dispatcherMap, storedMap} from '.';
 import {PropertyGetter} from './types';
 
 export const stored = <S = any>(getter: PropertyGetter<S>) => ({constructor}: any, propertyName: string): void => {
-  if (!constructor._stored) {
-    constructor._stored = {[propertyName]: getter};
+  if (!constructor[storedMap]) {
+    constructor[storedMap] = {[propertyName]: getter};
   } else {
-    constructor._stored[propertyName] = getter;
+    constructor[storedMap][propertyName] = getter;
   }
 };
 
 export const dispatcher = ({constructor}: any, propertyName: string): void => {
-  if (!constructor._dispatchers) {
-    constructor._dispatchers = [propertyName];
+  if (!constructor[dispatcherMap]) {
+    constructor[dispatcherMap] = [propertyName];
   } else {
-    constructor._dispatchers.push(propertyName);
+    constructor[dispatcherMap].push(propertyName);
   }
 };
