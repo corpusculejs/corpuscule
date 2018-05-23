@@ -24,7 +24,7 @@ const styles = (...pathsOrStyles: string[]) => <T extends Constructor<Corpuscule
     protected [createRoot](): HTMLDivElement {
       const root = super[createRoot]();
       const layout = document.createElement('div');
-      const loadingPromises: Array<Promise<void>> = [];
+      const loadingProcesses: Array<Promise<void>> = [];
 
       for (const pathOrStyle of pathsOrStyles) {
         if (stylePattern.test(pathOrStyle)) {
@@ -37,7 +37,7 @@ const styles = (...pathsOrStyles: string[]) => <T extends Constructor<Corpuscule
           link.type = 'text/css';
           link.href = pathOrStyle;
 
-          loadingPromises.push(new Promise<void>((resolve) => {
+          loadingProcesses.push(new Promise<void>((resolve) => {
             link.onload = resolve as any;
           }));
 
@@ -45,8 +45,8 @@ const styles = (...pathsOrStyles: string[]) => <T extends Constructor<Corpuscule
         }
       }
 
-      if (loadingPromises.length > 0) {
-        this[loading] = Promise.all(loadingPromises);
+      if (loadingProcesses.length > 0) {
+        this[loading] = Promise.all(loadingProcesses);
       }
 
       root.appendChild(layout);
