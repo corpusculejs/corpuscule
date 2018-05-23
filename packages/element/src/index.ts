@@ -107,7 +107,7 @@ export default abstract class CorpusculeElement extends HTMLElement {
     return true;
   }
 
-  public get rendering(): Promise<void> {
+  public get renderingProcess(): Promise<void> {
     return this[$$.rendering] || Promise.resolve();
   }
 
