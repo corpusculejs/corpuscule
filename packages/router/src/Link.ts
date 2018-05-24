@@ -1,5 +1,5 @@
 import push from './push';
-import {a, to} from './tokens';
+import {a, handleClick, to} from './tokens';
 import {CustomElement} from './types';
 
 export default class Link extends HTMLElement implements CustomElement {
@@ -26,11 +26,11 @@ export default class Link extends HTMLElement implements CustomElement {
   public connectedCallback(): void {
     this[to] = this.getAttribute('to') || '';
     this[a].href = this[to];
-    this[a].addEventListener('click', this.__handleClick);
+    this[a].addEventListener('click', this[handleClick]);
   }
 
   public disconnectedCallback(): void {
-    this[a].removeEventListener('click', this.__handleClick);
+    this[a].removeEventListener('click', this[handleClick]);
   }
 
   public get to(): string {
@@ -42,7 +42,7 @@ export default class Link extends HTMLElement implements CustomElement {
     this.setAttribute('to', this[to]);
   }
 
-  private readonly __handleClick = (e: Event) => {
+  private readonly [handleClick] = (e: Event) => {
     e.preventDefault();
     push(this[to]);
   };
