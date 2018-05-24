@@ -26,7 +26,7 @@ const observableFields = () => {
     states();
     computed();
 
-    it('should call _didUpdate() with proper prevProperties and prevState', async () => {
+    it('should call [didUpdate]() with proper prevProperties and prevState', async () => {
       const spy = jasmine.createSpy('OnUpdate');
 
       class Test extends CorpusculeElement {
