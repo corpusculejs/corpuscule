@@ -8,7 +8,7 @@ import {registerAndMount} from '../utils';
 
 const didMethods = () => {
   describe('didMethods', () => {
-    it('should call _didMount() callback on mounting', () => {
+    it('should call [didMount]() callback on mounting', () => {
       const spy = jasmine.createSpy('OnMount');
 
       class Test extends CorpusculeElement {
@@ -27,7 +27,7 @@ const didMethods = () => {
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
-    it('should call _didUnmount() callback on unmounting', () => {
+    it('should call [didUnmount]() callback on unmounting', () => {
       const spy = jasmine.createSpy('OnUnmount');
 
       class Test extends CorpusculeElement {
@@ -48,7 +48,7 @@ const didMethods = () => {
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
-    it('should call _didUpdate() on every update', async () => {
+    it('should call [didUpdate]() on every update', async () => {
       const spy = jasmine.createSpy('OnUpdate');
 
       class Test extends CorpusculeElement {
