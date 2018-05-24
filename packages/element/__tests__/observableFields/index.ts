@@ -45,16 +45,17 @@ const observableFields = () => {
         }
 
         protected static get [stateMap](): StateDescriptorMap<any> {
-          return ['__state'];
+          return ['state'];
         }
 
         public attr: string = 'zeroAttr';
         public prop: string = 'zeroProp';
 
-        private __state: string = 'zeroState';
+        // tslint:disable-next-line:no-unused-variable
+        private state: string = 'zeroState';
 
         public updateState(str: string): void {
-          this.__state = str;
+          this.state = str;
         }
 
         protected [didUpdate](...args: any[]): void {
@@ -75,7 +76,7 @@ const observableFields = () => {
           attr: 'zeroAttr',
           prop: 'zeroProp',
         }, {
-          __state: 'zeroState',
+          state: 'zeroState',
         });
 
       el.prop = 'oneProp';
@@ -84,7 +85,7 @@ const observableFields = () => {
         attr: 'oneAttr',
         prop: 'zeroProp',
       }, {
-        __state: 'zeroState',
+        state: 'zeroState',
       });
 
       el.updateState('oneState');
@@ -93,7 +94,7 @@ const observableFields = () => {
         attr: 'oneAttr',
         prop: 'oneProp',
       }, {
-        __state: 'zeroState',
+        state: 'zeroState',
       });
 
       el.setAttribute('attr', 'twoAttr');
@@ -102,7 +103,7 @@ const observableFields = () => {
         attr: 'oneAttr',
         prop: 'oneProp',
       }, {
-        __state: 'oneState',
+        state: 'oneState',
       });
     });
   });

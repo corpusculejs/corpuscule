@@ -13,17 +13,17 @@ const states = () => {
         public static is: string = `x-${uuid()}`;
 
         protected static get [stateMap](): StateDescriptorMap<any> {
-          return ['__index'];
+          return ['index'];
         }
 
-        private __index: number = 1;
+        private index: number = 1;
 
         public updateIndexTo(i: number): void {
-          this.__index = i;
+          this.index = i;
         }
 
         protected [render](): TemplateResult {
-          return html`<span id="node">#${this.__index}</span>`;
+          return html`<span id="node">#${this.index}</span>`;
         }
       }
 
