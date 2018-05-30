@@ -1,4 +1,5 @@
 const packages = {
+  context: ['index'],
   element: [
     'index',
     'decorators',
