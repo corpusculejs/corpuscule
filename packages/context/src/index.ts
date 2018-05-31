@@ -1,15 +1,12 @@
 // tslint:disable:max-classes-per-file
-import * as $$ from './tokens/internal';
-import {value} from './tokens/lifecycle';
 import {
   Constructor,
   Consume,
   ContextDetails,
   CustomElement,
+  LocalProperties,
   Unsubscribe,
 } from './types';
-
-export {value};
 
 const crypto = window.crypto || (window as any).msCrypto;
 
@@ -22,6 +19,16 @@ const randomString = () => {
 
 const createContext = <T>(defaultValue?: T) => {
   const eventName = randomString();
+
+  const $$ = { // tslint:disable-line:no-object-literal-type-assertion
+    consume: Symbol(),
+    consumers: Symbol(),
+    subscribe: Symbol(),
+    unsubscribe: Symbol(),
+    value: Symbol(),
+  } as LocalProperties;
+
+  const value: 'value' = Symbol('providingValue') as any;
 
   const provider = <U extends Constructor<CustomElement>>(target: U): U =>
     class Provider extends target {
@@ -117,6 +124,7 @@ const createContext = <T>(defaultValue?: T) => {
   return {
     consumer,
     provider,
+    value,
   };
 };
 
