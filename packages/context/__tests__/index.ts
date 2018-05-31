@@ -1,14 +1,13 @@
 // tslint:disable:max-classes-per-file
 // tslint:disable-next-line:no-implicit-dependencies
 import uuid from 'uuid/v4';
-import createContext, {value} from '../src';
-import {consume, consumers} from '../src/tokens/internal';
+import createContext from '../src';
 import {BaseConsumer, BaseProvider, registerAndMount} from './utils';
 
 describe('@corpuscule/context', () => {
   describe('createContext', () => {
     it('should create context', () => {
-      const {provider, consumer} = createContext();
+      const {provider, consumer, value} = createContext();
 
       @provider
       class TestProvider extends BaseProvider {
@@ -33,7 +32,7 @@ describe('@corpuscule/context', () => {
     });
 
     it('should provide context for all consumers', () => {
-      const {provider, consumer} = createContext();
+      const {provider, consumer, value} = createContext();
 
       @provider
       class TestProvider extends BaseProvider {
@@ -67,7 +66,7 @@ describe('@corpuscule/context', () => {
     });
 
     it('should allow to use default value for context', () => {
-      const {provider, consumer} = createContext(5);
+      const {provider, consumer, value} = createContext(5);
 
       @provider
       class TestProvider extends BaseProvider {
@@ -90,7 +89,7 @@ describe('@corpuscule/context', () => {
     });
 
     it('should allow to set value dynamically', () => {
-      const {provider, consumer} = createContext();
+      const {provider, consumer, value} = createContext();
 
       @provider
       class TestProvider extends BaseProvider {
@@ -121,7 +120,7 @@ describe('@corpuscule/context', () => {
     it('should call connectedCallback() and disconnectedCallback() of user\'s class', () => {
       const connectedSpy = jasmine.createSpy('onConnect');
       const disconnectedSpy = jasmine.createSpy('onDisconnect');
-      const {provider, consumer} = createContext();
+      const {provider, consumer, value} = createContext();
 
       @provider
       class TestProvider extends BaseProvider {
@@ -166,7 +165,7 @@ describe('@corpuscule/context', () => {
     });
 
     it('should stop providing value to disconnected consumers', () => {
-      const {provider, consumer} = createContext();
+      const {provider, consumer, value} = createContext();
 
       @provider
       class TestProvider extends BaseProvider {
@@ -195,11 +194,14 @@ describe('@corpuscule/context', () => {
         [TestConsumer2.is, TestConsumer2],
       );
 
-      expect((p as any)[consumers]).toEqual([(c1 as any)[consume], (c2 as any)[consume]]);
+      expect(c1[value]).toBe(2);
+      expect(c2[value]).toBe(2);
 
       c1.remove();
+      p[value] = 3;
 
-      expect((p as any)[consumers]).toEqual([(c2 as any)[consume]]);
+      expect(c2[value]).toBe(3);
+      expect(c1[value]).toBe(2);
     });
   });
 });

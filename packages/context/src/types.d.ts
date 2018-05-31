@@ -16,3 +16,11 @@ export interface ContextDetails<T> {
   readonly consume: Consume<T>;
   unsubscribe?: Unsubscribe<T>; // tslint:disable-line:readonly-keyword
 }
+
+export interface LocalProperties {
+  readonly consume: unique symbol;
+  readonly consumers: unique symbol;
+  readonly subscribe: unique symbol;
+  readonly unsubscribe: unique symbol;
+  readonly value: unique symbol;
+}
