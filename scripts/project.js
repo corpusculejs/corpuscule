@@ -1,18 +1,18 @@
 const packages = {
-  context: ['index'],
+  // context: ["index"],
   element: [
-    'index',
-    'decorators',
+    "index",
+    "decorators",
   ],
-  redux: [
-    'index',
-    'decorators',
-  ],
-  router: [
-    'index',
-    'decorators',
-  ],
-  styles: ['index'],
+  // redux: [
+  //   "index",
+  //   "decorators",
+  // ],
+  // router: [
+  //   "index",
+  //   "decorators",
+  // ],
+  // styles: ["index"],
 };
 
 module.exports = packages;
