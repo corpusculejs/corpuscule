@@ -1,5 +1,5 @@
 // tslint:disable:max-classes-per-file
-import {Constructor} from '../src/types';
+import {Constructor} from "../src";
 
 export class BaseConsumer extends HTMLElement {
 }
@@ -9,13 +9,13 @@ export class BaseProvider extends HTMLElement {
 
   public constructor() {
     super();
-    this.attachShadow({mode: 'open'});
+    this.attachShadow({mode: "open"});
   }
 
   public connectedCallback(): void {
     if (this.consumers) {
       for (const consumer of this.consumers) {
-        const div = document.createElement('div');
+        const div = document.createElement("div");
         div.appendChild(consumer);
         this.shadowRoot!.appendChild(div);
       }
@@ -28,6 +28,7 @@ export function registerAndMount<T extends BaseProvider, U extends BaseConsumer>
   consumer: [string, Constructor<U>],
 ): [T, U];
 
+// tslint:disable-next-line:naming-convention
 export function registerAndMount<T extends BaseProvider, U1 extends BaseConsumer, U2 extends BaseConsumer>(
   provider: [string, Constructor<T>],
   consumer1: [string, Constructor<U1>],
