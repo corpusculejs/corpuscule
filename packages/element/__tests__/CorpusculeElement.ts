@@ -1,12 +1,12 @@
-import lifecycle from './lifecycle';
-import observableFields from './observableFields';
+import lifecycle from "./lifecycle";
+import observableFields from "./observableFields";
 
 const timeRemaining = () => 1;
 
 const corpusculeElement = () => {
-  describe('CorpusculeElement', () => {
+  describe("CorpusculeElement", () => {
     beforeAll(() => {
-      spyOn(window as any, 'requestIdleCallback').and.callFake((next: Function) => {
+      spyOn(window as any, "requestIdleCallback").and.callFake((next: Function) => {
         next({timeRemaining});
       });
     });

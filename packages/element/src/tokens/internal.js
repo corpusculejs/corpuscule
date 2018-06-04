@@ -1,0 +1,14 @@
+export const attributesRegistry = Symbol("attributesRegistry");
+export const initAttributes = Symbol("initAttributes");
+export const initComputed = Symbol("initComputed");
+export const initProperties = Symbol("initProperties");
+export const initStates = Symbol("initStates");
+export const invalidate = Symbol("invalidate");
+export const isMount = Symbol("isMount");
+export const previousProperties = Symbol("previousProperties");
+export const previousStates = Symbol("previousStates");
+export const properties = Symbol("properties");
+export const rendering = Symbol("rendering");
+export const root = Symbol("root");
+export const scheduler = Symbol("scheduler");
+export const states = Symbol("states");

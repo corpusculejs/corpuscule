@@ -1,24 +1,24 @@
 // tslint:disable:await-promise max-classes-per-file
-import {TemplateResult} from 'lit-html';
-import {html} from 'lit-html/lib/lit-extended';
+import {TemplateResult} from "lit-html";
+import {html} from "lit-html/lib/lit-extended";
 // tslint:disable-next-line:no-implicit-dependencies
-import uuid from 'uuid/v4';
+import uuid from "uuid/v4";
 import CorpusculeElement, {
   AttributeDescriptorMap,
   attributeMap,
   render,
-} from '../../src';
-import {registerAndMount} from '../utils';
+} from "../../src";
+import {registerAndMount} from "../utils";
 
 const attributes = () => {
-  describe('attributes', () => {
-    it('should update on attribute change', () => {
+  describe("attributes", () => {
+    it("should update on attribute change", () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
         protected static get [attributeMap](): AttributeDescriptorMap<any> {
           return {
-            index: ['idx', Number, {pure: true}],
+            index: ["idx", Number, {pure: true}],
           };
         }
 
@@ -28,29 +28,29 @@ const attributes = () => {
           return html`<span id="node">${
             this.index !== undefined
               ? `#${this.index}`
-              : 'Nothing'
+              : "Nothing"
             }</span>`;
         }
       }
 
       const el = registerAndMount(Test.is, Test);
 
-      const node = el.shadowRoot!.getElementById('node')!;
+      const node = el.shadowRoot!.getElementById("node")!;
 
-      expect(node.textContent).toBe('Nothing');
+      expect(node.textContent).toBe("Nothing");
 
-      el.setAttribute('idx', '2');
+      el.setAttribute("idx", "2");
 
-      expect(node.textContent).toBe('#2');
+      expect(node.textContent).toBe("#2");
     });
 
-    it('should set default attribute value if no attribute is set before mounting', () => {
+    it("should set default attribute value if no attribute is set before mounting", () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
         protected static get [attributeMap](): AttributeDescriptorMap<any> {
           return {
-            index: ['idx', Number],
+            index: ["idx", Number],
           };
         }
 
@@ -62,19 +62,19 @@ const attributes = () => {
       }
 
       const el = registerAndMount(Test.is, Test);
-      expect(el.getAttribute('idx')).toBe('2');
+      expect(el.getAttribute("idx")).toBe("2");
 
-      const node = el.shadowRoot!.getElementById('node')!;
-      expect(node.textContent).toBe('#2');
+      const node = el.shadowRoot!.getElementById("node")!;
+      expect(node.textContent).toBe("#2");
     });
 
-    it('should set value from attribute value, if any values are set before mounting', () => {
+    it("should set value from attribute value, if any values are set before mounting", () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
         protected static get [attributeMap](): AttributeDescriptorMap<any> {
           return {
-            index: ['idx', Number],
+            index: ["idx", Number],
           };
         }
 
@@ -86,19 +86,19 @@ const attributes = () => {
       }
 
       const el = registerAndMount(Test.is, Test, (e) => {
-        e.setAttribute('idx', '2');
+        e.setAttribute("idx", "2");
       });
 
       expect(el.index).toBe(2);
     });
 
-    it('should set attribute value on attribute property change', () => {
+    it("should set attribute value on attribute property change", () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
         protected static get [attributeMap](): AttributeDescriptorMap<any> {
           return {
-            index: ['idx', Number],
+            index: ["idx", Number],
           };
         }
 
@@ -113,18 +113,18 @@ const attributes = () => {
 
       el.index = 2;
 
-      expect(el.getAttribute('idx')).toBe('2');
+      expect(el.getAttribute("idx")).toBe("2");
     });
 
-    it('should avoid re-render if attribute values are identical and pureness is not disabled', () => {
-      const spy = jasmine.createSpy('OnRender');
+    it("should avoid re-render if attribute values are identical and pureness is not disabled", () => {
+      const spy = jasmine.createSpy("OnRender");
 
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
         protected static get [attributeMap](): AttributeDescriptorMap<any> {
           return {
-            index: ['idx', Number],
+            index: ["idx", Number],
           };
         }
 
@@ -144,15 +144,15 @@ const attributes = () => {
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
-    it('should re-render if property pureness is disabled', () => {
-      const spy = jasmine.createSpy('OnRender');
+    it("should re-render if property pureness is disabled", () => {
+      const spy = jasmine.createSpy("OnRender");
 
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
         protected static get [attributeMap](): AttributeDescriptorMap<any> {
           return {
-            index: ['idx', Number, {pure: false}],
+            index: ["idx", Number, {pure: false}],
           };
         }
 
@@ -172,13 +172,13 @@ const attributes = () => {
       expect(spy).toHaveBeenCalledTimes(2);
     });
 
-    it('should add and remove attribute if it has boolean type', () => {
+    it("should add and remove attribute if it has boolean type", () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
         protected static get [attributeMap](): AttributeDescriptorMap<any> {
           return {
-            has: ['has', Boolean],
+            has: ["has", Boolean],
           };
         }
 
@@ -191,24 +191,24 @@ const attributes = () => {
 
       const el = registerAndMount(Test.is, Test);
 
-      expect(el.hasAttribute('has')).not.toBeTruthy();
+      expect(el.hasAttribute("has")).not.toBeTruthy();
 
       el.has = true;
 
-      expect(el.hasAttribute('has')).toBeTruthy();
+      expect(el.hasAttribute("has")).toBeTruthy();
 
       el.has = false;
 
-      expect(el.hasAttribute('has')).not.toBeTruthy();
+      expect(el.hasAttribute("has")).not.toBeTruthy();
     });
 
-    it('should throw error, if attribute value does not fit guard', () => {
+    it("should throw error, if attribute value does not fit guard", () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
         protected static get [attributeMap](): AttributeDescriptorMap<any> {
           return {
-            index: ['idx', Number],
+            index: ["idx", Number],
           };
         }
 
@@ -222,8 +222,8 @@ const attributes = () => {
       const el = registerAndMount(Test.is, Test);
 
       expect(() => {
-        (el as any).index = 'string';
-      }).toThrow(new TypeError('Value applied to "index" is not Number'));
+        (el as any).index = "string";
+      }).toThrow(new TypeError("Value applied to \"index\" is not Number"));
     });
   });
 };

@@ -1,8 +1,8 @@
 // tslint:disable:await-promise max-classes-per-file
-import {TemplateResult} from 'lit-html';
-import {html} from 'lit-html/lib/lit-extended';
+import {TemplateResult} from "lit-html";
+import {html} from "lit-html/lib/lit-extended";
 // tslint:disable-next-line:no-implicit-dependencies
-import uuid from 'uuid/v4';
+import uuid from "uuid/v4";
 import CorpusculeElement, {
   deriveStateFromProps,
   PropertyDescriptorMap,
@@ -10,13 +10,13 @@ import CorpusculeElement, {
   render,
   shouldUpdate,
   StateDescriptorMap, stateMap
-} from '../../src';
-import {registerAndMount} from '../utils';
+} from "../../src";
+import {registerAndMount} from "../utils";
 
 const methods = () => {
-  describe('static methods', () => {
-    it('should disable updating if [shouldUpdate]() returns false', () => {
-      const spy = jasmine.createSpy('OnRender');
+  describe("static methods", () => {
+    it("should disable updating if [shouldUpdate]() returns false", () => {
+      const spy = jasmine.createSpy("OnRender");
 
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
@@ -47,8 +47,8 @@ const methods = () => {
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
-    it('should not consider result of [shouldUpdate]() if update is forced', async () => {
-      const spy = jasmine.createSpy('OnRender');
+    it("should not consider result of [shouldUpdate]() if update is forced", async () => {
+      const spy = jasmine.createSpy("OnRender");
 
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
@@ -79,7 +79,7 @@ const methods = () => {
       expect(spy).toHaveBeenCalledTimes(2);
     });
 
-    it('should recalculate state on props change if [deriveStateFromProps]() is defined', () => {
+    it("should recalculate state on props change if [deriveStateFromProps]() is defined", () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
@@ -90,7 +90,7 @@ const methods = () => {
         }
 
         protected static get [stateMap](): StateDescriptorMap<any> {
-          return ['state'];
+          return ["state"];
         }
 
         protected static [deriveStateFromProps]({prop: nextProp}: any, {prop: prevProp}: any): any {
@@ -119,7 +119,7 @@ const methods = () => {
       expect(el.state).toBeTruthy();
     });
 
-    it('should get the promise to wait until component\'s renderingProcess is done', () => {
+    it("should get the promise to wait until component's renderingProcess is done", () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
@@ -135,7 +135,7 @@ const methods = () => {
       expect(el.renderingProcess).toEqual(jasmine.any(Promise));
     });
 
-    it('should get the promise even if there is no renderingProcess yet', () => {
+    it("should get the promise even if there is no renderingProcess yet", () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
