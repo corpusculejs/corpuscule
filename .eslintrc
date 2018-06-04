@@ -6,6 +6,7 @@
     "es6": true
   },
   "rules": {
+    "callback-return": "off",
     "global-require": "off"
   }
 }
