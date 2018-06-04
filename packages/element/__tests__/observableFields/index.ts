@@ -1,8 +1,8 @@
 // tslint:disable:await-promise max-classes-per-file
-import {TemplateResult} from 'lit-html';
-import {html} from 'lit-html/lib/lit-extended';
+import {TemplateResult} from "lit-html";
+import {html} from "lit-html/lib/lit-extended";
 // tslint:disable-next-line:no-implicit-dependencies
-import uuid from 'uuid/v4';
+import uuid from "uuid/v4";
 import CorpusculeElement, {
   AttributeDescriptorMap,
   attributeMap,
@@ -12,29 +12,29 @@ import CorpusculeElement, {
   render,
   StateDescriptorMap,
   stateMap,
-} from '../../src';
-import {registerAndMount} from '../utils';
-import attributes from './attributes';
-import computed from './computed';
-import properties from './properties';
-import states from './states';
+} from "../../src";
+import {registerAndMount} from "../utils";
+import attributes from "./attributes";
+import computed from "./computed";
+import properties from "./properties";
+import states from "./states";
 
 const observableFields = () => {
-  describe('observable fields', () => {
+  describe("observable fields", () => {
     attributes();
     properties();
     states();
     computed();
 
-    it('should call [didUpdate]() with proper prevProperties and prevState', async () => {
-      const spy = jasmine.createSpy('OnUpdate');
+    it("should call [didUpdate]() with proper prevProperties and prevState", async () => {
+      const spy = jasmine.createSpy("OnUpdate");
 
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
         protected static get [attributeMap](): AttributeDescriptorMap<any> {
           return {
-            attr: ['attr', String],
+            attr: ["attr", String],
           };
         }
 
@@ -45,14 +45,14 @@ const observableFields = () => {
         }
 
         protected static get [stateMap](): StateDescriptorMap<any> {
-          return ['state'];
+          return ["state"];
         }
 
-        public attr: string = 'zeroAttr';
-        public prop: string = 'zeroProp';
+        public attr: string = "zeroAttr";
+        public prop: string = "zeroProp";
 
         // tslint:disable-next-line:no-unused-variable
-        private state: string = 'zeroState';
+        private state: string = "zeroState";
 
         public updateState(str: string): void {
           this.state = str;
@@ -69,41 +69,41 @@ const observableFields = () => {
 
       const el = registerAndMount(Test.is, Test);
 
-      el.setAttribute('attr', 'oneAttr');
+      el.setAttribute("attr", "oneAttr");
 
       expect(spy)
         .toHaveBeenCalledWith({
-          attr: 'zeroAttr',
-          prop: 'zeroProp',
+          attr: "zeroAttr",
+          prop: "zeroProp",
         }, {
-          state: 'zeroState',
+          state: "zeroState",
         });
 
-      el.prop = 'oneProp';
+      el.prop = "oneProp";
 
       expect(spy).toHaveBeenCalledWith({
-        attr: 'oneAttr',
-        prop: 'zeroProp',
+        attr: "oneAttr",
+        prop: "zeroProp",
       }, {
-        state: 'zeroState',
+        state: "zeroState",
       });
 
-      el.updateState('oneState');
+      el.updateState("oneState");
 
       expect(spy).toHaveBeenCalledWith({
-        attr: 'oneAttr',
-        prop: 'oneProp',
+        attr: "oneAttr",
+        prop: "oneProp",
       }, {
-        state: 'zeroState',
+        state: "zeroState",
       });
 
-      el.setAttribute('attr', 'twoAttr');
+      el.setAttribute("attr", "twoAttr");
 
       expect(spy).toHaveBeenCalledWith({
-        attr: 'oneAttr',
-        prop: 'oneProp',
+        attr: "oneAttr",
+        prop: "oneProp",
       }, {
-        state: 'oneState',
+        state: "oneState",
       });
     });
   });
