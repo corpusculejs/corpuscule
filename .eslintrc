@@ -1,0 +1,12 @@
+{
+  "extends": "eslint-config-poetez",
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true
+  },
+  "rules": {
+    "callback-return": "off",
+    "global-require": "off"
+  }
+}

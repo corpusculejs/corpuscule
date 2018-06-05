@@ -1,26 +1,26 @@
 // tslint:disable:await-promise max-classes-per-file
-import {TemplateResult} from 'lit-html';
-import {html} from 'lit-html/lib/lit-extended';
+import {TemplateResult} from "lit-html";
+import {html} from "lit-html/lib/lit-extended";
 // tslint:disable-next-line:no-implicit-dependencies
-import uuid from 'uuid/v4';
+import uuid from "uuid/v4";
 import CorpusculeElement, {
   ComputedDescriptorMap,
   computedMap,
   render,
-} from '../../src';
-import {registerAndMount} from '../utils';
+} from "../../src";
+import {registerAndMount} from "../utils";
 
 const computed = () => {
-  describe('computed', () => {
-    it('should memoize result of processed getter', () => {
-      const spy = jasmine.createSpy('OnComputed');
+  describe("computed", () => {
+    it("should memoize result of processed getter", () => {
+      const spy = jasmine.createSpy("OnComputed");
 
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
         protected static get [computedMap](): ComputedDescriptorMap<any> {
           return {
-            comp: ['first', 'second'],
+            comp: ["first", "second"],
           };
         }
 
@@ -47,15 +47,15 @@ const computed = () => {
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
-    it('should reset result on watching property change', () => {
-      const spy = jasmine.createSpy('OnComputed');
+    it("should reset result on watching property change", () => {
+      const spy = jasmine.createSpy("OnComputed");
 
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
         protected static get [computedMap](): ComputedDescriptorMap<any> {
           return {
-            comp: ['first', 'second'],
+            comp: ["first", "second"],
           };
         }
 
@@ -87,13 +87,13 @@ const computed = () => {
       expect(spy).toHaveBeenCalledTimes(2);
     });
 
-    it('should throw an error if computed variable is not defined', () => {
+    it("should throw an error if computed variable is not defined", () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
         protected static get [computedMap](): ComputedDescriptorMap<any> {
           return {
-            comp: ['first', 'second'],
+            comp: ["first", "second"],
           };
         }
 
@@ -107,16 +107,16 @@ const computed = () => {
       }
 
       expect(() => registerAndMount(Test.is, Test))
-        .toThrowError('Property "comp" is not defined or is not a getter');
+        .toThrowError("Property \"comp\" is not defined or is not a getter");
     });
 
-    it('should throw an error if computed variable is not a getter', () => {
+    it("should throw an error if computed variable is not a getter", () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
         protected static get [computedMap](): ComputedDescriptorMap<any> {
           return {
-            comp: ['first', 'second'],
+            comp: ["first", "second"],
           };
         }
 
@@ -134,16 +134,16 @@ const computed = () => {
       }
 
       expect(() => registerAndMount(Test.is, Test))
-        .toThrowError('Property "comp" is not defined or is not a getter');
+        .toThrowError("Property \"comp\" is not defined or is not a getter");
     });
 
-    it('should allow to define property in any place of prototype chain', () => {
+    it("should allow to define property in any place of prototype chain", () => {
       class Parent extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
         protected static get [computedMap](): ComputedDescriptorMap<any> {
           return {
-            comp: ['first'],
+            comp: ["first"],
           };
         }
 
@@ -158,7 +158,8 @@ const computed = () => {
         }
       }
 
-      class Child extends Parent {}
+      class Child extends Parent {
+      }
 
       const el = registerAndMount(Child.is, Child);
 

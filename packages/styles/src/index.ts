@@ -1,8 +1,8 @@
-import CorpusculeElement, {createRoot} from '@corpuscule/element';
-import {loading} from './tokens';
-import {Constructor} from './types';
+import CorpusculeElement, {createRoot} from "@corpuscule/element";
+import {loading} from "./tokens";
+import {Constructor} from "./types";
 
-export {createUrl} from './utils';
+export {createUrl} from "./utils";
 
 const stylePattern = /[{}]/;
 
@@ -23,18 +23,18 @@ const styles = (...pathsOrStyles: string[]) => <T extends Constructor<Corpuscule
 
     protected [createRoot](): HTMLDivElement {
       const root = super[createRoot]();
-      const layout = document.createElement('div');
+      const layout = document.createElement("div");
       const loadingProcesses: Array<Promise<void>> = [];
 
       for (const pathOrStyle of pathsOrStyles) {
         if (stylePattern.test(pathOrStyle)) {
-          const style = document.createElement('style');
+          const style = document.createElement("style");
           style.textContent = pathOrStyle;
           root.appendChild(style);
         } else {
-          const link = document.createElement('link');
-          link.rel = 'stylesheet';
-          link.type = 'text/css';
+          const link = document.createElement("link");
+          link.rel = "stylesheet";
+          link.type = "text/css";
           link.href = pathOrStyle;
 
           loadingProcesses.push(new Promise<void>((resolve) => {

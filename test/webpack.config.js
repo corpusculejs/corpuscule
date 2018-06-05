@@ -1,23 +1,24 @@
-const {resolve} = require('path');
+/* eslint-disable sort-keys */
+const {resolve} = require("path");
 
 const cwd = process.cwd();
 const root = path => resolve(cwd, path);
 
 module.exports = {
-  devtool: 'inline-source-map',
-  mode: 'development',
+  devtool: "inline-source-map",
+  mode: "development",
   resolve: {
     extensions: [
-      '.js',
-      '.ts',
+      ".js",
+      ".ts",
     ],
   },
   module: {
     rules: [
       {
-        test: /\.ts/,
-        loader: 'istanbul-instrumenter-loader',
-        enforce: 'post',
+        test: /\.js/,
+        loader: "istanbul-instrumenter-loader",
+        enforce: "post",
         options: {
           esModules: true,
         },
@@ -27,9 +28,9 @@ module.exports = {
         test: /\.ts/,
         use: [
           {
-            loader: 'ts-loader',
+            loader: "ts-loader",
             options: {
-              configFile: root('tsconfig.test.json'),
+              configFile: root("tsconfig.json"),
             },
           },
         ],
