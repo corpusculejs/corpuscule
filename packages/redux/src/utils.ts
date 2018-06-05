@@ -1,6 +1,6 @@
 // tslint:disable:no-invalid-this
-import {Action, Store} from 'redux';
-import {DispatcherRegistry, PropertyGetter} from './types';
+import {Action, Store} from "redux";
+import {DispatcherRegistry, PropertyGetter} from "./types";
 
 export const initDispatchers = <S, A extends Action>(
   {prototype}: any,

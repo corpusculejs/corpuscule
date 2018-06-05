@@ -1,8 +1,8 @@
 // tslint:disable:no-invalid-this
-import {Action, Store, Unsubscribe} from 'redux';
-import {dispatcherMap, storedMap, unsubscribe} from './tokens';
-import {PropertyGetter, ReduxConstructor} from './types';
-import {initDispatchers, updateStoredProperties} from './utils';
+import {Action, Store, Unsubscribe} from "redux";
+import {dispatcherMap, storedMap, unsubscribe} from "./tokens";
+import {PropertyGetter, ReduxConstructor} from "./types";
+import {initDispatchers, updateStoredProperties} from "./utils";
 
 export {dispatcherMap, storedMap};
 
@@ -15,7 +15,7 @@ const createReduxConnectionUtils = () => {
 
   const connectReduxStore = <S, T extends ReduxConstructor<S>>(target: T): T => {
     if (!currentStore) {
-      throw new Error('Store is not provided');
+      throw new Error("Store is not provided");
     }
 
     if (target[dispatcherMap]) {
