@@ -4,7 +4,8 @@
   "scripts": {
     "bootstrap": "lerna bootstrap",
     "build": "node scripts/build.js",
-    "lint:packages": "tslint \"packages/**/*.ts\" -e \"packages/**/+(node_modules|dist)/**/*\" -c tslint.json -p tsconfig.json -t verbose",
+    "lint:es": "eslint packages/**/*.js",
+    "lint:dts": "tslint \"packages/**/*.ts\" -e \"packages/**/+(node_modules|dist)/**/*\" -c tslint.json -p tsconfig.json -t verbose",
     "prepare": "npm run bootstrap && npm run lint:packages && npm run build",
     "precommit": "lint-staged",
     "test": "karma start test/karma.conf.js"
@@ -20,8 +21,11 @@
   },
   "homepage": "https://github.com/corpusculejs/corpuscule#readme",
   "devDependencies": {
-    "@types/jasmine": "^2.8.7",
+    "@types/jasmine": "^2.8.8",
+    "@types/uuid": "^3.4.3",
     "codecov": "^3.0.2",
+    "eslint": "^5.0.0-alpha.4",
+    "eslint-config-poetez": "https://github.com/Lodin/eslint-config-poetez/releases/download/0.1.0/eslint-config-poetez-0.1.0.tgz",
     "husky": "^0.14.3",
     "istanbul-instrumenter-loader": "^3.0.1",
     "jasmine-core": "^3.1.0",
@@ -29,7 +33,6 @@
     "karma-chrome-launcher": "^2.2.0",
     "karma-coverage-istanbul-reporter": "^2.0.0",
     "karma-jasmine": "^1.1.2",
-    "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^3.0.0",
     "lerna": "^2.11.0",
     "lint-staged": "^7.1.1",
@@ -38,11 +41,11 @@
     "puppeteer": "^1.4.0",
     "rimraf": "^2.6.2",
     "rollup": "^0.59.1",
-    "rollup-plugin-typescript2": "^0.14.0",
+    "rollup-plugin-babel": "^4.0.0-beta.4",
     "ts-loader": "^4.3.0",
     "tslint": "^5.10.0",
     "tslint-config-poetez": "^1.1.1",
-    "typescript": "^2.9.0-rc",
+    "typescript": "^2.9.1",
     "uuid": "^3.2.1",
     "webpack": "^4.8.3"
   }
