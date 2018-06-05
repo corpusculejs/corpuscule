@@ -1,7 +1,7 @@
-import UniversalRouter, {ActionContext, Options, Params, Route} from 'universal-router';
+import UniversalRouter, {ActionContext, Options, Params, Route} from "universal-router";
 
 const resolveRoute = (context: ActionContext, params: Params): [any, ActionContext] | undefined => {
-  if (typeof context.route.action === 'function') {
+  if (typeof context.route.action === "function") {
     return [context.route.action(context, params), context];
   }
 

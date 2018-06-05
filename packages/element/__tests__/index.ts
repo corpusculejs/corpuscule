@@ -1,7 +1,7 @@
-import corpusculeElement from './CorpusculeElement';
-import decorators from './decorators';
+import corpusculeElement from "./CorpusculeElement";
+import decorators from "./decorators";
 
-describe('@corpuscule/element', () => {
+describe("@corpuscule/element", () => {
   corpusculeElement();
   decorators();
 });

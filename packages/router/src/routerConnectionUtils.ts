@@ -1,6 +1,6 @@
-import UniversalRouter, {ActionContext, Route} from 'universal-router';
-import {routeNode, updateRoute} from './tokens';
-import {RouterConstructor} from './types';
+import UniversalRouter, {ActionContext, Route} from "universal-router";
+import {routeNode, updateRoute} from "./tokens";
+import {RouterConstructor} from "./types";
 
 export const createRouterConnectionUtils = () => {
   let currentRouter: UniversalRouter;
@@ -11,18 +11,18 @@ export const createRouterConnectionUtils = () => {
 
   const connectRouter = (routes: ReadonlyArray<Route>) => <T extends RouterConstructor>(target: T): T => {
     if (!currentRouter) {
-      throw new Error('Router is not provided');
+      throw new Error("Router is not provided");
     }
 
     const node = target[routeNode];
 
     if (!node) {
-      throw new Error('routerNode is not specified');
+      throw new Error("routerNode is not specified");
     }
 
     return class WithRouter extends target {
       public async connectedCallback(): Promise<void> {
-        window.addEventListener('popstate', this[updateRoute]);
+        window.addEventListener("popstate", this[updateRoute]);
 
         if (super.connectedCallback) {
           super.connectedCallback();
@@ -32,7 +32,7 @@ export const createRouterConnectionUtils = () => {
       }
 
       public disconnectedCallback(): void {
-        window.removeEventListener('popstate', this[updateRoute]);
+        window.removeEventListener("popstate", this[updateRoute]);
 
         if (super.disconnectedCallback) {
           super.disconnectedCallback();
@@ -40,8 +40,8 @@ export const createRouterConnectionUtils = () => {
       }
 
       private [updateRoute] = async (e: PopStateEvent | string) => {
-        const path = typeof e !== 'string'
-          ? (e.state ? e.state.path : '')
+        const path = typeof e !== "string"
+          ? (e.state ? e.state.path : "")
           : e;
 
         const resolved: [any, ActionContext] | undefined = await currentRouter.resolve(path);

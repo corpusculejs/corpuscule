@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
-    "declaration": true,
+    "declaration": false,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "lib": [
@@ -20,7 +20,7 @@
     "target": "esnext"
   },
   "include": [
-    "packages/**/*.ts"
+    "packages/**/*"
   ],
   "exclude": [
     "packages/**/dist",

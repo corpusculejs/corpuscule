@@ -1,16 +1,16 @@
 // tslint:disable:await-promise max-classes-per-file
-import {TemplateResult} from 'lit-html';
-import {html} from 'lit-html/lib/lit-extended';
+import {TemplateResult} from "lit-html";
+import {html} from "lit-html/lib/lit-extended";
 // tslint:disable-next-line:no-implicit-dependencies
-import uuid from 'uuid/v4';
-import CorpusculeElement, {attributeMap, computedMap, propertyMap, render, stateMap} from '../src';
-import {attribute, computed, element, property, state} from '../src/decorators';
-import {mount} from './utils';
+import uuid from "uuid/v4";
+import CorpusculeElement, {attributeMap, computedMap, propertyMap, render, stateMap} from "../src";
+import {attribute, computed, element, property, state} from "../src/decorators";
+import {mount} from "./utils";
 
 const decorators = () => {
-  describe('decorators', () => {
-    describe('@element', () => {
-      it('should init CorpusculeElement', () => {
+  describe("decorators", () => {
+    describe("@element", () => {
+      it("should init CorpusculeElement", () => {
         const is = `x-${uuid()}`;
 
         @element(is)
@@ -26,12 +26,12 @@ const decorators = () => {
         const root = el.shadowRoot;
         expect(root).not.toBeNull();
 
-        const node = root!.getElementById('node');
+        const node = root!.getElementById("node");
         expect(node).not.toBeNull();
-        expect(node!.textContent).toBe('Test content');
+        expect(node!.textContent).toBe("Test content");
       });
 
-      it('should add static "is" to element', () => {
+      it("should add static \"is\" to element", () => {
         const is = `x-${uuid()}`;
 
         @element(is)
@@ -45,13 +45,13 @@ const decorators = () => {
       });
     });
 
-    describe('@attribute', () => {
-      it('should add attribute to element', () => {
+    describe("@attribute", () => {
+      it("should add attribute to element", () => {
         class Test extends CorpusculeElement {
-          @attribute('t', Number)
+          @attribute("t", Number)
           public test: number = 1;
 
-          @attribute('t2', Boolean, {pure: false})
+          @attribute("t2", Boolean, {pure: false})
           public test2: boolean = false;
 
           protected [render](): TemplateResult {
@@ -60,16 +60,16 @@ const decorators = () => {
         }
 
         expect((Test as any)[attributeMap]).toEqual({
-          test: ['t', Number],
-          test2: ['t2', Boolean, {pure: false}],
+          test: ["t", Number],
+          test2: ["t2", Boolean, {pure: false}],
         });
       });
     });
 
-    describe('@property', () => {
-      it('should add property to element', () => {
-        const guard1 = (v: any) => typeof v === 'boolean';
-        const guard2 = (v: any) => typeof v === 'number';
+    describe("@property", () => {
+      it("should add property to element", () => {
+        const guard1 = (v: any) => typeof v === "boolean";
+        const guard2 = (v: any) => typeof v === "number";
 
         class Test extends CorpusculeElement {
           @property()
@@ -94,8 +94,8 @@ const decorators = () => {
       });
     });
 
-    describe('@state', () => {
-      it('should add state property to element', () => {
+    describe("@state", () => {
+      it("should add state property to element", () => {
         class Test extends CorpusculeElement {
           @state
           public test: number = 1;
@@ -109,24 +109,24 @@ const decorators = () => {
         }
 
         expect((Test as any)[stateMap]).toEqual([
-          'test',
-          'test2',
+          "test",
+          "test2",
         ]);
       });
     });
 
-    describe('@computed', () => {
-      it('should add computed property to element', () => {
+    describe("@computed", () => {
+      it("should add computed property to element", () => {
         class Test extends CorpusculeElement {
           public first: number = 1;
           public second: number = 2;
 
-          @computed('first', 'second')
+          @computed("first", "second")
           public get test(): number {
             return this.first + this.second;
           }
 
-          @computed('first', 'second')
+          @computed("first", "second")
           public get test2(): number {
             return this.second - this.first;
           }
@@ -137,8 +137,8 @@ const decorators = () => {
         }
 
         expect((Test as any)[computedMap]).toEqual({
-          test: ['first', 'second'],
-          test2: ['first', 'second'],
+          test: ["first", "second"],
+          test2: ["first", "second"],
         });
       });
     });
