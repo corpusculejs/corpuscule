@@ -3,12 +3,12 @@ import {TemplateResult} from "lit-html";
 import {html} from "lit-html/lib/lit-extended";
 // tslint:disable-next-line:no-implicit-dependencies
 import uuid from "uuid/v4";
+import {defineAndMount} from "../../../../test/utils";
 import CorpusculeElement, {
   AttributeDescriptorMap,
   attributeMap,
   render,
 } from "../../src";
-import {registerAndMount} from "../utils";
 
 const attributes = () => {
   describe("attributes", () => {
@@ -33,7 +33,7 @@ const attributes = () => {
         }
       }
 
-      const el = registerAndMount(Test.is, Test);
+      const el = defineAndMount(Test);
 
       const node = el.shadowRoot!.getElementById("node")!;
 
@@ -61,7 +61,7 @@ const attributes = () => {
         }
       }
 
-      const el = registerAndMount(Test.is, Test);
+      const el = defineAndMount(Test);
       expect(el.getAttribute("idx")).toBe("2");
 
       const node = el.shadowRoot!.getElementById("node")!;
@@ -85,7 +85,7 @@ const attributes = () => {
         }
       }
 
-      const el = registerAndMount(Test.is, Test, (e) => {
+      const el = defineAndMount(Test, (e) => {
         e.setAttribute("idx", "2");
       });
 
@@ -109,7 +109,7 @@ const attributes = () => {
         }
       }
 
-      const el = registerAndMount(Test.is, Test);
+      const el = defineAndMount(Test);
 
       el.index = 2;
 
@@ -137,7 +137,7 @@ const attributes = () => {
         }
       }
 
-      const el = registerAndMount(Test.is, Test);
+      const el = defineAndMount(Test);
 
       el.index = 1;
 
@@ -165,7 +165,7 @@ const attributes = () => {
         }
       }
 
-      const el = registerAndMount(Test.is, Test);
+      const el = defineAndMount(Test);
 
       el.index = 1;
 
@@ -189,7 +189,7 @@ const attributes = () => {
         }
       }
 
-      const el = registerAndMount(Test.is, Test);
+      const el = defineAndMount(Test);
 
       expect(el.hasAttribute("has")).not.toBeTruthy();
 
@@ -219,7 +219,7 @@ const attributes = () => {
         }
       }
 
-      const el = registerAndMount(Test.is, Test);
+      const el = defineAndMount(Test);
 
       expect(() => {
         (el as any).index = "string";

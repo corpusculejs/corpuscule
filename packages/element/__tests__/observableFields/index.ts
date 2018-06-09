@@ -3,6 +3,7 @@ import {TemplateResult} from "lit-html";
 import {html} from "lit-html/lib/lit-extended";
 // tslint:disable-next-line:no-implicit-dependencies
 import uuid from "uuid/v4";
+import {defineAndMount} from "../../../../test/utils";
 import CorpusculeElement, {
   AttributeDescriptorMap,
   attributeMap,
@@ -13,7 +14,6 @@ import CorpusculeElement, {
   StateDescriptorMap,
   stateMap,
 } from "../../src";
-import {registerAndMount} from "../utils";
 import attributes from "./attributes";
 import computed from "./computed";
 import properties from "./properties";
@@ -67,7 +67,7 @@ const observableFields = () => {
         }
       }
 
-      const el = registerAndMount(Test.is, Test);
+      const el = defineAndMount(Test);
 
       el.setAttribute("attr", "oneAttr");
 

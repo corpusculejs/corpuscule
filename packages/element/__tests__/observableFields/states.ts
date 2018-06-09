@@ -3,8 +3,8 @@ import {TemplateResult} from "lit-html";
 import {html} from "lit-html/lib/lit-extended";
 // tslint:disable-next-line:no-implicit-dependencies
 import uuid from "uuid/v4";
+import {defineAndMount} from "../../../../test/utils";
 import CorpusculeElement, {render, StateDescriptorMap, stateMap} from "../../src";
-import {registerAndMount} from "../utils";
 
 const states = () => {
   describe("states", () => {
@@ -27,7 +27,7 @@ const states = () => {
         }
       }
 
-      const el = registerAndMount(Test.is, Test);
+      const el = defineAndMount(Test);
       const node = el.shadowRoot!.getElementById("node")!;
 
       expect(node.textContent).toBe("#1");

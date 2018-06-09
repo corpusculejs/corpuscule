@@ -3,6 +3,7 @@ import {TemplateResult} from "lit-html";
 import {html} from "lit-html/lib/lit-extended";
 // tslint:disable-next-line:no-implicit-dependencies
 import uuid from "uuid/v4";
+import {defineAndMount} from "../../../../test/utils";
 import CorpusculeElement, {
   deriveStateFromProps,
   PropertyDescriptorMap,
@@ -11,7 +12,6 @@ import CorpusculeElement, {
   shouldUpdate,
   StateDescriptorMap, stateMap
 } from "../../src";
-import {registerAndMount} from "../utils";
 
 const methods = () => {
   describe("static methods", () => {
@@ -40,7 +40,7 @@ const methods = () => {
         }
       }
 
-      const el = registerAndMount(Test.is, Test);
+      const el = defineAndMount(Test);
 
       el.num = 2;
 
@@ -72,7 +72,7 @@ const methods = () => {
         }
       }
 
-      const el = registerAndMount(Test.is, Test);
+      const el = defineAndMount(Test);
 
       await el.forceUpdate();
 
@@ -108,7 +108,7 @@ const methods = () => {
         }
       }
 
-      const el = registerAndMount(Test.is, Test);
+      const el = defineAndMount(Test);
 
       el.prop = 3;
 
@@ -128,7 +128,7 @@ const methods = () => {
         }
       }
 
-      const el = registerAndMount(Test.is, Test);
+      const el = defineAndMount(Test);
 
       el.forceUpdate(); // tslint:disable-line:no-floating-promises
 
@@ -144,7 +144,7 @@ const methods = () => {
         }
       }
 
-      registerAndMount(Test.is, Test, (e) => {
+      defineAndMount(Test, (e) => {
         expect(e.renderingProcess).toEqual(jasmine.any(Promise));
       });
     });

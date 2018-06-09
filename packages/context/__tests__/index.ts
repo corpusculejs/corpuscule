@@ -1,8 +1,8 @@
 // tslint:disable:max-classes-per-file
 // tslint:disable-next-line:no-implicit-dependencies
 import uuid from "uuid/v4";
+import {BasicConsumer, BasicProvider, defineAndMountContext} from "../../../test/utils";
 import createContext from "../src";
-import {BaseConsumer, BaseProvider, registerAndMount} from "./utils";
 
 describe("@corpuscule/context", () => {
   describe("createContext", () => {
@@ -10,23 +10,20 @@ describe("@corpuscule/context", () => {
       const {provider, consumer, value} = createContext();
 
       @provider
-      class TestProvider extends BaseProvider {
+      class TestProvider extends BasicProvider {
         public static readonly is: string = `x-${uuid()}`;
 
         protected [value]: number = 2;
       }
 
       @consumer
-      class TestConsumer extends BaseConsumer {
+      class TestConsumer extends BasicConsumer {
         public static readonly is: string = `x-${uuid()}`;
 
         protected [value]?: number;
       }
 
-      const [, c] = registerAndMount(
-        [TestProvider.is, TestProvider],
-        [TestConsumer.is, TestConsumer],
-      );
+      const [, c] = defineAndMountContext(TestProvider, TestConsumer);
 
       expect(c[value]).toBe(2);
     });
@@ -35,31 +32,27 @@ describe("@corpuscule/context", () => {
       const {provider, consumer, value} = createContext();
 
       @provider
-      class TestProvider extends BaseProvider {
+      class TestProvider extends BasicProvider {
         public static readonly is: string = `x-${uuid()}`;
 
         protected [value]: number = 2;
       }
 
       @consumer
-      class TestConsumer1 extends BaseConsumer {
+      class TestConsumer1 extends BasicConsumer {
         public static readonly is: string = `x-${uuid()}`;
 
         protected [value]?: number;
       }
 
       @consumer
-      class TestConsumer2 extends BaseConsumer {
+      class TestConsumer2 extends BasicConsumer {
         public static readonly is: string = `x-${uuid()}`;
 
         protected [value]?: number;
       }
 
-      const [, c1, c2] = registerAndMount(
-        [TestProvider.is, TestProvider],
-        [TestConsumer1.is, TestConsumer1],
-        [TestConsumer2.is, TestConsumer2],
-      );
+      const [, c1, c2] = defineAndMountContext(TestProvider, TestConsumer1, TestConsumer2);
 
       expect(c1[value]).toBe(2);
       expect(c2[value]).toBe(2);
@@ -69,21 +62,18 @@ describe("@corpuscule/context", () => {
       const {provider, consumer, value} = createContext(5);
 
       @provider
-      class TestProvider extends BaseProvider {
+      class TestProvider extends BasicProvider {
         public static readonly is: string = `x-${uuid()}`;
       }
 
       @consumer
-      class TestConsumer extends BaseConsumer {
+      class TestConsumer extends BasicConsumer {
         public static readonly is: string = `x-${uuid()}`;
 
         protected [value]?: number;
       }
 
-      const [, c] = registerAndMount(
-        [TestProvider.is, TestProvider],
-        [TestConsumer.is, TestConsumer],
-      );
+      const [, c] = defineAndMountContext(TestProvider, TestConsumer);
 
       expect(c[value]).toBe(5);
     });
@@ -92,23 +82,20 @@ describe("@corpuscule/context", () => {
       const {provider, consumer, value} = createContext();
 
       @provider
-      class TestProvider extends BaseProvider {
+      class TestProvider extends BasicProvider {
         public static readonly is: string = `x-${uuid()}`;
 
         protected [value]: number = 2;
       }
 
       @consumer
-      class TestConsumer extends BaseConsumer {
+      class TestConsumer extends BasicConsumer {
         public static readonly is: string = `x-${uuid()}`;
 
         protected [value]?: number;
       }
 
-      const [p, c] = registerAndMount(
-        [TestProvider.is, TestProvider],
-        [TestConsumer.is, TestConsumer],
-      );
+      const [p, c] = defineAndMountContext(TestProvider, TestConsumer);
 
       expect(c[value]).toBe(2);
 
@@ -123,7 +110,7 @@ describe("@corpuscule/context", () => {
       const {provider, consumer, value} = createContext();
 
       @provider
-      class TestProvider extends BaseProvider {
+      class TestProvider extends BasicProvider {
         public static readonly is: string = `x-${uuid()}`;
 
         protected [value]: number = 2;
@@ -139,7 +126,7 @@ describe("@corpuscule/context", () => {
       }
 
       @consumer
-      class TestConsumer extends BaseConsumer {
+      class TestConsumer extends BasicConsumer {
         public static readonly is: string = `x-${uuid()}`;
 
         protected [value]?: number;
@@ -153,10 +140,7 @@ describe("@corpuscule/context", () => {
         }
       }
 
-      const [p] = registerAndMount(
-        [TestProvider.is, TestProvider],
-        [TestConsumer.is, TestConsumer],
-      );
+      const [p] = defineAndMountContext(TestProvider, TestConsumer);
 
       document.body.removeChild(p);
 
@@ -168,31 +152,27 @@ describe("@corpuscule/context", () => {
       const {provider, consumer, value} = createContext();
 
       @provider
-      class TestProvider extends BaseProvider {
+      class TestProvider extends BasicProvider {
         public static readonly is: string = `x-${uuid()}`;
 
         protected [value]: number = 2;
       }
 
       @consumer
-      class TestConsumer1 extends BaseConsumer {
+      class TestConsumer1 extends BasicConsumer {
         public static readonly is: string = `x-${uuid()}`;
 
         protected [value]?: number;
       }
 
       @consumer
-      class TestConsumer2 extends BaseConsumer {
+      class TestConsumer2 extends BasicConsumer {
         public static readonly is: string = `x-${uuid()}`;
 
         protected [value]?: number;
       }
 
-      const [p, c1, c2] = registerAndMount(
-        [TestProvider.is, TestProvider],
-        [TestConsumer1.is, TestConsumer1],
-        [TestConsumer2.is, TestConsumer2],
-      );
+      const [p, c1, c2] = defineAndMountContext(TestProvider, TestConsumer1, TestConsumer2);
 
       expect(c1[value]).toBe(2);
       expect(c2[value]).toBe(2);
