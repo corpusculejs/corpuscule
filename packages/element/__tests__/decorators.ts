@@ -3,9 +3,9 @@ import {TemplateResult} from "lit-html";
 import {html} from "lit-html/lib/lit-extended";
 // tslint:disable-next-line:no-implicit-dependencies
 import uuid from "uuid/v4";
+import {mount} from "../../../test/utils";
 import CorpusculeElement, {attributeMap, computedMap, propertyMap, render, stateMap} from "../src";
 import {attribute, computed, element, property, state} from "../src/decorators";
-import {mount} from "./utils";
 
 const decorators = () => {
   describe("decorators", () => {
@@ -20,7 +20,7 @@ const decorators = () => {
           }
         }
 
-        const el = mount(is);
+        const el = mount<Test>(is);
         expect(el).toEqual(jasmine.any(Test));
 
         const root = el.shadowRoot;

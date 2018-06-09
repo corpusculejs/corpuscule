@@ -3,8 +3,8 @@ import {TemplateResult} from "lit-html";
 import {html} from "lit-html/lib/lit-extended";
 // tslint:disable-next-line:no-implicit-dependencies
 import uuid from "uuid/v4";
+import {defineAndMount} from "../../../../test/utils";
 import CorpusculeElement, {PropertyDescriptorMap, propertyMap, render} from "../../src";
-import {registerAndMount} from "../utils";
 
 const properties = () => {
   describe("properties", () => {
@@ -25,7 +25,7 @@ const properties = () => {
         }
       }
 
-      const el = registerAndMount(Test.is, Test);
+      const el = defineAndMount(Test);
       const node = el.shadowRoot!.getElementById("node")!;
 
       expect(node.textContent).toBe("#1");
@@ -52,7 +52,7 @@ const properties = () => {
         }
       }
 
-      const el = registerAndMount(Test.is, Test);
+      const el = defineAndMount(Test);
 
       expect(() => {
         (el as any).str = 1;
@@ -80,7 +80,7 @@ const properties = () => {
         }
       }
 
-      const el = registerAndMount(Test.is, Test);
+      const el = defineAndMount(Test);
 
       el.str = "1";
 
@@ -108,7 +108,7 @@ const properties = () => {
         }
       }
 
-      const el = registerAndMount(Test.is, Test);
+      const el = defineAndMount(Test);
 
       el.str = "1";
 
