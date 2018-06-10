@@ -14,8 +14,9 @@ export interface CustomElement extends HTMLElement {
 
 declare const createContext: <T>(defaultValue?: T) => {
   readonly consumer: <U extends Constructor<CustomElement>>(target: U) => U;
+  readonly contextValue: "contextValue"; // hack to resolve unique symbol widening
   readonly provider: <U extends Constructor<CustomElement>>(target: U) => U;
-  readonly value: "value"; // hack to resolve unique symbol widening
+  readonly providingValue: "providingValue"; // hack to resolve unique symbol widening
 };
 
 export default createContext;

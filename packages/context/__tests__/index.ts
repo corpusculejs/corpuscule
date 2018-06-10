@@ -7,59 +7,73 @@ import createContext from "../src";
 describe("@corpuscule/context", () => {
   describe("createContext", () => {
     it("should create context", () => {
-      const {provider, consumer, value} = createContext();
+      const {
+        consumer,
+        contextValue,
+        provider,
+        providingValue,
+      } = createContext();
 
       @provider
       class TestProvider extends BasicProvider {
         public static readonly is: string = `x-${uuid()}`;
 
-        protected [value]: number = 2;
+        protected [providingValue]: number = 2;
       }
 
       @consumer
       class TestConsumer extends BasicConsumer {
         public static readonly is: string = `x-${uuid()}`;
 
-        protected [value]?: number;
+        protected [contextValue]?: number;
       }
 
       const [, c] = defineAndMountContext(TestProvider, TestConsumer);
 
-      expect(c[value]).toBe(2);
+      expect(c[contextValue]).toBe(2);
     });
 
     it("should provide context for all consumers", () => {
-      const {provider, consumer, value} = createContext();
+      const {
+        consumer,
+        contextValue,
+        provider,
+        providingValue,
+      } = createContext();
 
       @provider
       class TestProvider extends BasicProvider {
         public static readonly is: string = `x-${uuid()}`;
 
-        protected [value]: number = 2;
+        protected [providingValue]: number = 2;
       }
 
       @consumer
       class TestConsumer1 extends BasicConsumer {
         public static readonly is: string = `x-${uuid()}`;
 
-        protected [value]?: number;
+        protected [contextValue]?: number;
       }
 
       @consumer
       class TestConsumer2 extends BasicConsumer {
         public static readonly is: string = `x-${uuid()}`;
 
-        protected [value]?: number;
+        protected [contextValue]?: number;
       }
 
       const [, c1, c2] = defineAndMountContext(TestProvider, TestConsumer1, TestConsumer2);
 
-      expect(c1[value]).toBe(2);
-      expect(c2[value]).toBe(2);
+      expect(c1[contextValue]).toBe(2);
+      expect(c2[contextValue]).toBe(2);
     });
 
     it("should allow to use default value for context", () => {
-      const {provider, consumer, value} = createContext(5);
+      const {
+        consumer,
+        contextValue,
+        provider,
+      } = createContext(5);
 
       @provider
       class TestProvider extends BasicProvider {
@@ -70,50 +84,60 @@ describe("@corpuscule/context", () => {
       class TestConsumer extends BasicConsumer {
         public static readonly is: string = `x-${uuid()}`;
 
-        protected [value]?: number;
+        protected [contextValue]?: number;
       }
 
       const [, c] = defineAndMountContext(TestProvider, TestConsumer);
 
-      expect(c[value]).toBe(5);
+      expect(c[contextValue]).toBe(5);
     });
 
     it("should allow to set value dynamically", () => {
-      const {provider, consumer, value} = createContext();
+      const {
+        consumer,
+        contextValue,
+        provider,
+        providingValue,
+      } = createContext();
 
       @provider
       class TestProvider extends BasicProvider {
         public static readonly is: string = `x-${uuid()}`;
 
-        protected [value]: number = 2;
+        protected [providingValue]: number = 2;
       }
 
       @consumer
       class TestConsumer extends BasicConsumer {
         public static readonly is: string = `x-${uuid()}`;
 
-        protected [value]?: number;
+        protected [contextValue]?: number;
       }
 
       const [p, c] = defineAndMountContext(TestProvider, TestConsumer);
 
-      expect(c[value]).toBe(2);
+      expect(c[contextValue]).toBe(2);
 
-      p[value] = 5;
+      p[providingValue] = 5;
 
-      expect(c[value]).toBe(5);
+      expect(c[contextValue]).toBe(5);
     });
 
     it("should call connectedCallback() and disconnectedCallback() of user's class", () => {
       const connectedSpy = jasmine.createSpy("onConnect");
       const disconnectedSpy = jasmine.createSpy("onDisconnect");
-      const {provider, consumer, value} = createContext();
+      const {
+        consumer,
+        contextValue,
+        provider,
+        providingValue,
+      } = createContext();
 
       @provider
       class TestProvider extends BasicProvider {
         public static readonly is: string = `x-${uuid()}`;
 
-        protected [value]: number = 2;
+        protected [providingValue]: number = 2;
 
         public connectedCallback(): void {
           connectedSpy();
@@ -129,7 +153,7 @@ describe("@corpuscule/context", () => {
       class TestConsumer extends BasicConsumer {
         public static readonly is: string = `x-${uuid()}`;
 
-        protected [value]?: number;
+        protected [contextValue]?: number;
 
         public connectedCallback(): void {
           connectedSpy();
@@ -149,39 +173,44 @@ describe("@corpuscule/context", () => {
     });
 
     it("should stop providing value to disconnected consumers", () => {
-      const {provider, consumer, value} = createContext();
+      const {
+        consumer,
+        contextValue,
+        provider,
+        providingValue,
+      } = createContext();
 
       @provider
       class TestProvider extends BasicProvider {
         public static readonly is: string = `x-${uuid()}`;
 
-        protected [value]: number = 2;
+        protected [providingValue]: number = 2;
       }
 
       @consumer
       class TestConsumer1 extends BasicConsumer {
         public static readonly is: string = `x-${uuid()}`;
 
-        protected [value]?: number;
+        protected [contextValue]?: number;
       }
 
       @consumer
       class TestConsumer2 extends BasicConsumer {
         public static readonly is: string = `x-${uuid()}`;
 
-        protected [value]?: number;
+        protected [contextValue]?: number;
       }
 
       const [p, c1, c2] = defineAndMountContext(TestProvider, TestConsumer1, TestConsumer2);
 
-      expect(c1[value]).toBe(2);
-      expect(c2[value]).toBe(2);
+      expect(c1[contextValue]).toBe(2);
+      expect(c2[contextValue]).toBe(2);
 
       c1.remove();
-      p[value] = 3;
+      p[providingValue] = 3;
 
-      expect(c2[value]).toBe(3);
-      expect(c1[value]).toBe(2);
+      expect(c2[contextValue]).toBe(3);
+      expect(c1[contextValue]).toBe(2);
     });
   });
 });

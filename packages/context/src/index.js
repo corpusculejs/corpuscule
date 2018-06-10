@@ -18,7 +18,8 @@ const createContext = (defaultValue) => {
     value: Symbol("value"),
   };
 
-  const value = Symbol("value");
+  const providingValue = Symbol("providingValue");
+  const contextValue = Symbol("contextValue");
 
   const provider = target =>
     class Provider extends target {
@@ -33,11 +34,11 @@ const createContext = (defaultValue) => {
         this[$$.unsubscribe] = this[$$.unsubscribe].bind(this);
       }
 
-      get [value]() {
+      get [providingValue]() {
         return this[$$.value];
       }
 
-      set [value](v) {
+      set [providingValue](v) {
         this[$$.value] = v;
 
         if (this[$$.consumers]) {
@@ -113,14 +114,15 @@ const createContext = (defaultValue) => {
       }
 
       [$$.consume](v) {
-        this[value] = v;
+        this[contextValue] = v;
       }
     };
 
   return {
     consumer,
+    contextValue,
     provider,
-    value,
+    providingValue,
   };
 };
 
