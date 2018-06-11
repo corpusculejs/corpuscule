@@ -10,7 +10,7 @@ import {
 } from "./tokens/lifecycle";
 import {
   defaultPropertyOptions,
-  getAllPropertyDescriptors, getPropertyDescriptor,
+  getDescriptors, getPropertyDescriptor,
   handleError,
   parseAttributeValue, prepareComputed,
   toAttribute,
@@ -22,19 +22,19 @@ export * from "./tokens/lifecycle";
 export default class CorpusculeElement extends HTMLElement {
   static get observedAttributes() {
     if (this[propertyMap]) {
-      this[$$.initProperties](getAllPropertyDescriptors(this, propertyMap));
+      this[$$.initProperties](getDescriptors(this, propertyMap));
     }
 
     if (this[stateMap]) {
-      this[$$.initStates](getAllPropertyDescriptors(this, stateMap));
+      this[$$.initStates](getDescriptors(this, stateMap));
     }
 
     if (this[computedMap]) {
-      this[$$.initComputed](getAllPropertyDescriptors(this, computedMap));
+      this[$$.initComputed](getDescriptors(this, computedMap));
     }
 
     return this[attributeMap]
-      ? this[$$.initAttributes](getAllPropertyDescriptors(this, attributeMap))
+      ? this[$$.initAttributes](getDescriptors(this, attributeMap))
       : [];
   }
 
