@@ -13,6 +13,9 @@ const packages = {
   //   "decorators",
   // ],
   // styles: ["index"],
+  utils: [
+    "propertyChain",
+  ],
 };
 
 module.exports = packages;
