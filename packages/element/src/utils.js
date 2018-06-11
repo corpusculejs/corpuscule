@@ -1,30 +1,10 @@
-import {stateMap} from "./tokens/lifecycle";
-
-const {hasOwnProperty: has} = Object;
+import {getDescriptorChainValues, getPropertyChainDescriptors} from "@corpuscule/utils/propertyChain";
 
 export const defaultPropertyOptions = {pure: true};
 
-export const getAllPropertyDescriptors = (target, getter) => {
-  const isArray = getter === stateMap;
-  let descriptors = isArray ? [] : {};
-  let t = target;
-
-  while (t !== HTMLElement) {
-    if (has.call(t, getter)) {
-      descriptors = isArray ? [
-        ...descriptors,
-        ...target[getter],
-      ] : {
-        ...descriptors,
-        ...target[getter],
-      };
-    }
-
-    t = Object.getPrototypeOf(t);
-  }
-
-  return descriptors;
-};
+export const getDescriptors =
+  (object, propertyKey) =>
+    getDescriptorChainValues(getPropertyChainDescriptors(object, propertyKey), {merge: true});
 
 export const getPropertyDescriptor = (prototype, propertyName) => {
   let p = prototype;

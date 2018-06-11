@@ -2,6 +2,9 @@
   "name": "@corpuscule/element",
   "version": "0.3.0",
   "description": "Custom element base class for Corpuscule",
+  "dependencies": {
+    "@corpuscule/utils": "https://github.com/corpusculejs/corpuscule/releases/download/%40corpuscule%2Futils%400.1.0/corpuscule-utils-0.1.0.tgz"
+  },
   "peerDependencies": {
     "lit-html": "^0.10.0"
   }
