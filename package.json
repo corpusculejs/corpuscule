@@ -26,7 +26,7 @@
     "@types/uuid": "^3.4.3",
     "codecov": "^3.0.2",
     "eslint": "^5.0.0-alpha.4",
-    "eslint-config-poetez": "https://github.com/Lodin/eslint-config-poetez/releases/download/0.1.0/eslint-config-poetez-0.1.0.tgz",
+    "eslint-config-poetez": "https://github.com/Lodin/eslint-config-poetez/releases/download/0.1.1/eslint-config-poetez-0.1.1.tgz",
     "husky": "^0.14.3",
     "istanbul-instrumenter-loader": "^3.0.1",
     "jasmine-core": "^3.1.0",
