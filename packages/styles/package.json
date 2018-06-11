@@ -3,10 +3,6 @@
   "version": "0.2.0",
   "description": "Decorator to load styles for Corpuscule",
   "peerDependencies": {
-    "@corpuscule/element": "^0.2.0"
-  },
-  "devDependencies": {
-    "@corpuscule/element": "https://github.com/corpusculejs/corpuscule/releases/download/%40corpuscule%2Felement%400.2.0/corpuscule-element-0.2.0.tgz",
     "lit-html": "^0.10.0"
   }
 }
