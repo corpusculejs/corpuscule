@@ -1,28 +1,65 @@
 import createContext from "@corpuscule/context";
 import * as $$ from "./tokens/internal";
-import {storedMap} from "./tokens/lifecycle";
+import {dispatcherMap, connectedMap} from "./tokens/lifecycle";
+import {getDescriptors} from "./utils";
 
 const {
+  consumer,
+  contextValue: context,
   provider,
-  consumer: basicConsumer,
-  value: store,
+  providingValue: store,
 } = createContext();
 
 export {
+  dispatcherMap,
   provider,
-  storedMap,
+  connectedMap,
   store,
 };
 
-export const consumer = target =>
-  class ReduxConsumer extends basicConsumer(target) {
-    constructor() {
-      super();
-      this[$$.registry] = Object.entries(this.constructor[storedMap]);
+export const connect = (target) => {
+  class ReduxConnected extends consumer(target) {
+    static get [$$.registry]() {
+      if (!this[$$.memoizedRegistry]) {
+        this[$$.memoizedRegistry] = this[connectedMap]
+          ? Object.entries(getDescriptors(this, connectedMap))
+          : [];
+      }
+
+      return this[$$.memoizedRegistry];
     }
 
-    set [store](v) {
-      super[store] = v;
+    static [$$.initDispatchers](dispatchers) {
+      for (const propertyName of dispatchers) {
+        const method = this.prototype[propertyName];
+
+        if (!method) {
+          // eslint-disable-next-line accessor-pairs
+          Object.defineProperty(this.prototype, propertyName, {
+            configurable: true,
+            set(value) {
+              Object.defineProperty(this, propertyName, {
+                configurable: true,
+                value(...args) {
+                  this[$$.context].dispatch(value(...args));
+                },
+              });
+            },
+          });
+
+          continue;
+        }
+
+        Object.defineProperty(this.prototype, propertyName, {
+          value(...args) {
+            this[$$.context].dispatch(method.call(this, ...args));
+          },
+        });
+      }
+    }
+
+    set [context](v) {
+      this[$$.context] = v;
 
       if (this[$$.unsubscribe]) {
         this[$$.unsubscribe]();
@@ -36,19 +73,21 @@ export const consumer = target =>
         super.disconnectedCallback();
       }
 
-      this[$$.unsubscribe]();
+      if (this[$$.unsubscribe]) {
+        this[$$.unsubscribe]();
+      }
     }
 
     [$$.subscribe]() {
-      this[$$.update](this[store]);
+      this[$$.update](this[$$.context]);
 
-      this[$$.unsubscribe] = this[store].subscribe(() => {
-        this[$$.update](this[store]);
+      this[$$.unsubscribe] = this[$$.context].subscribe(() => {
+        this[$$.update](this[$$.context]);
       });
     }
 
     [$$.update]({getState}) {
-      for (const [propertyName, getter] of this[$$.registry]) {
+      for (const [propertyName, getter] of this.constructor[$$.registry]) {
         const nextValue = getter(getState());
 
         if (nextValue !== this[propertyName]) {
@@ -56,4 +95,11 @@ export const consumer = target =>
         }
       }
     }
-  };
+  }
+
+  if (ReduxConnected[dispatcherMap]) {
+    ReduxConnected[$$.initDispatchers](getDescriptors(ReduxConnected, dispatcherMap));
+  }
+
+  return ReduxConnected;
+};
