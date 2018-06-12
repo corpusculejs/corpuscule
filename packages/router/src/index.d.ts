@@ -25,15 +25,12 @@ export const layout: unique symbol;
 
 export const createRouter: (routes: Route | ReadonlyArray<Route>, options?: Options) => UniversalRouter;
 
-export class Link extends HTMLElement implements CustomElement {
-  public static readonly is: string;
-  public static readonly observedAttributes: ReadonlyArray<string>;
-
-  public to: string; // tslint:disable-line:readonly-keyword
-
-  public attributeChangedCallback(attrName: string, oldVal: string, newVal: string): void;
+export class Link extends HTMLAnchorElement implements CustomElement {
+  public static readonly is: "corpuscule-link";
 
   public connectedCallback(): void;
+
+  public disconnectedCallback(): void;
 }
 
 export const push: (path: string, title?: string) => void;
