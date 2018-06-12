@@ -4,7 +4,9 @@
   "description": "Redux mixin for Corpuscule",
   "dependencies": {
     "@corpuscule/context": "https://github.com/corpusculejs/corpuscule/releases/download/%40corpuscule%2Fcontext%400.2.0/corpuscule-context-0.2.0.tgz",
-    "@corpuscule/utils": "https://github.com/corpusculejs/corpuscule/releases/download/%40corpuscule%2Futils%400.1.0/corpuscule-utils-0.1.0.tgz",
-    "redux": "https://github.com/nobabel/redux/releases/download/4.0.0-nobabel/redux-4.0.0-nobabel.tgz"
+    "@corpuscule/utils": "https://github.com/corpusculejs/corpuscule/releases/download/%40corpuscule%2Futils%400.1.0/corpuscule-utils-0.1.0.tgz"
+  },
+  "peerDependencies": {
+    "redux": "^4.0.0"
   }
 }
