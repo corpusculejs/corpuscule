@@ -12,6 +12,7 @@ import {
   provider,
   store,
 } from "../src";
+import decorators from "./decorators";
 
 describe("@corpuscule/redux", () => {
   let reduxState: {test: number};
@@ -175,4 +176,6 @@ describe("@corpuscule/redux", () => {
       type: "test",
     });
   });
+
+  decorators();
 });
