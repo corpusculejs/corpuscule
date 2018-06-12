@@ -1,12 +1,6 @@
 import createContext from "@corpuscule/context";
 import UniversalRouter, {Options, Route} from "universal-router";
 
-export {
-  UniversalRouter,
-  Options,
-  Route,
-};
-
 export interface Constructor<T> {
   new(...args: any[]): T; // tslint:disable-line:readonly-array
 }
