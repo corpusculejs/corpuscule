@@ -4,15 +4,15 @@ const packages = {
     "index",
     "decorators",
   ],
-  // redux: [
-  //   "index",
-  //   "decorators",
-  // ],
+  redux: [
+    "index",
+    "decorators",
+  ],
   // router: [
   //   "index",
   //   "decorators",
   // ],
-  // styles: ["index"],
+  styles: ["index"],
   utils: [
     "propertyChain",
   ],
