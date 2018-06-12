@@ -5,40 +5,40 @@ export const element = name => (target) => {
   customElements.define(name, target);
 };
 
-export const attribute = (name, guard, options) => ({constructor}, propertyName) => {
+export const attribute = (name, guard, options) => ({constructor}, propertyKey) => {
   const value = options ? [name, guard, options] : [name, guard];
 
   if (constructor[attributeMap]) {
-    constructor[attributeMap][propertyName] = value;
+    constructor[attributeMap][propertyKey] = value;
   } else {
-    constructor[attributeMap] = {[propertyName]: value};
+    constructor[attributeMap] = {[propertyKey]: value};
   }
 };
 
-export const property = (guard = null, options) => ({constructor}, propertyName) => {
+export const property = (guard = null, options) => ({constructor}, propertyKey) => {
   const value = guard !== null && options
     ? [guard, options]
     : guard;
 
   if (constructor[propertyMap]) {
-    constructor[propertyMap][propertyName] = value;
+    constructor[propertyMap][propertyKey] = value;
   } else {
-    constructor[propertyMap] = {[propertyName]: value};
+    constructor[propertyMap] = {[propertyKey]: value};
   }
 };
 
-export const state = ({constructor}, propertyName) => {
+export const state = ({constructor}, propertyKey) => {
   if (constructor[stateMap]) {
-    constructor[stateMap].push(propertyName);
+    constructor[stateMap].push(propertyKey);
   } else {
-    constructor[stateMap] = [propertyName];
+    constructor[stateMap] = [propertyKey];
   }
 };
 
-export const computed = (...watchings) => ({constructor}, propertyName) => {
+export const computed = (...watchings) => ({constructor}, propertyKey) => {
   if (constructor[computedMap]) {
-    constructor[computedMap][propertyName] = watchings;
+    constructor[computedMap][propertyKey] = watchings;
   } else {
-    constructor[computedMap] = {[propertyName]: watchings};
+    constructor[computedMap] = {[propertyKey]: watchings};
   }
 };
