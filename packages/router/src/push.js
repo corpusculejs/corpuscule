@@ -1,6 +1,4 @@
-import {RouterPush} from "./types";
-
-const push: RouterPush = (path, title = "") => {
+const push = (path, title = "") => {
   history.pushState({path}, title, path);
   dispatchEvent(new PopStateEvent("popstate", {state: history.state}));
 };
