@@ -8,10 +8,7 @@ const packages = {
     "index",
     "decorators",
   ],
-  // router: [
-  //   "index",
-  //   "decorators",
-  // ],
+  router: ["index"],
   styles: ["index"],
   utils: [
     "propertyChain",
