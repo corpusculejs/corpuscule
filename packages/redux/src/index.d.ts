@@ -19,8 +19,8 @@ export interface ReduxStatics<S> {
 }
 
 export const connect: {
-  <S, U extends Constructor<CustomElement, ReduxStatics<S>>>(target: U): U;
-  <S, U extends Constructor<CustomElement>>(target: U): U & ReduxStatics<S>;
+  <S, T extends Constructor<CustomElement, ReduxStatics<S>>>(target: T): T;
+  <S, T extends Constructor<CustomElement>>(target: T): T & ReduxStatics<S>;
 };
 
 export const provider: ReturnType<typeof createContext>["provider"];
