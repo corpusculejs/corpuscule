@@ -4,6 +4,6 @@
   "description": "Router for Corpuscule",
   "dependencies": {
     "@corpuscule/context": "https://github.com/corpusculejs/corpuscule/releases/download/%40corpuscule%2Fcontext%400.2.0/corpuscule-context-0.2.0.tgz",
-    "universal-router": "https://github.com/nobabel/universal-router/releases/download/6.0.0-nobabel.2/universal-router-6.0.0-nobabel.2.tgz"
+    "universal-router": "^6.0.0"
   }
 }
