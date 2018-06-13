@@ -20,7 +20,7 @@ export {
   router,
 };
 
-export const route = routes => target =>
+export const switcher = routes => target =>
   class Route extends consumer(target) {
     constructor() {
       super();

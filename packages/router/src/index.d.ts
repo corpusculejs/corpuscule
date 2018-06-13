@@ -32,6 +32,6 @@ export const push: (path: string, title?: string) => void;
 export const provider: ReturnType<typeof createContext>["provider"];
 export const router: unique symbol;
 
-export const route:
+export const switcher:
   (routes: ReadonlyArray<Route>) =>
     <T extends Constructor<CustomElement>>(target: T) => T;
