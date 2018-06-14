@@ -9,7 +9,7 @@ const {
 } = require("fs");
 const rimraf = require("rimraf");
 const {promisify} = require("util");
-const packages = require("./project");
+const {packages, definitions} = require("./project");
 
 const copyFileAsync = promisify(copyFile);
 const execAsync = promisify(exec);
@@ -74,13 +74,17 @@ const copyDtsFiles = async (pack) => {
   );
 };
 
+const buildCommon = async pack => Promise.all([
+  copyProjectFiles(pack),
+  copyDtsFiles(pack),
+]);
+
 const build = async (pack) => {
   await recreateDist(pack);
 
   await Promise.all([
     execAsync(`rollup -c scripts/rollup.config.js`),
-    copyProjectFiles(pack),
-    copyDtsFiles(pack),
+    buildCommon(pack),
   ]);
 
   await execAsync(`cd ${root(pack, "dist")} && npm pack`);
@@ -88,6 +92,17 @@ const build = async (pack) => {
   console.log(`✓ "${pack}" is built`);
 };
 
+const buildDefinitions = async (pack) => {
+  await recreateDist(pack);
+  await buildCommon(pack);
+  await execAsync(`cd ${root(pack, "dist")} && npm pack`);
+  console.log(`✓ "${pack}" is built`);
+};
+
 for (const pack of Object.keys(packages)) {
   build(pack);
+}
+
+for (const pack of definitions) {
+  buildDefinitions(pack);
 }
