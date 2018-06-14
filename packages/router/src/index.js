@@ -20,21 +20,21 @@ export {
   router,
 };
 
-export const switcher = routes => target =>
+export const outlet = routes => target =>
   class Route extends consumer(target) {
     constructor() {
       super();
       this[$$.updateRoute] = this[$$.updateRoute].bind(this);
     }
 
-    async connectedCallback() {
+    connectedCallback() {
       window.addEventListener("popstate", this[$$.updateRoute]);
 
       if (super.connectedCallback) {
         super.connectedCallback();
       }
 
-      await this[$$.updateRoute](location.pathname);
+      this[$$.updateRoute](location.pathname);
     }
 
     disconnectedCallback() {
@@ -45,21 +45,26 @@ export const switcher = routes => target =>
       }
     }
 
-    async [$$.updateRoute](pathOrEvent) {
+    get resolvingPromise() {
+      return this[$$.resolving];
+    }
+
+    [$$.updateRoute](pathOrEvent) {
       const path = typeof pathOrEvent === "string"
         ? pathOrEvent
-        : (pathOrEvent.state ? pathOrEvent.state.path : ""); // eslint-disable-line no-extra-parens
+        : pathOrEvent.state || "";
 
-      const resolved = await this[context].resolve(path);
+      this[$$.resolving] = this[context].resolve(path)
+        .then((resolved) => {
+          if (resolved === undefined) {
+            return;
+          }
 
-      if (resolved === undefined) {
-        return;
-      }
+          const [result, {route}] = resolved;
 
-      const [result, routeCtx] = resolved;
-
-      if (routes.includes(routeCtx.route)) {
-        this[layout] = result;
-      }
+          if (routes.includes(route)) {
+            this[layout] = result;
+          }
+        });
     }
   };
