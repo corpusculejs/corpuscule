@@ -1,4 +1,4 @@
-const packages = require("./project");
+const {packages} = require("./project");
 
 module.exports = Object.entries(packages).reduce((acc, [pack, entries]) => {
   for (const file of entries) {

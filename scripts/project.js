@@ -15,4 +15,9 @@ const packages = {
   ],
 };
 
-module.exports = packages;
+const definitions = ["types"];
+
+module.exports = {
+  definitions,
+  packages,
+};
