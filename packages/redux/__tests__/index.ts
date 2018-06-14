@@ -27,6 +27,10 @@ describe("@corpuscule/redux", () => {
     reduxStore.getState.and.callFake(() => reduxState);
   });
 
+  afterEach(() => {
+    document.body.innerHTML = ""; // tslint:disable-line:no-inner-html
+  });
+
   it("should subscribe to store", () => {
     @provider
     class Provider extends BasicProvider {
