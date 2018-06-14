@@ -2,18 +2,20 @@ import {Link} from "../src";
 
 const linkTest = () => {
   describe("Link", () => {
+    let historyPushStateSpy: jasmine.Spy;
+    let historyStateSpy: jasmine.Spy;
     let link: Link;
+
+    afterAll(() => {
+      historyStateSpy.and.callThrough();
+      historyPushStateSpy.and.callThrough();
+    });
 
     beforeEach(() => {
       link = document.createElement("a", {is: Link.is}) as Link;
       link.href = "/test";
-
-      spyOn(history, "pushState");
-      spyOnProperty(history, "state").and.returnValue({path: "/test"});
-    });
-
-    afterEach(() => {
-      link.remove();
+      historyPushStateSpy = spyOn(history, "pushState");
+      historyStateSpy = spyOnProperty(history, "state").and.returnValue("/test");
     });
 
     it("should be accessible through 'document.createElement'", () => {
@@ -22,10 +24,14 @@ const linkTest = () => {
 
     it("should dispatch PopStateEvent with current history state by click", (done) => {
       document.body.appendChild(link);
-      window.addEventListener("popstate", (e: PopStateEvent) => {
-        expect(e.state).toEqual({path: "/test"});
+      const listener = (e: PopStateEvent) => {
+        expect(e.state).toEqual("/test");
+
+        window.removeEventListener("popstate", listener);
         done();
-      });
+      };
+
+      window.addEventListener("popstate", listener);
 
       link.click();
     });

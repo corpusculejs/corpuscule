@@ -2,31 +2,41 @@ import {push} from "../src";
 
 const pushTest = () => {
   describe("push", () => {
+    let historyPushStateSpy: jasmine.Spy;
     let historyStateSpy: jasmine.Spy;
 
+    afterAll(() => {
+      historyStateSpy.and.callThrough();
+      historyPushStateSpy.and.callThrough();
+    });
+
     beforeEach(() => {
-      spyOn(history, "pushState");
-      historyStateSpy = spyOnProperty(history, "state").and.returnValue({path: "/test"});
+      historyPushStateSpy = spyOn(history, "pushState");
+      historyStateSpy = spyOnProperty(history, "state").and.returnValue("/test");
     });
 
     it("should push new state to history", () => {
       push("/test");
       // tslint:disable-next-line:no-unbound-method
-      expect(history.pushState).toHaveBeenCalledWith({path: "/test"}, "", "/test");
+      expect(history.pushState).toHaveBeenCalledWith("/test", "", "/test");
       expect(historyStateSpy).toHaveBeenCalled();
     });
 
     it("should allow to add title to a page", () => {
       push("/test", "Test");
       // tslint:disable-next-line:no-unbound-method
-      expect(history.pushState).toHaveBeenCalledWith({path: "/test"}, "Test", "/test");
+      expect(history.pushState).toHaveBeenCalledWith("/test", "Test", "/test");
     });
 
     it("should dispatch 'popstate' event", (done) => {
-      window.addEventListener("popstate", (e: PopStateEvent) => {
-        expect(e.state).toEqual({path: "/test"});
+      const listener = (e: PopStateEvent) => {
+        expect(e.state).toEqual("/test");
+
+        window.removeEventListener("popstate", listener);
         done();
-      });
+      };
+
+      window.addEventListener("popstate", listener);
 
       push("/test");
     });
