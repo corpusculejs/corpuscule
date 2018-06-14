@@ -1,19 +1,6 @@
 import createContext from "@corpuscule/context";
+import {CustomElement, CustomElementClass, UncertainCustomElementClass} from "@corpuscule/types";
 import UniversalRouter, {Options, Route} from "universal-router";
-
-export interface Constructor<T> {
-  new(...args: any[]): T; // tslint:disable-line:readonly-array
-}
-
-export interface CustomElement extends HTMLElement {
-  attributeChangedCallback?(attrName: string, oldVal: string, newVal: string): void;
-
-  connectedCallback?(): void;
-
-  disconnectedCallback?(): void;
-
-  adoptedCallback?(): void;
-}
 
 export const layout: unique symbol;
 
@@ -32,6 +19,10 @@ export const push: (path: string, title?: string) => void;
 export const provider: ReturnType<typeof createContext>["provider"];
 export const router: unique symbol;
 
-export const switcher:
+export interface RouterOutlet {
+  readonly resolvingPromise: Promise<void>;
+}
+
+export const outlet:
   (routes: ReadonlyArray<Route>) =>
-    <T extends Constructor<CustomElement>>(target: T) => T;
+    <T = {}>(target: UncertainCustomElementClass<T>) => CustomElementClass<T & RouterOutlet>;
