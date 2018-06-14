@@ -1,10 +1,5 @@
-import createContext, {CustomElement} from "@corpuscule/context";
-
-export type Constructor<T, U = {}> = {
-  new(...args: any[]): T; // tslint:disable-line:readonly-array
-} & {
-  readonly [P in keyof U]: U[P];
-};
+import createContext from "@corpuscule/context";
+import {UncertainCustomElementClass} from "@corpuscule/types";
 
 export type DispatcherRegistry = ReadonlyArray<string>;
 export type PropertyGetter<S> = (state: S) => any;
@@ -19,8 +14,8 @@ export interface ReduxStatics<S> {
 }
 
 export const connect: {
-  <S, T extends Constructor<CustomElement, ReduxStatics<S>>>(target: T): T;
-  <S, T extends Constructor<CustomElement>>(target: T): T & ReduxStatics<S>;
+  <S, T extends UncertainCustomElementClass<T>>(target: T & ReduxStatics<S>): T,
+  <S, T extends UncertainCustomElementClass<T>>(target: T): T & ReduxStatics<S>,
 };
 
 export const provider: ReturnType<typeof createContext>["provider"];

@@ -1,5 +1,8 @@
 {
   "name": "@corpuscule/context",
   "version": "0.2.0",
-  "description": "DOM-dependent context for CorpusculeJS"
+  "description": "DOM-dependent context for CorpusculeJS",
+  "dependencies": {
+    "@corpuscule/types": "https://github.com/corpusculejs/corpuscule/releases/download/%40corpuscule%2Ftypes%400.1.0/corpuscule-types-0.1.0.tgz"
+  }
 }
