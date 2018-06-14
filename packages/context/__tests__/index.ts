@@ -5,6 +5,10 @@ import {BasicConsumer, BasicProvider, defineAndMountContext} from "../../../test
 import createContext from "../src";
 
 describe("@corpuscule/context", () => {
+  afterEach(() => {
+    document.body.innerHTML = ""; // tslint:disable-line:no-inner-html
+  });
+
   describe("createContext", () => {
     it("should create context", () => {
       const {

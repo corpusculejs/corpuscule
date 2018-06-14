@@ -15,7 +15,7 @@ describe("@corpuscule/styles", () => {
   });
 
   afterEach(() => {
-    container.remove();
+    document.body.innerHTML = ""; // tslint:disable-line:no-inner-html
   });
 
   it("should create a <link> tag if path is received", () => {
