@@ -1,3 +1,4 @@
+import {CustomElement} from "@corpuscule/types";
 import {TemplateResult} from "lit-html";
 
 export interface PropertyOptions {
@@ -43,7 +44,7 @@ export const render: unique symbol;
 export const shouldUpdate: unique symbol;
 export const stateMap: unique symbol;
 
-export default abstract class CorpusculeElement extends HTMLElement {
+export default class CorpusculeElement extends HTMLElement implements CustomElement {
   public static readonly is: string;
 
   public static readonly observableAttributes: ReadonlyArray<string>;
@@ -75,5 +76,5 @@ export default abstract class CorpusculeElement extends HTMLElement {
 
   protected [didUnmount](): void;
 
-  protected abstract [render](): TemplateResult | null;
+  protected [render](): TemplateResult | null;
 }
