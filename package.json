@@ -49,6 +49,7 @@
     "tslint": "^5.10.0",
     "tslint-config-poetez": "^1.1.1",
     "typescript": "^2.9.1",
+    "universal-route": "^2.0.3",
     "universal-router": "^6.0.0",
     "uuid": "^3.2.1",
     "webpack": "^4.12.0"
