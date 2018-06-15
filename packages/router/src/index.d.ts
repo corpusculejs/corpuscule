@@ -24,5 +24,7 @@ export interface RouterOutlet {
 }
 
 export const outlet:
-  (routes: ReadonlyArray<Route>) =>
-    <T = {}>(target: UncertainCustomElementClass<T>) => CustomElementClass<T & RouterOutlet>;
+  (routes: ReadonlyArray<Route>) => {
+    <T = {}>(target: UncertainCustomElementClass<T>): CustomElementClass<T & RouterOutlet>,
+    <T extends UncertainCustomElementClass<T>>(target: T): T,
+  };
