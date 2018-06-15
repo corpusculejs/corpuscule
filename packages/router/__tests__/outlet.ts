@@ -7,6 +7,8 @@ import {createRouter, layout, outlet, provider, router as $router} from "../src"
 
 const outletTest = () => {
   describe("outlet", () => {
+    const basicLocation = location.pathname;
+
     const routes: ReadonlyArray<Route> = [
       {
         action: () => "Test Root",
@@ -19,7 +21,7 @@ const outletTest = () => {
     ];
 
     const router = createRouter(routes, {
-      baseUrl: location.pathname,
+      baseUrl: basicLocation,
     });
 
     it("should create a router outlet that contains initial layout", async () => {
@@ -58,7 +60,7 @@ const outletTest = () => {
 
       const [, o] = defineAndMountContext(Provider, Test);
 
-      dispatchEvent(new PopStateEvent("popstate", {state: "#test"}));
+      dispatchEvent(new PopStateEvent("popstate", {state: `${basicLocation}#test`}));
 
       await o.resolvingPromise;
 
