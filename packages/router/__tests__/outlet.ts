@@ -33,8 +33,7 @@ const outletTest = () => {
     });
 
     it("should create a router outlet that contains initial layout", async () => {
-      @provider
-      class Provider extends BasicProvider {
+      class Provider extends provider(BasicProvider) {
         public static is: string = `x-${uuid()}`;
 
         protected readonly [$router]: UniversalRouter = router;
@@ -84,8 +83,7 @@ const outletTest = () => {
         protected readonly [$router]: UniversalRouter = router;
       }
 
-      @outlet(routes)
-      class Test extends BasicConsumer {
+      class Test extends outlet(routes)(BasicConsumer) {
         public static is: string = `x-${uuid()}`;
 
         public readonly [layout]: string;
