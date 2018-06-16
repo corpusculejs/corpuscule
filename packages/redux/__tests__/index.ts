@@ -55,7 +55,7 @@ describe("@corpuscule/redux", () => {
     class Connected extends connect(BasicConsumer) {
       public static is: string = `x-${uuid()}`;
 
-      protected static get [connectedMap](): ConnectedMap<typeof reduxState> {
+      public static get [connectedMap](): ConnectedMap<typeof reduxState> {
         return {
           test: state => state.test,
         };
@@ -80,7 +80,7 @@ describe("@corpuscule/redux", () => {
     class Connected extends connect(BasicConsumer) {
       public static is: string = `x-${uuid()}`;
 
-      protected static get [connectedMap](): ConnectedMap<typeof reduxState> {
+      public static get [connectedMap](): ConnectedMap<typeof reduxState> {
         return {
           test: state => state.test,
         };
@@ -136,7 +136,7 @@ describe("@corpuscule/redux", () => {
     class Connected extends connect(BasicConsumer) {
       public static is: string = `x-${uuid()}`;
 
-      protected static get [dispatcherMap](): DispatcherRegistry {
+      public static get [dispatcherMap](): DispatcherRegistry {
         return ["external", "test"];
       }
 
