@@ -19,12 +19,11 @@ export const push: (path: string, title?: string) => void;
 export const provider: ReturnType<typeof createContext>["provider"];
 export const router: unique symbol;
 
-export interface RouterOutlet {
+export interface RouterOutlet<T> {
   readonly resolvingPromise: Promise<void>;
+  readonly [layout]: T;
 }
 
 export const outlet:
-  (routes: ReadonlyArray<Route>) => {
-    <T = {}>(target: UncertainCustomElementClass<T>): CustomElementClass<T & RouterOutlet>,
-    <T extends UncertainCustomElementClass<T>>(target: T): T,
-  };
+  (routes: ReadonlyArray<Route>) =>
+    <T, U = {}>(target: UncertainCustomElementClass<U>) => CustomElementClass<U & RouterOutlet<T>>;
