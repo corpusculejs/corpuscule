@@ -12,7 +12,6 @@ import {
   provider,
   store,
 } from "../src";
-import decorators from "./decorators";
 
 describe("@corpuscule/redux", () => {
   let reduxState: {test: number};
@@ -32,15 +31,13 @@ describe("@corpuscule/redux", () => {
   });
 
   it("should subscribe to store", () => {
-    @provider
-    class Provider extends BasicProvider {
+    class Provider extends provider(BasicProvider) {
       public static is: string = `x-${uuid()}`;
 
       protected [store]: Store = reduxStore;
     }
 
-    @connect
-    class Connected extends BasicConsumer {
+    class Connected extends connect(BasicConsumer) {
       public static is: string = `x-${uuid()}`;
     }
 
@@ -49,15 +46,13 @@ describe("@corpuscule/redux", () => {
   });
 
   it("should allow to declare properties bound with store", () => {
-    @provider
-    class Provider extends BasicProvider {
+    class Provider extends provider(BasicProvider) {
       public static is: string = `x-${uuid()}`;
 
       protected [store]: Store = reduxStore;
     }
 
-    @connect
-    class Connected extends BasicConsumer {
+    class Connected extends connect(BasicConsumer) {
       public static is: string = `x-${uuid()}`;
 
       protected static get [connectedMap](): ConnectedMap<typeof reduxState> {
@@ -76,15 +71,13 @@ describe("@corpuscule/redux", () => {
   });
 
   it("should update properties when store is updated", () => {
-    @provider
-    class Provider extends BasicProvider {
+    class Provider extends provider(BasicProvider) {
       public static is: string = `x-${uuid()}`;
 
       protected [store]: Store = reduxStore;
     }
 
-    @connect
-    class Connected extends BasicConsumer {
+    class Connected extends connect(BasicConsumer) {
       public static is: string = `x-${uuid()}`;
 
       protected static get [connectedMap](): ConnectedMap<typeof reduxState> {
@@ -106,15 +99,13 @@ describe("@corpuscule/redux", () => {
   });
 
   it("should unsubscribe from store before subscribing to a new one", () => {
-    @provider
-    class Provider extends BasicProvider {
+    class Provider extends provider(BasicProvider) {
       public static is: string = `x-${uuid()}`;
 
       protected [store]: Store = reduxStore;
     }
 
-    @connect
-    class Connected extends BasicConsumer {
+    class Connected extends connect(BasicConsumer) {
       public static is: string = `x-${uuid()}`;
     }
 
@@ -136,15 +127,13 @@ describe("@corpuscule/redux", () => {
       type: "external",
     });
 
-    @provider
-    class Provider extends BasicProvider {
+    class Provider extends provider(BasicProvider) {
       public static is: string = `x-${uuid()}`;
 
       protected [store]: Store = reduxStore;
     }
 
-    @connect
-    class Connected extends BasicConsumer {
+    class Connected extends connect(BasicConsumer) {
       public static is: string = `x-${uuid()}`;
 
       protected static get [dispatcherMap](): DispatcherRegistry {
@@ -180,6 +169,4 @@ describe("@corpuscule/redux", () => {
       type: "test",
     });
   });
-
-  decorators();
 });
