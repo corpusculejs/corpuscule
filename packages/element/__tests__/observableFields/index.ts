@@ -32,19 +32,19 @@ const observableFields = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        protected static get [attributeMap](): AttributeDescriptorMap<any> {
+        public static get [attributeMap](): AttributeDescriptorMap<any> {
           return {
             attr: ["attr", String],
           };
         }
 
-        protected static get [propertyMap](): PropertyDescriptorMap<any> {
+        public static get [propertyMap](): PropertyDescriptorMap<any> {
           return {
             prop: null,
           };
         }
 
-        protected static get [stateMap](): StateDescriptorMap<any> {
+        public static get [stateMap](): StateDescriptorMap<any> {
           return ["state"];
         }
 
