@@ -9,31 +9,24 @@ const outletTest = () => {
   describe("outlet", () => {
     const basicLocation = location.pathname;
 
-    const childrenRoutes: Routes = [
-      {
-        action: () => "Child Root",
-        path: "",
-      },
-      {
-        action: () => "Child Branch",
-        path: "/child",
-      },
-    ];
+    const childrenRoutes: Routes = [{
+      action: () => "Child Root",
+      path: "",
+    }, {
+      action: () => "Child Branch",
+      path: "/child",
+    }];
 
-    const routes: Routes = [
-      {
-        action: () => "Test Root",
-        path: "",
-      },
-      {
-        action: () => "Test Branch",
-        path: `#test`,
-      },
-      {
-        children: childrenRoutes,
-        path: "#parent",
-      },
-    ];
+    const routes: Routes = [{
+      action: () => "Test Root",
+      path: "",
+    }, {
+      action: () => "Test Branch",
+      path: `#test`,
+    }, {
+      children: childrenRoutes,
+      path: "#parent",
+    }];
 
     const router = createRouter(routes, {
       baseUrl: basicLocation,
