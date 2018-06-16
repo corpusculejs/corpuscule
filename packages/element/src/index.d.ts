@@ -49,14 +49,14 @@ export default class CorpusculeElement extends HTMLElement implements CustomElem
 
   public static readonly observableAttributes: ReadonlyArray<string>;
 
-  protected static readonly [attributeMap]?: AttributeDescriptorMap<{}>;
-  protected static readonly [propertyMap]?: PropertyDescriptorMap<{}>;
-  protected static readonly [stateMap]?: StateDescriptorMap<any>;
-  protected static readonly [computedMap]?: ComputedDescriptorMap<{}>;
+  public static readonly [attributeMap]?: AttributeDescriptorMap<{}>;
+  public static readonly [propertyMap]?: PropertyDescriptorMap<{}>;
+  public static readonly [stateMap]?: StateDescriptorMap<any>;
+  public static readonly [computedMap]?: ComputedDescriptorMap<{}>;
 
-  protected static [deriveStateFromProps](nextProps: {}, prevProps: {}, prevState: {}): {} | null;
+  public static [deriveStateFromProps](nextProps: {}, prevProps: {}, prevState: {}): {} | null;
 
-  protected static [shouldUpdate](nextProps: {}, nextState: {}, prevProps: {}, prevState: {}): boolean;
+  public static [shouldUpdate](nextProps: {}, nextState: {}, prevProps: {}, prevState: {}): boolean;
 
   public readonly renderingPromise: Promise<void>;
 

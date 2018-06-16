@@ -12,7 +12,7 @@ const states = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        protected static get [stateMap](): StateDescriptorMap<any> {
+        public static get [stateMap](): StateDescriptorMap<any> {
           return ["index"];
         }
 

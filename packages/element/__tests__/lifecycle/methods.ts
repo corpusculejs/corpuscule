@@ -21,13 +21,13 @@ const methods = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        protected static get [propertyMap](): PropertyDescriptorMap<any> {
+        public static get [propertyMap](): PropertyDescriptorMap<any> {
           return {
             num: null,
           };
         }
 
-        protected static [shouldUpdate](): boolean {
+        public static [shouldUpdate](): boolean {
           return false;
         }
 
@@ -53,13 +53,13 @@ const methods = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        protected static get [propertyMap](): PropertyDescriptorMap<any> {
+        public static get [propertyMap](): PropertyDescriptorMap<any> {
           return {
             num: null,
           };
         }
 
-        protected static [shouldUpdate](): boolean {
+        public static [shouldUpdate](): boolean {
           return false;
         }
 
@@ -83,17 +83,17 @@ const methods = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        protected static get [propertyMap](): PropertyDescriptorMap<any> {
+        public static get [propertyMap](): PropertyDescriptorMap<any> {
           return {
             prop: null,
           };
         }
 
-        protected static get [stateMap](): StateDescriptorMap<any> {
+        public static get [stateMap](): StateDescriptorMap<any> {
           return ["state"];
         }
 
-        protected static [deriveStateFromProps]({prop: nextProp}: any, {prop: prevProp}: any): any {
+        public static [deriveStateFromProps]({prop: nextProp}: any, {prop: prevProp}: any): any {
           return {
             state: nextProp < prevProp,
           };
@@ -132,7 +132,7 @@ const methods = () => {
 
       el.forceUpdate(); // tslint:disable-line:no-floating-promises
 
-      expect(el.renderingProcess).toEqual(jasmine.any(Promise));
+      expect(el.renderingPromise).toEqual(jasmine.any(Promise));
     });
 
     it("should get the promise even if there is no renderingProcess yet", () => {
@@ -145,7 +145,7 @@ const methods = () => {
       }
 
       defineAndMount(Test, (e) => {
-        expect(e.renderingProcess).toEqual(jasmine.any(Promise));
+        expect(e.renderingPromise).toEqual(jasmine.any(Promise));
       });
     });
   });
