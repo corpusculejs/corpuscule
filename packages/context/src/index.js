@@ -26,9 +26,7 @@ const createContext = (defaultValue) => {
       constructor() {
         super();
         this[$$.consumers] = [];
-        this[$$.value] = this[$$.value] !== undefined
-          ? this[$$.value]
-          : defaultValue;
+        this[$$.value] = defaultValue;
 
         this[$$.subscribe] = this[$$.subscribe].bind(this);
         this[$$.unsubscribe] = this[$$.unsubscribe].bind(this);
