@@ -19,8 +19,7 @@ describe("@corpuscule/styles", () => {
   });
 
   it("should create a <link> tag if path is received", () => {
-    @styles("/styles.css")
-    class Test extends HTMLElement {
+    class Test extends styles("/styles.css")(HTMLElement) {
     }
 
     const {[style]: s} = Test as any;
@@ -34,8 +33,7 @@ describe("@corpuscule/styles", () => {
   });
 
   it("should create a <style/> tag if styles are received", () => {
-    @styles(rawStyles)
-    class Test extends HTMLElement {
+    class Test extends styles(rawStyles)(HTMLElement) {
     }
 
     const {[style]: s} = Test as any;
@@ -49,11 +47,10 @@ describe("@corpuscule/styles", () => {
   });
 
   it("should allow to insert different style types", () => {
-    @styles("/styles.css", rawStyles)
-    class Test extends HTMLElement {
+    class Test extends styles("/styles.css", rawStyles)(HTMLElement) {
     }
 
-    const {[style]: s} = Test as any;
+    const {[style]: s} = Test;
 
     expect(s).toEqual(jasmine.any(TemplateResult));
 
