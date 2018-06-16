@@ -1,6 +1,6 @@
 {
   "name": "@corpuscule/redux",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Redux mixin for Corpuscule",
   "dependencies": {
     "@corpuscule/context": "https://github.com/corpusculejs/corpuscule/releases/download/%40corpuscule%2Fcontext%400.2.0/corpuscule-context-0.2.0.tgz",
