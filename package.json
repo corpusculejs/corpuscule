@@ -23,6 +23,7 @@
   "homepage": "https://github.com/corpusculejs/corpuscule#readme",
   "devDependencies": {
     "@types/jasmine": "^2.8.8",
+    "@types/universal-router": "^6.0.0",
     "@types/uuid": "^3.4.3",
     "codecov": "^3.0.2",
     "eslint": "^5.0.0-alpha.4",
