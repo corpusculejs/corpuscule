@@ -96,6 +96,10 @@ const createContext = (defaultValue) => {
 
         this[$$.unsubscribe] = event.detail.unsubscribe;
 
+        if (!this[$$.unsubscribe]) {
+          throw new Error(`No provider found for ${this.constructor.name}`);
+        }
+
         if (super.connectedCallback) {
           super.connectedCallback();
         }

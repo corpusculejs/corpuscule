@@ -202,5 +202,23 @@ describe("@corpuscule/context", () => {
       expect(c2[contextValue]).toBe(3);
       expect(c1[contextValue]).toBe(2);
     });
+    // it("should throw an error if no provider exists for context", () => {
+    //   const {
+    //     consumer,
+    //     contextValue,
+    //   } = createContext();
+    //
+    //   class TestConsumer extends consumer(HTMLElement) {
+    //     public static readonly is: string = `x-${uuid()}`;
+    //
+    //     public [contextValue]?: number;
+    //   }
+    //
+    //   customElements.define(TestConsumer.is, TestConsumer);
+    //   const el = document.createElement(TestConsumer.is);
+    //   expect(() => {
+    //     document.body.appendChild(el);
+    //   }).toThrowError("No provider found for TestConsumer");
+    // });
   });
 });
