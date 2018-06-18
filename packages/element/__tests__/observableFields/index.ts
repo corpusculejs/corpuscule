@@ -68,8 +68,10 @@ const observableFields = () => {
       }
 
       const el = defineAndMount(Test);
+      await el.renderingPromise;
 
       el.setAttribute("attr", "oneAttr");
+      await el.renderingPromise;
 
       expect(spy)
         .toHaveBeenCalledWith({
@@ -80,6 +82,7 @@ const observableFields = () => {
         });
 
       el.prop = "oneProp";
+      await el.renderingPromise;
 
       expect(spy).toHaveBeenCalledWith({
         attr: "oneAttr",
@@ -89,6 +92,7 @@ const observableFields = () => {
       });
 
       el.updateState("oneState");
+      await el.renderingPromise;
 
       expect(spy).toHaveBeenCalledWith({
         attr: "oneAttr",
@@ -98,6 +102,7 @@ const observableFields = () => {
       });
 
       el.setAttribute("attr", "twoAttr");
+      await el.renderingPromise;
 
       expect(spy).toHaveBeenCalledWith({
         attr: "oneAttr",

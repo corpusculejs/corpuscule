@@ -8,7 +8,7 @@ import CorpusculeElement, {didMount, didUnmount, didUpdate, render} from "../../
 
 const didMethods = () => {
   describe("didMethods", () => {
-    it("should call [didMount]() callback on mounting", () => {
+    it("should call [didMount]() callback on mounting", async () => {
       const spy = jasmine.createSpy("OnMount");
 
       class Test extends CorpusculeElement {
@@ -23,11 +23,14 @@ const didMethods = () => {
         }
       }
 
-      defineAndMount(Test);
+      const el = defineAndMount(Test);
+
+      await el.renderingPromise;
+
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
-    it("should call [didUnmount]() callback on unmounting", () => {
+    it("should call [didUnmount]() callback on unmounting", async () => {
       const spy = jasmine.createSpy("OnUnmount");
 
       class Test extends CorpusculeElement {
@@ -44,6 +47,8 @@ const didMethods = () => {
 
       const el = defineAndMount(Test);
       document.body.removeChild(el);
+
+      await el.renderingPromise;
 
       expect(spy).toHaveBeenCalledTimes(1);
     });
@@ -66,6 +71,8 @@ const didMethods = () => {
       }
 
       const el = defineAndMount(Test);
+      await el.renderingPromise;
+
       el.num = 2;
 
       await el.forceUpdate();

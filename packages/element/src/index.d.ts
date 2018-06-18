@@ -76,5 +76,5 @@ export default class CorpusculeElement extends HTMLElement implements CustomElem
 
   protected [didUnmount](): void;
 
-  protected [render](): TemplateResult | null;
+  protected [render](): TemplateResult | Promise<TemplateResult> | Promise<null> | null;
 }

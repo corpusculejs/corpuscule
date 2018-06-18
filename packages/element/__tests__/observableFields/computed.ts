@@ -12,7 +12,7 @@ import CorpusculeElement, {
 
 const computed = () => {
   describe("computed", () => {
-    it("should memoize result of processed getter", () => {
+    it("should memoize result of processed getter", async () => {
       const spy = jasmine.createSpy("OnComputed");
 
       class Test extends CorpusculeElement {
@@ -40,6 +40,7 @@ const computed = () => {
       }
 
       const el = defineAndMount(Test);
+      await el.renderingPromise;
 
       expect(el.comp).toBe(3);
       expect(el.comp).toBe(3);
@@ -47,7 +48,7 @@ const computed = () => {
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
-    it("should reset result on watching property change", () => {
+    it("should reset result on watching property change", async () => {
       const spy = jasmine.createSpy("OnComputed");
 
       class Test extends CorpusculeElement {
@@ -75,11 +76,13 @@ const computed = () => {
       }
 
       const el = defineAndMount(Test);
+      await el.renderingPromise;
 
       expect(el.comp).toBe(3);
 
       el.first = 0;
       el.second = 1;
+      await el.renderingPromise;
 
       expect(el.comp).toBe(1);
       expect(el.comp).toBe(1);
@@ -137,7 +140,7 @@ const computed = () => {
         .toThrowError("Property \"comp\" is not defined or is not a getter");
     });
 
-    it("should allow to define property in any place of prototype chain", () => {
+    it("should allow to define property in any place of prototype chain", async () => {
       class Parent extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
@@ -162,6 +165,7 @@ const computed = () => {
       }
 
       const el = defineAndMount(Child);
+      await el.renderingPromise;
 
       expect(el.comp).toBe(3);
     });
