@@ -9,15 +9,16 @@ const next = (deadline) => {
     }
 
     const [task, resolve] = scheduledTasks.shift();
-    task().then(resolve);
+    task();
+    resolve();
   }
 };
 
 const schedule = async (callback, immediately) =>
-  new Promise(async (resolve, reject) => {
+  new Promise((resolve, reject) => {
     try {
       if (immediately) {
-        await callback();
+        callback();
         resolve();
 
         return;

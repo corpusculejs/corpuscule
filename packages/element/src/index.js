@@ -288,7 +288,9 @@ export default class CorpusculeElement extends HTMLElement {
 
     scheduler.valid = false;
 
-    this[$$.rendering] = schedule(async () => {
+    const [render, compatibilityMode] = await renderPromise;
+
+    this[$$.rendering] = schedule(() => {
       const {
         is,
         [$.deriveStateFromProps]: derive,
@@ -314,10 +316,7 @@ export default class CorpusculeElement extends HTMLElement {
         : true;
 
       if (should) {
-        const [rendered, [render, compatibilityMode]] = await Promise.all([
-          this[$.render](),
-          renderPromise,
-        ]);
+        const rendered = this[$.render]();
 
         if (rendered) {
           render(rendered, this[$$.root], compatibilityMode ? is : undefined);
