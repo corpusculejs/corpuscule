@@ -10,7 +10,7 @@ import methods from "./methods";
 
 const lifecycle = () => {
   describe("lifecycle", () => {
-    it("should allow to create basic custom element", () => {
+    it("should allow to create basic custom element", async () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
@@ -19,7 +19,8 @@ const lifecycle = () => {
         }
       }
 
-      defineAndMount(Test);
+      const test = defineAndMount(Test);
+      await test.renderingPromise;
 
       const collection = document.body.getElementsByTagName(Test.is);
       expect(collection.length).toBe(1);
@@ -47,6 +48,7 @@ const lifecycle = () => {
       }
 
       const el = defineAndMount(Test);
+      await el.renderingPromise;
 
       const node = el.shadowRoot!.getElementById("node")!;
       expect(node.textContent).toBe("Test content #1");

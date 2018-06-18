@@ -8,7 +8,7 @@ import CorpusculeElement, {render, StateDescriptorMap, stateMap} from "../../src
 
 const states = () => {
   describe("states", () => {
-    it("should update on state change", () => {
+    it("should update on state change", async () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
@@ -28,11 +28,14 @@ const states = () => {
       }
 
       const el = defineAndMount(Test);
+      await el.renderingPromise;
+
       const node = el.shadowRoot!.getElementById("node")!;
 
       expect(node.textContent).toBe("#1");
 
       el.updateIndexTo(2);
+      await el.renderingPromise;
 
       expect(node.textContent).toBe("#2");
     });

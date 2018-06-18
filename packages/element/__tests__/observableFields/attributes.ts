@@ -12,7 +12,7 @@ import CorpusculeElement, {
 
 const attributes = () => {
   describe("attributes", () => {
-    it("should update on attribute change", () => {
+    it("should update on attribute change", async () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
@@ -34,17 +34,19 @@ const attributes = () => {
       }
 
       const el = defineAndMount(Test);
+      await el.renderingPromise;
 
       const node = el.shadowRoot!.getElementById("node")!;
 
       expect(node.textContent).toBe("Nothing");
 
       el.setAttribute("idx", "2");
+      await el.renderingPromise;
 
       expect(node.textContent).toBe("#2");
     });
 
-    it("should set default attribute value if no attribute is set before mounting", () => {
+    it("should set default attribute value if no attribute is set before mounting", async () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
@@ -62,13 +64,15 @@ const attributes = () => {
       }
 
       const el = defineAndMount(Test);
+      await el.renderingPromise;
+
       expect(el.getAttribute("idx")).toBe("2");
 
       const node = el.shadowRoot!.getElementById("node")!;
       expect(node.textContent).toBe("#2");
     });
 
-    it("should set value from attribute value, if any values are set before mounting", () => {
+    it("should set value from attribute value, if any values are set before mounting", async () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
@@ -89,10 +93,12 @@ const attributes = () => {
         e.setAttribute("idx", "2");
       });
 
+      await el.renderingPromise;
+
       expect(el.index).toBe(2);
     });
 
-    it("should set attribute value on attribute property change", () => {
+    it("should set attribute value on attribute property change", async () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
@@ -110,13 +116,15 @@ const attributes = () => {
       }
 
       const el = defineAndMount(Test);
+      await el.renderingPromise;
 
       el.index = 2;
+      await el.renderingPromise;
 
       expect(el.getAttribute("idx")).toBe("2");
     });
 
-    it("should avoid re-render if attribute values are identical and pureness is not disabled", () => {
+    it("should avoid re-render if attribute values are identical and pureness is not disabled", async () => {
       const spy = jasmine.createSpy("OnRender");
 
       class Test extends CorpusculeElement {
@@ -138,13 +146,15 @@ const attributes = () => {
       }
 
       const el = defineAndMount(Test);
+      await el.renderingPromise;
 
       el.index = 1;
+      await el.renderingPromise;
 
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
-    it("should re-render if property pureness is disabled", () => {
+    it("should re-render if property pureness is disabled", async () => {
       const spy = jasmine.createSpy("OnRender");
 
       class Test extends CorpusculeElement {
@@ -166,13 +176,15 @@ const attributes = () => {
       }
 
       const el = defineAndMount(Test);
+      await el.renderingPromise;
 
       el.index = 1;
+      await el.renderingPromise;
 
       expect(spy).toHaveBeenCalledTimes(2);
     });
 
-    it("should add and remove attribute if it has boolean type", () => {
+    it("should add and remove attribute if it has boolean type", async () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
@@ -190,19 +202,22 @@ const attributes = () => {
       }
 
       const el = defineAndMount(Test);
+      await el.renderingPromise;
 
       expect(el.hasAttribute("has")).not.toBeTruthy();
 
       el.has = true;
+      await el.renderingPromise;
 
       expect(el.hasAttribute("has")).toBeTruthy();
 
       el.has = false;
+      await el.renderingPromise;
 
       expect(el.hasAttribute("has")).not.toBeTruthy();
     });
 
-    it("should throw error, if attribute value does not fit guard", () => {
+    it("should throw error, if attribute value does not fit guard", async () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
@@ -220,6 +235,7 @@ const attributes = () => {
       }
 
       const el = defineAndMount(Test);
+      await el.renderingPromise;
 
       expect(() => {
         (el as any).index = "string";

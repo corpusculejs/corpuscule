@@ -15,7 +15,7 @@ import CorpusculeElement, {
 
 const methods = () => {
   describe("static methods", () => {
-    it("should disable updating if [shouldUpdate]() returns false", () => {
+    it("should disable updating if [shouldUpdate]() returns false", async () => {
       const spy = jasmine.createSpy("OnRender");
 
       class Test extends CorpusculeElement {
@@ -42,7 +42,11 @@ const methods = () => {
 
       const el = defineAndMount(Test);
 
+      await el.renderingPromise;
+
       el.num = 2;
+
+      await el.renderingPromise;
 
       expect(spy).toHaveBeenCalledTimes(1);
     });
@@ -74,12 +78,14 @@ const methods = () => {
 
       const el = defineAndMount(Test);
 
+      await el.renderingPromise;
+
       await el.forceUpdate();
 
       expect(spy).toHaveBeenCalledTimes(2);
     });
 
-    it("should recalculate state on props change if [deriveStateFromProps]() is defined", () => {
+    it("should recalculate state on props change if [deriveStateFromProps]() is defined", async () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
@@ -109,12 +115,15 @@ const methods = () => {
       }
 
       const el = defineAndMount(Test);
+      await el.renderingPromise;
 
       el.prop = 3;
+      await el.renderingPromise;
 
       expect(el.state).not.toBeTruthy();
 
       el.prop = 2;
+      await el.renderingPromise;
 
       expect(el.state).toBeTruthy();
     });

@@ -1,13 +1,5 @@
-import {render as r} from "lit-html/lib/shady-render";
 import * as $$ from "./tokens/internal";
-import {
-  attributeMap,
-  computedMap, createRoot,
-  deriveStateFromProps, didMount, didUnmount, didUpdate,
-  propertyMap,
-  render,
-  shouldUpdate, stateMap,
-} from "./tokens/lifecycle";
+import * as $ from "./tokens/lifecycle";
 import {
   defaultPropertyOptions,
   getDescriptors, getPropertyDescriptor,
@@ -19,30 +11,34 @@ import schedule from "./scheduler";
 
 export * from "./tokens/lifecycle";
 
+const renderPromise = window.Corpuscule && window.Corpuscule.compatibility === true
+  ? import("lit-html/lib/shady-render").then(({render}) => [render, true])
+  : import("lit-html/lib/lit-extended").then(({render}) => [render, false]);
+
 export default class CorpusculeElement extends HTMLElement {
   static get observedAttributes() {
-    if (this[propertyMap]) {
-      this[$$.initProperties](getDescriptors(this, propertyMap));
+    if (this[$.propertyMap]) {
+      this[$$.initProperties](getDescriptors(this, $.propertyMap));
     }
 
-    if (this[stateMap]) {
-      this[$$.initStates](getDescriptors(this, stateMap));
+    if (this[$.stateMap]) {
+      this[$$.initStates](getDescriptors(this, $.stateMap));
     }
 
-    if (this[computedMap]) {
-      this[$$.initComputed](getDescriptors(this, computedMap));
+    if (this[$.computedMap]) {
+      this[$$.initComputed](getDescriptors(this, $.computedMap));
     }
 
-    return this[attributeMap]
-      ? this[$$.initAttributes](getDescriptors(this, attributeMap))
+    return this[$.attributeMap]
+      ? this[$$.initAttributes](getDescriptors(this, $.attributeMap))
       : [];
   }
 
-  static [deriveStateFromProps]() {
+  static [$.deriveStateFromProps]() {
     return null;
   }
 
-  static [shouldUpdate]() {
+  static [$.shouldUpdate]() {
     return true;
   }
 
@@ -194,7 +190,7 @@ export default class CorpusculeElement extends HTMLElement {
     this[$$.properties] = {};
     this[$$.previousProperties] = {};
     this[$$.previousStates] = {};
-    this[$$.root] = this[createRoot]();
+    this[$$.root] = this[$.createRoot]();
     this[$$.scheduler] = {
       force: false,
       initial: true,
@@ -239,7 +235,7 @@ export default class CorpusculeElement extends HTMLElement {
   }
 
   disconnectedCallback() {
-    this[didUnmount]();
+    this[$.didUnmount]();
     this[$$.isMount] = false;
   }
 
@@ -247,24 +243,24 @@ export default class CorpusculeElement extends HTMLElement {
     return this[$$.invalidate]("force");
   }
 
-  [createRoot]() {
+  [$.createRoot]() {
     return this.attachShadow({mode: "open"});
   }
 
   // eslint-disable-next-line no-empty-function, class-methods-use-this
-  [didMount]() {
+  [$.didMount]() {
   }
 
   // eslint-disable-next-line no-empty-function, class-methods-use-this
-  [didUpdate]() {
+  [$.didUpdate]() {
   }
 
   // eslint-disable-next-line no-empty-function, class-methods-use-this
-  [didUnmount]() {
+  [$.didUnmount]() {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  [render]() {
+  [$.render]() {
     throw new Error("[render]() is not implemented");
   }
 
@@ -292,11 +288,11 @@ export default class CorpusculeElement extends HTMLElement {
 
     scheduler.valid = false;
 
-    this[$$.rendering] = schedule(() => {
+    this[$$.rendering] = schedule(async () => {
       const {
         is,
-        [deriveStateFromProps]: derive,
-        [shouldUpdate]: should,
+        [$.deriveStateFromProps]: derive,
+        [$.shouldUpdate]: shouldUpdate,
       } = this.constructor;
 
       const {
@@ -313,25 +309,28 @@ export default class CorpusculeElement extends HTMLElement {
         };
       }
 
-      const s = !scheduler.force && !scheduler.mounting
-        ? should(props, states, prevProps, prevStates)
+      const should = !scheduler.force && !scheduler.mounting
+        ? shouldUpdate(props, states, prevProps, prevStates)
         : true;
 
-      if (s) {
-        const rendered = this[render]();
+      if (should) {
+        const [rendered, [render, compatibilityMode]] = await Promise.all([
+          this[$.render](),
+          renderPromise,
+        ]);
 
         if (rendered) {
-          r(rendered, this[$$.root], is);
+          render(rendered, this[$$.root], compatibilityMode ? is : undefined);
         }
       }
 
       if (scheduler.mounting) {
-        this[didMount]();
+        this[$.didMount]();
         this[$$.isMount] = true;
       }
 
-      if (s && !scheduler.mounting) {
-        this[didUpdate](prevProps, prevStates);
+      if (should && !scheduler.mounting) {
+        this[$.didUpdate](prevProps, prevStates);
       }
 
       this[$$.previousProperties] = {
