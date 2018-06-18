@@ -28,7 +28,7 @@ export const connect = (target) => {
         this[$$.initDispatchers](getDescriptors(this, dispatcherMap));
       }
 
-      return super.observableAttributes || [];
+      return super.observedAttributes || [];
     }
 
     static [$$.initDispatchers](dispatchers) {
