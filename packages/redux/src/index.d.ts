@@ -1,15 +1,15 @@
 import createContext from "@corpuscule/context";
 import {CustomElementClass, UncertainCustomElementClass} from "@corpuscule/types";
 
-export type DispatcherRegistry = ReadonlyArray<string>;
+export type DispatcherMap = ReadonlyArray<PropertyKey>;
 export type PropertyGetter<S> = (state: S) => any;
 
-export interface ConnectedMap<S> {
-  readonly [propertyName: string]: PropertyGetter<S>;
-}
+export type ConnectedMap<S> = {
+  readonly [P in PropertyKey]: PropertyGetter<S>;
+};
 
 export interface ReduxClass<T, S> extends CustomElementClass<T> {
-  readonly [dispatcherMap]?: DispatcherRegistry;
+  readonly [dispatcherMap]?: DispatcherMap;
   readonly [connectedMap]?: ConnectedMap<S>;
 }
 
