@@ -1,13 +1,7 @@
 const packages = {
   context: ["index"],
-  element: [
-    "index",
-    "decorators",
-  ],
-  redux: [
-    "index",
-    "decorators",
-  ],
+  element: ["index"],
+  redux: ["index"],
   router: ["index"],
   styles: ["index"],
   utils: [
