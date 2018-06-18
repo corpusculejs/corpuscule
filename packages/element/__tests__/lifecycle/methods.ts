@@ -21,7 +21,7 @@ const methods = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [propertyMap](): PropertyDescriptorMap<any> {
+        public static get [propertyMap](): PropertyDescriptorMap {
           return {
             num: null,
           };
@@ -57,7 +57,7 @@ const methods = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [propertyMap](): PropertyDescriptorMap<any> {
+        public static get [propertyMap](): PropertyDescriptorMap {
           return {
             num: null,
           };
@@ -89,13 +89,13 @@ const methods = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [propertyMap](): PropertyDescriptorMap<any> {
+        public static get [propertyMap](): PropertyDescriptorMap {
           return {
             prop: null,
           };
         }
 
-        public static get [stateMap](): StateDescriptorMap<any> {
+        public static get [stateMap](): StateDescriptorMap {
           return ["state"];
         }
 

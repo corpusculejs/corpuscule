@@ -10,7 +10,7 @@ export type AttributeDescriptor =
   | [string, AttributeGuard]
   | [string, AttributeGuard, PropertyOptions];
 
-export type ComputedDescriptor = ReadonlyArray<string | symbol>;
+export type ComputedDescriptor = ReadonlyArray<PropertyKey>;
 
 export type PropertyGuard = (value: any) => boolean;
 export type PropertyDescriptor =
@@ -18,19 +18,19 @@ export type PropertyDescriptor =
   | PropertyGuard
   | null;
 
-export type AttributeDescriptorMap<T> = {
-  [P in keyof T]: AttributeDescriptor;
+export type AttributeDescriptorMap = {
+  readonly [P in PropertyKey]: AttributeDescriptor;
 };
 
-export type ComputedDescriptorMap<T> = {
-  [P in keyof T]: ComputedDescriptor;
+export type ComputedDescriptorMap = {
+  readonly [P in PropertyKey]: ComputedDescriptor;
 };
 
-export type PropertyDescriptorMap<T> = {
-  [P in keyof T]: PropertyDescriptor;
+export type PropertyDescriptorMap = {
+  readonly [P in PropertyKey]: PropertyDescriptor;
 };
 
-export type StateDescriptorMap<T> = ReadonlyArray<keyof T>;
+export type StateDescriptorMap = ReadonlyArray<PropertyKey>;
 
 export const attributeMap: unique symbol;
 export const computedMap: unique symbol;
@@ -47,12 +47,12 @@ export const stateMap: unique symbol;
 export default class CorpusculeElement extends HTMLElement implements CustomElement {
   public static readonly is: string;
 
-  public static readonly observableAttributes: ReadonlyArray<string>;
+  public static readonly observableAttributes: ReadonlyArray<PropertyKey>;
 
-  public static readonly [attributeMap]?: AttributeDescriptorMap<{}>;
-  public static readonly [propertyMap]?: PropertyDescriptorMap<{}>;
-  public static readonly [stateMap]?: StateDescriptorMap<any>;
-  public static readonly [computedMap]?: ComputedDescriptorMap<{}>;
+  public static readonly [attributeMap]?: AttributeDescriptorMap;
+  public static readonly [propertyMap]?: PropertyDescriptorMap;
+  public static readonly [stateMap]?: StateDescriptorMap;
+  public static readonly [computedMap]?: ComputedDescriptorMap;
 
   public static [deriveStateFromProps](nextProps: {}, prevProps: {}, prevState: {}): {} | null;
 
