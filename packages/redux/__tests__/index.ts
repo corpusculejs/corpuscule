@@ -8,7 +8,7 @@ import {
   connectedMap,
   ConnectedMap,
   dispatcherMap,
-  DispatcherRegistry,
+  DispatcherMap,
   provider,
   store,
 } from "../src";
@@ -136,7 +136,7 @@ describe("@corpuscule/redux", () => {
     class Connected extends connect(BasicConsumer) {
       public static is: string = `x-${uuid()}`;
 
-      public static get [dispatcherMap](): DispatcherRegistry {
+      public static get [dispatcherMap](): DispatcherMap {
         return ["external", "test"];
       }
 
