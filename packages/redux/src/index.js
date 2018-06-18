@@ -19,14 +19,16 @@ export {
 
 export const connect = (target) => {
   class ReduxConnected extends consumer(target) {
-    static get [$$.registry]() {
-      if (!this[$$.memoizedRegistry]) {
-        this[$$.memoizedRegistry] = this[connectedMap]
-          ? Object.entries(getDescriptors(this, connectedMap))
-          : [];
+    static get observedAttributes() {
+      if (this[connectedMap]) {
+        this[$$.registry] = Object.entries(getDescriptors(this, connectedMap));
       }
 
-      return this[$$.memoizedRegistry];
+      if (this[dispatcherMap]) {
+        this[$$.initDispatchers](getDescriptors(this, dispatcherMap));
+      }
+
+      return super.observableAttributes || [];
     }
 
     static [$$.initDispatchers](dispatchers) {
@@ -68,6 +70,12 @@ export const connect = (target) => {
       this[$$.subscribe]();
     }
 
+    attributeChangedCallback(...args) {
+      if (super.attributeChangedCallback) {
+        super.attributeChangedCallback(...args);
+      }
+    }
+
     disconnectedCallback() {
       if (super.disconnectedCallback) {
         super.disconnectedCallback();
@@ -87,6 +95,10 @@ export const connect = (target) => {
     }
 
     [$$.update]({getState}) {
+      if (!this.constructor[$$.registry]) {
+        return;
+      }
+
       for (const [propertyName, getter] of this.constructor[$$.registry]) {
         const nextValue = getter(getState());
 
@@ -95,10 +107,6 @@ export const connect = (target) => {
         }
       }
     }
-  }
-
-  if (ReduxConnected[dispatcherMap]) {
-    ReduxConnected[$$.initDispatchers](getDescriptors(ReduxConnected, dispatcherMap));
   }
 
   return ReduxConnected;
