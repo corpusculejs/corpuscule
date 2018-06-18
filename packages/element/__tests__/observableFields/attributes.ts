@@ -16,7 +16,7 @@ const attributes = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [attributeMap](): AttributeDescriptorMap<any> {
+        public static get [attributeMap](): AttributeDescriptorMap {
           return {
             index: ["idx", Number, {pure: true}],
           };
@@ -50,7 +50,7 @@ const attributes = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [attributeMap](): AttributeDescriptorMap<any> {
+        public static get [attributeMap](): AttributeDescriptorMap {
           return {
             index: ["idx", Number],
           };
@@ -76,7 +76,7 @@ const attributes = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [attributeMap](): AttributeDescriptorMap<any> {
+        public static get [attributeMap](): AttributeDescriptorMap {
           return {
             index: ["idx", Number],
           };
@@ -102,7 +102,7 @@ const attributes = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [attributeMap](): AttributeDescriptorMap<any> {
+        public static get [attributeMap](): AttributeDescriptorMap {
           return {
             index: ["idx", Number],
           };
@@ -130,7 +130,7 @@ const attributes = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [attributeMap](): AttributeDescriptorMap<any> {
+        public static get [attributeMap](): AttributeDescriptorMap {
           return {
             index: ["idx", Number],
           };
@@ -160,7 +160,7 @@ const attributes = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [attributeMap](): AttributeDescriptorMap<any> {
+        public static get [attributeMap](): AttributeDescriptorMap {
           return {
             index: ["idx", Number, {pure: false}],
           };
@@ -188,7 +188,7 @@ const attributes = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [attributeMap](): AttributeDescriptorMap<any> {
+        public static get [attributeMap](): AttributeDescriptorMap {
           return {
             has: ["has", Boolean],
           };
@@ -221,7 +221,7 @@ const attributes = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [attributeMap](): AttributeDescriptorMap<any> {
+        public static get [attributeMap](): AttributeDescriptorMap {
           return {
             index: ["idx", Number],
           };

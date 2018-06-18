@@ -12,7 +12,7 @@ const properties = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [propertyMap](): PropertyDescriptorMap<any> {
+        public static get [propertyMap](): PropertyDescriptorMap {
           return {
             index: null,
           };
@@ -42,7 +42,7 @@ const properties = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [propertyMap](): PropertyDescriptorMap<any> {
+        public static get [propertyMap](): PropertyDescriptorMap {
           return {
             str: value => typeof value === "string",
           };
@@ -69,7 +69,7 @@ const properties = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [propertyMap](): PropertyDescriptorMap<any> {
+        public static get [propertyMap](): PropertyDescriptorMap {
           return {
             str: value => typeof value === "string",
           };
@@ -99,7 +99,7 @@ const properties = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [propertyMap](): PropertyDescriptorMap<any> {
+        public static get [propertyMap](): PropertyDescriptorMap {
           return {
             str: [value => typeof value === "string", {pure: false}],
           };
