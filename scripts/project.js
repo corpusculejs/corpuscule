@@ -11,6 +11,7 @@ const packages = {
   router: ["index"],
   styles: ["index"],
   utils: [
+    "pipe",
     "propertyChain",
   ],
 };
