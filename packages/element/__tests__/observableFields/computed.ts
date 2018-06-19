@@ -18,7 +18,7 @@ const computed = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [computedMap](): ComputedDescriptorMap {
+        public static get [computedMap](): ComputedDescriptorMap<Test> {
           return {
             comp: ["first", "second"],
           };
@@ -54,7 +54,7 @@ const computed = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [computedMap](): ComputedDescriptorMap {
+        public static get [computedMap](): ComputedDescriptorMap<Test> {
           return {
             comp: ["first", "second"],
           };
@@ -117,7 +117,7 @@ const computed = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [computedMap](): ComputedDescriptorMap {
+        public static get [computedMap](): ComputedDescriptorMap<Test> {
           return {
             comp: ["first", "second"],
           };
@@ -144,7 +144,7 @@ const computed = () => {
       class Parent extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [computedMap](): ComputedDescriptorMap {
+        public static get [computedMap](): ComputedDescriptorMap<Parent> {
           return {
             comp: ["first"],
           };
