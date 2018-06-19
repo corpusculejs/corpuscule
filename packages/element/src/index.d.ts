@@ -18,19 +18,20 @@ export type PropertyDescriptor =
   | PropertyGuard
   | null;
 
-export type AttributeDescriptorMap = {
-  readonly [P in PropertyKey]: AttributeDescriptor;
+export type AttributeDescriptorMap<T extends CorpusculeElement = any> = {
+  readonly [P in Exclude<keyof T, keyof CorpusculeElement>]?: AttributeDescriptor;
 };
 
-export type ComputedDescriptorMap = {
-  readonly [P in PropertyKey]: ComputedDescriptor;
+export type ComputedDescriptorMap<T extends CorpusculeElement = any> = {
+  readonly [P in Exclude<keyof T, keyof CorpusculeElement>]?: ComputedDescriptor;
 };
 
-export type PropertyDescriptorMap = {
-  readonly [P in PropertyKey]: PropertyDescriptor;
+export type PropertyDescriptorMap<T extends CorpusculeElement = any> = {
+  readonly [P in Exclude<keyof T, keyof CorpusculeElement>]?: PropertyDescriptor;
 };
 
-export type StateDescriptorMap = ReadonlyArray<PropertyKey>;
+// TODO: fix when Microsoft/TypeScript#24897 is merged (if possible)
+export type StateDescriptorMap<T extends CorpusculeElement = any> = ReadonlyArray<PropertyKey>;
 
 export const attributeMap: unique symbol;
 export const computedMap: unique symbol;
