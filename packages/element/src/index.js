@@ -304,12 +304,10 @@ export default class CorpusculeElement extends HTMLElement {
         [$$.states]: states,
       } = this;
 
-      if (scheduler.mounting || scheduler.props || scheduler.force) {
-        this[$$.states] = {
-          ...states,
-          ...derive(props, prevProps, prevStates),
-        };
-      }
+      this[$$.states] = {
+        ...states,
+        ...derive(props, prevProps, prevStates),
+      };
 
       const should = !scheduler.force && !scheduler.mounting
         ? shouldUpdate(props, states, prevProps, prevStates)
