@@ -54,10 +54,10 @@ export default class CorpusculeElement extends HTMLElement {
       Object.defineProperty(this.prototype, propertyName, {
         configurable: true,
         get() {
-          return this[$$.properties][propertyName];
+          return this[$$.props][propertyName];
         },
         set(value) {
-          const {[$$.properties]: props} = this;
+          const {[$$.props]: props} = this;
 
           if (pure && value === props[propertyName]) {
             return;
@@ -99,10 +99,10 @@ export default class CorpusculeElement extends HTMLElement {
       Object.defineProperty(this.prototype, propertyName, {
         configurable: true,
         get() {
-          return this[$$.properties][propertyName];
+          return this[$$.props][propertyName];
         },
         set(value) {
-          const {[$$.properties]: props} = this;
+          const {[$$.props]: props} = this;
 
           if (pure && value === props[propertyName]) {
             return;
@@ -187,9 +187,9 @@ export default class CorpusculeElement extends HTMLElement {
   constructor() {
     super();
     this[$$.isMount] = false;
-    this[$$.properties] = {};
-    this[$$.previousProperties] = {};
-    this[$$.previousStates] = {};
+    this[$$.props] = {};
+    this[$$.prevProps] = {};
+    this[$$.prevStates] = {};
     this[$$.root] = this[$.createRoot]();
     this[$$.scheduler] = {
       force: false,
@@ -209,14 +209,14 @@ export default class CorpusculeElement extends HTMLElement {
     const {[$$.attributesRegistry]: registry} = this.constructor;
 
     const [propertyName, guard] = registry.get(attrName);
-    this[$$.properties][propertyName] = parseAttributeValue(newVal, guard);
+    this[$$.props][propertyName] = parseAttributeValue(newVal, guard);
 
     await this[$$.invalidate]("props");
   }
 
   async connectedCallback() {
     const {[$$.attributesRegistry]: registry} = this.constructor;
-    const {[$$.properties]: props} = this;
+    const {[$$.props]: props} = this;
 
     if (registry) {
       for (const [attributeName, [propertyName, guard]] of registry) {
@@ -298,9 +298,9 @@ export default class CorpusculeElement extends HTMLElement {
       } = this.constructor;
 
       const {
-        [$$.previousProperties]: prevProps,
-        [$$.previousStates]: prevStates,
-        [$$.properties]: props,
+        [$$.prevProps]: prevProps,
+        [$$.prevStates]: prevStates,
+        [$$.props]: props,
         [$$.states]: states,
       } = this;
 
@@ -332,12 +332,12 @@ export default class CorpusculeElement extends HTMLElement {
         this[$.didUpdate](prevProps, prevStates);
       }
 
-      this[$$.previousProperties] = {
+      this[$$.prevProps] = {
         ...prevProps,
         ...props,
       };
 
-      this[$$.previousStates] = {
+      this[$$.prevStates] = {
         ...prevStates,
         ...states,
       };
