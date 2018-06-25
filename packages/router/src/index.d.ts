@@ -3,6 +3,7 @@ import {CustomElement, CustomElementClass, UncertainCustomElementClass} from "@c
 import UniversalRouter, {Options, Route} from "universal-router";
 
 export const layout: unique symbol;
+export const resolve: unique symbol;
 
 export const createRouter: (routes: Route | ReadonlyArray<Route>, options?: Options) => UniversalRouter;
 
@@ -22,6 +23,7 @@ export const router: unique symbol;
 export interface RouterOutlet<T> {
   readonly resolvingPromise: Promise<void>;
   readonly [layout]: T;
+  [resolve](path: string): IterableIterator<any>;
 }
 
 export const outlet:
