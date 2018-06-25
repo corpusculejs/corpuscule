@@ -21,8 +21,7 @@ export default class Link extends HTMLAnchorElement {
 
   [$$.handleClick](e) {
     e.preventDefault();
-    const {pathname, search, hash} = new URL(this.href);
-    push(`${pathname}${search}${hash}`);
+    push(`${this.pathname}${this.search}${this.hash}`);
   }
 }
 
