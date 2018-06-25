@@ -14,7 +14,7 @@ const empty = x => x;
  * from right to left. For example, compose(f, g, h) is identical to doing
  * (...args) => f(g(h(...args))).
  */
-const pipe = (...funcs) => {
+const compose = (...funcs) => {
   if (funcs.length === 0) {
     return empty;
   }
@@ -26,4 +26,4 @@ const pipe = (...funcs) => {
   return funcs.reduce((a, b) => (...args) => a(b(...args)));
 };
 
-export default pipe;
+export default compose;
