@@ -1,5 +1,5 @@
 import push from "./push";
-import * as $$ from "./tokens/internal";
+import {handleClick as $$handleClick} from "./tokens/internal";
 
 export default class Link extends HTMLAnchorElement {
   static get is() {
@@ -8,18 +8,18 @@ export default class Link extends HTMLAnchorElement {
 
   constructor() {
     super();
-    this[$$.handleClick] = this[$$.handleClick].bind(this);
+    this[$$handleClick] = this[$$handleClick].bind(this);
   }
 
   connectedCallback() {
-    this.addEventListener("click", this[$$.handleClick]);
+    this.addEventListener("click", this[$$handleClick]);
   }
 
   disconnectedCallback() {
-    this.removeEventListener("click", this[$$.handleClick]);
+    this.removeEventListener("click", this[$$handleClick]);
   }
 
-  [$$.handleClick](e) {
+  [$$handleClick](e) {
     e.preventDefault();
     push(`${this.pathname}${this.search}${this.hash}`);
   }
