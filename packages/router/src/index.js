@@ -1,11 +1,11 @@
+import createContext from "@corpuscule/context";
+import * as $$ from "./tokens/internal";
+import {layout, resolve} from "./tokens/lifecycle";
+
 export {default as createUrl} from "universal-router/generateUrls";
 export {default as createRouter} from "./createRouter";
 export {default as Link} from "./Link";
 export {default as push} from "./push";
-
-import createContext from "@corpuscule/context";
-import * as $$ from "./tokens/internal";
-import {layout} from "./tokens/lifecycle";
 
 const {
   consumer,
@@ -17,6 +17,7 @@ const {
 export {
   layout,
   provider,
+  resolve,
   router,
 };
 
@@ -49,12 +50,19 @@ export const outlet = routes => target =>
       return this[$$.resolving];
     }
 
+    // eslint-disable-next-line class-methods-use-this
+    *[resolve](path) {
+      return yield path;
+    }
+
     [$$.updateRoute](pathOrEvent) {
       const path = typeof pathOrEvent === "string"
         ? pathOrEvent
         : pathOrEvent.state || "";
 
-      this[$$.resolving] = this[context].resolve(path)
+      const iter = this[resolve](path);
+
+      this[$$.resolving] = this[context].resolve(iter.next().value)
         .then((resolved) => {
           if (resolved === undefined) {
             return;
@@ -63,7 +71,7 @@ export const outlet = routes => target =>
           const [result, {route}] = resolved;
 
           if (routes.includes(route)) {
-            this[layout] = result;
+            this[layout] = iter.next(result).value;
           }
         });
     }
