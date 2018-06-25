@@ -1,5 +1,8 @@
 import createContext from "@corpuscule/context";
-import * as $$ from "./tokens/internal";
+import {
+  resolving as $$resolving,
+  updateRoute as $$updateRoute,
+} from "./tokens/internal";
 import {layout, resolve} from "./tokens/lifecycle";
 
 export {default as createUrl} from "universal-router/generateUrls";
@@ -25,21 +28,21 @@ export const outlet = routes => target =>
   class Route extends consumer(target) {
     constructor() {
       super();
-      this[$$.updateRoute] = this[$$.updateRoute].bind(this);
+      this[$$updateRoute] = this[$$updateRoute].bind(this);
     }
 
     connectedCallback() {
-      window.addEventListener("popstate", this[$$.updateRoute]);
+      window.addEventListener("popstate", this[$$updateRoute]);
 
       if (super.connectedCallback) {
         super.connectedCallback();
       }
 
-      this[$$.updateRoute](location.pathname);
+      this[$$updateRoute](location.pathname);
     }
 
     disconnectedCallback() {
-      window.removeEventListener("popstate", this[$$.updateRoute]);
+      window.removeEventListener("popstate", this[$$updateRoute]);
 
       if (super.disconnectedCallback) {
         super.disconnectedCallback();
@@ -47,7 +50,7 @@ export const outlet = routes => target =>
     }
 
     get resolvingPromise() {
-      return this[$$.resolving];
+      return this[$$resolving];
     }
 
     // eslint-disable-next-line class-methods-use-this
@@ -55,14 +58,14 @@ export const outlet = routes => target =>
       return yield path;
     }
 
-    [$$.updateRoute](pathOrEvent) {
+    [$$updateRoute](pathOrEvent) {
       const path = typeof pathOrEvent === "string"
         ? pathOrEvent
         : pathOrEvent.state || "";
 
       const iter = this[resolve](path);
 
-      this[$$.resolving] = this[context].resolve(iter.next().value)
+      this[$$resolving] = this[context].resolve(iter.next().value)
         .then((resolved) => {
           if (resolved === undefined) {
             return;
