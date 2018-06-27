@@ -2,6 +2,16 @@
   "name": "@corpuscule/element",
   "version": "0.4.0",
   "description": "Custom element base class for Corpuscule",
+  "author": "Vlad Rindevich <rindevich.vs@gmail.com> (https://github.com/Lodin)",
+  "bugs": {
+    "url": "https://github.com/corpusculejs/corpuscule/issues"
+  },
+  "homepage": "https://github.com/corpusculejs/corpuscule#readme",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/corpusculejs/corpuscule.git"
+  },
   "dependencies": {
     "@corpuscule/types": "https://github.com/corpusculejs/corpuscule/releases/download/%40corpuscule%2Ftypes%400.1.1/corpuscule-types-0.1.1.tgz",
     "@corpuscule/utils": "https://github.com/corpusculejs/corpuscule/releases/download/%40corpuscule%2Futils%400.2.0/corpuscule-utils-0.2.0.tgz"
