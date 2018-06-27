@@ -5,12 +5,12 @@ const packages = {
   router: ["index"],
   styles: ["index"],
   utils: [
-    "pipe",
+    "compose",
     "propertyChain",
   ],
 };
 
-const definitions = ["types"];
+const definitions = ["typings"];
 
 module.exports = {
   definitions,
