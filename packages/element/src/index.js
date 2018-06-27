@@ -1,5 +1,32 @@
-import * as $$ from "./tokens/internal";
-import * as $ from "./tokens/lifecycle";
+import {
+  attributesRegistry as $$attributesRegistry,
+  initAttributes as $$initAttributes,
+  initComputed as $$initComputed,
+  initProperties as $$initProperties,
+  initStates as $$initStates,
+  invalidate as $$invalidate,
+  isMount as $$isMount,
+  prevProps as $$prevProps,
+  prevStates as $$prevStates,
+  props as $$props,
+  rendering as $$rendering,
+  root as $$root,
+  scheduler as $$scheduler,
+  states as $$states,
+} from "./tokens/internal";
+import {
+  attributeMap as $attributeMap,
+  computedMap as $computedMap,
+  createRoot as $createRoot,
+  didMount as $didMount,
+  didUpdate as $didUpdate,
+  didUnmount as $didUnmount,
+  deriveStateFromProps as $deriveStateFromProps,
+  propertyMap as $propertyMap,
+  render as $render,
+  shouldUpdate as $shouldUpdate,
+  stateMap as $stateMap,
+} from "./tokens/lifecycle";
 import {
   defaultPropertyOptions,
   getDescriptors, getPropertyDescriptor,
@@ -17,32 +44,32 @@ const renderPromise = window.Corpuscule && window.Corpuscule.compatibility === t
 
 export default class CorpusculeElement extends HTMLElement {
   static get observedAttributes() {
-    if (this[$.propertyMap]) {
-      this[$$.initProperties](getDescriptors(this, $.propertyMap));
+    if (this[$propertyMap]) {
+      this[$$initProperties](getDescriptors(this, $propertyMap));
     }
 
-    if (this[$.stateMap]) {
-      this[$$.initStates](getDescriptors(this, $.stateMap));
+    if (this[$stateMap]) {
+      this[$$initStates](getDescriptors(this, $stateMap));
     }
 
-    if (this[$.computedMap]) {
-      this[$$.initComputed](getDescriptors(this, $.computedMap));
+    if (this[$computedMap]) {
+      this[$$initComputed](getDescriptors(this, $computedMap));
     }
 
-    return this[$.attributeMap]
-      ? this[$$.initAttributes](getDescriptors(this, $.attributeMap))
+    return this[$attributeMap]
+      ? this[$$initAttributes](getDescriptors(this, $attributeMap))
       : [];
   }
 
-  static [$.deriveStateFromProps]() {
+  static [$deriveStateFromProps]() {
     return null;
   }
 
-  static [$.shouldUpdate]() {
+  static [$shouldUpdate]() {
     return true;
   }
 
-  static [$$.initAttributes](attributes) {
+  static [$$initAttributes](attributes) {
     const attributesRegistry = new Map();
 
     for (const [
@@ -54,10 +81,10 @@ export default class CorpusculeElement extends HTMLElement {
       Object.defineProperty(this.prototype, propertyName, {
         configurable: true,
         get() {
-          return this[$$.props][propertyName];
+          return this[$$props][propertyName];
         },
         set(value) {
-          const {[$$.props]: props} = this;
+          const {[$$props]: props} = this;
 
           if (pure && value === props[propertyName]) {
             return;
@@ -69,21 +96,22 @@ export default class CorpusculeElement extends HTMLElement {
 
           props[propertyName] = value;
 
-          if (this[$$.isMount]) {
+          if (this[$$isMount]) {
             toAttribute(this, attributeName, value);
           }
 
-          this[$$.invalidate]("props").catch(handleError);
+          this[$$invalidate]("props")
+            .catch(handleError);
         },
       });
     }
 
-    this[$$.attributesRegistry] = attributesRegistry;
+    this[$$attributesRegistry] = attributesRegistry;
 
     return Array.from(attributesRegistry.keys());
   }
 
-  static [$$.initProperties](properties) {
+  static [$$initProperties](properties) {
     for (const [propertyName, descriptor] of Object.entries(properties)) {
       let guard = null;
       let pure = true;
@@ -99,10 +127,10 @@ export default class CorpusculeElement extends HTMLElement {
       Object.defineProperty(this.prototype, propertyName, {
         configurable: true,
         get() {
-          return this[$$.props][propertyName];
+          return this[$$props][propertyName];
         },
         set(value) {
-          const {[$$.props]: props} = this;
+          const {[$$props]: props} = this;
 
           if (pure && value === props[propertyName]) {
             return;
@@ -114,28 +142,30 @@ export default class CorpusculeElement extends HTMLElement {
 
           props[propertyName] = value;
 
-          this[$$.invalidate]("props").catch(handleError);
+          this[$$invalidate]("props")
+            .catch(handleError);
         },
       });
     }
   }
 
-  static [$$.initStates](states) {
+  static [$$initStates](states) {
     for (const propertyName of states) {
       Object.defineProperty(this.prototype, propertyName, {
         configurable: true,
         get() {
-          return this[$$.states][propertyName];
+          return this[$$states][propertyName];
         },
         set(value) {
-          this[$$.states][propertyName] = value;
-          this[$$.invalidate]("states").catch(handleError);
+          this[$$states][propertyName] = value;
+          this[$$invalidate]("states")
+            .catch(handleError);
         },
       });
     }
   }
 
-  static [$$.initComputed](computed) {
+  static [$$initComputed](computed) {
     for (const [propertyName, watchings] of Object.entries(computed)) {
       const descriptor = getPropertyDescriptor(this.prototype, propertyName);
 
@@ -181,24 +211,24 @@ export default class CorpusculeElement extends HTMLElement {
   }
 
   get renderingPromise() {
-    return this[$$.rendering] || Promise.resolve();
+    return this[$$rendering] || Promise.resolve();
   }
 
   constructor() {
     super();
-    this[$$.isMount] = false;
-    this[$$.props] = {};
-    this[$$.prevProps] = {};
-    this[$$.prevStates] = {};
-    this[$$.root] = this[$.createRoot]();
-    this[$$.scheduler] = {
+    this[$$isMount] = false;
+    this[$$props] = {};
+    this[$$prevProps] = {};
+    this[$$prevStates] = {};
+    this[$$root] = this[$createRoot]();
+    this[$$scheduler] = {
       force: false,
       initial: true,
       mounting: false,
       props: false,
       valid: false,
     };
-    this[$$.states] = {};
+    this[$$states] = {};
   }
 
   async attributeChangedCallback(attrName, oldVal, newVal) {
@@ -206,17 +236,17 @@ export default class CorpusculeElement extends HTMLElement {
       return;
     }
 
-    const {[$$.attributesRegistry]: registry} = this.constructor;
+    const {[$$attributesRegistry]: registry} = this.constructor;
 
     const [propertyName, guard] = registry.get(attrName);
-    this[$$.props][propertyName] = parseAttributeValue(newVal, guard);
+    this[$$props][propertyName] = parseAttributeValue(newVal, guard);
 
-    await this[$$.invalidate]("props");
+    await this[$$invalidate]("props");
   }
 
   async connectedCallback() {
-    const {[$$.attributesRegistry]: registry} = this.constructor;
-    const {[$$.props]: props} = this;
+    const {[$$attributesRegistry]: registry} = this.constructor;
+    const {[$$props]: props} = this;
 
     if (registry) {
       for (const [attributeName, [propertyName, guard]] of registry) {
@@ -231,41 +261,41 @@ export default class CorpusculeElement extends HTMLElement {
       }
     }
 
-    await this[$$.invalidate]("mounting");
+    await this[$$invalidate]("mounting");
   }
 
   disconnectedCallback() {
-    this[$.didUnmount]();
-    this[$$.isMount] = false;
+    this[$didUnmount]();
+    this[$$isMount] = false;
   }
 
   async forceUpdate() {
-    return this[$$.invalidate]("force");
+    return this[$$invalidate]("force");
   }
 
-  [$.createRoot]() {
+  [$createRoot]() {
     return this.attachShadow({mode: "open"});
   }
 
   // eslint-disable-next-line no-empty-function, class-methods-use-this
-  [$.didMount]() {
+  [$didMount]() {
   }
 
   // eslint-disable-next-line no-empty-function, class-methods-use-this
-  [$.didUpdate]() {
+  [$didUpdate]() {
   }
 
   // eslint-disable-next-line no-empty-function, class-methods-use-this
-  [$.didUnmount]() {
+  [$didUnmount]() {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  [$.render]() {
+  [$render]() {
     throw new Error("[render]() is not implemented");
   }
 
-  async [$$.invalidate](type) {
-    const {[$$.scheduler]: scheduler} = this;
+  async [$$invalidate](type) {
+    const {[$$scheduler]: scheduler} = this;
 
     switch (type) {
       case "force":
@@ -283,28 +313,28 @@ export default class CorpusculeElement extends HTMLElement {
     }
 
     if (!scheduler.valid) {
-      return this[$$.rendering];
+      return this[$$rendering];
     }
 
     scheduler.valid = false;
 
     const [render, compatibilityMode] = await renderPromise;
 
-    this[$$.rendering] = schedule(() => {
+    this[$$rendering] = schedule(() => {
       const {
         is,
-        [$.deriveStateFromProps]: derive,
-        [$.shouldUpdate]: shouldUpdate,
+        [$deriveStateFromProps]: derive,
+        [$shouldUpdate]: shouldUpdate,
       } = this.constructor;
 
       const {
-        [$$.prevProps]: prevProps,
-        [$$.prevStates]: prevStates,
-        [$$.props]: props,
-        [$$.states]: states,
+        [$$prevProps]: prevProps,
+        [$$prevStates]: prevStates,
+        [$$props]: props,
+        [$$states]: states,
       } = this;
 
-      this[$$.states] = {
+      this[$$states] = {
         ...states,
         ...derive(props, prevProps, prevStates),
       };
@@ -314,28 +344,28 @@ export default class CorpusculeElement extends HTMLElement {
         : true;
 
       if (should) {
-        const rendered = this[$.render]();
+        const rendered = this[$render]();
 
         if (rendered) {
-          render(rendered, this[$$.root], compatibilityMode ? is : undefined);
+          render(rendered, this[$$root], compatibilityMode ? is : undefined);
         }
       }
 
       if (scheduler.mounting) {
-        this[$.didMount]();
-        this[$$.isMount] = true;
+        this[$didMount]();
+        this[$$isMount] = true;
       }
 
       if (should && !scheduler.mounting) {
-        this[$.didUpdate](prevProps, prevStates);
+        this[$didUpdate](prevProps, prevStates);
       }
 
-      this[$$.prevProps] = {
+      this[$$prevProps] = {
         ...prevProps,
         ...props,
       };
 
-      this[$$.prevStates] = {
+      this[$$prevStates] = {
         ...prevStates,
         ...states,
       };
@@ -347,6 +377,6 @@ export default class CorpusculeElement extends HTMLElement {
       scheduler.props = false;
     }, scheduler.initial);
 
-    return this[$$.rendering];
+    return this[$$rendering];
   }
 }
