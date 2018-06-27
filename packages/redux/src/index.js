@@ -1,5 +1,12 @@
 import createContext from "@corpuscule/context";
-import * as $$ from "./tokens/internal";
+import {
+  context as $$context,
+  initDispatchers as $$initDispatchers,
+  registry as $$registry,
+  subscribe as $$subscribe,
+  unsubscribe as $$unsubscribe,
+  update as $$update,
+} from "./tokens/internal";
 import {dispatcherMap, connectedMap} from "./tokens/lifecycle";
 import {getDescriptors} from "./utils";
 
@@ -21,17 +28,17 @@ export const connect = (target) => {
   class ReduxConnected extends consumer(target) {
     static get observedAttributes() {
       if (this[connectedMap]) {
-        this[$$.registry] = Object.entries(getDescriptors(this, connectedMap));
+        this[$$registry] = Object.entries(getDescriptors(this, connectedMap));
       }
 
       if (this[dispatcherMap]) {
-        this[$$.initDispatchers](getDescriptors(this, dispatcherMap));
+        this[$$initDispatchers](getDescriptors(this, dispatcherMap));
       }
 
       return super.observedAttributes || [];
     }
 
-    static [$$.initDispatchers](dispatchers) {
+    static [$$initDispatchers](dispatchers) {
       for (const propertyName of dispatchers) {
         const method = this.prototype[propertyName];
 
@@ -43,7 +50,7 @@ export const connect = (target) => {
               Object.defineProperty(this, propertyName, {
                 configurable: true,
                 value(...args) {
-                  this[$$.context].dispatch(value(...args));
+                  this[$$context].dispatch(value(...args));
                 },
               });
             },
@@ -54,20 +61,20 @@ export const connect = (target) => {
 
         Object.defineProperty(this.prototype, propertyName, {
           value(...args) {
-            this[$$.context].dispatch(method.call(this, ...args));
+            this[$$context].dispatch(method.call(this, ...args));
           },
         });
       }
     }
 
     set [context](v) {
-      this[$$.context] = v;
+      this[$$context] = v;
 
-      if (this[$$.unsubscribe]) {
-        this[$$.unsubscribe]();
+      if (this[$$unsubscribe]) {
+        this[$$unsubscribe]();
       }
 
-      this[$$.subscribe]();
+      this[$$subscribe]();
     }
 
     attributeChangedCallback(...args) {
@@ -81,25 +88,25 @@ export const connect = (target) => {
         super.disconnectedCallback();
       }
 
-      if (this[$$.unsubscribe]) {
-        this[$$.unsubscribe]();
+      if (this[$$unsubscribe]) {
+        this[$$unsubscribe]();
       }
     }
 
-    [$$.subscribe]() {
-      this[$$.update](this[$$.context]);
+    [$$subscribe]() {
+      this[$$update](this[$$context]);
 
-      this[$$.unsubscribe] = this[$$.context].subscribe(() => {
-        this[$$.update](this[$$.context]);
+      this[$$unsubscribe] = this[$$context].subscribe(() => {
+        this[$$update](this[$$context]);
       });
     }
 
-    [$$.update]({getState}) {
-      if (!this.constructor[$$.registry]) {
+    [$$update]({getState}) {
+      if (!this.constructor[$$registry]) {
         return;
       }
 
-      for (const [propertyName, getter] of this.constructor[$$.registry]) {
+      for (const [propertyName, getter] of this.constructor[$$registry]) {
         const nextValue = getter(getState());
 
         if (nextValue !== this[propertyName]) {
