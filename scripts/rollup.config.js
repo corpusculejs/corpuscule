@@ -8,7 +8,7 @@ module.exports = Object.entries(packages).reduce((acc, [pack, entries]) => {
       ],
       input: `packages/${pack}/src/${file}.js`,
       output: {
-        file: `packages/${pack}/dist/${file}.js`,
+        file: `packages/${pack}/lib/${file}.js`,
         format: "es",
       },
     });
