@@ -1,4 +1,4 @@
-import {CustomElementClass, UncertainCustomElementClass} from "@corpuscule/types";
+import {CustomElementClass, UncertainCustomElementClass} from "@corpuscule/typings";
 import {TemplateResult} from "lit-html";
 
 export const link: (url: string, base: string) => string;

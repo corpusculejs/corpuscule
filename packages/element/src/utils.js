@@ -1,4 +1,4 @@
-import {getDescriptorChainValues, getPropertyChainDescriptors} from "@corpuscule/utils/propertyChain";
+import {getDescriptorChainValues, getPropertyChainDescriptors} from "@corpuscule/utils/lib/propertyChain";
 
 export const defaultPropertyOptions = {pure: true};
 

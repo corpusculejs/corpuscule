@@ -1,4 +1,4 @@
-import {CustomElementClass, UncertainCustomElementClass} from "@corpuscule/types";
+import {CustomElementClass, UncertainCustomElementClass} from "@corpuscule/typings";
 
 declare const createContext: <T>(defaultValue?: T) => {
   readonly consumer: <T = {}>(target: UncertainCustomElementClass<T>) => CustomElementClass<T>;
