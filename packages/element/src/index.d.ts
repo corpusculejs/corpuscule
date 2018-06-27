@@ -1,4 +1,4 @@
-import {CustomElement} from "@corpuscule/types";
+import {CustomElement} from "@corpuscule/typings";
 import {TemplateResult} from "lit-html";
 
 export interface PropertyOptions {

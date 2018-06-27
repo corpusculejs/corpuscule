@@ -1,5 +1,5 @@
 import createContext from "@corpuscule/context";
-import {CustomElement, CustomElementClass, UncertainCustomElementClass} from "@corpuscule/types";
+import {CustomElement, CustomElementClass, UncertainCustomElementClass} from "@corpuscule/typings";
 import UniversalRouter, {Options, Route} from "universal-router";
 
 export const layout: unique symbol;

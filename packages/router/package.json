@@ -2,6 +2,9 @@
   "name": "@corpuscule/router",
   "version": "0.4.0",
   "description": "Routing utils for Corpuscule",
+  "main": "lib/index.js",
+  "module": "lib/index.js",
+  "types": "lib/index.d.ts",
   "author": "Vlad Rindevich <rindevich.vs@gmail.com> (https://github.com/Lodin)",
   "bugs": {
     "url": "https://github.com/corpusculejs/corpuscule/issues"
@@ -13,11 +16,11 @@
     "url": "git+https://github.com/corpusculejs/corpuscule.git"
   },
   "dependencies": {
-    "@corpuscule/context": "https://github.com/corpusculejs/corpuscule/releases/download/%40corpuscule%2Fcontext%400.3.0/corpuscule-context-0.3.0.tgz",
-    "@corpuscule/types": "https://github.com/corpusculejs/corpuscule/releases/download/%40corpuscule%2Ftypes%400.1.1/corpuscule-types-0.1.1.tgz"
+    "@corpuscule/context": "^0.3.0",
+    "@corpuscule/typings": "^0.2.0"
   },
   "peerDependencies": {
-    "universal-router": "^6.0.0",
-    "@types/universal-router": "^6.0.0"
+    "@types/universal-router": "^6.0.0",
+    "universal-router": "^6.0.0"
   }
 }

@@ -1,5 +1,5 @@
 import createContext from "@corpuscule/context";
-import {CustomElementClass, UncertainCustomElementClass} from "@corpuscule/types";
+import {CustomElementClass, UncertainCustomElementClass} from "@corpuscule/typings";
 
 export type DispatcherMap = ReadonlyArray<PropertyKey>;
 export type PropertyGetter<S> = (state: S) => any;
