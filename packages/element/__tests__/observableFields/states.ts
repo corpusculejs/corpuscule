@@ -4,7 +4,7 @@ import {html} from "lit-html/lib/lit-extended";
 // tslint:disable-next-line:no-implicit-dependencies
 import uuid from "uuid/v4";
 import {defineAndMount} from "../../../../test/utils";
-import CorpusculeElement, {render, StateDescriptorMap, stateMap} from "../../src";
+import CorpusculeElement, {render, state} from "../../src";
 
 const states = () => {
   describe("states", () => {
@@ -12,10 +12,7 @@ const states = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [stateMap](): StateDescriptorMap<Test> {
-          return ["index"];
-        }
-
+        @state
         private index: number = 1;
 
         public updateIndexTo(i: number): void {

@@ -1,9 +1,6 @@
+import {attributeRegistry} from "./decorators";
+import schedule from "./scheduler";
 import {
-  attributesRegistry as $$attributesRegistry,
-  initAttributes as $$initAttributes,
-  initComputed as $$initComputed,
-  initProperties as $$initProperties,
-  initStates as $$initStates,
   invalidate as $$invalidate,
   isMount as $$isMount,
   prevProps as $$prevProps,
@@ -15,27 +12,20 @@ import {
   states as $$states,
 } from "./tokens/internal";
 import {
-  attributeMap as $attributeMap,
-  computedMap as $computedMap,
   createRoot as $createRoot,
   didMount as $didMount,
   didUpdate as $didUpdate,
   didUnmount as $didUnmount,
   deriveStateFromProps as $deriveStateFromProps,
-  propertyMap as $propertyMap,
   render as $render,
   shouldUpdate as $shouldUpdate,
-  stateMap as $stateMap,
 } from "./tokens/lifecycle";
 import {
-  defaultPropertyOptions,
-  getDescriptors, getPropertyDescriptor,
-  handleError,
-  parseAttributeValue, prepareComputed,
+  parseAttributeValue,
   toAttribute,
 } from "./utils";
-import schedule from "./scheduler";
 
+export {attribute, computed, property, state} from "./decorators";
 export * from "./tokens/lifecycle";
 
 const renderPromise = window.Corpuscule && window.Corpuscule.compatibility === true
@@ -44,20 +34,8 @@ const renderPromise = window.Corpuscule && window.Corpuscule.compatibility === t
 
 export default class CorpusculeElement extends HTMLElement {
   static get observedAttributes() {
-    if (this[$propertyMap]) {
-      this[$$initProperties](getDescriptors(this, $propertyMap));
-    }
-
-    if (this[$stateMap]) {
-      this[$$initStates](getDescriptors(this, $stateMap));
-    }
-
-    if (this[$computedMap]) {
-      this[$$initComputed](getDescriptors(this, $computedMap));
-    }
-
-    return this[$attributeMap]
-      ? this[$$initAttributes](getDescriptors(this, $attributeMap))
+    return attributeRegistry.has(this.prototype)
+      ? Array.from(attributeRegistry.get(this.prototype).keys())
       : [];
   }
 
@@ -67,147 +45,6 @@ export default class CorpusculeElement extends HTMLElement {
 
   static [$shouldUpdate]() {
     return true;
-  }
-
-  static [$$initAttributes](attributes) {
-    const attributesRegistry = new Map();
-
-    for (const [
-      propertyName,
-      [attributeName, guard, {pure} = defaultPropertyOptions],
-    ] of Object.entries(attributes)) {
-      attributesRegistry.set(attributeName, [propertyName, guard]);
-
-      Object.defineProperty(this.prototype, propertyName, {
-        configurable: true,
-        get() {
-          return this[$$props][propertyName];
-        },
-        set(value) {
-          const {[$$props]: props} = this;
-
-          if (pure && value === props[propertyName]) {
-            return;
-          }
-
-          if (typeof value !== guard.name.toLowerCase()) {
-            throw new TypeError(`Value applied to "${propertyName}" is not ${guard.name}`);
-          }
-
-          props[propertyName] = value;
-
-          if (this[$$isMount]) {
-            toAttribute(this, attributeName, value);
-          }
-
-          this[$$invalidate]("props")
-            .catch(handleError);
-        },
-      });
-    }
-
-    this[$$attributesRegistry] = attributesRegistry;
-
-    return Array.from(attributesRegistry.keys());
-  }
-
-  static [$$initProperties](properties) {
-    for (const [propertyName, descriptor] of Object.entries(properties)) {
-      let guard = null;
-      let pure = true;
-
-      if (descriptor !== null) {
-        if (typeof descriptor === "function") {
-          guard = descriptor;
-        } else {
-          [guard, {pure = defaultPropertyOptions.pure}] = descriptor;
-        }
-      }
-
-      Object.defineProperty(this.prototype, propertyName, {
-        configurable: true,
-        get() {
-          return this[$$props][propertyName];
-        },
-        set(value) {
-          const {[$$props]: props} = this;
-
-          if (pure && value === props[propertyName]) {
-            return;
-          }
-
-          if (guard && !guard(value)) {
-            throw new TypeError(`Value applied to "${propertyName}" has wrong type`);
-          }
-
-          props[propertyName] = value;
-
-          this[$$invalidate]("props")
-            .catch(handleError);
-        },
-      });
-    }
-  }
-
-  static [$$initStates](states) {
-    for (const propertyName of states) {
-      Object.defineProperty(this.prototype, propertyName, {
-        configurable: true,
-        get() {
-          return this[$$states][propertyName];
-        },
-        set(value) {
-          this[$$states][propertyName] = value;
-          this[$$invalidate]("states")
-            .catch(handleError);
-        },
-      });
-    }
-  }
-
-  static [$$initComputed](computed) {
-    for (const [propertyName, watchings] of Object.entries(computed)) {
-      const descriptor = getPropertyDescriptor(this.prototype, propertyName);
-
-      if (!descriptor || !descriptor.get) {
-        throw new Error(`Property "${propertyName}" is not defined or is not a getter`);
-      }
-
-      const {get} = descriptor;
-
-      const registry = new WeakMap();
-
-      Object.defineProperty(this.prototype, propertyName, {
-        configurable: true,
-        get() {
-          const computedData = prepareComputed(
-            this,
-            propertyName,
-            registry,
-            watchings,
-            get,
-          );
-
-          const {cache} = computedData;
-          let isValueUpdated = false;
-
-          for (const [watchingProperty, watchingValue] of cache) {
-            if (this[watchingProperty] !== watchingValue) {
-              if (!isValueUpdated) {
-                computedData.value = get.call(this);
-                isValueUpdated = true;
-              }
-
-              cache.set(watchingProperty, this[watchingProperty]);
-            }
-          }
-
-          isValueUpdated = false;
-
-          return computedData.value;
-        },
-      });
-    }
   }
 
   get renderingPromise() {
@@ -236,8 +73,7 @@ export default class CorpusculeElement extends HTMLElement {
       return;
     }
 
-    const {[$$attributesRegistry]: registry} = this.constructor;
-
+    const registry = attributeRegistry.get(this.constructor.prototype);
     const [propertyName, guard] = registry.get(attrName);
     this[$$props][propertyName] = parseAttributeValue(newVal, guard);
 
@@ -245,7 +81,7 @@ export default class CorpusculeElement extends HTMLElement {
   }
 
   async connectedCallback() {
-    const {[$$attributesRegistry]: registry} = this.constructor;
+    const registry = attributeRegistry.get(this.constructor.prototype);
     const {[$$props]: props} = this;
 
     if (registry) {
