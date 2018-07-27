@@ -1,14 +1,11 @@
 import createContext from "@corpuscule/context";
 import {
   context as $$context,
-  initDispatchers as $$initDispatchers,
-  registry as $$registry,
   subscribe as $$subscribe,
   unsubscribe as $$unsubscribe,
   update as $$update,
 } from "./tokens/internal";
-import {dispatcherMap, connectedMap} from "./tokens/lifecycle";
-import {getDescriptors} from "./utils";
+import {connectedRegistry} from "./utils";
 
 const {
   consumer,
@@ -18,103 +15,75 @@ const {
 } = createContext();
 
 export {
-  dispatcherMap,
   provider,
-  connectedMap,
   store,
 };
 
+export {
+  connected,
+  dispatcher,
+} from "./utils";
+
 export const connect = (target) => {
-  class ReduxConnected extends consumer(target) {
-    static get observedAttributes() {
-      if (this[connectedMap]) {
-        this[$$registry] = Object.entries(getDescriptors(this, connectedMap));
-      }
+  const consumed = consumer(target);
 
-      if (this[dispatcherMap]) {
-        this[$$initDispatchers](getDescriptors(this, dispatcherMap));
-      }
+  const {
+    disconnectedCallback,
+  } = consumed;
 
-      return super.observedAttributes || [];
-    }
-
-    static [$$initDispatchers](dispatchers) {
-      for (const propertyName of dispatchers) {
-        const method = this.prototype[propertyName];
-
-        if (!method) {
-          // eslint-disable-next-line accessor-pairs
-          Object.defineProperty(this.prototype, propertyName, {
-            configurable: true,
-            set(value) {
-              Object.defineProperty(this, propertyName, {
-                configurable: true,
-                value(...args) {
-                  this[$$context].dispatch(value(...args));
-                },
-              });
-            },
-          });
-
-          continue;
+  Object.defineProperties(consumed.prototype, {
+    disconnectedCallback: {
+      configurable: true,
+      value() {
+        if (disconnectedCallback) {
+          disconnectedCallback.call(this);
         }
 
-        Object.defineProperty(this.prototype, propertyName, {
-          value(...args) {
-            this[$$context].dispatch(method.call(this, ...args));
-          },
-        });
-      }
-    }
+        if (this[$$unsubscribe]) {
+          this[$$unsubscribe]();
+        }
+      },
+    },
+    // eslint-disable-next-line sort-keys, accessor-pairs
+    [context]: {
+      set(v) {
+        this[$$context] = v;
 
-    set [context](v) {
-      this[$$context] = v;
+        if (this[$$unsubscribe]) {
+          this[$$unsubscribe]();
+        }
 
-      if (this[$$unsubscribe]) {
-        this[$$unsubscribe]();
-      }
-
-      this[$$subscribe]();
-    }
-
-    attributeChangedCallback(...args) {
-      if (super.attributeChangedCallback) {
-        super.attributeChangedCallback(...args);
-      }
-    }
-
-    disconnectedCallback() {
-      if (super.disconnectedCallback) {
-        super.disconnectedCallback();
-      }
-
-      if (this[$$unsubscribe]) {
-        this[$$unsubscribe]();
-      }
-    }
-
-    [$$subscribe]() {
-      this[$$update](this[$$context]);
-
-      this[$$unsubscribe] = this[$$context].subscribe(() => {
+        this[$$subscribe]();
+      },
+    },
+    // eslint-disable-next-line sort-keys
+    [$$subscribe]: {
+      value() {
         this[$$update](this[$$context]);
-      });
-    }
 
-    [$$update]({getState}) {
-      if (!this.constructor[$$registry]) {
-        return;
-      }
+        this[$$unsubscribe] = this[$$context].subscribe(() => {
+          this[$$update](this[$$context]);
+        });
+      },
+    },
+    [$$update]: {
+      value({getState}) {
+        const registry = connectedRegistry.get(this.constructor.prototype);
 
-      for (const [propertyName, getter] of this.constructor[$$registry]) {
-        const nextValue = getter(getState());
-
-        if (nextValue !== this[propertyName]) {
-          this[propertyName] = nextValue;
+        if (!registry) {
+          return;
         }
-      }
-    }
-  }
 
-  return ReduxConnected;
+        for (const [propertyName, getter] of registry) {
+          const nextValue = getter(getState());
+
+          if (nextValue !== this[propertyName]) {
+            this[propertyName] = nextValue;
+          }
+        }
+      },
+    },
+  });
+
+  return consumed;
 };
