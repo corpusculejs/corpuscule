@@ -18,13 +18,15 @@ describe("@corpuscule/context", () => {
         providingValue,
       } = createContext();
 
-      class TestProvider extends provider(BasicProvider) {
+      @provider
+      class TestProvider extends BasicProvider {
         public static readonly is: string = `x-${uuid()}`;
 
         protected [providingValue]: number = 2;
       }
 
-      class TestConsumer extends consumer(BasicConsumer) {
+      @consumer
+      class TestConsumer extends BasicConsumer {
         public static readonly is: string = `x-${uuid()}`;
 
         protected [contextValue]?: number;
@@ -43,19 +45,22 @@ describe("@corpuscule/context", () => {
         providingValue,
       } = createContext();
 
-      class TestProvider extends provider(BasicProvider) {
+      @provider
+      class TestProvider extends BasicProvider {
         public static readonly is: string = `x-${uuid()}`;
 
         protected [providingValue]: number = 2;
       }
 
-      class TestConsumer1 extends consumer(BasicConsumer) {
+      @consumer
+      class TestConsumer1 extends BasicConsumer {
         public static readonly is: string = `x-${uuid()}`;
 
         protected [contextValue]?: number;
       }
 
-      class TestConsumer2 extends consumer(BasicConsumer) {
+      @consumer
+      class TestConsumer2 extends BasicConsumer {
         public static readonly is: string = `x-${uuid()}`;
 
         protected [contextValue]?: number;
@@ -74,11 +79,13 @@ describe("@corpuscule/context", () => {
         provider,
       } = createContext(5);
 
-      class TestProvider extends provider(BasicProvider) {
+      @provider
+      class TestProvider extends BasicProvider {
         public static readonly is: string = `x-${uuid()}`;
       }
 
-      class TestConsumer extends consumer(BasicConsumer) {
+      @consumer
+      class TestConsumer extends BasicConsumer {
         public static readonly is: string = `x-${uuid()}`;
 
         protected [contextValue]?: number;
@@ -97,13 +104,15 @@ describe("@corpuscule/context", () => {
         providingValue,
       } = createContext();
 
-      class TestProvider extends provider(BasicProvider) {
+      @provider
+      class TestProvider extends BasicProvider {
         public static readonly is: string = `x-${uuid()}`;
 
         protected [providingValue]: number = 2;
       }
 
-      class TestConsumer extends consumer(BasicConsumer) {
+      @consumer
+      class TestConsumer extends BasicConsumer {
         public static readonly is: string = `x-${uuid()}`;
 
         protected [contextValue]?: number;
@@ -128,7 +137,8 @@ describe("@corpuscule/context", () => {
         providingValue,
       } = createContext();
 
-      class TestProvider extends provider(BasicProvider) {
+      @provider
+      class TestProvider extends BasicProvider {
         public static readonly is: string = `x-${uuid()}`;
 
         protected [providingValue]: number = 2;
@@ -143,7 +153,8 @@ describe("@corpuscule/context", () => {
         }
       }
 
-      class TestConsumer extends consumer(BasicConsumer) {
+      @consumer
+      class TestConsumer extends BasicConsumer {
         public static readonly is: string = `x-${uuid()}`;
 
         protected [contextValue]?: number;
@@ -173,19 +184,22 @@ describe("@corpuscule/context", () => {
         providingValue,
       } = createContext();
 
-      class TestProvider extends provider(BasicProvider) {
+      @provider
+      class TestProvider extends BasicProvider {
         public static readonly is: string = `x-${uuid()}`;
 
         protected [providingValue]: number = 2;
       }
 
-      class TestConsumer1 extends consumer(BasicConsumer) {
+      @consumer
+      class TestConsumer1 extends BasicConsumer {
         public static readonly is: string = `x-${uuid()}`;
 
         protected [contextValue]?: number;
       }
 
-      class TestConsumer2 extends consumer(BasicConsumer) {
+      @consumer
+      class TestConsumer2 extends BasicConsumer {
         public static readonly is: string = `x-${uuid()}`;
 
         protected [contextValue]?: number;
@@ -208,7 +222,8 @@ describe("@corpuscule/context", () => {
     //     contextValue,
     //   } = createContext();
     //
-    //   class TestConsumer extends consumer(HTMLElement) {
+    //   @consumer
+    //   class TestConsumer extends HTMLElement {
     //     public static readonly is: string = `x-${uuid()}`;
     //
     //     public [contextValue]?: number;
