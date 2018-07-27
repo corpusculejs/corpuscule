@@ -1,26 +1,4 @@
-import {getDescriptorChainValues, getPropertyChainDescriptors} from "@corpuscule/utils/lib/propertyChain";
-
 export const defaultPropertyOptions = {pure: true};
-
-export const getDescriptors =
-  (object, propertyKey) =>
-    getDescriptorChainValues(getPropertyChainDescriptors(object, propertyKey), {merge: true});
-
-export const getPropertyDescriptor = (prototype, propertyName) => {
-  let p = prototype;
-
-  while (p.constructor !== HTMLElement) {
-    const descriptor = Object.getOwnPropertyDescriptor(p, propertyName);
-
-    if (descriptor) {
-      return descriptor;
-    }
-
-    p = Object.getPrototypeOf(p);
-  }
-
-  return undefined;
-};
 
 export const handleError = (e) => {
   throw e;

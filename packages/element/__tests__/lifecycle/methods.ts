@@ -6,11 +6,9 @@ import uuid from "uuid/v4";
 import {defineAndMount} from "../../../../test/utils";
 import CorpusculeElement, {
   deriveStateFromProps,
-  PropertyDescriptorMap,
-  propertyMap,
+  property,
   render,
-  shouldUpdate,
-  StateDescriptorMap, stateMap
+  shouldUpdate, state,
 } from "../../src";
 
 const methods = () => {
@@ -21,16 +19,11 @@ const methods = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [propertyMap](): PropertyDescriptorMap<Test> {
-          return {
-            num: null,
-          };
-        }
-
         public static [shouldUpdate](): boolean {
           return false;
         }
 
+        @property()
         public num: number = 1;
 
         protected [render](): TemplateResult {
@@ -57,16 +50,11 @@ const methods = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [propertyMap](): PropertyDescriptorMap<Test> {
-          return {
-            num: null,
-          };
-        }
-
         public static [shouldUpdate](): boolean {
           return false;
         }
 
+        @property()
         public num: number = 1;
 
         protected [render](): TemplateResult {
@@ -89,24 +77,16 @@ const methods = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [propertyMap](): PropertyDescriptorMap<Test> {
-          return {
-            prop: null,
-          };
-        }
-
-        public static get [stateMap](): StateDescriptorMap<Test> {
-          return ["state"];
-        }
-
         public static [deriveStateFromProps]({prop: nextProp}: any, {prop: prevProp}: any): any {
           return {
             state: nextProp < prevProp,
           };
         }
 
+        @property()
         public prop: number = 1;
 
+        @state
         public state: boolean = false;
 
         protected [render](): TemplateResult {

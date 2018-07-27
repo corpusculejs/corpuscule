@@ -6,54 +6,34 @@ export interface PropertyOptions {
 }
 
 export type AttributeGuard = BooleanConstructor | NumberConstructor | StringConstructor;
-export type AttributeDescriptor =
-  | [string, AttributeGuard]
-  | [string, AttributeGuard, PropertyOptions];
-
-export type ComputedDescriptor = ReadonlyArray<PropertyKey>;
-
 export type PropertyGuard = (value: any) => boolean;
-export type PropertyDescriptor =
-  | [PropertyGuard, PropertyOptions]
-  | PropertyGuard
-  | null;
 
-export type AttributeDescriptorMap<T extends CorpusculeElement = any> = {
-  readonly [P in Exclude<keyof T, keyof CorpusculeElement>]?: AttributeDescriptor;
-};
+export const attribute:
+  (attributeName: string, guard: AttributeGuard, options?: PropertyOptions) =>
+    (target: unknown, propertyName: string) => void;
 
-export type ComputedDescriptorMap<T extends CorpusculeElement = any> = {
-  readonly [P in Exclude<keyof T, keyof CorpusculeElement>]?: ComputedDescriptor;
-};
+export const computed:
+  (...watchings: string[]) => // tslint:disable-line:readonly-array
+    (target: unknown, propertyName: string) => void;
 
-export type PropertyDescriptorMap<T extends CorpusculeElement = any> = {
-  readonly [P in Exclude<keyof T, keyof CorpusculeElement>]?: PropertyDescriptor;
-};
+export const property:
+  (guard?: PropertyGuard, options?: PropertyOptions) =>
+    (target: unknown, propertyName: string) => void;
 
-// TODO: fix when Microsoft/TypeScript#24897 is merged (if possible)
-export type StateDescriptorMap<T extends CorpusculeElement = any> = ReadonlyArray<PropertyKey>;
+export const state: (target: unknown, propertyName: string) => void;
 
-export const attributeMap: unique symbol;
-export const computedMap: unique symbol;
 export const createRoot: unique symbol;
 export const didMount: unique symbol;
 export const didUpdate: unique symbol;
 export const didUnmount: unique symbol;
 export const deriveStateFromProps: unique symbol;
-export const propertyMap: unique symbol;
 export const render: unique symbol;
 export const shouldUpdate: unique symbol;
-export const stateMap: unique symbol;
 
 export default class CorpusculeElement extends HTMLElement implements CustomElement {
   public static readonly is: string;
 
   public static readonly observableAttributes: ReadonlyArray<PropertyKey>;
-
-  public static readonly [attributeMap]?: AttributeDescriptorMap;
-  public static readonly [propertyMap]?: PropertyDescriptorMap;
-  public static readonly [stateMap]?: StateDescriptorMap;
-  public static readonly [computedMap]?: ComputedDescriptorMap;
 
   public static [deriveStateFromProps](nextProps: {}, prevProps: {}, prevState: {}): {} | null;
 
