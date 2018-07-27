@@ -33,13 +33,15 @@ const outletTest = () => {
     });
 
     it("should create a router outlet that contains initial layout", async () => {
-      class Provider extends provider(BasicProvider) {
+      @provider
+      class Provider extends BasicProvider {
         public static is: string = `x-${uuid()}`;
 
         protected readonly [$router]: UniversalRouter = router;
       }
 
-      class Test extends outlet(routes)(BasicConsumer) {
+      @outlet(routes)
+      class Test extends BasicConsumer {
         public static is: string = `x-${uuid()}`;
 
         public readonly [layout]: string;
@@ -47,49 +49,52 @@ const outletTest = () => {
 
       const [, o] = defineAndMountContext(Provider, Test);
 
-      await o.resolvingPromise;
+      await (o as any).resolvingPromise;
 
       expect(o[layout]).toBe("Test Root");
     });
 
     it("should get new layout on 'popstate' event", async () => {
-      class Provider extends provider(BasicProvider) {
+      @provider
+      class Provider extends BasicProvider {
         public static is: string = `x-${uuid()}`;
 
         protected readonly [$router]: UniversalRouter = router;
       }
 
-      class BasicTest extends BasicConsumer {
+      @outlet(routes)
+      class Test extends BasicConsumer {
         public static is: string = `x-${uuid()}`;
 
         public readonly [layout]: string;
       }
-
-      const Test = outlet(routes)(BasicTest); // tslint:disable-line:naming-convention
 
       const [, o] = defineAndMountContext(Provider, Test);
 
       dispatchEvent(new PopStateEvent("popstate", {state: `${basicLocation}#test`}));
 
-      await o.resolvingPromise;
+      await (o as any).resolvingPromise;
 
       expect(o[layout]).toBe("Test Branch");
     });
 
     it("should ignore layouts for another routes", async () => {
-      class Provider extends provider(BasicProvider) {
+      @provider
+      class Provider extends BasicProvider {
         public static is: string = `x-${uuid()}`;
 
         protected readonly [$router]: UniversalRouter = router;
       }
 
-      class Test extends outlet(routes)(BasicConsumer) {
+      @outlet(routes)
+      class Test extends BasicConsumer {
         public static is: string = `x-${uuid()}`;
 
         public readonly [layout]: string;
       }
 
-      class Child extends outlet(childrenRoutes)(BasicConsumer) {
+      @outlet(childrenRoutes)
+      class Child extends BasicConsumer {
         public static is: string = `x-${uuid()}`;
 
         public readonly [layout]: string;
@@ -99,13 +104,13 @@ const outletTest = () => {
 
       dispatchEvent(new PopStateEvent("popstate", {state: `${basicLocation}#parent`}));
 
-      await child.resolvingPromise;
+      await (child as any).resolvingPromise;
 
       expect(child[layout]).toBe("Child Root");
 
       dispatchEvent(new PopStateEvent("popstate", {state: `${basicLocation}#parent/child`}));
 
-      await child.resolvingPromise;
+      await (child as any).resolvingPromise;
 
       expect(child[layout]).toBe("Child Branch");
       expect(test[layout]).toBe("Test Root");
