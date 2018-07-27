@@ -16,3 +16,6 @@ export interface CustomElementClass<T> {
 }
 
 export type UncertainCustomElementClass<T> = CustomElementClass<T> | Omit<CustomElementClass<T>, "is">;
+
+export type ClassDecorator = <T>(target: UncertainCustomElementClass<T>) => CustomElementClass<T>;
+export type FieldDecorator = <T>(target: UncertainCustomElementClass<T>, propertyName: string) => any;
