@@ -26,6 +26,4 @@ export interface RouterOutlet<T> {
   [resolve](path: string): IterableIterator<any>;
 }
 
-export const outlet:
-  <T = any>(routes: ReadonlyArray<Route>) =>
-    <U = {}>(target: UncertainCustomElementClass<U>) => CustomElementClass<U & RouterOutlet<T>>;
+export const outlet: (routes: ReadonlyArray<Route>) => ClassDecorator;
