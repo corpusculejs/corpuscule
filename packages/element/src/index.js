@@ -47,7 +47,7 @@ export default class CorpusculeElement extends HTMLElement {
     return true;
   }
 
-  get renderingPromise() {
+  get elementRendering() {
     return this[$$rendering] || Promise.resolve();
   }
 

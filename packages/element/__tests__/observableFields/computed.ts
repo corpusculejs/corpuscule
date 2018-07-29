@@ -30,7 +30,7 @@ const testComputed = () => {
       }
 
       const el = defineAndMount(Test);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(el.comp).toBe(3);
       expect(el.comp).toBe(3);
@@ -60,13 +60,13 @@ const testComputed = () => {
       }
 
       const el = defineAndMount(Test);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(el.comp).toBe(3);
 
       el.first = 0;
       el.second = 1;
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(el.comp).toBe(1);
       expect(el.comp).toBe(1);
@@ -115,7 +115,7 @@ const testComputed = () => {
       }
 
       const el = defineAndMount(Child);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(el.comp).toBe(3);
     });

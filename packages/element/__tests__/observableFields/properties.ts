@@ -21,14 +21,14 @@ const properties = () => {
       }
 
       const el = defineAndMount(Test);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       const node = el.shadowRoot!.getElementById("node")!;
 
       expect(node.textContent).toBe("#1");
 
       el.index = 2;
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(node.textContent).toBe("#2");
     });
@@ -46,7 +46,7 @@ const properties = () => {
       }
 
       const el = defineAndMount(Test);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(() => {
         (el as any).str = 1;
@@ -70,10 +70,10 @@ const properties = () => {
       }
 
       const el = defineAndMount(Test);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       el.str = "1";
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(spy).toHaveBeenCalledTimes(1);
     });
@@ -95,10 +95,10 @@ const properties = () => {
       }
 
       const el = defineAndMount(Test);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       el.str = "1";
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(spy).toHaveBeenCalledTimes(2);
     });

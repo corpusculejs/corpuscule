@@ -20,7 +20,7 @@ const lifecycle = () => {
       }
 
       const test = defineAndMount(Test);
-      await test.renderingPromise;
+      await test.elementRendering;
 
       const collection = document.body.getElementsByTagName(Test.is);
       expect(collection.length).toBe(1);
@@ -48,7 +48,7 @@ const lifecycle = () => {
       }
 
       const el = defineAndMount(Test);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       const node = el.shadowRoot!.getElementById("node")!;
       expect(node.textContent).toBe("Test content #1");

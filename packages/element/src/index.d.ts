@@ -30,7 +30,7 @@ export default class CorpusculeElement extends HTMLElement implements CustomElem
 
   public static [shouldUpdate](nextProps: {}, nextState: {}, prevProps: {}, prevState: {}): boolean;
 
-  public readonly renderingPromise: Promise<void>;
+  public readonly elementRendering: Promise<void>;
 
   public attributeChangedCallback(attrName: string, oldVal: string, newVal: string): Promise<void>;
 
