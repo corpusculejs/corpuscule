@@ -21,7 +21,7 @@ export const provider: ReturnType<typeof createContext>["provider"];
 export const router: unique symbol;
 
 export interface RouterOutlet<T> {
-  readonly resolvingPromise: Promise<void>;
+  readonly routeResolving: Promise<void>;
   readonly [layout]: T;
   [resolve](path: string): IterableIterator<any>;
 }
