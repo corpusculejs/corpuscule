@@ -1,5 +1,5 @@
 import createContext from "@corpuscule/context";
-import {CustomElement, CustomElementClass, UncertainCustomElementClass} from "@corpuscule/typings";
+import {CustomElement} from "@corpuscule/typings";
 import UniversalRouter, {Options, Route} from "universal-router";
 
 export const layout: unique symbol;
@@ -21,11 +21,9 @@ export const provider: ReturnType<typeof createContext>["provider"];
 export const router: unique symbol;
 
 export interface RouterOutlet<T> {
-  readonly resolvingPromise: Promise<void>;
+  readonly routeResolving: Promise<void>;
   readonly [layout]: T;
   [resolve](path: string): IterableIterator<any>;
 }
 
-export const outlet:
-  <T = any>(routes: ReadonlyArray<Route>) =>
-    <U = {}>(target: UncertainCustomElementClass<U>) => CustomElementClass<U & RouterOutlet<T>>;
+export const outlet: (routes: ReadonlyArray<Route>) => ClassDecorator;

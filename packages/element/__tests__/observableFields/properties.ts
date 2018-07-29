@@ -4,7 +4,7 @@ import {html} from "lit-html/lib/lit-extended";
 // tslint:disable-next-line:no-implicit-dependencies
 import uuid from "uuid/v4";
 import {defineAndMount} from "../../../../test/utils";
-import CorpusculeElement, {PropertyDescriptorMap, propertyMap, render} from "../../src";
+import CorpusculeElement, {property, render} from "../../src";
 
 const properties = () => {
   describe("properties", () => {
@@ -12,12 +12,7 @@ const properties = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [propertyMap](): PropertyDescriptorMap<Test> {
-          return {
-            index: null,
-          };
-        }
-
+        @property()
         public index: number = 1;
 
         protected [render](): TemplateResult {
@@ -26,14 +21,14 @@ const properties = () => {
       }
 
       const el = defineAndMount(Test);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       const node = el.shadowRoot!.getElementById("node")!;
 
       expect(node.textContent).toBe("#1");
 
       el.index = 2;
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(node.textContent).toBe("#2");
     });
@@ -42,12 +37,7 @@ const properties = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [propertyMap](): PropertyDescriptorMap<Test> {
-          return {
-            str: value => typeof value === "string",
-          };
-        }
-
+        @property(value => typeof value === "string")
         public str: string = "";
 
         protected [render](): TemplateResult {
@@ -56,7 +46,7 @@ const properties = () => {
       }
 
       const el = defineAndMount(Test);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(() => {
         (el as any).str = 1;
@@ -69,12 +59,7 @@ const properties = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [propertyMap](): PropertyDescriptorMap<Test> {
-          return {
-            str: value => typeof value === "string",
-          };
-        }
-
+        @property(value => typeof value === "string")
         public str: string = "1";
 
         protected [render](): TemplateResult {
@@ -85,10 +70,10 @@ const properties = () => {
       }
 
       const el = defineAndMount(Test);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       el.str = "1";
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(spy).toHaveBeenCalledTimes(1);
     });
@@ -99,12 +84,7 @@ const properties = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [propertyMap](): PropertyDescriptorMap<Test> {
-          return {
-            str: [value => typeof value === "string", {pure: false}],
-          };
-        }
-
+        @property(value => typeof value === "string", {pure: false})
         public str: string = "1";
 
         protected [render](): TemplateResult {
@@ -115,10 +95,10 @@ const properties = () => {
       }
 
       const el = defineAndMount(Test);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       el.str = "1";
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(spy).toHaveBeenCalledTimes(2);
     });
