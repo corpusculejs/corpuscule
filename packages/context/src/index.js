@@ -10,115 +10,163 @@ const randomString = () => {
 const createContext = (defaultValue) => {
   const eventName = randomString();
 
-  const $$ = {
-    consume: Symbol("consume"),
-    consumers: Symbol("consumers"),
-    subscribe: Symbol("subscribe"),
-    unsubscribe: Symbol("unsubscribe"),
-    value: Symbol("value"),
-  };
+  const $$consume = Symbol("consume");
+  const $$consumers = Symbol("consumers");
+  const $$subscribe = Symbol("subscribe");
+  const $$unsubscribe = Symbol("unsubscribe");
+  const $$value = Symbol("value");
 
   const providingValue = Symbol("providingValue");
   const contextValue = Symbol("contextValue");
 
-  const provider = target =>
-    class Provider extends target {
-      constructor() {
-        super();
-        this[$$.consumers] = [];
-        this[$$.value] = defaultValue;
+  const provider = (target) => {
+    const {
+      connectedCallback,
+      disconnectedCallback,
+    } = target.prototype;
 
-        this[$$.subscribe] = this[$$.subscribe].bind(this);
-        this[$$.unsubscribe] = this[$$.unsubscribe].bind(this);
-      }
+    Object.defineProperties(target.prototype, {
+      connectedCallback: {
+        configurable: true,
+        value() {
+          this.addEventListener(eventName, this[$$subscribe]);
 
-      get [providingValue]() {
-        return this[$$.value];
-      }
+          if (connectedCallback) {
+            connectedCallback.call(this);
+          }
+        },
+      },
+      disconnectedCallback: {
+        configurable: true,
+        value() {
+          this.removeEventListener(eventName, this[$$subscribe]);
 
-      set [providingValue](v) {
-        this[$$.value] = v;
+          if (disconnectedCallback) {
+            disconnectedCallback.call(this);
+          }
+        },
+      },
+      [providingValue]: {
+        get() {
+          return this[$$value];
+        },
+        set(v) {
+          this[$$value] = v;
 
-        if (this[$$.consumers]) {
-          for (const cb of this[$$.consumers]) {
+          for (const cb of this[$$consumers]) {
             cb(v);
           }
-        }
-      }
+        },
+      },
+      // eslint-disable-next-line sort-keys
+      [$$consumers]: {
+        value: [],
+        writable: true,
+      },
+      [$$subscribe]: {
+        configurable: true,
+        get() {
+          const subscribe = (event) => {
+            const {consume} = event.detail;
 
-      connectedCallback() {
-        this.addEventListener(eventName, this[$$.subscribe]);
+            this[$$consumers].push(consume);
+            consume(this[$$value]);
 
-        if (super.connectedCallback) {
-          super.connectedCallback();
-        }
-      }
+            event.detail.unsubscribe = this[$$unsubscribe];
+            event.stopPropagation();
+          };
 
-      disconnectedCallback() {
-        this.removeEventListener(eventName, this[$$.subscribe]);
+          Object.defineProperty(this, $$subscribe, {
+            value: subscribe,
+          });
 
-        if (super.disconnectedCallback) {
-          super.disconnectedCallback();
-        }
-      }
+          return subscribe;
+        },
+      },
+      [$$unsubscribe]: {
+        configurable: true,
+        get() {
+          const unsubscribe = (consume) => {
+            this[$$consumers] = this[$$consumers].filter(p => p !== consume);
+          };
 
-      [$$.subscribe](event) {
-        const {consume} = event.detail;
+          Object.defineProperty(this, $$unsubscribe, {
+            value: unsubscribe,
+          });
 
-        this[$$.consumers].push(consume);
-        consume(this[$$.value]);
+          return unsubscribe;
+        },
+      },
+      [$$value]: {
+        value: defaultValue,
+        writable: true,
+      },
+    });
 
-        event.detail.unsubscribe = this[$$.unsubscribe];
-        event.stopPropagation();
-      }
+    return target;
+  };
 
-      [$$.unsubscribe](consume) {
-        this[$$.consumers] = this[$$.consumers].filter(p => p !== consume);
-      }
-    };
+  const consumer = (target) => {
+    const {
+      connectedCallback,
+      disconnectedCallback,
+    } = target.prototype;
 
-  const consumer = target =>
-    class Consumer extends target {
-      constructor() {
-        super();
-        this[$$.consume] = this[$$.consume].bind(this);
-      }
+    Object.defineProperties(target.prototype, {
+      connectedCallback: {
+        configurable: true,
+        value() {
+          const event = new CustomEvent(eventName, {
+            bubbles: true,
+            cancelable: true,
+            composed: true,
+            detail: {consume: this[$$consume]},
+          });
 
-      connectedCallback() {
-        const event = new CustomEvent(eventName, {
-          bubbles: true,
-          cancelable: true,
-          composed: true,
-          detail: {consume: this[$$.consume]},
-        });
+          this.dispatchEvent(event);
 
-        this.dispatchEvent(event);
+          this[$$unsubscribe] = event.detail.unsubscribe;
 
-        this[$$.unsubscribe] = event.detail.unsubscribe;
+          if (!this[$$unsubscribe]) {
+            throw new Error(`No provider found for ${this.constructor.name}`);
+          }
 
-        if (!this[$$.unsubscribe]) {
-          throw new Error(`No provider found for ${this.constructor.name}`);
-        }
+          if (connectedCallback) {
+            connectedCallback.call(this);
+          }
+        },
+      },
+      disconnectedCallback: {
+        configurable: true,
+        value() {
+          if (this[$$unsubscribe]) {
+            this[$$unsubscribe](this[$$consume]);
+          }
 
-        if (super.connectedCallback) {
-          super.connectedCallback();
-        }
-      }
+          if (disconnectedCallback) {
+            disconnectedCallback.call(this);
+          }
+        },
+      },
+      // eslint-disable-next-line sort-keys
+      [$$consume]: {
+        configurable: true,
+        get() {
+          const consume = (v) => {
+            this[contextValue] = v;
+          };
 
-      disconnectedCallback() {
-        if (this[$$.unsubscribe]) {
-          this[$$.unsubscribe](this[$$.consume]);
-        }
+          Object.defineProperty(this, $$consume, {
+            value: consume,
+          });
 
-        if (super.disconnectedCallback) {
-          super.disconnectedCallback();
-        }
-      }
+          return consume;
+        },
+      },
+    });
 
-      [$$.consume](v) {
-        this[contextValue] = v;
-      }
-    };
+    return target;
+  };
 
   return {
     consumer,

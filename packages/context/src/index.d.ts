@@ -1,9 +1,7 @@
-import {CustomElementClass, UncertainCustomElementClass} from "@corpuscule/typings";
-
 declare const createContext: <T>(defaultValue?: T) => {
-  readonly consumer: <T = {}>(target: UncertainCustomElementClass<T>) => CustomElementClass<T>;
+  readonly consumer: ClassDecorator;
   readonly contextValue: "contextValue"; // hack to resolve unique symbol widening
-  readonly provider: <T = {}>(target: UncertainCustomElementClass<T>) => CustomElementClass<T>;
+  readonly provider: ClassDecorator;
   readonly providingValue: "providingValue"; // hack to resolve unique symbol widening
 };
 

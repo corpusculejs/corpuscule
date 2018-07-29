@@ -1,8 +1,3 @@
-export const attributesRegistry = Symbol("attributesRegistry");
-export const initAttributes = Symbol("initAttributes");
-export const initComputed = Symbol("initComputed");
-export const initProperties = Symbol("initProperties");
-export const initStates = Symbol("initStates");
 export const invalidate = Symbol("invalidate");
 export const isMount = Symbol("isMount");
 export const prevProps = Symbol("prevProps");

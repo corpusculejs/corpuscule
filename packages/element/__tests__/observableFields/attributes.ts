@@ -4,11 +4,7 @@ import {html} from "lit-html/lib/lit-extended";
 // tslint:disable-next-line:no-implicit-dependencies
 import uuid from "uuid/v4";
 import {defineAndMount} from "../../../../test/utils";
-import CorpusculeElement, {
-  AttributeDescriptorMap,
-  attributeMap,
-  render,
-} from "../../src";
+import CorpusculeElement, {attribute, render} from "../../src";
 
 const attributes = () => {
   describe("attributes", () => {
@@ -16,12 +12,7 @@ const attributes = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [attributeMap](): AttributeDescriptorMap<Test> {
-          return {
-            index: ["idx", Number, {pure: true}],
-          };
-        }
-
+        @attribute("idx", Number, {pure: true})
         public index?: number;
 
         protected [render](): TemplateResult {
@@ -34,14 +25,14 @@ const attributes = () => {
       }
 
       const el = defineAndMount(Test);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       const node = el.shadowRoot!.getElementById("node")!;
 
       expect(node.textContent).toBe("Nothing");
 
       el.setAttribute("idx", "2");
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(node.textContent).toBe("#2");
     });
@@ -50,12 +41,7 @@ const attributes = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [attributeMap](): AttributeDescriptorMap<Test> {
-          return {
-            index: ["idx", Number],
-          };
-        }
-
+        @attribute("idx", Number)
         public index: number = 2;
 
         protected [render](): TemplateResult {
@@ -64,7 +50,7 @@ const attributes = () => {
       }
 
       const el = defineAndMount(Test);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(el.getAttribute("idx")).toBe("2");
 
@@ -76,12 +62,7 @@ const attributes = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [attributeMap](): AttributeDescriptorMap<Test> {
-          return {
-            index: ["idx", Number],
-          };
-        }
-
+        @attribute("idx", Number)
         public index: number = 1;
 
         protected [render](): TemplateResult {
@@ -93,7 +74,7 @@ const attributes = () => {
         e.setAttribute("idx", "2");
       });
 
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(el.index).toBe(2);
     });
@@ -102,12 +83,7 @@ const attributes = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [attributeMap](): AttributeDescriptorMap<Test> {
-          return {
-            index: ["idx", Number],
-          };
-        }
-
+        @attribute("idx", Number)
         public index: number = 1;
 
         protected [render](): TemplateResult {
@@ -116,10 +92,10 @@ const attributes = () => {
       }
 
       const el = defineAndMount(Test);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       el.index = 2;
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(el.getAttribute("idx")).toBe("2");
     });
@@ -130,12 +106,7 @@ const attributes = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [attributeMap](): AttributeDescriptorMap<Test> {
-          return {
-            index: ["idx", Number],
-          };
-        }
-
+        @attribute("idx", Number)
         public index: number = 1;
 
         protected [render](): TemplateResult {
@@ -146,10 +117,10 @@ const attributes = () => {
       }
 
       const el = defineAndMount(Test);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       el.index = 1;
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(spy).toHaveBeenCalledTimes(1);
     });
@@ -160,12 +131,7 @@ const attributes = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [attributeMap](): AttributeDescriptorMap<Test> {
-          return {
-            index: ["idx", Number, {pure: false}],
-          };
-        }
-
+        @attribute("idx", Number, {pure: false})
         public index: number = 1;
 
         protected [render](): TemplateResult {
@@ -176,10 +142,10 @@ const attributes = () => {
       }
 
       const el = defineAndMount(Test);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       el.index = 1;
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(spy).toHaveBeenCalledTimes(2);
     });
@@ -188,12 +154,7 @@ const attributes = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [attributeMap](): AttributeDescriptorMap<Test> {
-          return {
-            has: ["has", Boolean],
-          };
-        }
-
+        @attribute("has", Boolean)
         public has: boolean = false;
 
         protected [render](): TemplateResult {
@@ -202,17 +163,17 @@ const attributes = () => {
       }
 
       const el = defineAndMount(Test);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(el.hasAttribute("has")).not.toBeTruthy();
 
       el.has = true;
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(el.hasAttribute("has")).toBeTruthy();
 
       el.has = false;
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(el.hasAttribute("has")).not.toBeTruthy();
     });
@@ -221,12 +182,7 @@ const attributes = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [attributeMap](): AttributeDescriptorMap<Test> {
-          return {
-            index: ["idx", Number],
-          };
-        }
-
+        @attribute("idx", Number)
         public index: number = 1;
 
         protected [render](): TemplateResult {
@@ -235,7 +191,7 @@ const attributes = () => {
       }
 
       const el = defineAndMount(Test);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(() => {
         (el as any).index = "string";

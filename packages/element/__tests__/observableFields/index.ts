@@ -5,17 +5,13 @@ import {html} from "lit-html/lib/lit-extended";
 import uuid from "uuid/v4";
 import {defineAndMount} from "../../../../test/utils";
 import CorpusculeElement, {
-  AttributeDescriptorMap,
-  attributeMap,
-  didUpdate,
-  PropertyDescriptorMap,
-  propertyMap,
+  attribute,
+  didUpdate, property,
   render,
-  StateDescriptorMap,
-  stateMap,
+  state,
 } from "../../src";
 import attributes from "./attributes";
-import computed from "./computed";
+import testComputed from "./computed";
 import properties from "./properties";
 import states from "./states";
 
@@ -24,7 +20,7 @@ const observableFields = () => {
     attributes();
     properties();
     states();
-    computed();
+    testComputed();
 
     it("should call [didUpdate]() with proper prevProperties and prevState", async () => {
       const spy = jasmine.createSpy("OnUpdate");
@@ -32,27 +28,14 @@ const observableFields = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [attributeMap](): AttributeDescriptorMap<Test> {
-          return {
-            attr: ["attr", String],
-          };
-        }
-
-        public static get [propertyMap](): PropertyDescriptorMap<Test> {
-          return {
-            prop: null,
-          };
-        }
-
-        public static get [stateMap](): StateDescriptorMap<Test> {
-          return ["state"];
-        }
-
+        @attribute("attr", String)
         public attr: string = "zeroAttr";
+
+        @property()
         public prop: string = "zeroProp";
 
-        // tslint:disable-next-line:no-unused-variable
-        private state: string = "zeroState";
+        @state
+        private state: string = "zeroState"; // tslint:disable-line:no-unused-variable
 
         public updateState(str: string): void {
           this.state = str;
@@ -68,10 +51,10 @@ const observableFields = () => {
       }
 
       const el = defineAndMount(Test);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       el.setAttribute("attr", "oneAttr");
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(spy)
         .toHaveBeenCalledWith({
@@ -82,7 +65,7 @@ const observableFields = () => {
         });
 
       el.prop = "oneProp";
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(spy).toHaveBeenCalledWith({
         attr: "oneAttr",
@@ -92,7 +75,7 @@ const observableFields = () => {
       });
 
       el.updateState("oneState");
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(spy).toHaveBeenCalledWith({
         attr: "oneAttr",
@@ -102,7 +85,7 @@ const observableFields = () => {
       });
 
       el.setAttribute("attr", "twoAttr");
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(spy).toHaveBeenCalledWith({
         attr: "oneAttr",

@@ -4,13 +4,9 @@ import {html} from "lit-html/lib/lit-extended";
 // tslint:disable-next-line:no-implicit-dependencies
 import uuid from "uuid/v4";
 import {defineAndMount} from "../../../../test/utils";
-import CorpusculeElement, {
-  ComputedDescriptorMap,
-  computedMap,
-  render,
-} from "../../src";
+import CorpusculeElement, {computed, render} from "../../src";
 
-const computed = () => {
+const testComputed = () => {
   describe("computed", () => {
     it("should memoize result of processed getter", async () => {
       const spy = jasmine.createSpy("OnComputed");
@@ -18,16 +14,10 @@ const computed = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [computedMap](): ComputedDescriptorMap<Test> {
-          return {
-            comp: ["first", "second"],
-          };
-        }
-
         public first: number = 1;
-
         public second: number = 2;
 
+        @computed("first", "second")
         public get comp(): number {
           spy();
 
@@ -40,7 +30,7 @@ const computed = () => {
       }
 
       const el = defineAndMount(Test);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(el.comp).toBe(3);
       expect(el.comp).toBe(3);
@@ -54,16 +44,10 @@ const computed = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [computedMap](): ComputedDescriptorMap<Test> {
-          return {
-            comp: ["first", "second"],
-          };
-        }
-
         public first: number = 1;
-
         public second: number = 2;
 
+        @computed("first", "second")
         public get comp(): number {
           spy();
 
@@ -76,13 +60,13 @@ const computed = () => {
       }
 
       const el = defineAndMount(Test);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(el.comp).toBe(3);
 
       el.first = 0;
       el.second = 1;
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(el.comp).toBe(1);
       expect(el.comp).toBe(1);
@@ -90,53 +74,24 @@ const computed = () => {
       expect(spy).toHaveBeenCalledTimes(2);
     });
 
-    it("should throw an error if computed variable is not defined", () => {
-      class Test extends CorpusculeElement {
-        public static is: string = `x-${uuid()}`;
-
-        public static get [computedMap](): ComputedDescriptorMap {
-          return {
-            comp: ["first", "second"],
-          };
-        }
-
-        public first: number = 1;
-
-        public second: number = 2;
-
-        protected [render](): TemplateResult {
-          return html`<span id="node">Test content</span>`;
-        }
-      }
-
-      expect(() => defineAndMount(Test))
-        .toThrowError("Property \"comp\" is not defined or is not a getter");
-    });
-
     it("should throw an error if computed variable is not a getter", () => {
-      class Test extends CorpusculeElement {
-        public static is: string = `x-${uuid()}`;
+      expect(() => {
+        class Test extends CorpusculeElement { // tslint:disable-line:no-unused-variable
+          public static is: string = `x-${uuid()}`;
 
-        public static get [computedMap](): ComputedDescriptorMap<Test> {
-          return {
-            comp: ["first", "second"],
-          };
+          public first: number = 1;
+          public second: number = 2;
+
+          @computed("first", "second")
+          public comp(): number {
+            return this.first + this.second;
+          }
+
+          protected [render](): TemplateResult {
+            return html`<span id="node">Test content</span>`;
+          }
         }
-
-        public first: number = 1;
-
-        public second: number = 2;
-
-        public comp(): number {
-          return this.first + this.second;
-        }
-
-        protected [render](): TemplateResult {
-          return html`<span id="node">Test content</span>`;
-        }
-      }
-
-      expect(() => defineAndMount(Test))
+      })
         .toThrowError("Property \"comp\" is not defined or is not a getter");
     });
 
@@ -144,14 +99,9 @@ const computed = () => {
       class Parent extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static get [computedMap](): ComputedDescriptorMap<Parent> {
-          return {
-            comp: ["first"],
-          };
-        }
-
         public first: number = 1;
 
+        @computed("first")
         public get comp(): number {
           return this.first + 2;
         }
@@ -165,11 +115,11 @@ const computed = () => {
       }
 
       const el = defineAndMount(Child);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(el.comp).toBe(3);
     });
   });
 };
 
-export default computed;
+export default testComputed;
