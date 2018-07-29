@@ -16,8 +16,7 @@
     "url": "git+https://github.com/corpusculejs/corpuscule.git"
   },
   "dependencies": {
-    "@corpuscule/context": "^0.4.0",
-    "@corpuscule/typings": "^0.3.0"
+    "@corpuscule/context": "^0.4.0"
   },
   "peerDependencies": {
     "redux": "^4.0.0"

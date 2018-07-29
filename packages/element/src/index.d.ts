@@ -1,4 +1,4 @@
-import {CustomElement, FieldDecorator} from "@corpuscule/typings";
+import {CustomElement} from "@corpuscule/typings";
 import {TemplateResult} from "lit-html";
 
 export interface PropertyOptions {
@@ -8,10 +8,10 @@ export interface PropertyOptions {
 export type AttributeGuard = BooleanConstructor | NumberConstructor | StringConstructor;
 export type PropertyGuard = (value: any) => boolean;
 
-export const attribute: (attributeName: string, guard: AttributeGuard, options?: PropertyOptions) => FieldDecorator;
-export const computed: <T extends string[]>(...watchings: T) => FieldDecorator; // tslint:disable-line:readonly-array
-export const property: (guard?: PropertyGuard, options?: PropertyOptions) => FieldDecorator;
-export const state: FieldDecorator;
+export const attribute: (attributeName: string, guard: AttributeGuard, options?: PropertyOptions) => PropertyDecorator;
+export const computed: <T extends string[]>(...watchings: T) => PropertyDecorator; // tslint:disable-line:readonly-array
+export const property: (guard?: PropertyGuard, options?: PropertyOptions) => PropertyDecorator;
+export const state: PropertyDecorator;
 
 export const createRoot: unique symbol;
 export const didMount: unique symbol;
