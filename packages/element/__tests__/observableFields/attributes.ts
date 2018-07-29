@@ -25,14 +25,14 @@ const attributes = () => {
       }
 
       const el = defineAndMount(Test);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       const node = el.shadowRoot!.getElementById("node")!;
 
       expect(node.textContent).toBe("Nothing");
 
       el.setAttribute("idx", "2");
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(node.textContent).toBe("#2");
     });
@@ -50,7 +50,7 @@ const attributes = () => {
       }
 
       const el = defineAndMount(Test);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(el.getAttribute("idx")).toBe("2");
 
@@ -74,7 +74,7 @@ const attributes = () => {
         e.setAttribute("idx", "2");
       });
 
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(el.index).toBe(2);
     });
@@ -92,10 +92,10 @@ const attributes = () => {
       }
 
       const el = defineAndMount(Test);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       el.index = 2;
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(el.getAttribute("idx")).toBe("2");
     });
@@ -117,10 +117,10 @@ const attributes = () => {
       }
 
       const el = defineAndMount(Test);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       el.index = 1;
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(spy).toHaveBeenCalledTimes(1);
     });
@@ -142,10 +142,10 @@ const attributes = () => {
       }
 
       const el = defineAndMount(Test);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       el.index = 1;
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(spy).toHaveBeenCalledTimes(2);
     });
@@ -163,17 +163,17 @@ const attributes = () => {
       }
 
       const el = defineAndMount(Test);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(el.hasAttribute("has")).not.toBeTruthy();
 
       el.has = true;
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(el.hasAttribute("has")).toBeTruthy();
 
       el.has = false;
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(el.hasAttribute("has")).not.toBeTruthy();
     });
@@ -191,7 +191,7 @@ const attributes = () => {
       }
 
       const el = defineAndMount(Test);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(() => {
         (el as any).index = "string";

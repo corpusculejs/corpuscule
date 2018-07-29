@@ -25,7 +25,7 @@ const didMethods = () => {
 
       const el = defineAndMount(Test);
 
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(spy).toHaveBeenCalledTimes(1);
     });
@@ -48,7 +48,7 @@ const didMethods = () => {
       const el = defineAndMount(Test);
       document.body.removeChild(el);
 
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(spy).toHaveBeenCalledTimes(1);
     });
@@ -71,7 +71,7 @@ const didMethods = () => {
       }
 
       const el = defineAndMount(Test);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       el.num = 2;
 

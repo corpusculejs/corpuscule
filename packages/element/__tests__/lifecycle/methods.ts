@@ -35,11 +35,11 @@ const methods = () => {
 
       const el = defineAndMount(Test);
 
-      await el.renderingPromise;
+      await el.elementRendering;
 
       el.num = 2;
 
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(spy).toHaveBeenCalledTimes(1);
     });
@@ -66,7 +66,7 @@ const methods = () => {
 
       const el = defineAndMount(Test);
 
-      await el.renderingPromise;
+      await el.elementRendering;
 
       await el.forceUpdate();
 
@@ -95,15 +95,15 @@ const methods = () => {
       }
 
       const el = defineAndMount(Test);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       el.prop = 3;
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(el.state).not.toBeTruthy();
 
       el.prop = 2;
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(el.state).toBeTruthy();
     });
@@ -121,7 +121,7 @@ const methods = () => {
 
       el.forceUpdate(); // tslint:disable-line:no-floating-promises
 
-      expect(el.renderingPromise).toEqual(jasmine.any(Promise));
+      expect(el.elementRendering).toEqual(jasmine.any(Promise));
     });
 
     it("should get the promise even if there is no renderingProcess yet", () => {
@@ -134,7 +134,7 @@ const methods = () => {
       }
 
       defineAndMount(Test, (e) => {
-        expect(e.renderingPromise).toEqual(jasmine.any(Promise));
+        expect(e.elementRendering).toEqual(jasmine.any(Promise));
       });
     });
   });

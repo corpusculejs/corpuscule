@@ -25,14 +25,14 @@ const states = () => {
       }
 
       const el = defineAndMount(Test);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       const node = el.shadowRoot!.getElementById("node")!;
 
       expect(node.textContent).toBe("#1");
 
       el.updateIndexTo(2);
-      await el.renderingPromise;
+      await el.elementRendering;
 
       expect(node.textContent).toBe("#2");
     });
