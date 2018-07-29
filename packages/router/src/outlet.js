@@ -48,7 +48,7 @@ const outlet = routes => (target) => {
         }
       },
     },
-    resolvingPromise: {
+    routeResolving: {
       get() {
         return this[$$resolving];
       },

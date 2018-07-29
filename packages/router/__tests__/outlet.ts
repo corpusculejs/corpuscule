@@ -3,7 +3,13 @@ import UniversalRouter, {Routes} from "universal-router";
 // tslint:disable-next-line:no-implicit-dependencies
 import uuid from "uuid/v4";
 import {BasicConsumer, BasicProvider, defineAndMountContext} from "../../../test/utils";
-import {createRouter, layout, outlet, provider, router as $router} from "../src";
+import {
+  createRouter,
+  layout,
+  outlet,
+  provider,
+  router as $router,
+} from "../src";
 
 const outletTest = () => {
   describe("outlet", () => {
@@ -49,7 +55,7 @@ const outletTest = () => {
 
       const [, o] = defineAndMountContext(Provider, Test);
 
-      await (o as any).resolvingPromise;
+      await (o as any).routeResolving;
 
       expect(o[layout]).toBe("Test Root");
     });
@@ -73,7 +79,7 @@ const outletTest = () => {
 
       dispatchEvent(new PopStateEvent("popstate", {state: `${basicLocation}#test`}));
 
-      await (o as any).resolvingPromise;
+      await (o as any).routeResolving;
 
       expect(o[layout]).toBe("Test Branch");
     });
@@ -104,13 +110,13 @@ const outletTest = () => {
 
       dispatchEvent(new PopStateEvent("popstate", {state: `${basicLocation}#parent`}));
 
-      await (child as any).resolvingPromise;
+      await (child as any).routeResolving;
 
       expect(child[layout]).toBe("Child Root");
 
       dispatchEvent(new PopStateEvent("popstate", {state: `${basicLocation}#parent/child`}));
 
-      await (child as any).resolvingPromise;
+      await (child as any).routeResolving;
 
       expect(child[layout]).toBe("Child Branch");
       expect(test[layout]).toBe("Test Root");
