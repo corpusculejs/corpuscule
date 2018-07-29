@@ -5,7 +5,7 @@ import {
   unsubscribe as $$unsubscribe,
   update as $$update,
 } from "./tokens/internal";
-import {connectedRegistry} from "./utils";
+import {connectedRegistry} from "./decorators";
 
 const {
   consumer,
@@ -22,7 +22,7 @@ export {
 export {
   connected,
   dispatcher,
-} from "./utils";
+} from "./decorators";
 
 export const connect = (target) => {
   const consumed = consumer(target);

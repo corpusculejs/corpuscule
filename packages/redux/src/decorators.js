@@ -13,11 +13,11 @@ export const connected = getter => (prototype, propertyName) => {
 };
 
 export const dispatcher = (prototype, propertyName) => {
-  const method = prototype[propertyName];
+  const descriptor = Object.getOwnPropertyDescriptor(prototype, propertyName);
 
-  return method ? {
+  return descriptor && descriptor.value ? {
     value(...args) {
-      this[$$context].dispatch(method.apply(this, args));
+      this[$$context].dispatch(descriptor.value.apply(this, args));
     },
   } : {
     configurable: true,
