@@ -8,117 +8,121 @@ import {
 } from "./context";
 import {
   handleSubmit as $$handleSubmit,
-  initProps as $$initProps,
   props as $$props,
   unsubscriptions as $$unsubscriptions,
 } from "./tokens/internal";
 import {formInstance} from "./tokens/lifecycle";
 
-const form = target =>
-  class FinalForm extends provider(target) {
-    static get observedAttributes() {
-      this[$$initProps](configOptions);
+const form = (target) => {
+  const provided = provider(target);
 
-      return super.observedAttributes || [];
-    }
+  const {value: connectedCallback} = Reflect.getOwnPropertyDescriptor(provided.prototype, "connectedCallback");
+  const {value: disconnectedCallback} = Reflect.getOwnPropertyDescriptor(provided.prototype, "disconnectedCallback");
 
-    static [$$initProps](props) {
-      for (const prop of props) {
-        Object.defineProperty(this.prototype, prop, {
-          get() {
-            return this[$$props][prop];
-          },
-          set(value) {
-            this[$$props][prop] = value;
+  Object.defineProperties(provided.prototype, {
+    ...configOptions.map(prop => ({
+      get() {
+        return this[$$props][prop];
+      },
+      set: prop === "initialValues" ? function set(value) {
+        this[$$props][prop] = value;
 
-            if (this[$$form]) {
-              if (prop === "initialValues") {
-                for (const v of value) {
-                  if (this[$$props][prop][v] !== value[v]) {
-                    this[$$form].initialize(value);
-                    this[$$props][prop] = value;
-                    break;
-                  }
-                }
-              } else {
-                this[$$form].setConfig(prop, this[$$props][prop]);
-              }
+        if (this[$$form]) {
+          for (const v of value) {
+            if (this[$$props][prop][v] !== value[v]) {
+              this[$$form].initialize(value);
+              this[$$props][prop] = value;
+              break;
             }
-          },
-        });
-      }
-    }
-
-    get decorators() {
-      return this[$$props].decorators;
-    }
-
-    set decorators(value) {
-      if (!this[$$form]) {
-        this[$$props].decorators = value;
-
-        return;
-      }
-
-      // eslint-disable-next-line consistent-return, no-console
-      console.warn("Form decorators should not change");
-    }
-
-    get [formInstance]() {
-      return this[$$form];
-    }
-
-    constructor() {
-      super();
-      this[$$props] = {};
-      this[$$unsubscriptions] = [];
-      this[$$handleSubmit] = this[$$handleSubmit].bind(this);
-    }
-
-    attributeChangedCallback(...args) {
-      if (super.attributeChangedCallback) {
-        super.attributeChangedCallback(...args);
-      }
-    }
-
-    async connectedCallback() {
-      if (super.connectedCallback) {
-        super.connectedCallback();
-      }
-
-      await null;
-
-      const instance = createForm(this[$$props]);
-
-      if (this.decorators) {
-        for (const decorate of this.decorators) {
-          this[$$unsubscriptions].push(decorate(instance));
+          }
         }
-      }
+      } : function set(value) {
+        this[$$props][prop] = value;
 
-      this[$$form] = instance;
+        if (this[$$form]) {
+          this[$$form].setConfig(prop, this[$$props][prop]);
+        }
+      },
+    })),
+    connectedCallback: {
+      async value() {
+        if (connectedCallback) {
+          connectedCallback.call(this);
+        }
 
-      this.addEventListener("submit", this[$$handleSubmit]);
-    }
+        await null;
 
-    disconnectedCallback() {
-      for (const unsubscribe of this[$$unsubscriptions]) {
-        unsubscribe();
-      }
+        const instance = createForm(this[$$props]);
 
-      this.removeEventListener("submit", this[$$handleSubmit]);
+        if (this.decorators) {
+          for (const decorate of this.decorators) {
+            this[$$unsubscriptions].push(decorate(instance));
+          }
+        }
 
-      if (super.disconnectedCallback) {
-        super.disconnectedCallback();
-      }
-    }
+        this[$$form] = instance;
 
-    [$$handleSubmit](e) {
-      e.preventDefault();
-      e.stopPropagation();
+        this.addEventListener("submit", this[$$handleSubmit]);
+      },
+    },
+    decorators: {
+      get() {
+        return this[$$props].decorators;
+      },
+      set(value) {
+        if (!this[$$form]) {
+          this[$$props].decorators = value;
 
-      this[$$form].submit();
-    }
-  };
+          return;
+        }
+
+        // eslint-disable-next-line consistent-return, no-console
+        console.warn("Form decorators should not change");
+      },
+    },
+    disconnectedCallback: {
+      value() {
+        for (const unsubscribe of this[$$unsubscriptions]) {
+          unsubscribe();
+        }
+
+        this.removeEventListener("submit", this[$$handleSubmit]);
+
+        if (disconnectedCallback) {
+          disconnectedCallback.call(this);
+        }
+      },
+    },
+    [formInstance]: {
+      value() {
+        return this[$$form];
+      },
+    },
+    [$$handleSubmit]: { // eslint-disable-line sort-keys
+      get() {
+        const handleSubmit = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          this[$$form].submit();
+        };
+
+        Object.defineProperty(this, $$handleSubmit, {
+          value: handleSubmit,
+        });
+
+        return handleSubmit;
+      },
+    },
+    [$$props]: {
+      value: {},
+    },
+    [$$unsubscriptions]: {
+      value: [],
+    },
+  });
+
+  return target;
+};
 
 export default form;
