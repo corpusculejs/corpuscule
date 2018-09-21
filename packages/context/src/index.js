@@ -1,4 +1,5 @@
 /* eslint-disable max-classes-per-file */
+import {createBaseCallbackCaller} from "./utils";
 
 const randomString = () => {
   const arr = new Uint32Array(2);
@@ -19,54 +20,79 @@ const createContext = (defaultValue) => {
   const providingValue = Symbol("providingValue");
   const contextValue = Symbol("contextValue");
 
-  const provider = (target) => {
-    const {
-      connectedCallback,
-      disconnectedCallback,
-    } = target.prototype;
+  const provider = ({elements, kind}) => {
+    if (kind !== "class") {
+      throw new TypeError("@provider can be applied only to a class");
+    }
 
-    Object.defineProperties(target.prototype, {
-      connectedCallback: {
-        configurable: true,
-        value() {
-          this.addEventListener(eventName, this[$$subscribe]);
+    const providingValueMethod = elements.find(({key}) => key === providingValue);
 
-          if (connectedCallback) {
-            connectedCallback.call(this);
-          }
-        },
-      },
-      disconnectedCallback: {
-        configurable: true,
-        value() {
-          this.removeEventListener(eventName, this[$$subscribe]);
+    const callBaseConnectedCallback = createBaseCallbackCaller("connectedCallback", elements);
+    const callBaseDisconnectedCallback = createBaseCallbackCaller("disconnectedCallback", elements);
 
-          if (disconnectedCallback) {
-            disconnectedCallback.call(this);
-          }
-        },
-      },
-      [providingValue]: {
-        get() {
-          return this[$$value];
-        },
-        set(v) {
-          this[$$value] = v;
+    return {
+      elements: [...elements.filter(({key}) =>
+        key !== "connectedCallback"
+        && key !== "disconnectedCallback"
+        && key !== providingValue,
+      ), {
+        descriptor: {
+          configurable: true,
+          enumerable: true,
+          value() {
+            this.addEventListener(eventName, this[$$subscribe]);
 
-          for (const cb of this[$$consumers]) {
-            cb(v);
-          }
+            if (providingValueMethod && providingValueMethod.initializer) {
+              this[providingValue] = providingValueMethod.initializer();
+            }
+
+            callBaseConnectedCallback(this);
+          },
         },
-      },
-      // eslint-disable-next-line sort-keys
-      [$$consumers]: {
-        value: [],
-        writable: true,
-      },
-      [$$subscribe]: {
-        configurable: true,
-        get() {
-          const subscribe = (event) => {
+        key: "connectedCallback",
+        kind: "method",
+        placement: "prototype",
+      }, {
+        descriptor: {
+          configurable: true,
+          enumerable: true,
+          value() {
+            this.removeEventListener(eventName, this[$$subscribe]);
+            callBaseDisconnectedCallback(this);
+          },
+        },
+        key: "disconnectedCallback",
+        kind: "method",
+        placement: "prototype",
+      }, {
+        descriptor: {
+          configurable: true,
+          enumerable: true,
+          get() {
+            return this[$$value];
+          },
+          set(v) {
+            this[$$value] = v;
+
+            for (const cb of this[$$consumers]) {
+              cb(v);
+            }
+          },
+        },
+        key: providingValue,
+        kind: "method",
+        placement: "prototype",
+      }, {
+        descriptor: {
+          writable: true,
+        },
+        initializer: () => [],
+        key: $$consumers,
+        kind: "field",
+        placement: "own",
+      }, {
+        descriptor: {
+          value(event) {
             const {consume} = event.detail;
 
             this[$$consumers].push(consume);
@@ -74,98 +100,101 @@ const createContext = (defaultValue) => {
 
             event.detail.unsubscribe = this[$$unsubscribe];
             event.stopPropagation();
-          };
-
-          Object.defineProperty(this, $$subscribe, {
-            value: subscribe,
-          });
-
-          return subscribe;
+          },
         },
-      },
-      [$$unsubscribe]: {
-        configurable: true,
-        get() {
-          const unsubscribe = (consume) => {
+        key: $$subscribe,
+        kind: "method",
+        placement: "own",
+      }, {
+        descriptor: {},
+        initializer() {
+          return (consume) => {
             this[$$consumers] = this[$$consumers].filter(p => p !== consume);
           };
-
-          Object.defineProperty(this, $$unsubscribe, {
-            value: unsubscribe,
-          });
-
-          return unsubscribe;
         },
-      },
-      [$$value]: {
-        value: defaultValue,
-        writable: true,
-      },
-    });
-
-    return target;
+        key: $$unsubscribe,
+        kind: "field",
+        placement: "own",
+      }, {
+        descriptor: {
+          writable: true,
+        },
+        initializer: () => defaultValue,
+        key: $$value,
+        kind: "field",
+        placement: "own",
+      }],
+      kind,
+    };
   };
 
-  const consumer = (target) => {
-    const {
-      connectedCallback,
-      disconnectedCallback,
-    } = target.prototype;
+  const consumer = ({elements, kind}) => {
+    if (kind !== "class") {
+      throw new TypeError("@provider can be applied only to a class");
+    }
 
-    Object.defineProperties(target.prototype, {
-      connectedCallback: {
-        configurable: true,
-        value() {
-          const event = new CustomEvent(eventName, {
-            bubbles: true,
-            cancelable: true,
-            composed: true,
-            detail: {consume: this[$$consume]},
-          });
+    const callBaseConnectedCallback = createBaseCallbackCaller("connectedCallback", elements);
+    const callBaseDisconnectedCallback = createBaseCallbackCaller("disconnectedCallback", elements);
 
-          this.dispatchEvent(event);
+    return {
+      elements: [...elements.filter(({key}) =>
+        key !== "connectedCallback"
+        && key !== "disconnectedCallback"
+        && key !== contextValue,
+      ), {
+        descriptor: {
+          configurable: true,
+          enumerable: true,
+          value() {
+            const event = new CustomEvent(eventName, {
+              bubbles: true,
+              cancelable: true,
+              composed: true,
+              detail: {consume: this[$$consume]},
+            });
 
-          this[$$unsubscribe] = event.detail.unsubscribe;
+            this.dispatchEvent(event);
 
-          if (!this[$$unsubscribe]) {
-            throw new Error(`No provider found for ${this.constructor.name}`);
-          }
+            this[$$unsubscribe] = event.detail.unsubscribe;
 
-          if (connectedCallback) {
-            connectedCallback.call(this);
-          }
+            if (!this[$$unsubscribe]) {
+              throw new Error(`No provider found for ${this.constructor.name}`);
+            }
+
+            callBaseConnectedCallback(this);
+          },
         },
-      },
-      disconnectedCallback: {
-        configurable: true,
-        value() {
-          if (this[$$unsubscribe]) {
-            this[$$unsubscribe](this[$$consume]);
-          }
+        key: "connectedCallback",
+        kind: "method",
+        placement: "prototype",
+      }, {
+        descriptor: {
+          configurable: true,
+          enumerable: true,
+          value() {
+            if (this[$$unsubscribe]) {
+              this[$$unsubscribe](this[$$consume]);
+            }
 
-          if (disconnectedCallback) {
-            disconnectedCallback.call(this);
-          }
+            callBaseDisconnectedCallback(this);
+          },
         },
-      },
-      // eslint-disable-next-line sort-keys
-      [$$consume]: {
-        configurable: true,
-        get() {
-          const consume = (v) => {
+        key: "disconnectedCallback",
+        kind: "method",
+        placement: "prototype",
+      }, {
+        descriptor: {},
+        initializer() {
+          return (v) => {
             this[contextValue] = v;
           };
-
-          Object.defineProperty(this, $$consume, {
-            value: consume,
-          });
-
-          return consume;
         },
-      },
-    });
-
-    return target;
+        key: $$consume,
+        kind: "field",
+        placement: "own",
+      }],
+      kind,
+    };
   };
 
   return {
