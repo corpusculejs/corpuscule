@@ -1,5 +1,19 @@
 export const defaultPropertyOptions = {pure: true};
 
+export const assertField = (decorator, key, kind) => {
+  if (kind !== "field") {
+    throw new TypeError(`@${decorator} can be applied only to class field and "${key}" is not a field`);
+  }
+};
+
+export const addToRegistry = (registry, target, key, value) => {
+  if (registry.has(target)) {
+    registry.get(target).set(key, value);
+  } else {
+    registry.set(target, new Map([[key, value]]));
+  }
+};
+
 export const handleError = (e) => {
   throw e;
 };

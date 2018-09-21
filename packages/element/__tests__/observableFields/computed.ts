@@ -91,7 +91,7 @@ const testComputed = () => {
           }
         }
       })
-        .toThrowError("Property \"comp\" is not defined or is not a getter");
+        .toThrowError("@computed can be applied only to getter and \"comp\" is not a getter");
     });
 
     it("should allow to define property in any place of prototype chain", async () => {
