@@ -1,6 +1,5 @@
 // tslint:disable:await-promise max-classes-per-file
-import {TemplateResult} from "lit-html";
-import {html} from "lit-html/lib/lit-extended";
+import {html, TemplateResult} from "lit-html";
 // tslint:disable-next-line:no-implicit-dependencies
 import uuid from "uuid/v4";
 import {defineAndMount} from "../../../../test/utils";
