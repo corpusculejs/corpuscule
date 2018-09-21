@@ -5,10 +5,13 @@
     "bootstrap": "lerna bootstrap",
     "build": "node scripts/build.js",
     "lint": "run-p lint:es lint:ts",
+    "lint-staged": "lint-staged",
     "lint:es": "eslint packages/**/*.js",
-    "lint:ts": "tslint \"packages/**/*.ts\" -e \"packages/**/+(node_modules|lib)/**/*\" -c tslint.json -p tsconfig.json -t verbose",
+    "lint:ts": "run-p tslint typecheck",
+    "tslint": "tslint \"packages/**/*.ts\" -e \"packages/**/+(node_modules|lib)/**/*\" -c tslint.json -p tsconfig.json -t verbose",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "prepare": "run-s bootstrap lint build",
-    "precommit": "lint-staged",
+    "precommit": "run-p typecheck lint-staged",
     "test": "karma start test/karma.conf.js"
   },
   "repository": {
