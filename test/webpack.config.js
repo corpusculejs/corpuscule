@@ -1,9 +1,4 @@
 /* eslint-disable sort-keys */
-const {resolve} = require("path");
-
-const cwd = process.cwd();
-const root = path => resolve(cwd, path);
-
 module.exports = {
   devtool: "inline-source-map",
   mode: "development",
@@ -28,9 +23,19 @@ module.exports = {
         test: /\.ts/,
         use: [
           {
-            loader: "ts-loader",
+            loader: "babel-loader",
             options: {
-              configFile: root("tsconfig.json"),
+              babelrc: false,
+              cacheDirectory: true,
+              cacheCompression: false,
+              plugins: [
+                [require("@babel/plugin-proposal-decorators"), {decoratorsBeforeExport: true}],
+                require("@babel/plugin-proposal-class-properties"),
+                require("@babel/plugin-syntax-dynamic-import"),
+              ],
+              presets: [
+                require("@babel/preset-typescript"),
+              ],
             },
           },
         ],
