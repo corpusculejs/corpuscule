@@ -1,5 +1,5 @@
 /* eslint-disable max-classes-per-file */
-import {createBaseCallbackCaller} from "./utils";
+import getSuperMethod from "@corpuscule/utils/lib/getSuperMethod";
 
 const randomString = () => {
   const arr = new Uint32Array(2);
@@ -7,6 +7,9 @@ const randomString = () => {
 
   return `${rnd1}${rnd2}`;
 };
+
+const connectedCallbackKey = "connectedCallback";
+const disconnectedCallbackKey = "disconnectedCallback";
 
 const createContext = (defaultValue) => {
   const eventName = randomString();
@@ -27,13 +30,13 @@ const createContext = (defaultValue) => {
 
     const providingValueMethod = elements.find(({key}) => key === providingValue);
 
-    const callBaseConnectedCallback = createBaseCallbackCaller("connectedCallback", elements);
-    const callBaseDisconnectedCallback = createBaseCallbackCaller("disconnectedCallback", elements);
+    const superConnectedCallback = getSuperMethod(connectedCallbackKey, elements);
+    const superDisconnectedCallback = getSuperMethod(disconnectedCallbackKey, elements);
 
     return {
       elements: [...elements.filter(({key}) =>
-        key !== "connectedCallback"
-        && key !== "disconnectedCallback"
+        key !== connectedCallbackKey
+        && key !== disconnectedCallbackKey
         && key !== providingValue,
       ), {
         descriptor: {
@@ -46,10 +49,10 @@ const createContext = (defaultValue) => {
               this[providingValue] = providingValueMethod.initializer();
             }
 
-            callBaseConnectedCallback(this);
+            superConnectedCallback(this);
           },
         },
-        key: "connectedCallback",
+        key: connectedCallbackKey,
         kind: "method",
         placement: "prototype",
       }, {
@@ -58,10 +61,10 @@ const createContext = (defaultValue) => {
           enumerable: true,
           value() {
             this.removeEventListener(eventName, this[$$subscribe]);
-            callBaseDisconnectedCallback(this);
+            superDisconnectedCallback(this);
           },
         },
-        key: "disconnectedCallback",
+        key: disconnectedCallbackKey,
         kind: "method",
         placement: "prototype",
       }, {
@@ -133,13 +136,13 @@ const createContext = (defaultValue) => {
       throw new TypeError("@provider can be applied only to a class");
     }
 
-    const callBaseConnectedCallback = createBaseCallbackCaller("connectedCallback", elements);
-    const callBaseDisconnectedCallback = createBaseCallbackCaller("disconnectedCallback", elements);
+    const superConnectedCallback = getSuperMethod(connectedCallbackKey, elements);
+    const superDisconnectedCallback = getSuperMethod(disconnectedCallbackKey, elements);
 
     return {
       elements: [...elements.filter(({key}) =>
-        key !== "connectedCallback"
-        && key !== "disconnectedCallback"
+        key !== connectedCallbackKey
+        && key !== disconnectedCallbackKey
         && key !== contextValue,
       ), {
         descriptor: {
@@ -161,10 +164,10 @@ const createContext = (defaultValue) => {
               throw new Error(`No provider found for ${this.constructor.name}`);
             }
 
-            callBaseConnectedCallback(this);
+            superConnectedCallback(this);
           },
         },
-        key: "connectedCallback",
+        key: connectedCallbackKey,
         kind: "method",
         placement: "prototype",
       }, {
@@ -176,10 +179,10 @@ const createContext = (defaultValue) => {
               this[$$unsubscribe](this[$$consume]);
             }
 
-            callBaseDisconnectedCallback(this);
+            superDisconnectedCallback(this);
           },
         },
-        key: "disconnectedCallback",
+        key: disconnectedCallbackKey,
         kind: "method",
         placement: "prototype",
       }, {
