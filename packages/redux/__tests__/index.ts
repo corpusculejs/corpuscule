@@ -55,7 +55,7 @@ describe("@corpuscule/redux", () => {
     class Connected extends BasicConsumer {
       public static is: string = `x-${uuid()}`;
 
-      @connected<typeof reduxState>(state => state.test)
+      @connected((state: typeof reduxState) => state.test)
       public test?: number;
     }
 
@@ -77,7 +77,7 @@ describe("@corpuscule/redux", () => {
     class Connected extends BasicConsumer {
       public static is: string = `x-${uuid()}`;
 
-      @connected<typeof reduxState>(state => state.test)
+      @connected((state: typeof reduxState) => state.test)
       public test?: number;
     }
 
