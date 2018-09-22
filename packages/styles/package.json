@@ -15,9 +15,6 @@
     "type": "git",
     "url": "git+https://github.com/corpusculejs/corpuscule.git"
   },
-  "dependencies": {
-    "@corpuscule/typings": "^0.2.0"
-  },
   "peerDependencies": {
     "lit-html": "^0.10.0"
   }
