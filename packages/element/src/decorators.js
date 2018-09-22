@@ -1,9 +1,16 @@
-import {addToRegistry, assertField, defaultPropertyOptions, handleError, prepareComputed, toAttribute} from "./utils";
+import {
+  assertField,
+  defaultPropertyOptions,
+  handleError,
+  prepareComputed,
+  toAttribute,
+} from "./utils";
 import {
   invalidate as $$invalidate,
   isMount as $$isMount,
   props as $$props, states as $$states,
 } from "./tokens/internal";
+import addToRegistry from "@corpuscule/utils/lib/addToRegistry";
 
 export const attributeRegistry = new WeakMap();
 
