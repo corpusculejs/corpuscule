@@ -1,9 +1,9 @@
-export const createBaseCallbackCaller = (name, elements) => {
-  const callback = elements.find(({key}) => key === name);
+const getSuperMethod = (name, elements) => {
+  const method = elements.find(({key}) => key === name);
 
   return (instance) => {
-    if (callback) {
-      callback.descriptor.value.call(instance);
+    if (method) {
+      method.descriptor.value.call(instance);
     } else {
       const superClass = Object.getPrototypeOf(instance.constructor.prototype);
 
@@ -13,3 +13,5 @@ export const createBaseCallbackCaller = (name, elements) => {
     }
   };
 };
+
+export default getSuperMethod;
