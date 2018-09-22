@@ -1,4 +1,5 @@
 import createContext from "@corpuscule/context";
+import getSuperMethod from "@corpuscule/utils/lib/getSuperMethod";
 import {
   resolving as $$resolving,
   updateRoute as $$updateRoute,
@@ -7,7 +8,7 @@ import {layout, resolve} from "./tokens/lifecycle";
 
 const {
   consumer,
-  contextValue: context,
+  contextValue,
   provider,
   providingValue: router,
 } = createContext();
@@ -17,60 +18,78 @@ export {
   router,
 };
 
-const outlet = routes => (target) => {
-  const consumed = consumer(target);
+const connectedCallbackKey = "connectedCallback";
+const disconnectedCallbackKey = "disconnectedCallback";
 
-  const {
-    connectedCallback,
-    disconnectedCallback,
-  } = consumed.prototype;
+const outlet = routes => (classDescriptor) => {
+  if (classDescriptor.kind !== "class") {
+    throw new TypeError(`@outlet can be applied only to class, not to ${classDescriptor.kind}`);
+  }
 
-  Object.defineProperties(target.prototype, {
-    connectedCallback: {
-      configurable: true,
-      value() {
-        window.addEventListener("popstate", this[$$updateRoute]);
+  const {elements, kind} = consumer(classDescriptor);
 
-        if (connectedCallback) {
-          connectedCallback.call(this);
-        }
+  const superConnectedCallback = getSuperMethod(connectedCallbackKey, elements);
+  const superDisconnectedCallback = getSuperMethod(disconnectedCallbackKey, elements);
 
-        this[$$updateRoute](location.pathname);
+  return {
+    elements: [...elements.filter(({key}) =>
+      key !== connectedCallbackKey
+      && key !== disconnectedCallbackKey
+    ), {
+      descriptor: {
+        configurable: true,
+        value() {
+          window.addEventListener("popstate", this[$$updateRoute]);
+
+          superConnectedCallback(this);
+
+          this[$$updateRoute](location.pathname);
+        },
       },
-    },
-    disconnectedCallback: {
-      configurable: true,
-      value() {
-        window.removeEventListener("popstate", this[$$updateRoute]);
-
-        if (disconnectedCallback) {
-          disconnectedCallback.call(this);
-        }
+      key: connectedCallbackKey,
+      kind: "method",
+      placement: "prototype",
+    }, {
+      descriptor: {
+        configurable: true,
+        value() {
+          window.removeEventListener("popstate", this[$$updateRoute]);
+          superDisconnectedCallback(this);
+        },
       },
-    },
-    routeResolving: {
-      get() {
-        return this[$$resolving];
+      key: disconnectedCallbackKey,
+      kind: "method",
+      placement: "prototype",
+    }, {
+      descriptor: {
+        get() {
+          return this[$$resolving];
+        },
       },
-    },
-    // eslint-disable-next-line sort-keys
-    [resolve]: {
-      configurable: true,
-      *value(path) {
-        return yield path;
+      key: "routeResolving",
+      kind: "method",
+      placement: "prototype",
+    }, {
+      descriptor: {
+        configurable: true,
+        *value(path) {
+          return yield path;
+        },
       },
-    },
-    // eslint-disable-next-line sort-keys
-    [$$updateRoute]: {
-      get() {
-        const updateRoute = (pathOrEvent) => {
+      key: resolve,
+      kind: "method",
+      placement: "prototype",
+    }, {
+      descriptor: {},
+      initializer() {
+        return (pathOrEvent) => {
           const path = typeof pathOrEvent === "string"
             ? pathOrEvent
             : pathOrEvent.state || "";
 
           const iter = this[resolve](path);
 
-          this[$$resolving] = this[context].resolve(iter.next().value)
+          this[$$resolving] = this[contextValue].resolve(iter.next().value)
             .then((resolved) => {
               if (resolved === undefined) {
                 return;
@@ -83,17 +102,13 @@ const outlet = routes => (target) => {
               }
             });
         };
-
-        Object.defineProperty(this, $$updateRoute, {
-          value: updateRoute,
-        });
-
-        return updateRoute;
       },
-    },
-  });
-
-  return target;
+      key: $$updateRoute,
+      kind: "field",
+      placement: "own",
+    }],
+    kind,
+  };
 };
 
 export default outlet;
