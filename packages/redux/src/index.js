@@ -37,10 +37,7 @@ export const connect = (classDescriptor) => {
   const superDisconnectedCallback = getSuperMethod(disconnectedCallbackKey, elements);
 
   return {
-    elements: [...elements.filter(({key}) =>
-      key !== disconnectedCallbackKey
-      && key !== contextValue,
-    ), {
+    elements: [...elements.filter(({key}) => key !== disconnectedCallbackKey), {
       descriptor: {
         configurable: true,
         enumerable: true,
