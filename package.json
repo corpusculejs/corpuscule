@@ -10,7 +10,7 @@
     "lint:ts": "run-p tslint typecheck",
     "tslint": "tslint \"packages/**/*.ts\" -e \"packages/**/+(node_modules|lib)/**/*\" -c tslint.json -p tsconfig.json -t verbose",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "prepare": "run-s bootstrap lint build",
+    "prepare": "run-s bootstrap build lint",
     "precommit": "run-p typecheck lint-staged",
     "test": "karma start test/karma.conf.js"
   },
