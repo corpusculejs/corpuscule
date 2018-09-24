@@ -73,27 +73,6 @@ const testComputed = () => {
       expect(spy).toHaveBeenCalledTimes(2);
     });
 
-    it("should throw an error if computed variable is not a getter", () => {
-      expect(() => {
-        class Test extends CorpusculeElement { // tslint:disable-line:no-unused-variable
-          public static is: string = `x-${uuid()}`;
-
-          public first: number = 1;
-          public second: number = 2;
-
-          @computed("first", "second")
-          public comp(): number {
-            return this.first + this.second;
-          }
-
-          protected [render](): TemplateResult {
-            return html`<span id="node">Test content</span>`;
-          }
-        }
-      })
-        .toThrowError("@computed can be applied only to getter and \"comp\" is not a getter");
-    });
-
     it("should allow to define property in any place of prototype chain", async () => {
       class Parent extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;

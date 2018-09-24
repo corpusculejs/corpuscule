@@ -1,4 +1,5 @@
 import createContext from "@corpuscule/context";
+import assertKind from "@corpuscule/utils/lib/assertKind";
 import getSuperMethod from "@corpuscule/utils/lib/getSuperMethod";
 import {
   resolving as $$resolving,
@@ -22,9 +23,7 @@ const connectedCallbackKey = "connectedCallback";
 const disconnectedCallbackKey = "disconnectedCallback";
 
 const outlet = routes => (classDescriptor) => {
-  if (classDescriptor.kind !== "class") {
-    throw new TypeError(`@outlet can be applied only to class, not to ${classDescriptor.kind}`);
-  }
+  assertKind("outlet", "class", classDescriptor.kind);
 
   const {elements, kind} = consumer(classDescriptor);
 

@@ -17,5 +17,8 @@
   },
   "peerDependencies": {
     "lit-html": "^0.10.0"
+  },
+  "dependencies": {
+    "@corpuscule/utils": "^0.3.0"
   }
 }

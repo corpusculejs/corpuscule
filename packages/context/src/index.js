@@ -1,4 +1,5 @@
 /* eslint-disable max-classes-per-file */
+import assertKind from "@corpuscule/utils/lib/assertKind";
 import getSuperMethod from "@corpuscule/utils/lib/getSuperMethod";
 
 const randomString = () => {
@@ -24,9 +25,7 @@ const createContext = (defaultValue) => {
   const contextValue = Symbol("contextValue");
 
   const provider = ({elements, kind}) => {
-    if (kind !== "class") {
-      throw new TypeError("@provider can be applied only to a class");
-    }
+    assertKind("provider", "class", kind);
 
     const providingValueMethod = elements.find(({key}) => key === providingValue);
 
@@ -132,9 +131,7 @@ const createContext = (defaultValue) => {
   };
 
   const consumer = ({elements, kind}) => {
-    if (kind !== "class") {
-      throw new TypeError("@provider can be applied only to a class");
-    }
+    assertKind("consumer", "class", kind);
 
     const superConnectedCallback = getSuperMethod(connectedCallbackKey, elements);
     const superDisconnectedCallback = getSuperMethod(disconnectedCallbackKey, elements);

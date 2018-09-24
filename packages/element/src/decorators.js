@@ -1,5 +1,6 @@
+import addToRegistry from "@corpuscule/utils/lib/addToRegistry";
+import assertKind from "@corpuscule/utils/lib/assertKind";
 import {
-  assertField,
   defaultPropertyOptions,
   handleError,
   prepareComputed,
@@ -10,7 +11,6 @@ import {
   isMount as $$isMount,
   props as $$props, states as $$states,
 } from "./tokens/internal";
-import addToRegistry from "@corpuscule/utils/lib/addToRegistry";
 
 export const attributeRegistry = new WeakMap();
 
@@ -23,7 +23,7 @@ export const attribute = (attributeName, guard, {pure} = defaultPropertyOptions)
   key,
   kind,
 }) => {
-  assertField("attribute", key, kind);
+  assertKind("attribute", "field", kind);
 
   return {
     descriptor: {
@@ -67,7 +67,7 @@ export const property = (guard = null, {pure} = defaultPropertyOptions) => ({
   key,
   kind,
 }) => {
-  assertField("property", key, kind);
+  assertKind("property", "field", kind);
 
   return {
     descriptor: {
@@ -102,7 +102,7 @@ export const property = (guard = null, {pure} = defaultPropertyOptions) => ({
 };
 
 export const state = ({initializer, key, kind}) => {
-  assertField("state", key, kind);
+  assertKind("state", "field", kind);
 
   return {
     descriptor: {
@@ -131,9 +131,7 @@ export const computed = (...watchings) => ({
   kind,
   placement,
 }) => {
-  if (!get) {
-    throw new Error(`@computed can be applied only to getter and "${key}" is not a getter`);
-  }
+  assertKind("computed", "getter", kind, !get);
 
   const registry = new WeakMap();
 
