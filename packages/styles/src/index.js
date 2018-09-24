@@ -1,3 +1,4 @@
+import assertKind from "@corpuscule/utils/lib/assertKind";
 import {html} from "lit-html";
 import {style} from "./tokens";
 
@@ -7,9 +8,7 @@ export {style};
 const stylePattern = /[{}]/;
 
 const styles = (...pathsOrStyles) => ({elements, kind}) => {
-  if (kind !== "class") {
-    throw new TypeError(`@connected can be applied only to a class but is applied to ${kind}`);
-  }
+  assertKind("styles", "class", kind);
 
   return {
     elements: [...elements.filter(({key}) => key !== style), {
