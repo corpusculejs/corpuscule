@@ -1,5 +1,9 @@
-import propertyChainTests from "./propertyChain";
+import addToRegistryTest from "./addToRegistry";
+import assertKindTest from "./assertKind";
+import getSuperMethodTest from "./getSuperMethod";
 
 describe("@corpuscule/utils", () => {
-  propertyChainTests();
+  addToRegistryTest();
+  assertKindTest();
+  getSuperMethodTest();
 });

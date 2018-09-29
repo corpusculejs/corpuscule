@@ -1,5 +1,4 @@
 // tslint:disable:max-classes-per-file
-
 import {render, TemplateResult} from "lit-html";
 import styles, {link, style} from "../src";
 
@@ -19,10 +18,12 @@ describe("@corpuscule/styles", () => {
   });
 
   it("should create a <link> tag if path is received", () => {
-    class Test extends styles("/styles.css")(HTMLElement) {
+    @styles("/styles.css")
+    class Test extends HTMLElement {
+      public static [style]: TemplateResult;
     }
 
-    const {[style]: s} = Test as any;
+    const {[style]: s} = Test;
 
     expect(s).toEqual(jasmine.any(TemplateResult));
 
@@ -33,10 +34,12 @@ describe("@corpuscule/styles", () => {
   });
 
   it("should create a <style/> tag if styles are received", () => {
-    class Test extends styles(rawStyles)(HTMLElement) {
+    @styles(rawStyles)
+    class Test extends HTMLElement {
+      public static [style]: TemplateResult;
     }
 
-    const {[style]: s} = Test as any;
+    const {[style]: s} = Test;
 
     expect(s).toEqual(jasmine.any(TemplateResult));
 
@@ -47,7 +50,9 @@ describe("@corpuscule/styles", () => {
   });
 
   it("should allow to insert different style types", () => {
-    class Test extends styles("/styles.css", rawStyles)(HTMLElement) {
+    @styles("/styles.css", rawStyles)
+    class Test extends HTMLElement {
+      public static [style]: TemplateResult;
     }
 
     const {[style]: s} = Test;

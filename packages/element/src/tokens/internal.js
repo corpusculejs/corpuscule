@@ -1,3 +1,4 @@
+export const initializePropsStates = Symbol("initializePropsStates");
 export const invalidate = Symbol("invalidate");
 export const isMount = Symbol("isMount");
 export const prevProps = Symbol("prevProps");

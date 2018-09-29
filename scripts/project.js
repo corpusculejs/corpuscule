@@ -5,8 +5,10 @@ const packages = {
   router: ["index"],
   styles: ["index"],
   utils: [
+    "addToRegistry",
+    "assertKind",
+    "getSuperMethod",
     "compose",
-    "propertyChain",
   ],
 };
 
