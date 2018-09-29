@@ -1,33 +1,66 @@
+import addToRegistry from "@corpuscule/utils/lib/addToRegistry";
+import assertKind from "@corpuscule/utils/lib/assertKind";
 import {context as $$context} from "./tokens/internal";
 
 export const connectedRegistry = new WeakMap();
 
-export const connected = getter => (prototype, propertyName) => {
-  const record = [propertyName, getter];
+export const connected = getter => (descriptor) => {
+  assertKind("connected", "field", descriptor.kind);
 
-  if (connectedRegistry.has(prototype)) {
-    connectedRegistry.get(prototype).set(...record);
-  } else {
-    connectedRegistry.set(prototype, new Map([record]));
-  }
+  return {
+    ...descriptor,
+    finisher(target) {
+      addToRegistry(connectedRegistry, target, descriptor.key, getter);
+    },
+  };
 };
 
-export const dispatcher = (prototype, propertyName) => {
-  const descriptor = Object.getOwnPropertyDescriptor(prototype, propertyName);
+export const dispatcher = ({
+  descriptor,
+  initializer,
+  key,
+  kind,
+  placement,
+}) => {
+  assertKind("dispatcher", "field or method", kind, kind !== "method" && kind !== "field");
 
-  return descriptor && descriptor.value ? {
-    value(...args) {
-      this[$$context].dispatch(descriptor.value.apply(this, args));
-    },
-  } : {
-    configurable: true,
-    set(value) {
-      Object.defineProperty(this, propertyName, {
+  if (kind === "field") {
+    const initialized = initializer ? initializer() : undefined;
+
+    if (!initialized || typeof initialized !== "function") {
+      throw new Error(`@dispatcher: "${key}" should be initialized with a function`);
+    }
+
+    return {
+      descriptor,
+      initializer() {
+        return (...args) => {
+          this[$$context].dispatch(initialized.apply(this, args));
+        };
+      },
+      key,
+      kind,
+      placement,
+    };
+  }
+
+  return {
+    descriptor,
+    extras: [{
+      descriptor: {
         configurable: true,
-        value(...args) {
-          this[$$context].dispatch(value(...args));
-        },
-      });
-    },
+      },
+      initializer() {
+        return (...args) => {
+          this[$$context].dispatch(descriptor.value.apply(this, args));
+        };
+      },
+      key,
+      kind: "field",
+      placement: "own",
+    }],
+    key,
+    kind,
+    placement,
   };
 };

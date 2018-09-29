@@ -1,6 +1,5 @@
 // tslint:disable:await-promise max-classes-per-file
-import {TemplateResult} from "lit-html";
-import {html} from "lit-html/lib/lit-extended";
+import {html, TemplateResult} from "lit-html";
 // tslint:disable-next-line:no-implicit-dependencies
 import uuid from "uuid/v4";
 import {defineAndMount} from "../../../../test/utils";
@@ -72,27 +71,6 @@ const testComputed = () => {
       expect(el.comp).toBe(1);
 
       expect(spy).toHaveBeenCalledTimes(2);
-    });
-
-    it("should throw an error if computed variable is not a getter", () => {
-      expect(() => {
-        class Test extends CorpusculeElement { // tslint:disable-line:no-unused-variable
-          public static is: string = `x-${uuid()}`;
-
-          public first: number = 1;
-          public second: number = 2;
-
-          @computed("first", "second")
-          public comp(): number {
-            return this.first + this.second;
-          }
-
-          protected [render](): TemplateResult {
-            return html`<span id="node">Test content</span>`;
-          }
-        }
-      })
-        .toThrowError("Property \"comp\" is not defined or is not a getter");
     });
 
     it("should allow to define property in any place of prototype chain", async () => {

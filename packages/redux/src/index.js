@@ -6,10 +6,11 @@ import {
   update as $$update,
 } from "./tokens/internal";
 import {connectedRegistry} from "./decorators";
+import getSuperMethod from "@corpuscule/utils/lib/getSuperMethod";
 
 const {
   consumer,
-  contextValue: context,
+  contextValue,
   provider,
   providingValue: store,
 } = createContext();
@@ -24,66 +25,83 @@ export {
   dispatcher,
 } from "./decorators";
 
-export const connect = (target) => {
-  const consumed = consumer(target);
+const disconnectedCallbackKey = "disconnectedCallback";
 
-  const {
-    disconnectedCallback,
-  } = consumed;
+export const connect = (classDescriptor) => {
+  if (classDescriptor.kind !== "class") {
+    throw new TypeError(`@connect can be applied only to class, not to ${classDescriptor.kind}`);
+  }
 
-  Object.defineProperties(consumed.prototype, {
-    disconnectedCallback: {
-      configurable: true,
-      value() {
-        if (disconnectedCallback) {
-          disconnectedCallback.call(this);
-        }
+  const {elements, kind} = consumer(classDescriptor);
 
-        if (this[$$unsubscribe]) {
-          this[$$unsubscribe]();
-        }
-      },
-    },
-    // eslint-disable-next-line sort-keys, accessor-pairs
-    [context]: {
-      set(v) {
-        this[$$context] = v;
+  const superDisconnectedCallback = getSuperMethod(disconnectedCallbackKey, elements);
 
-        if (this[$$unsubscribe]) {
-          this[$$unsubscribe]();
-        }
+  return {
+    elements: [...elements.filter(({key}) => key !== disconnectedCallbackKey), {
+      descriptor: {
+        configurable: true,
+        enumerable: true,
+        value() {
+          superDisconnectedCallback(this);
 
-        this[$$subscribe]();
-      },
-    },
-    // eslint-disable-next-line sort-keys
-    [$$subscribe]: {
-      value() {
-        this[$$update](this[$$context]);
-
-        this[$$unsubscribe] = this[$$context].subscribe(() => {
-          this[$$update](this[$$context]);
-        });
-      },
-    },
-    [$$update]: {
-      value({getState}) {
-        const registry = connectedRegistry.get(this.constructor.prototype);
-
-        if (!registry) {
-          return;
-        }
-
-        for (const [propertyName, getter] of registry) {
-          const nextValue = getter(getState());
-
-          if (nextValue !== this[propertyName]) {
-            this[propertyName] = nextValue;
+          if (this[$$unsubscribe]) {
+            this[$$unsubscribe]();
           }
-        }
+        },
       },
-    },
-  });
+      key: disconnectedCallbackKey,
+      kind: "method",
+      placement: "prototype",
+    }, {
+      descriptor: {
+        set(value) {
+          this[$$context] = value;
 
-  return consumed;
+          if (this[$$unsubscribe]) {
+            this[$$unsubscribe]();
+          }
+
+          this[$$subscribe]();
+        },
+      },
+      key: contextValue,
+      kind: "method",
+      placement: "prototype",
+    }, {
+      descriptor: {
+        value() {
+          this[$$update](this[$$context]);
+
+          this[$$unsubscribe] = this[$$context].subscribe(() => {
+            this[$$update](this[$$context]);
+          });
+        },
+      },
+      key: $$subscribe,
+      kind: "method",
+      placement: "prototype",
+    }, {
+      descriptor: {
+        value({getState}) {
+          const registry = connectedRegistry.get(this.constructor);
+
+          if (!registry) {
+            return;
+          }
+
+          for (const [key, getter] of registry) {
+            const nextValue = getter(getState());
+
+            if (nextValue !== this[key]) {
+              this[key] = nextValue;
+            }
+          }
+        },
+      },
+      key: $$update,
+      kind: "method",
+      placement: "prototype",
+    }],
+    kind,
+  };
 };

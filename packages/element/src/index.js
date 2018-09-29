@@ -1,6 +1,11 @@
-import {attributeRegistry} from "./decorators";
+import {
+  attributeRegistry,
+  propertyInitializerRegistry,
+  stateInitializerRegistry,
+} from "./decorators";
 import schedule from "./scheduler";
 import {
+  initializePropsStates as $$initializePropsStates,
   invalidate as $$invalidate,
   isMount as $$isMount,
   prevProps as $$prevProps,
@@ -30,12 +35,12 @@ export * from "./tokens/lifecycle";
 
 const renderPromise = window.Corpuscule && window.Corpuscule.compatibility === true
   ? import("lit-html/lib/shady-render").then(({render}) => [render, true])
-  : import("lit-html/lib/lit-extended").then(({render}) => [render, false]);
+  : import("lit-html").then(({render}) => [render, false]);
 
 export default class CorpusculeElement extends HTMLElement {
   static get observedAttributes() {
-    return attributeRegistry.has(this.prototype)
-      ? Array.from(attributeRegistry.get(this.prototype).keys())
+    return attributeRegistry.has(this)
+      ? Array.from(attributeRegistry.get(this).keys())
       : [];
   }
 
@@ -53,8 +58,9 @@ export default class CorpusculeElement extends HTMLElement {
 
   constructor() {
     super();
+
     this[$$isMount] = false;
-    this[$$props] = {};
+    this[$$props] = this[$$initializePropsStates](propertyInitializerRegistry);
     this[$$prevProps] = {};
     this[$$prevStates] = {};
     this[$$root] = this[$createRoot]();
@@ -65,7 +71,7 @@ export default class CorpusculeElement extends HTMLElement {
       props: false,
       valid: false,
     };
-    this[$$states] = {};
+    this[$$states] = this[$$initializePropsStates](stateInitializerRegistry);
   }
 
   async attributeChangedCallback(attrName, oldVal, newVal) {
@@ -73,7 +79,7 @@ export default class CorpusculeElement extends HTMLElement {
       return;
     }
 
-    const registry = attributeRegistry.get(this.constructor.prototype);
+    const registry = attributeRegistry.get(this.constructor);
     const [propertyName, guard] = registry.get(attrName);
     this[$$props][propertyName] = parseAttributeValue(newVal, guard);
 
@@ -81,7 +87,7 @@ export default class CorpusculeElement extends HTMLElement {
   }
 
   async connectedCallback() {
-    const registry = attributeRegistry.get(this.constructor.prototype);
+    const registry = attributeRegistry.get(this.constructor);
     const {[$$props]: props} = this;
 
     if (registry) {
@@ -214,5 +220,19 @@ export default class CorpusculeElement extends HTMLElement {
     }, scheduler.initial);
 
     return this[$$rendering];
+  }
+
+  [$$initializePropsStates](registry) {
+    const result = {};
+
+    const initializers = registry.get(this.constructor);
+
+    if (initializers) {
+      for (const [key, initializer] of initializers) {
+        result[key] = initializer ? initializer() : undefined;
+      }
+    }
+
+    return result;
   }
 }
