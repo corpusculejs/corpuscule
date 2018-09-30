@@ -1,8 +1,6 @@
 import lifecycle from "./lifecycle";
 import observableFields from "./observableFields";
 
-const timeRemaining = () => 1;
-
 const corpusculeElement = () => {
   describe("CorpusculeElement", () => {
     afterEach(() => {
