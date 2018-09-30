@@ -166,12 +166,6 @@ export default class CorpusculeElement extends HTMLElement {
 
     this[$$rendering] = schedule(() => {
       const {
-        is,
-        [$deriveStateFromProps]: derive,
-        [$shouldUpdate]: shouldUpdate,
-      } = this.constructor;
-
-      const {
         [$$prevProps]: prevProps,
         [$$prevStates]: prevStates,
         [$$props]: props,
@@ -180,14 +174,14 @@ export default class CorpusculeElement extends HTMLElement {
 
       this[$$states] = {
         ...states,
-        ...derive(props, prevProps, prevStates),
+        ...this.constructor[$deriveStateFromProps](props, states),
       };
 
-      const should = !scheduler.force && !scheduler.mounting
-        ? shouldUpdate(props, states, prevProps, prevStates)
+      const shouldUpdate = !scheduler.force && !scheduler.mounting
+        ? this.constructor[$shouldUpdate](props, states, prevProps, prevStates)
         : true;
 
-      if (should) {
+      if (shouldUpdate) {
         const rendered = this[$render]();
 
         if (rendered) {
@@ -200,7 +194,7 @@ export default class CorpusculeElement extends HTMLElement {
         this[$$isMount] = true;
       }
 
-      if (should && !scheduler.mounting) {
+      if (shouldUpdate && !scheduler.mounting) {
         this[$didUpdate](prevProps, prevStates);
       }
 
