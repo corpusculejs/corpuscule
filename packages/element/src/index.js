@@ -5,7 +5,7 @@ import {
 } from "./decorators";
 import schedule from "./scheduler";
 import {
-  initializePropsStates as $$initializePropsStates,
+  initializeValues as $$initializeValues,
   invalidate as $$invalidate,
   isMount as $$isMount,
   prevProps as $$prevProps,
@@ -60,7 +60,7 @@ export default class CorpusculeElement extends HTMLElement {
     super();
 
     this[$$isMount] = false;
-    this[$$props] = this[$$initializePropsStates](propertyInitializerRegistry);
+    this[$$props] = this[$$initializeValues](propertyInitializerRegistry);
     this[$$prevProps] = {};
     this[$$prevStates] = {};
     this[$$root] = this[$createRoot]();
@@ -71,7 +71,7 @@ export default class CorpusculeElement extends HTMLElement {
       props: false,
       valid: false,
     };
-    this[$$states] = this[$$initializePropsStates](stateInitializerRegistry);
+    this[$$states] = this[$$initializeValues](stateInitializerRegistry);
   }
 
   async attributeChangedCallback(attrName, oldVal, newVal) {
@@ -222,7 +222,7 @@ export default class CorpusculeElement extends HTMLElement {
     return this[$$rendering];
   }
 
-  [$$initializePropsStates](registry) {
+  [$$initializeValues](registry) {
     const result = {};
 
     const initializers = registry.get(this.constructor);
