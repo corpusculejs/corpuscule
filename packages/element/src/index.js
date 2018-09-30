@@ -229,7 +229,7 @@ export default class CorpusculeElement extends HTMLElement {
 
     if (initializers) {
       for (const [key, initializer] of initializers) {
-        result[key] = initializer ? initializer() : undefined;
+        result[key] = initializer ? initializer.call(this) : undefined;
       }
     }
 
