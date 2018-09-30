@@ -1,3 +1,4 @@
+import {render} from "lit-html";
 import {
   attributeRegistry,
   propertyInitializerRegistry,
@@ -38,10 +39,6 @@ import {
 
 export {attribute, computed, property, state} from "./decorators";
 export * from "./tokens/lifecycle";
-
-const renderPromise = window.Corpuscule && window.Corpuscule.compatibility === true
-  ? import("lit-html/lib/shady-render").then(({render}) => [render, true])
-  : import("lit-html").then(({render}) => [render, false]);
 
 export default class CorpusculeElement extends HTMLElement {
   static get observedAttributes() {
@@ -167,8 +164,6 @@ export default class CorpusculeElement extends HTMLElement {
 
     scheduler.valid = false;
 
-    const [render, compatibilityMode] = await renderPromise;
-
     this[$$rendering] = schedule(() => {
       const {
         is,
@@ -196,7 +191,7 @@ export default class CorpusculeElement extends HTMLElement {
         const rendered = this[$render]();
 
         if (rendered) {
-          render(rendered, this[$$root], compatibilityMode ? is : undefined);
+          render(rendered, this[$$root]);
         }
       }
 
