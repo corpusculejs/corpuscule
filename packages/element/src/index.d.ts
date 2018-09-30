@@ -26,7 +26,7 @@ export default class CorpusculeElement extends HTMLElement implements CustomElem
 
   public static readonly observableAttributes: ReadonlyArray<PropertyKey>;
 
-  public static [deriveStateFromProps](nextProps: {}, prevProps: {}, prevState: {}): {} | null;
+  public static [deriveStateFromProps](props: {}, states: {}): {} | null;
 
   public static [shouldUpdate](nextProps: {}, nextState: {}, prevProps: {}, prevState: {}): boolean;
 
