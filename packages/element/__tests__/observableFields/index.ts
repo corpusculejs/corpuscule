@@ -10,7 +10,6 @@ import CorpusculeElement, {
   state,
 } from "../../src";
 import attributes from "./attributes";
-import testComputed from "./computed";
 import properties from "./properties";
 import states from "./states";
 
@@ -19,7 +18,6 @@ const observableFields = () => {
     attributes();
     properties();
     states();
-    testComputed();
 
     it("should call [didUpdate]() with proper prevProperties and prevState", async () => {
       const spy = jasmine.createSpy("OnUpdate");

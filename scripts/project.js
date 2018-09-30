@@ -1,5 +1,6 @@
 const packages = {
   context: ["index"],
+  "decorator-computed": ["index"],
   element: ["index"],
   redux: ["index"],
   router: ["index"],
