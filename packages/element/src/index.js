@@ -26,6 +26,12 @@ import {
   shouldUpdate as $shouldUpdate,
 } from "./tokens/lifecycle";
 import {
+  forceStage,
+  mountingStage,
+  propsChangedStage,
+  stateChangedStage,
+} from "./tokens/stages";
+import {
   parseAttributeValue,
   toAttribute,
 } from "./utils";
@@ -83,7 +89,7 @@ export default class CorpusculeElement extends HTMLElement {
     const [propertyName, guard] = registry.get(attrName);
     this[$$props][propertyName] = parseAttributeValue(newVal, guard);
 
-    await this[$$invalidate]("props");
+    await this[$$invalidate](propsChangedStage);
   }
 
   async connectedCallback() {
@@ -103,7 +109,7 @@ export default class CorpusculeElement extends HTMLElement {
       }
     }
 
-    await this[$$invalidate]("mounting");
+    await this[$$invalidate](mountingStage);
   }
 
   disconnectedCallback() {
@@ -112,7 +118,7 @@ export default class CorpusculeElement extends HTMLElement {
   }
 
   async forceUpdate() {
-    return this[$$invalidate]("force");
+    return this[$$invalidate](forceStage);
   }
 
   [$createRoot]() {
@@ -139,18 +145,19 @@ export default class CorpusculeElement extends HTMLElement {
   async [$$invalidate](type) {
     const {[$$scheduler]: scheduler} = this;
 
+    // eslint-disable-next-line default-case
     switch (type) {
-      case "force":
+      case forceStage:
         scheduler.force = true;
         break;
-      case "mounting":
+      case mountingStage:
         scheduler.mounting = true;
         scheduler.valid = true;
         break;
-      case "props":
+      case propsChangedStage:
         scheduler.props = true;
         break;
-      default:
+      case stateChangedStage:
         break;
     }
 
