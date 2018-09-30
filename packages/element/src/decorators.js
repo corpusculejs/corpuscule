@@ -1,17 +1,19 @@
 import addToRegistry from "@corpuscule/utils/lib/addToRegistry";
 import assertKind from "@corpuscule/utils/lib/assertKind";
 import {
-  defaultPropertyOptions,
-  handleError,
-  prepareComputed,
-  toAttribute,
-} from "./utils";
-import {
   invalidate as $$invalidate,
   isMount as $$isMount,
   props as $$props, states as $$states,
 } from "./tokens/internal";
-import {propsChangedStage, stateChangedStage} from "./tokens/stages";
+import {
+  propsChangedStage,
+  stateChangedStage,
+} from "./tokens/stages";
+import {
+  defaultPropertyOptions,
+  handleError,
+  toAttribute,
+} from "./utils";
 
 export const attributeRegistry = new WeakMap();
 
@@ -123,52 +125,5 @@ export const state = ({initializer, key, kind}) => {
     key,
     kind: "method",
     placement: "prototype",
-  };
-};
-
-export const computed = (...watchings) => ({
-  descriptor: {get},
-  key,
-  kind,
-  placement,
-}) => {
-  assertKind("computed", "getter", kind, !get);
-
-  const registry = new WeakMap();
-
-  return {
-    descriptor: {
-      configurable: true,
-      get() {
-        const computedData = prepareComputed(
-          this,
-          key,
-          registry,
-          watchings,
-          get,
-        );
-
-        const {cache} = computedData;
-        let isValueUpdated = false;
-
-        for (const [watchingProperty, watchingValue] of cache) {
-          if (this[watchingProperty] !== watchingValue) {
-            if (!isValueUpdated) {
-              computedData.value = get.call(this);
-              isValueUpdated = true;
-            }
-
-            cache.set(watchingProperty, this[watchingProperty]);
-          }
-        }
-
-        isValueUpdated = false;
-
-        return computedData.value;
-      },
-    },
-    key,
-    kind,
-    placement,
   };
 };
