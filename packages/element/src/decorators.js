@@ -11,6 +11,7 @@ import {
   isMount as $$isMount,
   props as $$props, states as $$states,
 } from "./tokens/internal";
+import {propsChangedStage, stateChangedStage} from "./tokens/stages";
 
 export const attributeRegistry = new WeakMap();
 
@@ -49,7 +50,7 @@ export const attribute = (attributeName, guard, {pure} = defaultPropertyOptions)
           toAttribute(this, attributeName, value);
         }
 
-        this[$$invalidate]("props").catch(handleError);
+        this[$$invalidate](propsChangedStage).catch(handleError);
       },
     },
     finisher(target) {
@@ -89,7 +90,7 @@ export const property = (guard = null, {pure} = defaultPropertyOptions) => ({
 
         props[key] = value;
 
-        this[$$invalidate]("props").catch(handleError);
+        this[$$invalidate](propsChangedStage).catch(handleError);
       },
     },
     finisher(target) {
@@ -113,7 +114,7 @@ export const state = ({initializer, key, kind}) => {
       },
       set(value) {
         this[$$states][key] = value;
-        this[$$invalidate]("states").catch(handleError);
+        this[$$invalidate](stateChangedStage).catch(handleError);
       },
     },
     finisher(target) {
