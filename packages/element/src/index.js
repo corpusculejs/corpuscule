@@ -4,7 +4,6 @@ import {
   propertyInitializerRegistry,
   stateInitializerRegistry,
 } from "./decorators";
-import schedule from "./scheduler";
 import {
   initializeValues as $$initializeValues,
   invalidate as $$invalidate,
@@ -69,7 +68,6 @@ export default class CorpusculeElement extends HTMLElement {
     this[$$root] = this[$createRoot]();
     this[$$scheduler] = {
       force: false,
-      initial: true,
       mounting: false,
       props: false,
       valid: false,
@@ -164,7 +162,7 @@ export default class CorpusculeElement extends HTMLElement {
 
     scheduler.valid = false;
 
-    this[$$rendering] = schedule(() => {
+    this[$$rendering] = Promise.resolve().then(() => {
       const {
         [$$prevProps]: prevProps,
         [$$prevStates]: prevStates,
@@ -210,10 +208,9 @@ export default class CorpusculeElement extends HTMLElement {
 
       scheduler.valid = true;
 
-      scheduler.initial = false;
       scheduler.mounting = false;
       scheduler.props = false;
-    }, scheduler.initial);
+    });
 
     return this[$$rendering];
   }

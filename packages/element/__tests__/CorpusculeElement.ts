@@ -5,12 +5,6 @@ const timeRemaining = () => 1;
 
 const corpusculeElement = () => {
   describe("CorpusculeElement", () => {
-    beforeAll(() => {
-      spyOn(window as any, "requestIdleCallback").and.callFake((next: Function) => {
-        next({timeRemaining});
-      });
-    });
-
     afterEach(() => {
       const {body} = document;
 
