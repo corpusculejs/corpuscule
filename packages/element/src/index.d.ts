@@ -10,6 +10,7 @@ export type PropertyGuard = (value: any) => boolean;
 
 export const attribute: (attributeName: string, guard: AttributeGuard, options?: PropertyOptions) => PropertyDecorator;
 export const computed: <T extends string[]>(...watchings: T) => PropertyDecorator; // tslint:disable-line:readonly-array
+export const element: (name: string) => ClassDecorator;
 export const property: (guard?: PropertyGuard, options?: PropertyOptions) => PropertyDecorator;
 export const state: PropertyDecorator;
 

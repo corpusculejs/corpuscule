@@ -129,3 +129,28 @@ export const state = ({initializer, key, kind}) => {
     placement: "prototype",
   };
 };
+
+export const element = name => ({kind, elements}) => {
+  assertKind("element", "class", kind);
+
+  return {
+    elements: [
+      ...elements.filter(({key}) => key !== "is"),
+      {
+        descriptor: {
+          configurable: true,
+          get() {
+            return name;
+          },
+        },
+        key: "is",
+        kind: "method",
+        placement: "static",
+      },
+    ],
+    finisher(target) {
+      customElements.define(name, target);
+    },
+    kind,
+  };
+};
