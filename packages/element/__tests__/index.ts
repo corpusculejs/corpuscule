@@ -1,3 +1,4 @@
+import testCreateComputingEntanglement from "./computed";
 import testCorpusculeElement from "./corpusculeElement";
 
 describe("@corpuscule/element", () => {
@@ -6,4 +7,5 @@ describe("@corpuscule/element", () => {
   });
 
   testCorpusculeElement();
+  testCreateComputingEntanglement();
 });
