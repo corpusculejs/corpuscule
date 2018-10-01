@@ -36,7 +36,7 @@ import {
   toAttribute,
 } from "./utils";
 
-export {attribute, property, state} from "./decorators";
+export {attribute, element, property, state} from "./decorators";
 export * from "./tokens/lifecycle";
 
 export default class CorpusculeElement extends HTMLElement {
