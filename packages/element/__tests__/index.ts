@@ -1,4 +1,5 @@
 import corpusculeElement from "./CorpusculeElement";
+import testElementDecorator from "./elementDecorator";
 
 describe("@corpuscule/element", () => {
   afterEach(() => {
@@ -6,4 +7,5 @@ describe("@corpuscule/element", () => {
   });
 
   corpusculeElement();
+  testElementDecorator();
 });
