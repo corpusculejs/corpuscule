@@ -5,11 +5,17 @@ import uuid from "uuid/v4";
 import {defineAndMount} from "../../../../test/utils";
 import CorpusculeElement, {attribute, render} from "../../src";
 
-const attributes = () => {
-  describe("attributes", () => {
+const testAttributeDecorator = () => {
+  describe("@attribute", () => {
+    let elementName: string;
+
+    beforeEach(() => {
+      elementName = `x-${uuid()}`;
+    });
+
     it("should update on attribute change", async () => {
       class Test extends CorpusculeElement {
-        public static is: string = `x-${uuid()}`;
+        public static is: string = elementName;
 
         @attribute("idx", Number, {pure: true})
         public index?: number;
@@ -38,7 +44,7 @@ const attributes = () => {
 
     it("should set default attribute value if no attribute is set before mounting", async () => {
       class Test extends CorpusculeElement {
-        public static is: string = `x-${uuid()}`;
+        public static is: string = elementName;
 
         @attribute("idx", Number)
         public index: number = 2;
@@ -59,7 +65,7 @@ const attributes = () => {
 
     it("should set value from attribute value, if any values are set before mounting", async () => {
       class Test extends CorpusculeElement {
-        public static is: string = `x-${uuid()}`;
+        public static is: string = elementName;
 
         @attribute("idx", Number)
         public index: number = 1;
@@ -80,7 +86,7 @@ const attributes = () => {
 
     it("should set attribute value on attribute property change", async () => {
       class Test extends CorpusculeElement {
-        public static is: string = `x-${uuid()}`;
+        public static is: string = elementName;
 
         @attribute("idx", Number)
         public index: number = 1;
@@ -103,7 +109,7 @@ const attributes = () => {
       const spy = jasmine.createSpy("OnRender");
 
       class Test extends CorpusculeElement {
-        public static is: string = `x-${uuid()}`;
+        public static is: string = elementName;
 
         @attribute("idx", Number)
         public index: number = 1;
@@ -128,7 +134,7 @@ const attributes = () => {
       const spy = jasmine.createSpy("OnRender");
 
       class Test extends CorpusculeElement {
-        public static is: string = `x-${uuid()}`;
+        public static is: string = elementName;
 
         @attribute("idx", Number, {pure: false})
         public index: number = 1;
@@ -151,7 +157,7 @@ const attributes = () => {
 
     it("should add and remove attribute if it has boolean type", async () => {
       class Test extends CorpusculeElement {
-        public static is: string = `x-${uuid()}`;
+        public static is: string = elementName;
 
         @attribute("has", Boolean)
         public has: boolean = false;
@@ -179,7 +185,7 @@ const attributes = () => {
 
     it("should throw error, if attribute value does not fit guard", async () => {
       class Test extends CorpusculeElement {
-        public static is: string = `x-${uuid()}`;
+        public static is: string = elementName;
 
         @attribute("idx", Number)
         public index: number = 1;
@@ -199,4 +205,4 @@ const attributes = () => {
   });
 };
 
-export default attributes;
+export default testAttributeDecorator;

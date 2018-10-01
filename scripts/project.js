@@ -1,6 +1,9 @@
 const packages = {
   context: ["index"],
-  element: ["index"],
+  element: [
+    "computed",
+    "index",
+  ],
   redux: ["index"],
   router: ["index"],
   styles: ["index"],

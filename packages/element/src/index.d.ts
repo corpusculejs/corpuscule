@@ -6,10 +6,9 @@ export interface PropertyOptions {
 }
 
 export type AttributeGuard = BooleanConstructor | NumberConstructor | StringConstructor;
-export type PropertyGuard = (value: any) => boolean;
+export type PropertyGuard = (value: unknown) => boolean;
 
 export const attribute: (attributeName: string, guard: AttributeGuard, options?: PropertyOptions) => PropertyDecorator;
-export const computed: <T extends string[]>(...watchings: T) => PropertyDecorator; // tslint:disable-line:readonly-array
 export const element: (name: string) => ClassDecorator;
 export const property: (guard?: PropertyGuard, options?: PropertyOptions) => PropertyDecorator;
 export const state: PropertyDecorator;
@@ -27,7 +26,7 @@ export default class CorpusculeElement extends HTMLElement implements CustomElem
 
   public static readonly observableAttributes: ReadonlyArray<PropertyKey>;
 
-  public static [deriveStateFromProps](nextProps: {}, prevProps: {}, prevState: {}): {} | null;
+  public static [deriveStateFromProps](props: {}, states: {}): {} | null;
 
   public static [shouldUpdate](nextProps: {}, nextState: {}, prevProps: {}, prevState: {}): boolean;
 

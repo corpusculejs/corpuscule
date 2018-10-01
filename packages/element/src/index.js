@@ -1,11 +1,11 @@
+import {render} from "lit-html";
 import {
   attributeRegistry,
   propertyInitializerRegistry,
   stateInitializerRegistry,
 } from "./decorators";
-import schedule from "./scheduler";
 import {
-  initializePropsStates as $$initializePropsStates,
+  initializeValues as $$initializeValues,
   invalidate as $$invalidate,
   isMount as $$isMount,
   prevProps as $$prevProps,
@@ -26,16 +26,18 @@ import {
   shouldUpdate as $shouldUpdate,
 } from "./tokens/lifecycle";
 import {
+  forceStage,
+  mountingStage,
+  propsChangedStage,
+  stateChangedStage,
+} from "./tokens/stages";
+import {
   parseAttributeValue,
   toAttribute,
 } from "./utils";
 
-export {attribute, computed, element, property, state} from "./decorators";
+export {attribute, element, property, state} from "./decorators";
 export * from "./tokens/lifecycle";
-
-const renderPromise = window.Corpuscule && window.Corpuscule.compatibility === true
-  ? import("lit-html/lib/shady-render").then(({render}) => [render, true])
-  : import("lit-html").then(({render}) => [render, false]);
 
 export default class CorpusculeElement extends HTMLElement {
   static get observedAttributes() {
@@ -60,18 +62,17 @@ export default class CorpusculeElement extends HTMLElement {
     super();
 
     this[$$isMount] = false;
-    this[$$props] = this[$$initializePropsStates](propertyInitializerRegistry);
+    this[$$props] = this[$$initializeValues](propertyInitializerRegistry);
     this[$$prevProps] = {};
     this[$$prevStates] = {};
     this[$$root] = this[$createRoot]();
     this[$$scheduler] = {
       force: false,
-      initial: true,
       mounting: false,
       props: false,
       valid: false,
     };
-    this[$$states] = this[$$initializePropsStates](stateInitializerRegistry);
+    this[$$states] = this[$$initializeValues](stateInitializerRegistry);
   }
 
   async attributeChangedCallback(attrName, oldVal, newVal) {
@@ -83,7 +84,7 @@ export default class CorpusculeElement extends HTMLElement {
     const [propertyName, guard] = registry.get(attrName);
     this[$$props][propertyName] = parseAttributeValue(newVal, guard);
 
-    await this[$$invalidate]("props");
+    await this[$$invalidate](propsChangedStage);
   }
 
   async connectedCallback() {
@@ -91,6 +92,9 @@ export default class CorpusculeElement extends HTMLElement {
     const {[$$props]: props} = this;
 
     if (registry) {
+      // If attribute is set before component mounting, it is considered primary and
+      // inner property should be set to attribute value; setting inner property during
+      // class initialization is a fallback in case attribute is not set.
       for (const [attributeName, [propertyName, guard]] of registry) {
         const attributeValue = this.getAttribute(attributeName);
         const property = props[propertyName];
@@ -103,7 +107,7 @@ export default class CorpusculeElement extends HTMLElement {
       }
     }
 
-    await this[$$invalidate]("mounting");
+    await this[$$invalidate](mountingStage);
   }
 
   disconnectedCallback() {
@@ -112,7 +116,7 @@ export default class CorpusculeElement extends HTMLElement {
   }
 
   async forceUpdate() {
-    return this[$$invalidate]("force");
+    return this[$$invalidate](forceStage);
   }
 
   [$createRoot]() {
@@ -139,18 +143,19 @@ export default class CorpusculeElement extends HTMLElement {
   async [$$invalidate](type) {
     const {[$$scheduler]: scheduler} = this;
 
+    // eslint-disable-next-line default-case
     switch (type) {
-      case "force":
+      case forceStage:
         scheduler.force = true;
         break;
-      case "mounting":
+      case mountingStage:
         scheduler.mounting = true;
         scheduler.valid = true;
         break;
-      case "props":
+      case propsChangedStage:
         scheduler.props = true;
         break;
-      default:
+      case stateChangedStage:
         break;
     }
 
@@ -160,15 +165,10 @@ export default class CorpusculeElement extends HTMLElement {
 
     scheduler.valid = false;
 
-    const [render, compatibilityMode] = await renderPromise;
-
-    this[$$rendering] = schedule(() => {
-      const {
-        is,
-        [$deriveStateFromProps]: derive,
-        [$shouldUpdate]: shouldUpdate,
-      } = this.constructor;
-
+    // Setting all component properties takes time. So it is necessary to wait until this setting
+    // is over and only then component is able to update. Starting rendering after Promise.resolve()
+    // allows to have single rendering even if all component properties are changed.
+    this[$$rendering] = Promise.resolve().then(() => {
       const {
         [$$prevProps]: prevProps,
         [$$prevStates]: prevStates,
@@ -178,18 +178,18 @@ export default class CorpusculeElement extends HTMLElement {
 
       this[$$states] = {
         ...states,
-        ...derive(props, prevProps, prevStates),
+        ...this.constructor[$deriveStateFromProps](props, states),
       };
 
-      const should = !scheduler.force && !scheduler.mounting
-        ? shouldUpdate(props, states, prevProps, prevStates)
+      const shouldUpdate = !scheduler.force && !scheduler.mounting
+        ? this.constructor[$shouldUpdate](props, states, prevProps, prevStates)
         : true;
 
-      if (should) {
+      if (shouldUpdate) {
         const rendered = this[$render]();
 
         if (rendered) {
-          render(rendered, this[$$root], compatibilityMode ? is : undefined);
+          render(rendered, this[$$root]);
         }
       }
 
@@ -198,7 +198,7 @@ export default class CorpusculeElement extends HTMLElement {
         this[$$isMount] = true;
       }
 
-      if (should && !scheduler.mounting) {
+      if (shouldUpdate && !scheduler.mounting) {
         this[$didUpdate](prevProps, prevStates);
       }
 
@@ -214,22 +214,21 @@ export default class CorpusculeElement extends HTMLElement {
 
       scheduler.valid = true;
 
-      scheduler.initial = false;
       scheduler.mounting = false;
       scheduler.props = false;
-    }, scheduler.initial);
+    });
 
     return this[$$rendering];
   }
 
-  [$$initializePropsStates](registry) {
+  [$$initializeValues](registry) {
     const result = {};
 
     const initializers = registry.get(this.constructor);
 
     if (initializers) {
       for (const [key, initializer] of initializers) {
-        result[key] = initializer ? initializer() : undefined;
+        result[key] = initializer ? initializer.call(this) : undefined;
       }
     }
 
