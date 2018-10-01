@@ -5,11 +5,17 @@ import uuid from "uuid/v4";
 import {defineAndMount} from "../../../../test/utils";
 import CorpusculeElement, {render, state} from "../../src";
 
-const states = () => {
-  describe("states", () => {
+const testStateDecorator = () => {
+  describe("@state", () => {
+    let elementName: string;
+
+    beforeEach(() => {
+      elementName = `x-${uuid()}`;
+    });
+
     it("should update on state change", async () => {
       class Test extends CorpusculeElement {
-        public static is: string = `x-${uuid()}`;
+        public static is: string = elementName;
 
         @state
         private index: number = 1;
@@ -38,4 +44,4 @@ const states = () => {
   });
 };
 
-export default states;
+export default testStateDecorator;

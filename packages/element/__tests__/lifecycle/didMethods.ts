@@ -6,7 +6,7 @@ import {defineAndMount} from "../../../../test/utils";
 import CorpusculeElement, {didMount, didUnmount, didUpdate, render} from "../../src";
 
 const didMethods = () => {
-  describe("didMethods", () => {
+  describe("\"Did\"-methods", () => {
     it("should call [didMount]() callback on mounting", async () => {
       const spy = jasmine.createSpy("OnMount");
 
