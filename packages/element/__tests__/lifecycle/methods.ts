@@ -76,9 +76,9 @@ const methods = () => {
       class Test extends CorpusculeElement {
         public static is: string = `x-${uuid()}`;
 
-        public static [deriveStateFromProps]({prop: nextProp}: any, {prop: prevProp}: any): any {
+        public static [deriveStateFromProps]({prop: nextProp}: Test): any {
           return {
-            state: nextProp < prevProp,
+            state: nextProp + 10,
           };
         }
 
@@ -86,7 +86,7 @@ const methods = () => {
         public prop: number = 1;
 
         @state
-        public state: boolean = false;
+        public state: number = 0;
 
         protected [render](): TemplateResult {
           return html`<span id="node">Test content</span>`;
@@ -95,16 +95,12 @@ const methods = () => {
 
       const el = defineAndMount(Test);
       await el.elementRendering;
+      expect(el.state).toBe(11);
 
       el.prop = 3;
       await el.elementRendering;
 
-      expect(el.state).not.toBeTruthy();
-
-      el.prop = 2;
-      await el.elementRendering;
-
-      expect(el.state).toBeTruthy();
+      expect(el.state).toBe(13);
     });
 
     it("should get the promise to wait until component's renderingProcess is done", () => {

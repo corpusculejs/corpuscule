@@ -15,35 +15,6 @@ export const parseAttributeValue = (value, guard) => {
   }
 };
 
-export const prepareComputed = (instance, propertyName, registry, watchings, get) => {
-  let map = registry.get(instance);
-
-  if (!map) {
-    map = new Map();
-    registry.set(instance, map);
-  }
-
-  let computedData = map.get(propertyName);
-
-  if (!computedData) {
-    const value = get.call(instance);
-    const cache = watchings.reduce((acc, watchingProperty) => {
-      acc.set(watchingProperty, instance[watchingProperty]);
-
-      return acc;
-    }, new Map());
-
-    computedData = {
-      cache,
-      value,
-    };
-
-    map.set(propertyName, computedData);
-  }
-
-  return computedData;
-};
-
 export const toAttribute = (instance, attributeName, value) => {
   if (typeof value === "boolean") {
     if (value) {

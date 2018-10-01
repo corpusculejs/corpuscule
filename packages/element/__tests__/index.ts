@@ -1,4 +1,5 @@
-import corpusculeElement from "./CorpusculeElement";
+import testCreateComputingEntanglement from "./computed";
+import testCorpusculeElement from "./corpusculeElement";
 import testElementDecorator from "./elementDecorator";
 
 describe("@corpuscule/element", () => {
@@ -6,6 +7,7 @@ describe("@corpuscule/element", () => {
     document.body.innerHTML = ""; // tslint:disable-line:no-inner-html
   });
 
-  corpusculeElement();
+  testCorpusculeElement();
   testElementDecorator();
+  testCreateComputingEntanglement();
 });

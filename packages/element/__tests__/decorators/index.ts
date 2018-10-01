@@ -9,23 +9,27 @@ import CorpusculeElement, {
   render,
   state,
 } from "../../src";
-import attributes from "./attributes";
-import testComputed from "./computed";
-import properties from "./properties";
-import states from "./states";
+import testAttributeDecorator from "./attributeDecorator";
+import testPropertyDecorator from "./propertyDecorator";
+import testStateDecorator from "./stateDecorator";
 
-const observableFields = () => {
-  describe("observable fields", () => {
-    attributes();
-    properties();
-    states();
-    testComputed();
+const testDecorators = () => {
+  describe("decorators", () => {
+    let elementName: string;
+
+    beforeEach(() => {
+      elementName = `x-${uuid()}`;
+    });
+
+    testAttributeDecorator();
+    testPropertyDecorator();
+    testStateDecorator();
 
     it("should call [didUpdate]() with proper prevProperties and prevState", async () => {
       const spy = jasmine.createSpy("OnUpdate");
 
       class Test extends CorpusculeElement {
-        public static is: string = `x-${uuid()}`;
+        public static is: string = elementName;
 
         @attribute("attr", String)
         public attr: string = "zeroAttr";
@@ -96,4 +100,4 @@ const observableFields = () => {
   });
 };
 
-export default observableFields;
+export default testDecorators;

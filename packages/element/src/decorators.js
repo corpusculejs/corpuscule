@@ -1,16 +1,19 @@
 import addToRegistry from "@corpuscule/utils/lib/addToRegistry";
 import assertKind from "@corpuscule/utils/lib/assertKind";
 import {
-  defaultPropertyOptions,
-  handleError,
-  prepareComputed,
-  toAttribute,
-} from "./utils";
-import {
   invalidate as $$invalidate,
   isMount as $$isMount,
   props as $$props, states as $$states,
 } from "./tokens/internal";
+import {
+  propsChangedStage,
+  stateChangedStage,
+} from "./tokens/stages";
+import {
+  defaultPropertyOptions,
+  handleError,
+  toAttribute,
+} from "./utils";
 
 export const attributeRegistry = new WeakMap();
 
@@ -24,6 +27,8 @@ export const attribute = (attributeName, guard, {pure} = defaultPropertyOptions)
   kind,
 }) => {
   assertKind("attribute", "field", kind);
+
+  const guardingType = guard.name.toLowerCase();
 
   return {
     descriptor: {
@@ -39,7 +44,7 @@ export const attribute = (attributeName, guard, {pure} = defaultPropertyOptions)
           return;
         }
 
-        if (typeof value !== guard.name.toLowerCase()) {
+        if (typeof value !== guardingType) {
           throw new TypeError(`Value applied to "${key}" is not ${guard.name}`);
         }
 
@@ -49,7 +54,7 @@ export const attribute = (attributeName, guard, {pure} = defaultPropertyOptions)
           toAttribute(this, attributeName, value);
         }
 
-        this[$$invalidate]("props").catch(handleError);
+        this[$$invalidate](propsChangedStage).catch(handleError);
       },
     },
     finisher(target) {
@@ -89,7 +94,7 @@ export const property = (guard = null, {pure} = defaultPropertyOptions) => ({
 
         props[key] = value;
 
-        this[$$invalidate]("props").catch(handleError);
+        this[$$invalidate](propsChangedStage).catch(handleError);
       },
     },
     finisher(target) {
@@ -113,7 +118,7 @@ export const state = ({initializer, key, kind}) => {
       },
       set(value) {
         this[$$states][key] = value;
-        this[$$invalidate]("states").catch(handleError);
+        this[$$invalidate](stateChangedStage).catch(handleError);
       },
     },
     finisher(target) {
@@ -147,52 +152,5 @@ export const element = name => ({kind, elements}) => {
       customElements.define(name, target);
     },
     kind,
-  };
-};
-
-export const computed = (...watchings) => ({
-  descriptor: {get},
-  key,
-  kind,
-  placement,
-}) => {
-  assertKind("computed", "getter", kind, !get);
-
-  const registry = new WeakMap();
-
-  return {
-    descriptor: {
-      configurable: true,
-      get() {
-        const computedData = prepareComputed(
-          this,
-          key,
-          registry,
-          watchings,
-          get,
-        );
-
-        const {cache} = computedData;
-        let isValueUpdated = false;
-
-        for (const [watchingProperty, watchingValue] of cache) {
-          if (this[watchingProperty] !== watchingValue) {
-            if (!isValueUpdated) {
-              computedData.value = get.call(this);
-              isValueUpdated = true;
-            }
-
-            cache.set(watchingProperty, this[watchingProperty]);
-          }
-        }
-
-        isValueUpdated = false;
-
-        return computedData.value;
-      },
-    },
-    key,
-    kind,
-    placement,
   };
 };

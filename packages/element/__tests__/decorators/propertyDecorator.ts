@@ -5,11 +5,19 @@ import uuid from "uuid/v4";
 import {defineAndMount} from "../../../../test/utils";
 import CorpusculeElement, {property, render} from "../../src";
 
-const properties = () => {
-  describe("properties", () => {
+// TODO: tslint strict-type-predicates has a bug: palantir/tslint#4107
+// Check when this bug is resolved and remove disabling rules
+const testPropertyDecorator = () => {
+  describe("@property", () => {
+    let elementName: string;
+
+    beforeEach(() => {
+      elementName = `x-${uuid()}`;
+    });
+
     it("should update on property change", async () => {
       class Test extends CorpusculeElement {
-        public static is: string = `x-${uuid()}`;
+        public static is: string = elementName;
 
         @property()
         public index: number = 1;
@@ -34,9 +42,9 @@ const properties = () => {
 
     it("should throw error if guard is set and value has wrong type", async () => {
       class Test extends CorpusculeElement {
-        public static is: string = `x-${uuid()}`;
+        public static is: string = elementName;
 
-        @property(value => typeof value === "string")
+        @property(value => typeof value === "string") // tslint:disable-line:strict-type-predicates
         public str: string = "";
 
         protected [render](): TemplateResult {
@@ -56,9 +64,9 @@ const properties = () => {
       const spy = jasmine.createSpy("OnRender");
 
       class Test extends CorpusculeElement {
-        public static is: string = `x-${uuid()}`;
+        public static is: string = elementName;
 
-        @property(value => typeof value === "string")
+        @property(value => typeof value === "string") // tslint:disable-line:strict-type-predicates
         public str: string = "1";
 
         protected [render](): TemplateResult {
@@ -81,9 +89,9 @@ const properties = () => {
       const spy = jasmine.createSpy("OnRender");
 
       class Test extends CorpusculeElement {
-        public static is: string = `x-${uuid()}`;
+        public static is: string = elementName;
 
-        @property(value => typeof value === "string", {pure: false})
+        @property(value => typeof value === "string", {pure: false}) // tslint:disable-line:strict-type-predicates
         public str: string = "1";
 
         protected [render](): TemplateResult {
@@ -104,4 +112,4 @@ const properties = () => {
   });
 };
 
-export default properties;
+export default testPropertyDecorator;
