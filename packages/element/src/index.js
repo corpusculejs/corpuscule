@@ -92,6 +92,9 @@ export default class CorpusculeElement extends HTMLElement {
     const {[$$props]: props} = this;
 
     if (registry) {
+      // If attribute is set before component mounting, it is considered primary and
+      // inner property should be set to attribute value; setting inner property during
+      // class initialization is a fallback in case attribute is not set.
       for (const [attributeName, [propertyName, guard]] of registry) {
         const attributeValue = this.getAttribute(attributeName);
         const property = props[propertyName];
@@ -162,6 +165,9 @@ export default class CorpusculeElement extends HTMLElement {
 
     scheduler.valid = false;
 
+    // Setting all component properties takes time. So it is necessary to wait until this setting
+    // is over and only then component is able to update. Starting rendering after Promise.resolve()
+    // allows to have single rendering even if all component properties are changed.
     this[$$rendering] = Promise.resolve().then(() => {
       const {
         [$$prevProps]: prevProps,
