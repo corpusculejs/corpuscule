@@ -1,1 +1,0 @@
-# @corpuscule/decorator-computed

@@ -1,7 +1,7 @@
 // tslint:disable:await-promise max-classes-per-file
-import createComputingEntanglement, {ComputingEntanglement} from "../src";
+import createComputingEntanglement, {ComputingEntanglement} from "../src/computed";
 
-describe("@corpuscule/decorator-computed", () => {
+const testCreateComputingEntanglement = () => {
   describe("createComputingEntanglement", () => {
     let comp: ComputingEntanglement;
 
@@ -146,4 +146,6 @@ describe("@corpuscule/decorator-computed", () => {
       expect(spy2).toHaveBeenCalledTimes(2);
     });
   });
-});
+};
+
+export default testCreateComputingEntanglement;
