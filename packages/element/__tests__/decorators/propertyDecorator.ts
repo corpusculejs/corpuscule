@@ -5,11 +5,17 @@ import uuid from "uuid/v4";
 import {defineAndMount} from "../../../../test/utils";
 import CorpusculeElement, {property, render} from "../../src";
 
-const properties = () => {
-  describe("properties", () => {
+const testPropertyDecorator = () => {
+  describe("@property", () => {
+    let elementName: string;
+
+    beforeEach(() => {
+      elementName = `x-${uuid()}`;
+    });
+
     it("should update on property change", async () => {
       class Test extends CorpusculeElement {
-        public static is: string = `x-${uuid()}`;
+        public static is: string = elementName;
 
         @property()
         public index: number = 1;
@@ -34,7 +40,7 @@ const properties = () => {
 
     it("should throw error if guard is set and value has wrong type", async () => {
       class Test extends CorpusculeElement {
-        public static is: string = `x-${uuid()}`;
+        public static is: string = elementName;
 
         @property(value => typeof value === "string")
         public str: string = "";
@@ -56,7 +62,7 @@ const properties = () => {
       const spy = jasmine.createSpy("OnRender");
 
       class Test extends CorpusculeElement {
-        public static is: string = `x-${uuid()}`;
+        public static is: string = elementName;
 
         @property(value => typeof value === "string")
         public str: string = "1";
@@ -81,7 +87,7 @@ const properties = () => {
       const spy = jasmine.createSpy("OnRender");
 
       class Test extends CorpusculeElement {
-        public static is: string = `x-${uuid()}`;
+        public static is: string = elementName;
 
         @property(value => typeof value === "string", {pure: false})
         public str: string = "1";
@@ -104,4 +110,4 @@ const properties = () => {
   });
 };
 
-export default properties;
+export default testPropertyDecorator;
