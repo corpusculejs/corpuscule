@@ -28,6 +28,8 @@ export const attribute = (attributeName, guard, {pure} = defaultPropertyOptions)
 }) => {
   assertKind("attribute", "field", kind);
 
+  const guardingType = guard.name.toLowerCase();
+
   return {
     descriptor: {
       configurable: true,
@@ -42,7 +44,7 @@ export const attribute = (attributeName, guard, {pure} = defaultPropertyOptions)
           return;
         }
 
-        if (typeof value !== guard.name.toLowerCase()) {
+        if (typeof value !== guardingType) {
           throw new TypeError(`Value applied to "${key}" is not ${guard.name}`);
         }
 
