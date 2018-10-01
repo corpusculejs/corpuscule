@@ -5,6 +5,8 @@ import uuid from "uuid/v4";
 import {defineAndMount} from "../../../../test/utils";
 import CorpusculeElement, {property, render} from "../../src";
 
+// TODO: tslint strict-type-predicates has a bug: palantir/tslint#4107
+// Check when this bug is resolved and remove disabling rules
 const testPropertyDecorator = () => {
   describe("@property", () => {
     let elementName: string;
@@ -42,7 +44,7 @@ const testPropertyDecorator = () => {
       class Test extends CorpusculeElement {
         public static is: string = elementName;
 
-        @property(value => typeof value === "string")
+        @property(value => typeof value === "string") // tslint:disable-line:strict-type-predicates
         public str: string = "";
 
         protected [render](): TemplateResult {
@@ -64,7 +66,7 @@ const testPropertyDecorator = () => {
       class Test extends CorpusculeElement {
         public static is: string = elementName;
 
-        @property(value => typeof value === "string")
+        @property(value => typeof value === "string") // tslint:disable-line:strict-type-predicates
         public str: string = "1";
 
         protected [render](): TemplateResult {
@@ -89,7 +91,7 @@ const testPropertyDecorator = () => {
       class Test extends CorpusculeElement {
         public static is: string = elementName;
 
-        @property(value => typeof value === "string", {pure: false})
+        @property(value => typeof value === "string", {pure: false}) // tslint:disable-line:strict-type-predicates
         public str: string = "1";
 
         protected [render](): TemplateResult {
