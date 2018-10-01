@@ -30,7 +30,7 @@ import {
   toAttribute,
 } from "./utils";
 
-export {attribute, computed, property, state} from "./decorators";
+export {attribute, computed, element, property, state} from "./decorators";
 export * from "./tokens/lifecycle";
 
 const renderPromise = window.Corpuscule && window.Corpuscule.compatibility === true
