@@ -20,6 +20,6 @@
     "@corpuscule/utils": "^0.3.0"
   },
   "peerDependencies": {
-    "lit-html": "^0.10.0"
+    "lit-html": "^0.12.0"
   }
 }
