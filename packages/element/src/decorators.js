@@ -3,7 +3,8 @@ import assertKind from "@corpuscule/utils/lib/assertKind";
 import {
   invalidate as $$invalidate,
   isMount as $$isMount,
-  props as $$props, states as $$states,
+  props as $$props,
+  states as $$states,
 } from "./tokens/internal";
 import {
   propsChangedStage,
