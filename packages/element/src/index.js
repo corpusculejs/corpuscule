@@ -115,7 +115,7 @@ export default class CorpusculeElement extends HTMLElement {
     this[$$isMount] = false;
   }
 
-  async forceUpdate() {
+  forceUpdate() {
     return this[$$invalidate](forceStage);
   }
 
@@ -140,7 +140,7 @@ export default class CorpusculeElement extends HTMLElement {
     throw new Error("[render]() is not implemented");
   }
 
-  async [$$invalidate](type) {
+  [$$invalidate](type) {
     const {[$$scheduler]: scheduler} = this;
 
     // eslint-disable-next-line default-case
@@ -173,13 +173,16 @@ export default class CorpusculeElement extends HTMLElement {
         [$$prevProps]: prevProps,
         [$$prevStates]: prevStates,
         [$$props]: props,
-        [$$states]: states,
       } = this;
 
-      this[$$states] = {
+      let {[$$states]: states} = this;
+
+      const derivedState = this.constructor[$deriveStateFromProps](props, states);
+
+      this[$$states] = states = derivedState ? { // eslint-disable-line no-multi-assign
         ...states,
-        ...this.constructor[$deriveStateFromProps](props, states),
-      };
+        ...derivedState,
+      } : states;
 
       const shouldUpdate = !scheduler.force && !scheduler.mounting
         ? this.constructor[$shouldUpdate](props, states, prevProps, prevStates)
@@ -193,29 +196,27 @@ export default class CorpusculeElement extends HTMLElement {
         }
       }
 
-      if (scheduler.mounting) {
+      const shouldRunDidMount = scheduler.mounting;
+      const shouldRunDidUpdate = shouldUpdate && !scheduler.mounting;
+
+      this[$$prevProps] = {...props};
+      this[$$prevStates] = {...states};
+
+      scheduler.mounting = false;
+      scheduler.force = false;
+      scheduler.props = false;
+      scheduler.valid = true;
+
+      if (shouldRunDidMount) {
         this[$didMount]();
         this[$$isMount] = true;
       }
 
-      if (shouldUpdate && !scheduler.mounting) {
+      if (shouldRunDidUpdate) {
         this[$didUpdate](prevProps, prevStates);
       }
-
-      this[$$prevProps] = {
-        ...prevProps,
-        ...props,
-      };
-
-      this[$$prevStates] = {
-        ...prevStates,
-        ...states,
-      };
-
-      scheduler.valid = true;
-
-      scheduler.mounting = false;
-      scheduler.props = false;
+    }).catch((e) => {
+      throw e;
     });
 
     return this[$$rendering];

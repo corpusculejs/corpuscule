@@ -1,7 +1,7 @@
 // tslint:disable:max-classes-per-file
 // tslint:disable-next-line:no-implicit-dependencies
 import uuid from "uuid/v4";
-import {element} from "../src";
+import {element} from "../../src";
 
 const testElementDecorator = () => {
   describe("@element", () => {

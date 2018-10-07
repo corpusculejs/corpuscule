@@ -1,9 +1,5 @@
 export const defaultPropertyOptions = {pure: true};
 
-export const handleError = (e) => {
-  throw e;
-};
-
 export const parseAttributeValue = (value, guard) => {
   switch (guard) {
     case Boolean:
