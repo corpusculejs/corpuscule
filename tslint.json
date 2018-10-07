@@ -1,6 +1,7 @@
 {
   "extends": ["tslint-config-poetez"],
   "rules": {
-    "quotemark": [true, "double"]
+    "quotemark": [true, "double"],
+    "no-unused-variable": false
   }
 }
