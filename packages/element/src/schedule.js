@@ -1,40 +1,48 @@
 const tasks = [];
 let firstRequest = true;
-let pendingResolutions = [];
 
 const next = () => {
   firstRequest = false;
+
+  const pendingResolutions = [];
+  let rejectionReason;
 
   while (true) { // eslint-disable-line no-constant-condition
     if (tasks.length === 0) {
       break;
     }
 
-    const [task, resolve] = tasks.pop();
-    task();
+    const [task, resolve, reject] = tasks.pop();
 
-    if (tasks.length >= 0) {
-      pendingResolutions.push(resolve);
+    pendingResolutions.push(resolve, reject);
+
+    try {
+      task();
+    } catch (e) {
+      rejectionReason = e;
+      break;
     }
   }
 
-  for (const resolve of pendingResolutions) {
-    resolve();
+  for (let i = 0; i < pendingResolutions.length; i += 2) {
+    const resolve = pendingResolutions[i];
+    const reject = pendingResolutions[i + 1];
+
+    if (rejectionReason) {
+      reject(rejectionReason);
+    } else {
+      resolve();
+    }
   }
 
-  pendingResolutions = [];
   firstRequest = true;
 };
 
 const schedule = async callback => new Promise((resolve, reject) => {
-  try {
-    tasks.push([callback, resolve]);
+  tasks.push([callback, resolve, reject]);
 
-    if (firstRequest) {
-      requestAnimationFrame(next);
-    }
-  } catch (e) {
-    reject(e);
+  if (firstRequest) {
+    requestAnimationFrame(next);
   }
 });
 
