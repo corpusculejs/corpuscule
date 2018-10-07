@@ -39,15 +39,15 @@ const testRender = () => {
       expect(el.shadowRoot!.textContent).toContain("true");
     });
 
-    it("should throw error if render is not implemented", (done) => {
+    it("should throw error if render is not implemented", async () => {
       class Test extends CorpusculeElement {
         public static readonly is: string = elementName;
       }
 
       const el = defineAndMount(Test);
-      el.elementRendering.catch(({message}) => {
+
+      return el.elementRendering.catch(({message}) => {
         expect(message).toBe("[render]() is not implemented");
-        done();
       });
     });
   });
