@@ -274,14 +274,14 @@ const testUpdating = () => {
       el.setAttribute("str", "test string");
       await el.elementRendering;
       expect(didUpdateSpy).toHaveBeenCalledWith(
-        {str: "", num: 0},
+        {str: "start", num: 10},
         {bool: false},
       );
 
       el.num = 20;
       await el.elementRendering;
       expect(didUpdateSpy).toHaveBeenCalledWith(
-        {str: "test string", num: 0},
+        {str: "test string", num: 10},
         {bool: false},
       );
 
@@ -336,7 +336,37 @@ const testUpdating = () => {
       await el.elementRendering;
 
       expect(didUpdateSpy).toHaveBeenCalledTimes(2);
-      expect(renderSpy).toHaveBeenCalledTimes(2);
+      expect(renderSpy).toHaveBeenCalledTimes(3);
+    });
+
+    it("should avoid calling [didUpdate] if [shouldUpdate] returns false", async () => {
+      const didUpdateSpy = jasmine.createSpy("[didUpdate]");
+
+      class Test extends CorpusculeElement {
+        public static readonly is: string = elementName;
+
+        protected static [shouldUpdate](): boolean {
+          return false;
+        }
+
+        @property() public num: number = 10;
+
+        protected [didUpdate](): void {
+          didUpdateSpy();
+        }
+
+        protected [render](): TemplateResult | null {
+          return null;
+        }
+      }
+
+      const el = defineAndMount(Test);
+      await el.elementRendering;
+
+      el.num = 20;
+      await el.elementRendering;
+
+      expect(didUpdateSpy).not.toHaveBeenCalled();
     });
   });
 };

@@ -102,12 +102,17 @@ const testDeriveStateFromProps = () => {
 
         protected static [shouldUpdate](
           _props: unknown,
-          states: unknown,
+          states: {readonly [key: string]: unknown},
           _prevProps: unknown,
-          prevStates: unknown,
+          prevStates: {readonly [key: string]: unknown},
         ): boolean {
           shouldUpdateSpy();
-          expect(states).toBe(prevStates);
+
+          expect(Object.keys(states).length).toBe(Object.keys(prevStates).length);
+
+          for (const key in states) { // tslint:disable-line:forin
+            expect(states[key]).toBe(prevStates[key]);
+          }
 
           return true;
         }
@@ -171,10 +176,10 @@ const testDeriveStateFromProps = () => {
       await el.elementRendering;
 
       expect(shouldUpdateSpy).toHaveBeenCalledWith(
-        {num: 2},
-        {poweredNum: 4, zero: 0},
         {num: 3},
         {poweredNum: 9, zero: 0},
+        {num: 2},
+        {poweredNum: 4, zero: 0},
       );
     });
   });

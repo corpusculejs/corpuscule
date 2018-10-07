@@ -107,6 +107,8 @@ const testMounting = () => {
         }
 
         protected [render](): TemplateResult | null {
+          renderSpy();
+
           return null;
         }
       }
@@ -120,6 +122,7 @@ const testMounting = () => {
     it("should start new re-rendering cycle if [didMount] changes state", async () => {
       const renderSpy = jasmine.createSpy("[render]");
       const didMountSpy = jasmine.createSpy("[didMount]");
+      const didUpdateSpy = jasmine.createSpy("[didUpdate]");
 
       class Test extends CorpusculeElement {
         public static readonly is: string = elementName;
@@ -131,6 +134,10 @@ const testMounting = () => {
           didMountSpy();
 
           this.state = 20;
+        }
+
+        protected [didUpdate](): void {
+          didUpdateSpy();
         }
 
         protected [render](): TemplateResult | null {
@@ -145,7 +152,8 @@ const testMounting = () => {
       await el.elementRendering;
 
       expect(renderSpy).toHaveBeenCalledTimes(2);
-      expect(didMountSpy).toHaveBeenCalledTimes(2);
+      expect(didMountSpy).toHaveBeenCalledTimes(1);
+      expect(didUpdateSpy).toHaveBeenCalledTimes(1);
     });
 
     it("should avoid calling [didUpdate] during mounting", async () => {
