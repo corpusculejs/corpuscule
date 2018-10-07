@@ -215,6 +215,8 @@ export default class CorpusculeElement extends HTMLElement {
       if (shouldRunDidUpdate) {
         this[$didUpdate](prevProps, prevStates);
       }
+    }).catch((e) => {
+      throw e;
     });
 
     return this[$$rendering];
