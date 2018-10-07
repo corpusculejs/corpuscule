@@ -26,9 +26,9 @@ export default class CorpusculeElement extends HTMLElement implements CustomElem
 
   public static readonly observableAttributes: ReadonlyArray<PropertyKey>;
 
-  public static [deriveStateFromProps](props: {}, states: {}): {} | null;
+  protected static [deriveStateFromProps](props: unknown, states: unknown): unknown | null;
 
-  public static [shouldUpdate](nextProps: {}, nextState: {}, prevProps: {}, prevState: {}): boolean;
+  protected static [shouldUpdate](nextProps: unknown, nextState: unknown, prevProps: unknown, prevState: unknown): boolean;
 
   public readonly elementRendering: Promise<void>;
 
@@ -44,7 +44,7 @@ export default class CorpusculeElement extends HTMLElement implements CustomElem
 
   protected [didMount](): void;
 
-  protected [didUpdate](prevProperties: {}, prevStates: {}): void;
+  protected [didUpdate](prevProperties: unknown, prevStates: unknown): void;
 
   protected [didUnmount](): void;
 
