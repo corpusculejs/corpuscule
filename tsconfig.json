@@ -12,6 +12,8 @@
     "module": "esnext",
     "moduleResolution": "node",
     "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "outDir": "dist",
     "sourceMap": true,
     "strict": true,

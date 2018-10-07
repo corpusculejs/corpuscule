@@ -1,6 +1,6 @@
 import testCreateComputingEntanglement from "./computed";
 import testCorpusculeElement from "./corpusculeElement";
-import testElementDecorator from "./elementDecorator";
+import testDecorators from "./decorators";
 
 describe("@corpuscule/element", () => {
   afterEach(() => {
@@ -8,6 +8,6 @@ describe("@corpuscule/element", () => {
   });
 
   testCorpusculeElement();
-  testElementDecorator();
+  testDecorators();
   testCreateComputingEntanglement();
 });
