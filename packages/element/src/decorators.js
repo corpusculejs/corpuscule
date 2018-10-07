@@ -12,7 +12,6 @@ import {
 } from "./tokens/stages";
 import {
   defaultPropertyOptions,
-  handleError,
   toAttribute,
 } from "./utils";
 
@@ -55,7 +54,7 @@ export const attribute = (attributeName, guard, {pure} = defaultPropertyOptions)
           toAttribute(this, attributeName, value);
         }
 
-        this[$$invalidate](propsChangedStage).catch(handleError);
+        this[$$invalidate](propsChangedStage);
       },
     },
     finisher(target) {
@@ -95,7 +94,7 @@ export const property = (guard = null, {pure} = defaultPropertyOptions) => ({
 
         props[key] = value;
 
-        this[$$invalidate](propsChangedStage).catch(handleError);
+        this[$$invalidate](propsChangedStage);
       },
     },
     finisher(target) {
@@ -119,7 +118,7 @@ export const state = ({initializer, key, kind}) => {
       },
       set(value) {
         this[$$states][key] = value;
-        this[$$invalidate](stateChangedStage).catch(handleError);
+        this[$$invalidate](stateChangedStage);
       },
     },
     finisher(target) {
