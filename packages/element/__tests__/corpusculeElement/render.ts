@@ -38,6 +38,18 @@ const testRender = () => {
       await el.elementRendering;
       expect(el.shadowRoot!.textContent).toContain("true");
     });
+
+    it("should throw error if render is not implemented", (done) => {
+      class Test extends CorpusculeElement {
+        public static readonly is: string = elementName;
+      }
+
+      const el = defineAndMount(Test);
+      el.elementRendering.catch(({message}) => {
+        expect(message).toBe("[render]() is not implemented");
+        done();
+      });
+    });
   });
 };
 
