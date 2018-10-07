@@ -196,12 +196,8 @@ export default class CorpusculeElement extends HTMLElement {
         }
       }
 
-      const lifecycleData = {
-        mounting: scheduler.mounting,
-        prevProps,
-        prevStates,
-        updating: shouldUpdate && !scheduler.mounting,
-      };
+      const shouldRunDidMount = scheduler.mounting;
+      const shouldRunDidUpdate = shouldUpdate && !scheduler.mounting;
 
       this[$$prevProps] = {...props};
       this[$$prevStates] = {...states};
@@ -211,14 +207,12 @@ export default class CorpusculeElement extends HTMLElement {
       scheduler.props = false;
       scheduler.valid = true;
 
-      return lifecycleData;
-    }).then(({mounting, prevProps, prevStates, updating}) => {
-      if (mounting) {
+      if (shouldRunDidMount) {
         this[$didMount]();
         this[$$isMount] = true;
       }
 
-      if (updating) {
+      if (shouldRunDidUpdate) {
         this[$didUpdate](prevProps, prevStates);
       }
     });
