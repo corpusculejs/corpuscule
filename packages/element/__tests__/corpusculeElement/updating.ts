@@ -339,6 +339,34 @@ const testUpdating = () => {
       expect(renderSpy).toHaveBeenCalledTimes(3);
     });
 
+    it("should not render except mounting stage if [shouldUpdate] returns false", async () => {
+      const renderSpy = jasmine.createSpy("[render]");
+
+      class Test extends CorpusculeElement {
+        public static readonly is: string = elementName;
+
+        protected static [shouldUpdate](): boolean {
+          return false;
+        }
+
+        @property() public num: number = 10;
+
+        protected [render](): TemplateResult | null {
+          renderSpy();
+
+          return null;
+        }
+      }
+
+      const el = defineAndMount(Test);
+      await el.elementRendering;
+
+      el.num = 20;
+      await el.elementRendering;
+
+      expect(renderSpy).toHaveBeenCalledTimes(1);
+    });
+
     it("should avoid calling [didUpdate] if [shouldUpdate] returns false", async () => {
       const didUpdateSpy = jasmine.createSpy("[didUpdate]");
 
