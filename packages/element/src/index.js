@@ -4,7 +4,7 @@ import {
   propertyInitializerRegistry,
   stateInitializerRegistry,
 } from "./decorators";
-import schedule from "./schedule";
+import schedule from "./scheduler";
 import {
   initializeValues as $$initializeValues,
   invalidate as $$invalidate,

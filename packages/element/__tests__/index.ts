@@ -1,7 +1,7 @@
 import testCreateComputingEntanglement from "./computed";
 import testCorpusculeElement from "./corpusculeElement";
 import testDecorators from "./decorators";
-import testScheduler from "./schedule";
+import testScheduler from "./scheduler";
 
 describe("@corpuscule/element", () => {
   afterEach(() => {
