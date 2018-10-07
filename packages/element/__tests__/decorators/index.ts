@@ -10,6 +10,7 @@ import CorpusculeElement, {
   state,
 } from "../../src";
 import testAttributeDecorator from "./attributeDecorator";
+import testElementDecorator from "./elementDecorator";
 import testPropertyDecorator from "./propertyDecorator";
 import testStateDecorator from "./stateDecorator";
 
@@ -22,6 +23,7 @@ const testDecorators = () => {
     });
 
     testAttributeDecorator();
+    testElementDecorator();
     testPropertyDecorator();
     testStateDecorator();
 
@@ -37,8 +39,8 @@ const testDecorators = () => {
         @property()
         public prop: string = "zeroProp";
 
-        @state
-        private state: string = "zeroState"; // tslint:disable-line:no-unused-variable
+        // @ts-ignore
+        @state private state: string = "zeroState"; // tslint:disable-line:no-unused-variable
 
         public updateState(str: string): void {
           this.state = str;
