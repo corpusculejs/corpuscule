@@ -4,6 +4,7 @@ import {
   propertyInitializerRegistry,
   stateInitializerRegistry,
 } from "./decorators";
+import schedule from "./scheduler";
 import {
   initializeValues as $$initializeValues,
   invalidate as $$invalidate,
@@ -168,7 +169,7 @@ export default class CorpusculeElement extends HTMLElement {
     // Setting all component properties takes time. So it is necessary to wait until this setting
     // is over and only then component is able to update. Starting rendering after Promise.resolve()
     // allows to have single rendering even if all component properties are changed.
-    this[$$rendering] = Promise.resolve().then(() => {
+    this[$$rendering] = schedule(() => {
       const {
         [$$prevProps]: prevProps,
         [$$prevStates]: prevStates,
@@ -215,8 +216,6 @@ export default class CorpusculeElement extends HTMLElement {
       if (shouldRunDidUpdate) {
         this[$didUpdate](prevProps, prevStates);
       }
-    }).catch((e) => {
-      throw e;
     });
 
     return this[$$rendering];
