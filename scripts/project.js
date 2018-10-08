@@ -2,6 +2,7 @@ const packages = {
   context: ["index"],
   element: [
     "computed",
+    "dhtml",
     "index",
   ],
   redux: ["index"],
