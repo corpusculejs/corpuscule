@@ -1,3 +1,4 @@
+// tslint:disable:max-classes-per-file
 import {CustomElement} from "@corpuscule/typings";
 import {TemplateResult} from "lit-html";
 
@@ -21,8 +22,19 @@ export const deriveStateFromProps: unique symbol;
 export const render: unique symbol;
 export const shouldUpdate: unique symbol;
 
+export class UnsafeStatic {
+  public readonly value: unknown;
+  public constructor(value: unknown);
+}
+
+export const unsafeStatic: (value: unknown) => UnsafeStatic;
+
+// tslint:disable-next-line:array-type readonly-array
+export const dhtml: (strings: ReadonlyArray<string>, ...values: unknown[]) => TemplateResult;
+
 export default class CorpusculeElement extends HTMLElement implements CustomElement {
   public static readonly is: string;
+  public static readonly tag: UnsafeStatic;
 
   public static readonly observableAttributes: ReadonlyArray<PropertyKey>;
 

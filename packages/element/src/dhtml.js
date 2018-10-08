@@ -1,8 +1,5 @@
 /* eslint-disable max-depth */
-
 import {html} from "lit-html";
-
-const registry = new Map();
 
 export class UnsafeStatic {
   constructor(value) {
@@ -12,7 +9,7 @@ export class UnsafeStatic {
 
 export const unsafeStatic = value => new UnsafeStatic(value);
 
-const isElementOrUnsafeStatic = value => typeof value.is === "string" || value instanceof UnsafeStatic;
+const registry = new Map();
 
 const dhtml = (strings, ...values) => {
   const record = registry.get(strings);
@@ -23,7 +20,7 @@ const dhtml = (strings, ...values) => {
   if (!record) {
     valueIndexesToFilter = [];
 
-    if (values.some(isElementOrUnsafeStatic)) {
+    if (values.some(value => value instanceof UnsafeStatic)) {
       recordStrings = [];
 
       let previousValueWasStatic = false;
@@ -35,8 +32,8 @@ const dhtml = (strings, ...values) => {
           recordStrings.push(strings[i]);
         }
 
-        if (i < strings.length - 1 && isElementOrUnsafeStatic(values[i])) {
-          recordStrings[recordStrings.length - 1] += values[i].is || String(values[i].value);
+        if (i < strings.length - 1 && values[i] instanceof UnsafeStatic) {
+          recordStrings[recordStrings.length - 1] += String(values[i].value);
           valueIndexesToFilter.push(i);
           previousValueWasStatic = true;
         } else {
