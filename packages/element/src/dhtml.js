@@ -9,7 +9,7 @@ export class UnsafeStatic {
 
 export const unsafeStatic = value => new UnsafeStatic(value);
 
-const registry = new Map();
+const registry = new WeakMap();
 
 const dhtml = (strings, ...values) => {
   const record = registry.get(strings);
