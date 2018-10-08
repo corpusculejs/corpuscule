@@ -3,8 +3,7 @@ import {TemplateResult} from "lit-html";
 // tslint:disable-next-line:no-implicit-dependencies
 import uuid from "uuid/v4";
 import {defineAndMount} from "../../../test/utils";
-import CorpusculeElement, {render} from "../src";
-import dhtml, {unsafeStatic} from "../src/dhtml";
+import CorpusculeElement, {dhtml, render, unsafeStatic} from "../src";
 
 const testDhtml = () => {
   describe("dhtml", () => {
@@ -19,11 +18,14 @@ const testDhtml = () => {
 
       customElements.define(Test1.is, Test1);
 
+      // tslint:disable-next-line:naming-convention
+      const Test1Tag = unsafeStatic(Test1.is);
+
       class Test2 extends CorpusculeElement {
         public static readonly is: string = `x-${uuid()}`;
 
         protected [render](): TemplateResult | null {
-          return dhtml`<${Test1}/>`;
+          return dhtml`<${Test1Tag}/>`;
         }
       }
 
@@ -67,6 +69,9 @@ const testDhtml = () => {
 
       customElements.define(Test1.is, Test1);
 
+      // tslint:disable-next-line:naming-convention
+      const Test1Tag = unsafeStatic(Test1.is);
+
       class Test2 extends CorpusculeElement {
         public static readonly is: string = `x-${uuid()}`;
 
@@ -75,14 +80,14 @@ const testDhtml = () => {
           const nestedTwiceText = "Nested twice";
 
           return dhtml`
-            <${Test1}>
+            <${Test1Tag}>
               <div>Nested simple</div>
               ${testContentText}
-              <${Test1}>
+              <${Test1Tag}>
                 Nested Test
                 <section>${nestedTwiceText}</section>
-              </${Test1}>
-            </${Test1}>`;
+              </${Test1Tag}>
+            </${Test1Tag}>`;
         }
       }
 

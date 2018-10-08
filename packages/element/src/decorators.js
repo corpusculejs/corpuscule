@@ -14,6 +14,7 @@ import {
   defaultPropertyOptions,
   toAttribute,
 } from "./utils";
+import {unsafeStatic} from "./dhtml";
 
 export const attributeRegistry = new WeakMap();
 
@@ -133,6 +134,8 @@ export const state = ({initializer, key, kind}) => {
 export const element = name => ({kind, elements}) => {
   assertKind("element", "class", kind);
 
+  const tag = unsafeStatic(name);
+
   return {
     elements: [
       ...elements.filter(({key}) => key !== "is"),
@@ -144,6 +147,17 @@ export const element = name => ({kind, elements}) => {
           },
         },
         key: "is",
+        kind: "method",
+        placement: "static",
+      },
+      {
+        descriptor: {
+          configurable: true,
+          get() {
+            return tag;
+          },
+        },
+        key: "tag",
         kind: "method",
         placement: "static",
       },
