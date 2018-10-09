@@ -38,6 +38,7 @@ import {
 } from "./utils";
 
 export {attribute, element, property, state} from "./decorators";
+export {default as dhtml, unsafeStatic, UnsafeStatic} from "./dhtml";
 export * from "./tokens/lifecycle";
 
 export default class CorpusculeElement extends HTMLElement {
