@@ -1,6 +1,10 @@
+import assertKind from "@corpuscule/utils/lib/assertKind";
+import getSuperMethod from "@corpuscule/utils/lib/getSuperMethod";
+import shallowEqual from "@corpuscule/utils/lib/shallowEqual";
 import {
   configOptions,
   createForm,
+  formSubscriptionItems,
 } from "final-form";
 import {
   provider,
@@ -8,121 +12,146 @@ import {
 } from "./context";
 import {
   handleSubmit as $$handleSubmit,
-  props as $$props,
+  options as $$options,
   unsubscriptions as $$unsubscriptions,
 } from "./tokens/internal";
-import {formInstance} from "./tokens/lifecycle";
+import {formInstance, formValues} from "./tokens/lifecycle";
 
-const form = (target) => {
-  const provided = provider(target);
+const connectedCallbackKey = "connectedCallback";
+const disconnectedCallbackKey = "disconnectedCallback";
 
-  const {value: connectedCallback} = Reflect.getOwnPropertyDescriptor(provided.prototype, "connectedCallback");
-  const {value: disconnectedCallback} = Reflect.getOwnPropertyDescriptor(provided.prototype, "disconnectedCallback");
+export const all = formSubscriptionItems.reduce((result, key) => {
+  result[key] = true;
 
-  Object.defineProperties(provided.prototype, {
-    ...configOptions.map(prop => ({
-      get() {
-        return this[$$props][prop];
-      },
-      set: prop === "initialValues" ? function set(value) {
-        this[$$props][prop] = value;
+  return result;
+}, {});
 
-        if (this[$$form]) {
-          for (const v of value) {
-            if (this[$$props][prop][v] !== value[v]) {
-              this[$$form].initialize(value);
-              this[$$props][prop] = value;
-              break;
+const form = ({decorators, subscription}) => (classDescriptor) => {
+  assertKind("form", "class", classDescriptor.kind);
+
+  const {elements, kind} = provider(classDescriptor);
+
+  const superConnectedCallback = getSuperMethod(connectedCallbackKey, elements);
+  const superDisconnectedCallback = getSuperMethod(disconnectedCallbackKey, elements);
+
+  return {
+    elements: [
+      ...elements.filter(({key}) =>
+        key !== connectedCallbackKey
+        && key !== disconnectedCallbackKey
+      ),
+      ...configOptions.map(option => ({
+        descriptor: {
+          get() {
+            return this[$$options][option];
+          },
+          set: option === "initialValues" ? function setInitialValues(values) {
+            if (!(this.initialValuesEqual || shallowEqual)(
+              this[$$options].initialValues,
+              values
+            )) {
+              this[$$options].initialValues = values;
+
+              if (this[$$form]) {
+                this[$$form].initialize(values);
+              }
             }
-          }
-        }
-      } : function set(value) {
-        this[$$props][prop] = value;
+          } : function setOption(value) {
+            if (this[$$options][option] !== value) {
+              this[$$options][option] = value;
 
-        if (this[$$form]) {
-          this[$$form].setConfig(prop, this[$$props][prop]);
-        }
+              if (this[$$form]) {
+                this[$$form].setConfig(option, value);
+              }
+            }
+          },
+        },
+        key: option,
+        kind: "method",
+        placement: "prototype",
+      })),
+      {
+        descriptor: {
+          value() {
+            this[$$form] = createForm(this[$$options]);
+
+            if (decorators) {
+              for (const decorate of decorators) {
+                this[$$unsubscriptions].push(decorate(this[$$form]));
+              }
+            }
+
+            // Subscribe, set state and unsubscribe immediately
+            this[$$form].subscribe((state) => {
+              this[formValues] = state;
+            }, subscription || all)();
+
+            this.addEventListener("submit", this[$$handleSubmit]);
+
+            return superConnectedCallback(this);
+          },
+        },
+        key: connectedCallbackKey,
+        kind: "method",
+        placement: "prototype",
       },
-    })),
-    connectedCallback: {
-      async value() {
-        if (connectedCallback) {
-          connectedCallback.call(this);
-        }
+      {
+        descriptor: {
+          value() {
+            for (const unsubscribe of this[$$unsubscriptions]) {
+              unsubscribe();
+            }
 
-        await null;
+            this.removeEventListener("submit", this[$$handleSubmit]);
 
-        const instance = createForm(this[$$props]);
-
-        if (this.decorators) {
-          for (const decorate of this.decorators) {
-            this[$$unsubscriptions].push(decorate(instance));
-          }
-        }
-
-        this[$$form] = instance;
-
-        this.addEventListener("submit", this[$$handleSubmit]);
+            superDisconnectedCallback();
+          },
+        },
+        key: disconnectedCallbackKey,
+        kind: "method",
+        placement: "prototype",
       },
-    },
-    decorators: {
-      get() {
-        return this[$$props].decorators;
+      {
+        descriptor: {
+          get() {
+            return this[$$form];
+          },
+        },
+        key: formInstance,
+        kind: "method",
+        placement: "prototype",
       },
-      set(value) {
-        if (!this[$$form]) {
-          this[$$props].decorators = value;
+      {
+        descriptor: {},
+        initializer() {
+          return (event) => {
+            event.preventDefault();
+            event.stopPropagation();
 
-          return;
-        }
-
-        // eslint-disable-next-line consistent-return, no-console
-        console.warn("Form decorators should not change");
+            this[$$form].submit();
+          };
+        },
+        key: $$handleSubmit,
+        kind: "field",
+        placement: "own",
       },
-    },
-    disconnectedCallback: {
-      value() {
-        for (const unsubscribe of this[$$unsubscriptions]) {
-          unsubscribe();
-        }
-
-        this.removeEventListener("submit", this[$$handleSubmit]);
-
-        if (disconnectedCallback) {
-          disconnectedCallback.call(this);
-        }
+      {
+        descriptor: {},
+        initializer: () => ({}),
+        key: $$options,
+        kind: "field",
+        placement: "own",
       },
-    },
-    [formInstance]: {
-      value() {
-        return this[$$form];
+      {
+        descriptor: {},
+        initializer: () => [],
+        key: $$unsubscriptions,
+        kind: "field",
+        placement: "own",
       },
-    },
-    [$$handleSubmit]: { // eslint-disable-line sort-keys
-      get() {
-        const handleSubmit = (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-
-          this[$$form].submit();
-        };
-
-        Object.defineProperty(this, $$handleSubmit, {
-          value: handleSubmit,
-        });
-
-        return handleSubmit;
-      },
-    },
-    [$$props]: {
-      value: {},
-    },
-    [$$unsubscriptions]: {
-      value: [],
-    },
-  });
-
-  return target;
+    ],
+    kind,
+  };
 };
 
 export default form;
