@@ -4,7 +4,6 @@ import shallowEqual from "@corpuscule/utils/lib/shallowEqual";
 import {
   configOptions,
   createForm,
-  formSubscriptionItems,
 } from "final-form";
 import {
   provider,
@@ -16,15 +15,10 @@ import {
   unsubscriptions as $$unsubscriptions,
 } from "./tokens/internal";
 import {formInstance, formValues} from "./tokens/lifecycle";
+import {all} from "./utils";
 
 const connectedCallbackKey = "connectedCallback";
 const disconnectedCallbackKey = "disconnectedCallback";
-
-export const all = formSubscriptionItems.reduce((result, key) => {
-  result[key] = true;
-
-  return result;
-}, {});
 
 const form = ({decorators, subscription}) => (classDescriptor) => {
   assertKind("form", "class", classDescriptor.kind);
