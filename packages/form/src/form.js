@@ -14,7 +14,7 @@ import {
   options as $$options,
   unsubscriptions as $$unsubscriptions,
 } from "./tokens/internal";
-import {formInstance, formValues} from "./tokens/lifecycle";
+import {formInstance, formState} from "./tokens/lifecycle";
 import {all} from "./utils";
 
 const connectedCallbackKey = "connectedCallback";
@@ -77,7 +77,7 @@ const form = ({decorators, subscription}) => (classDescriptor) => {
 
             this[$$unsubscriptions].push(
               this[$$form].subscribe((state) => {
-                this[formValues] = state;
+                this[formState] = state;
               }, subscription || all)
             );
 
