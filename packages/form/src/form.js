@@ -75,10 +75,11 @@ const form = ({decorators, subscription}) => (classDescriptor) => {
               }
             }
 
-            // Subscribe, set state and unsubscribe immediately
-            this[$$form].subscribe((state) => {
-              this[formValues] = state;
-            }, subscription || all)();
+            this[$$unsubscriptions].push(
+              this[$$form].subscribe((state) => {
+                this[formValues] = state;
+              }, subscription || all)
+            );
 
             this.addEventListener("submit", this[$$handleSubmit]);
 
