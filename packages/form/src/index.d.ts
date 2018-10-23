@@ -5,7 +5,7 @@ import {
   FormSubscription,
 } from "final-form";
 
-export const formInstance: unique symbol;
+export const formApi: unique symbol;
 export const formState: unique symbol;
 
 export interface FormDecoratorParams {
@@ -14,7 +14,7 @@ export interface FormDecoratorParams {
 }
 
 export interface FormProvider {
-  readonly [formInstance]: FormApi;
+  readonly [formApi]: FormApi;
   readonly [formState]: FormState;
 }
 

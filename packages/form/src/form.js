@@ -14,7 +14,7 @@ import {
   options as $$options,
   unsubscriptions as $$unsubscriptions,
 } from "./tokens/internal";
-import {formInstance, formState} from "./tokens/lifecycle";
+import {formApi, formState} from "./tokens/lifecycle";
 import {all} from "./utils";
 
 const connectedCallbackKey = "connectedCallback";
@@ -112,7 +112,7 @@ const form = ({decorators, subscription}) => (classDescriptor) => {
             return this[$$form];
           },
         },
-        key: formInstance,
+        key: formApi,
         kind: "method",
         placement: "prototype",
       },
