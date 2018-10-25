@@ -182,6 +182,52 @@ const testDeriveStateFromProps = () => {
         {poweredNum: 4, zero: 0},
       );
     });
+
+    it("should be able to trigger getters and setters of state properties", async () => {
+      const setSpy = jasmine.createSpy("decoratorSet");
+
+      const decorator = ({key}: any, _p: string): any => ({
+        descriptor: {
+          set(this: object, value: number): void {
+            setSpy(value);
+          },
+        },
+        key,
+        kind: "method",
+        placement: "prototype",
+      });
+
+      class Test extends CorpusculeElement {
+        public static readonly is: string = elementName;
+
+        protected static [deriveStateFromProps]({num}: Test): object | null {
+          return {
+            state: num * 2,
+          };
+        }
+
+        @property() public num: number = 10;
+
+        // @ts-ignore
+        @decorator @state private state: number = 10;
+
+        public setState(value: number): void {
+          this.state = value;
+        }
+
+        protected [render](): TemplateResult | null {
+          return null;
+        }
+      }
+
+      const el = defineAndMount(Test);
+      await el.elementRendering;
+      expect(setSpy).toHaveBeenCalledWith(20);
+
+      el.setState(20);
+      await el.elementRendering;
+      expect(setSpy).toHaveBeenCalledWith(40);
+    });
   });
 };
 

@@ -72,7 +72,7 @@ export default class CorpusculeElement extends HTMLElement {
       force: false,
       mounting: false,
       props: false,
-      valid: false,
+      valid: true,
     };
     this[$$states] = this[$$initializeValues](stateInitializerRegistry);
   }
@@ -152,7 +152,6 @@ export default class CorpusculeElement extends HTMLElement {
         break;
       case mountingStage:
         scheduler.mounting = true;
-        scheduler.valid = true;
         break;
       case propsChangedStage:
         scheduler.props = true;
@@ -177,14 +176,9 @@ export default class CorpusculeElement extends HTMLElement {
         [$$props]: props,
       } = this;
 
-      let {[$$states]: states} = this;
+      Object.assign(this, this.constructor[$deriveStateFromProps](props, this[$$states]));
 
-      const derivedState = this.constructor[$deriveStateFromProps](props, states);
-
-      this[$$states] = states = derivedState ? { // eslint-disable-line no-multi-assign
-        ...states,
-        ...derivedState,
-      } : states;
+      const {[$$states]: states} = this;
 
       const shouldUpdate = !scheduler.force && !scheduler.mounting
         ? this.constructor[$shouldUpdate](props, states, prevProps, prevStates)
