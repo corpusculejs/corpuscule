@@ -1,14 +1,22 @@
 import assertKind from "@corpuscule/utils/lib/assertKind";
 import getSuperMethod from "@corpuscule/utils/lib/getSuperMethod";
 import shallowEqual from "@corpuscule/utils/lib/shallowEqual";
-import {
-  configOptions,
-  createForm,
-} from "final-form";
+import {createForm} from "final-form";
 import {
   provider,
   providingValue as $$form,
 } from "./context";
+import {
+  debug as $debug,
+  destroyOnUnregister as $destroyOnUnregister,
+  initialValues as $initialValues,
+  initialValuesEqual as $initialValuesEqual,
+  keepDirtyOnReinitialize as $keepDirtyOnReinitialize,
+  mutators as $mutators,
+  onSubmit as $onSubmit,
+  validate as $validate,
+  validateOnBlur as $validateOnBlur,
+} from "./tokens/form";
 import {
   handleSubmit as $$handleSubmit,
   options as $$options,
@@ -19,6 +27,16 @@ import {all} from "./utils";
 
 const connectedCallbackKey = "connectedCallback";
 const disconnectedCallbackKey = "disconnectedCallback";
+const configOptions = [
+  $debug,
+  $destroyOnUnregister,
+  $initialValues,
+  $keepDirtyOnReinitialize,
+  $mutators,
+  $onSubmit,
+  $validate,
+  $validateOnBlur,
+];
 
 const form = ({decorators, subscription}) => (classDescriptor) => {
   assertKind("form", "class", classDescriptor.kind);
@@ -33,14 +51,15 @@ const form = ({decorators, subscription}) => (classDescriptor) => {
       ...elements.filter(({key}) =>
         key !== connectedCallbackKey
         && key !== disconnectedCallbackKey
+        && !configOptions.includes(key)
       ),
       ...configOptions.map(option => ({
         descriptor: {
           get() {
             return this[$$options][option];
           },
-          set: option === "initialValues" ? function setInitialValues(values) {
-            if (!(this.initialValuesEqual || shallowEqual)(
+          set: option === $initialValues ? function setInitialValues(values) {
+            if (!(this[$initialValuesEqual] || shallowEqual)(
               this[$$options].initialValues,
               values
             )) {
@@ -80,6 +99,12 @@ const form = ({decorators, subscription}) => (classDescriptor) => {
                 this[formState] = state;
               }, subscription || all)
             );
+
+            for (const option of configOptions) {
+              if (elements[option]) {
+                this[option] = elements[option].initializer();
+              }
+            }
 
             this.addEventListener("submit", this[$$handleSubmit]);
 
