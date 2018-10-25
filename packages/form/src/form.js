@@ -9,12 +9,14 @@ import {
 import {
   debug as $debug,
   destroyOnUnregister as $destroyOnUnregister,
+  formApi as $formApi,
+  formState as $formState,
   initialValues as $initialValues,
   initialValuesEqual as $initialValuesEqual,
   keepDirtyOnReinitialize as $keepDirtyOnReinitialize,
   mutators as $mutators,
   onSubmit as $onSubmit,
-  validate as $validate,
+  validateForm as $validate,
   validateOnBlur as $validateOnBlur,
 } from "./tokens/form";
 import {
@@ -22,7 +24,6 @@ import {
   options as $$options,
   unsubscriptions as $$unsubscriptions,
 } from "./tokens/internal";
-import {formApi, formState} from "./tokens/lifecycle";
 import {all} from "./utils";
 
 const connectedCallbackKey = "connectedCallback";
@@ -46,6 +47,8 @@ const form = ({decorators, subscription}) => (classDescriptor) => {
   const superConnectedCallback = getSuperMethod(connectedCallbackKey, elements);
   const superDisconnectedCallback = getSuperMethod(disconnectedCallbackKey, elements);
 
+  const configElements = elements.filter(({key}) => configOptions.includes(key));
+
   return {
     elements: [
       ...elements.filter(({key}) =>
@@ -56,14 +59,14 @@ const form = ({decorators, subscription}) => (classDescriptor) => {
       ...configOptions.map(option => ({
         descriptor: {
           get() {
-            return this[$$options][option];
+            return this[$$options].get(option);
           },
           set: option === $initialValues ? function setInitialValues(values) {
             if (!(this[$initialValuesEqual] || shallowEqual)(
-              this[$$options].initialValues,
+              this[$$options].get($initialValues),
               values
             )) {
-              this[$$options].initialValues = values;
+              this[$$options].set($initialValues, values);
 
               if (this[$$form]) {
                 this[$$form].initialize(values);
@@ -71,10 +74,10 @@ const form = ({decorators, subscription}) => (classDescriptor) => {
             }
           } : function setOption(value) {
             if (this[$$options][option] !== value) {
-              this[$$options][option] = value;
+              this[$$options].set(option, typeof value === "function" ? value.bind(this) : value);
 
               if (this[$$form]) {
-                this[$$form].setConfig(option, value);
+                this[$$form].setConfig(option, this[$$options].get(option));
               }
             }
           },
@@ -86,6 +89,10 @@ const form = ({decorators, subscription}) => (classDescriptor) => {
       {
         descriptor: {
           value() {
+            for (const {key, initializer} of configElements) {
+              this[key] = initializer.call(this);
+            }
+
             this[$$form] = createForm(this[$$options]);
 
             if (decorators) {
@@ -96,15 +103,9 @@ const form = ({decorators, subscription}) => (classDescriptor) => {
 
             this[$$unsubscriptions].push(
               this[$$form].subscribe((state) => {
-                this[formState] = state;
+                this[$formState] = state;
               }, subscription || all)
             );
-
-            for (const option of configOptions) {
-              if (elements[option]) {
-                this[option] = elements[option].initializer();
-              }
-            }
 
             this.addEventListener("submit", this[$$handleSubmit]);
 
@@ -137,7 +138,7 @@ const form = ({decorators, subscription}) => (classDescriptor) => {
             return this[$$form];
           },
         },
-        key: formApi,
+        key: $formApi,
         kind: "method",
         placement: "prototype",
       },
@@ -157,7 +158,7 @@ const form = ({decorators, subscription}) => (classDescriptor) => {
       },
       {
         descriptor: {},
-        initializer: () => ({}),
+        initializer: () => new Map(),
         key: $$options,
         kind: "field",
         placement: "own",
