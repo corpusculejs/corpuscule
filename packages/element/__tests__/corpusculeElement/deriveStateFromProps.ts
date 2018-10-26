@@ -186,10 +186,15 @@ const testDeriveStateFromProps = () => {
     it("should be able to trigger getters and setters of state properties", async () => {
       const setSpy = jasmine.createSpy("decoratorSet");
 
-      const decorator = ({key}: any, _p: string): any => ({
+      const decorator = ({
+        descriptor: {get, set},
+        key,
+      }: any, _p: string): any => ({
         descriptor: {
+          get,
           set(this: object, value: number): void {
             setSpy(value);
+            set.call(this, value); // tslint:disable-line:no-invalid-this
           },
         },
         key,
@@ -200,9 +205,9 @@ const testDeriveStateFromProps = () => {
       class Test extends CorpusculeElement {
         public static readonly is: string = elementName;
 
-        protected static [deriveStateFromProps]({num}: Test): object | null {
+        protected static [deriveStateFromProps]({num}: Test, {state: s}: Test): object | null {
           return {
-            state: num * 2,
+            state: num * (s / 10),
           };
         }
 
@@ -222,9 +227,9 @@ const testDeriveStateFromProps = () => {
 
       const el = defineAndMount(Test);
       await el.elementRendering;
-      expect(setSpy).toHaveBeenCalledWith(20);
+      expect(setSpy).toHaveBeenCalledWith(10);
 
-      el.setState(20);
+      el.setState(40);
       await el.elementRendering;
       expect(setSpy).toHaveBeenCalledWith(40);
     });
