@@ -10,7 +10,7 @@ const assertKindTest = () => {
 
     it("should throw an error when shouldThrow is specified and true", () => {
       expect(() => {
-        assertKind("foo", "getter", "method", true); // descriptor.get is undefined
+        assertKind("foo", "getter", "method", false); // descriptor.get is undefined
       }).toThrow(new TypeError("@foo can be applied only to getter, not to method"));
     });
 
@@ -22,7 +22,7 @@ const assertKindTest = () => {
 
     it("should not throw an error when shouldThrow is specified and false", () => {
       expect(() => {
-        assertKind("foo", "getter", "method", false); // descriptor.get exists
+        assertKind("foo", "getter", "method", true); // descriptor.get exists
       }).not.toThrow();
     });
   });
