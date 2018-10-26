@@ -2,9 +2,9 @@ const assertKind = (
   decoratorName,
   expectedKind,
   receivedKind,
-  shouldThrow = expectedKind !== receivedKind,
+  correct = expectedKind === receivedKind,
 ) => {
-  if (shouldThrow) {
+  if (!correct) {
     throw new TypeError(`@${decoratorName} can be applied only to ${expectedKind}, not to ${receivedKind}`);
   }
 };
