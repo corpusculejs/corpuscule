@@ -1,12 +1,12 @@
 // tslint:disable:await-promise max-classes-per-file
-import createComputingEntanglement, {ComputingEntanglement} from "../src/computed";
+import createComputingPair, {ComputingPair} from "../src/computed";
 
 const testCreateComputingEntanglement = () => {
-  describe("createComputingEntanglement", () => {
-    let comp: ComputingEntanglement;
+  describe("createComputingPair", () => {
+    let comp: ComputingPair;
 
     beforeEach(() => {
-      comp = createComputingEntanglement();
+      comp = createComputingPair();
     });
 
     it("should memoize result of processed getter", async () => {
@@ -99,7 +99,7 @@ const testCreateComputingEntanglement = () => {
     });
 
     it("should work with crossing observers", async () => {
-      const comp2 = createComputingEntanglement();
+      const comp2 = createComputingPair();
 
       const spy1 = jasmine.createSpy("OnComputed1");
       const spy2 = jasmine.createSpy("OnComputed2");
@@ -144,6 +144,34 @@ const testCreateComputingEntanglement = () => {
 
       expect(spy1).toHaveBeenCalledTimes(2);
       expect(spy2).toHaveBeenCalledTimes(2);
+    });
+
+    it("should work with static fields", () => {
+      const spy = jasmine.createSpy("onComputed");
+
+      class Test { // tslint:disable-line:no-unnecessary-class
+        @comp.observe
+        public static field1: number = 10;
+
+        @comp.observe
+        public static field2: number = 20;
+
+        @comp.computed
+        public static get computed(): number {
+          spy();
+
+          return this.field1 + this.field2;
+        }
+      }
+
+      expect(Test.computed).toBe(30);
+      expect(Test.computed).toBe(30);
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      Test.field1 = 20;
+      expect(Test.computed).toBe(40);
+      expect(Test.computed).toBe(40);
+      expect(spy).toHaveBeenCalledTimes(2);
     });
   });
 };
