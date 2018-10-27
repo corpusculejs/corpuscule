@@ -3,7 +3,7 @@
 import Registry from "../src/Registry";
 
 const testRegistry = () => {
-  fdescribe("Registry", () => {
+  describe("Registry", () => {
     class Test {}
 
     let registry: Registry<any, string, string>;
