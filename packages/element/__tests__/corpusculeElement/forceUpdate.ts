@@ -1,20 +1,20 @@
 // tslint:disable:await-promise max-classes-per-file
-import {TemplateResult} from "lit-html";
+import {TemplateResult} from 'lit-html';
 // tslint:disable-next-line:no-implicit-dependencies
-import uuid from "uuid/v4";
-import {defineAndMount} from "../../../../test/utils";
-import CorpusculeElement, {render, shouldUpdate} from "../../src";
+import uuid from 'uuid/v4';
+import {defineAndMount} from '../../../../test/utils';
+import CorpusculeElement, {render, shouldUpdate} from '../../src';
 
 const testForceUpdate = () => {
-  describe("forceUpdate", () => {
+  describe('forceUpdate', () => {
     let elementName: string;
 
     beforeEach(() => {
       elementName = `x-${uuid()}`;
     });
 
-    it("should trigger re-rendeing", async () => {
-      const renderSpy = jasmine.createSpy("[render]");
+    it('should trigger re-rendeing', async () => {
+      const renderSpy = jasmine.createSpy('[render]');
 
       class Test extends CorpusculeElement {
         public static readonly is: string = elementName;
@@ -35,8 +35,8 @@ const testForceUpdate = () => {
       expect(renderSpy).toHaveBeenCalledTimes(3);
     });
 
-    it("should ignore [shouldUpdate]", async () => {
-      const shouldUpdateSpy = jasmine.createSpy("[render]");
+    it('should ignore [shouldUpdate]', async () => {
+      const shouldUpdateSpy = jasmine.createSpy('[render]');
 
       class Test extends CorpusculeElement {
         public static readonly is: string = elementName;
@@ -61,7 +61,7 @@ const testForceUpdate = () => {
       expect(shouldUpdateSpy).toHaveBeenCalledTimes(0);
     });
 
-    it("should return promise that is equal to `elementRendering`", async () => {
+    it('should return promise that is equal to `elementRendering`', async () => {
       class Test extends CorpusculeElement {
         public static readonly is: string = elementName;
 

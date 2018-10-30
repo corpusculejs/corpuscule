@@ -1,9 +1,9 @@
 // tslint:disable:max-classes-per-file no-unnecessary-class
 
-import addToRegistry from "../src/addToRegistry";
+import addToRegistry from '../src/addToRegistry';
 
 const addToRegistryTest = () => {
-  describe("addToRegistry", () => {
+  describe('addToRegistry', () => {
     class Test {}
 
     let registry: WeakMap<any, Map<string, string>>;
@@ -12,23 +12,23 @@ const addToRegistryTest = () => {
       registry = new WeakMap();
     });
 
-    it("should create a new global record in registry if it still does not have it", () => {
+    it('should create a new global record in registry if it still does not have it', () => {
       expect(registry.has(Test)).not.toBeTruthy();
 
-      addToRegistry(registry, Test, "key", "value");
+      addToRegistry(registry, Test, 'key', 'value');
 
       expect(registry.has(Test)).toBeTruthy();
-      expect(registry.get(Test)).toEqual(new Map([["key", "value"]]));
+      expect(registry.get(Test)).toEqual(new Map([['key', 'value']]));
     });
 
-    it("should add local record to a global record if global one already exists", () => {
-      registry.set(Test, new Map([["foo", "bar"]]));
+    it('should add local record to a global record if global one already exists', () => {
+      registry.set(Test, new Map([['foo', 'bar']]));
 
       expect(registry.has(Test));
 
-      addToRegistry(registry, Test, "key", "value");
+      addToRegistry(registry, Test, 'key', 'value');
 
-      expect(registry.get(Test)).toEqual(new Map([["foo", "bar"], ["key", "value"]]));
+      expect(registry.get(Test)).toEqual(new Map([['foo', 'bar'], ['key', 'value']]));
     });
   });
 };

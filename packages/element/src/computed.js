@@ -1,4 +1,4 @@
-import assertKind from "@corpuscule/utils/lib/assertKind";
+import assertKind from '@corpuscule/utils/lib/assertKind';
 
 const createComputingEntanglement = () => {
   const registry = new WeakMap();
@@ -10,7 +10,7 @@ const createComputingEntanglement = () => {
     kind,
     placement,
   }) => {
-    assertKind("computed", "getter", kind, !!get);
+    assertKind('computed', 'getter', kind, !!get);
 
     return {
       descriptor: {
@@ -53,7 +53,7 @@ const createComputingEntanglement = () => {
 
   const observe = (descriptor) => {
     const {key, kind} = descriptor;
-    assertKind("observe", "field or method", kind, kind === "field" || kind === "method");
+    assertKind('observe', 'field or method', kind, kind === 'field' || kind === 'method');
 
     observables.push(key);
 

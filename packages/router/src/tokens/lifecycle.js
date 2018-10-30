@@ -1,2 +1,2 @@
-export const layout = Symbol("layout");
-export const resolve = Symbol("resolve");
+export const layout = Symbol('layout');
+export const resolve = Symbol('resolve');

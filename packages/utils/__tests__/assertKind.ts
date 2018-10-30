@@ -1,28 +1,28 @@
-import assertKind from "../src/assertKind";
+import assertKind from '../src/assertKind';
 
 const assertKindTest = () => {
-  describe("assertKind", () => {
-    it("should throw an error when expected and received kinds are different", () => {
+  describe('assertKind', () => {
+    it('should throw an error when expected and received kinds are different', () => {
       expect(() => {
-        assertKind("foo", "field", "class");
-      }).toThrow(new TypeError("@foo can be applied only to field, not to class"));
+        assertKind('foo', 'field', 'class');
+      }).toThrow(new TypeError('@foo can be applied only to field, not to class'));
     });
 
-    it("should throw an error when shouldThrow is specified and true", () => {
+    it('should throw an error when shouldThrow is specified and true', () => {
       expect(() => {
-        assertKind("foo", "getter", "method", false); // descriptor.get is undefined
-      }).toThrow(new TypeError("@foo can be applied only to getter, not to method"));
+        assertKind('foo', 'getter', 'method', false); // descriptor.get is undefined
+      }).toThrow(new TypeError('@foo can be applied only to getter, not to method'));
     });
 
-    it("should not throw an error when expected and received kinds are equal", () => {
+    it('should not throw an error when expected and received kinds are equal', () => {
       expect(() => {
-        assertKind("foo", "field", "field");
+        assertKind('foo', 'field', 'field');
       }).not.toThrow();
     });
 
-    it("should not throw an error when shouldThrow is specified and false", () => {
+    it('should not throw an error when shouldThrow is specified and false', () => {
       expect(() => {
-        assertKind("foo", "getter", "method", true); // descriptor.get exists
+        assertKind('foo', 'getter', 'method', true); // descriptor.get exists
       }).not.toThrow();
     });
   });

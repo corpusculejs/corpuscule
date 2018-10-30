@@ -1,16 +1,16 @@
 // tslint:disable:await-promise max-classes-per-file
-import createComputingEntanglement, {ComputingEntanglement} from "../src/computed";
+import createComputingEntanglement, {ComputingEntanglement} from '../src/computed';
 
 const testCreateComputingEntanglement = () => {
-  describe("createComputingEntanglement", () => {
+  describe('createComputingEntanglement', () => {
     let comp: ComputingEntanglement;
 
     beforeEach(() => {
       comp = createComputingEntanglement();
     });
 
-    it("should memoize result of processed getter", async () => {
-      const spy = jasmine.createSpy("OnComputed");
+    it('should memoize result of processed getter', async () => {
+      const spy = jasmine.createSpy('OnComputed');
 
       class Test {
         @comp.observe
@@ -35,8 +35,8 @@ const testCreateComputingEntanglement = () => {
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
-    it("should reset result on watching property change", async () => {
-      const spy = jasmine.createSpy("OnComputed");
+    it('should reset result on watching property change', async () => {
+      const spy = jasmine.createSpy('OnComputed');
 
       class Test {
         @comp.observe
@@ -66,8 +66,8 @@ const testCreateComputingEntanglement = () => {
       expect(spy).toHaveBeenCalledTimes(2);
     });
 
-    it("should work with getters", async () => {
-      const spy = jasmine.createSpy("OnComputed");
+    it('should work with getters', async () => {
+      const spy = jasmine.createSpy('OnComputed');
 
       class Test {
         @comp.observe
@@ -98,11 +98,11 @@ const testCreateComputingEntanglement = () => {
       expect(spy).toHaveBeenCalledTimes(2);
     });
 
-    it("should work with crossing observers", async () => {
+    it('should work with crossing observers', async () => {
       const comp2 = createComputingEntanglement();
 
-      const spy1 = jasmine.createSpy("OnComputed1");
-      const spy2 = jasmine.createSpy("OnComputed2");
+      const spy1 = jasmine.createSpy('OnComputed1');
+      const spy2 = jasmine.createSpy('OnComputed2');
 
       class Test {
         @comp.observe
