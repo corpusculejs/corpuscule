@@ -1,8 +1,8 @@
-import addToRegistry from "@corpuscule/utils/lib/addToRegistry";
 import assertKind from "@corpuscule/utils/lib/assertKind";
+import Registry from "@corpuscule/utils/lib/Registry";
 import {context as $$context} from "./tokens/internal";
 
-export const connectedRegistry = new WeakMap();
+export const connectedRegistry = new Registry();
 
 export const connected = getter => (descriptor) => {
   assertKind("connected", "field", descriptor.kind);
@@ -10,7 +10,7 @@ export const connected = getter => (descriptor) => {
   return {
     ...descriptor,
     finisher(target) {
-      addToRegistry(connectedRegistry, target, descriptor.key, getter);
+      connectedRegistry.set(target, descriptor.key, getter);
     },
   };
 };

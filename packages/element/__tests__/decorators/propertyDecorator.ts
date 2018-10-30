@@ -4,6 +4,8 @@ import {html, TemplateResult} from "lit-html";
 import uuid from "uuid/v4";
 import {defineAndMount} from "../../../../test/utils";
 import CorpusculeElement, {property, render} from "../../src";
+import {props as $$props} from "../../src/tokens/internal";
+import {accessorDecorator} from "../utils";
 
 // TODO: tslint strict-type-predicates has a bug: palantir/tslint#4107
 // Check when this bug is resolved and remove disabling rules
@@ -108,6 +110,29 @@ const testPropertyDecorator = () => {
       await el.elementRendering;
 
       expect(spy).toHaveBeenCalledTimes(2);
+    });
+
+    it("should allow using after a decorator that transforms variable to accessor method", async () => {
+      class Test extends CorpusculeElement {
+        public static is: string = elementName;
+
+        @property()
+        @accessorDecorator
+        public str: string = "";
+
+        protected [render](): TemplateResult | null {
+          return null;
+        }
+      }
+
+      const el = defineAndMount(Test);
+      await el.elementRendering;
+
+      el.str = "1";
+      await el.elementRendering;
+
+      expect(el.str).toBe("1");
+      expect((el as any)[$$props]).toBe("1");
     });
   });
 };

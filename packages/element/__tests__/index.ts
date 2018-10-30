@@ -1,4 +1,3 @@
-import testCreateComputingEntanglement from "./computed";
 import testCorpusculeElement from "./corpusculeElement";
 import testDecorators from "./decorators";
 import testDhtml from "./dhtml";
@@ -12,6 +11,5 @@ describe("@corpuscule/element", () => {
   testDhtml();
   testCorpusculeElement();
   testDecorators();
-  testCreateComputingEntanglement();
   testScheduler();
 });

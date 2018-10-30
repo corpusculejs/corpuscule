@@ -3,7 +3,7 @@
 // Generated on Sun Apr 29 2018 20:36:45 GMT+0300 (RTZ 2 (зима))
 const webpack = require("./webpack.config");
 
-process.env.CHROME_BIN = require("puppeteer").executablePath();
+// process.env.CHROME_BIN = require("puppeteer").executablePath();
 
 const isCI = !!process.env.CI;
 
@@ -56,7 +56,7 @@ module.exports = (config) => {
 
     // Start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: isCI ? ["ChromeHeadlessNoSandbox"] : ["ChromeHeadless"],
+    browsers: isCI ? ["ChromeHeadlessNoSandbox"] : ["Chrome"],
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the test and exits

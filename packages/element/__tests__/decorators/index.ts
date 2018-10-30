@@ -10,6 +10,7 @@ import CorpusculeElement, {
   state,
 } from "../../src";
 import testAttributeDecorator from "./attributeDecorator";
+import testCreateComputingPair from "./computedDecorator";
 import testElementDecorator from "./elementDecorator";
 import testPropertyDecorator from "./propertyDecorator";
 import testStateDecorator from "./stateDecorator";
@@ -23,6 +24,7 @@ const testDecorators = () => {
     });
 
     testAttributeDecorator();
+    testCreateComputingPair();
     testElementDecorator();
     testPropertyDecorator();
     testStateDecorator();

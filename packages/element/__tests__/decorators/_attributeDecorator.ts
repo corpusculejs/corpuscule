@@ -17,7 +17,7 @@ const testAttributeDecorator = () => {
       class Test extends CorpusculeElement {
         public static is: string = elementName;
 
-        @attribute("idx", Number, {pure: true})
+        @attribute("idx", Number)
         public index?: number;
 
         protected [render](): TemplateResult {
@@ -63,7 +63,7 @@ const testAttributeDecorator = () => {
       expect(node.textContent).toBe("#2");
     });
 
-    it("should set value from attribute value, if any values are set before mounting", async () => {
+    it("should use value from attribute if any value is set before mounting", async () => {
       class Test extends CorpusculeElement {
         public static is: string = elementName;
 
@@ -84,7 +84,7 @@ const testAttributeDecorator = () => {
       expect(el.index).toBe(2);
     });
 
-    it("should set attribute value on attribute property change", async () => {
+    it("should set attribute value if property is changed manually", async () => {
       class Test extends CorpusculeElement {
         public static is: string = elementName;
 
@@ -105,7 +105,7 @@ const testAttributeDecorator = () => {
       expect(el.getAttribute("idx")).toBe("2");
     });
 
-    it("should avoid re-render if attribute values are identical and pureness is not disabled", async () => {
+    it("should avoid re-render if attribute values are identical", async () => {
       const spy = jasmine.createSpy("OnRender");
 
       class Test extends CorpusculeElement {
@@ -128,31 +128,6 @@ const testAttributeDecorator = () => {
       await el.elementRendering;
 
       expect(spy).toHaveBeenCalledTimes(1);
-    });
-
-    it("should re-render if property pureness is disabled", async () => {
-      const spy = jasmine.createSpy("OnRender");
-
-      class Test extends CorpusculeElement {
-        public static is: string = elementName;
-
-        @attribute("idx", Number, {pure: false})
-        public index: number = 1;
-
-        protected [render](): TemplateResult {
-          spy();
-
-          return html`<span id="node">#${this.index}</span>`;
-        }
-      }
-
-      const el = defineAndMount(Test);
-      await el.elementRendering;
-
-      el.index = 1;
-      await el.elementRendering;
-
-      expect(spy).toHaveBeenCalledTimes(2);
     });
 
     it("should add and remove attribute if it has boolean type", async () => {
@@ -183,7 +158,31 @@ const testAttributeDecorator = () => {
       expect(el.hasAttribute("has")).not.toBeTruthy();
     });
 
-    it("should throw error, if attribute value does not fit guard", async () => {
+    // it("should throw error if default value does not fit guard", async () => {
+    //   class Test extends CorpusculeElement {
+    //     public static is: string = elementName;
+    //
+    //     @attribute("idx", Number)
+    //     public index: string = "str";
+    //
+    //     protected [render](): TemplateResult {
+    //       return html`<span id="node">#${this.index}</span>`;
+    //     }
+    //   }
+    //
+    //   let error: Error;
+    //
+    //   try {
+    //     defineAndMount(Test);
+    //   } catch (e) {
+    //     error = e;
+    //   }
+    //
+    //   // @ts-ignore
+    //   expect(error).toEqual(new Error("Value applied to \"index\" is not Number or null/undefined"));
+    // });
+
+    it("should throw error if new value does not fit guard", async () => {
       class Test extends CorpusculeElement {
         public static is: string = elementName;
 
@@ -200,7 +199,7 @@ const testAttributeDecorator = () => {
 
       expect(() => {
         (el as any).index = "string";
-      }).toThrow(new TypeError("Value applied to \"index\" is not Number"));
+      }).toThrow(new TypeError("Value applied to \"index\" is not Number or undefined"));
     });
   });
 };

@@ -4,8 +4,6 @@ import {TemplateResult} from "lit-html";
 import uuid from "uuid/v4";
 import {defineAndMount} from "../../../../test/utils";
 import CorpusculeElement, {
-  deriveStateFromProps,
-  didMount,
   didUpdate,
   render,
   shouldUpdate,
@@ -20,52 +18,20 @@ const testMounting = () => {
       elementName = `x-${uuid()}`;
     });
 
-    it("should call [deriveStateFromProps] after constructor", async () => {
-      const constructorSpy = jasmine.createSpy("constructor");
-      const deriveStateFromPropsSpy = jasmine.createSpy("[deriveStateFromProps]");
-
-      class Test extends CorpusculeElement {
-        public static readonly is: string = elementName;
-
-        protected static [deriveStateFromProps](props: unknown, states: unknown): null {
-          deriveStateFromPropsSpy(props, states);
-          expect(constructorSpy).toHaveBeenCalled();
-
-          return null;
-        }
-
-        public constructor() {
-          super();
-
-          constructorSpy();
-        }
-
-        protected [render](): TemplateResult | null {
-          return null;
-        }
-      }
-
-      const el = defineAndMount(Test);
-      await el.elementRendering;
-
-      expect(deriveStateFromPropsSpy).toHaveBeenCalled();
-      expect(deriveStateFromPropsSpy).toHaveBeenCalledWith({}, {});
-    });
-
     it("should skip calling [shouldUpdate] during mounting stage", async () => {
       const shouldUpdateSpy = jasmine.createSpy("[shouldUpdate]");
 
       class Test extends CorpusculeElement {
         public static readonly is: string = elementName;
 
-        protected static [shouldUpdate](): boolean {
+        protected [render](): TemplateResult | null {
+          return null;
+        }
+
+        protected [shouldUpdate](): boolean {
           shouldUpdateSpy();
 
           return true;
-        }
-
-        protected [render](): TemplateResult | null {
-          return null;
         }
       }
 
@@ -75,7 +41,7 @@ const testMounting = () => {
       expect(shouldUpdateSpy).not.toHaveBeenCalled();
     });
 
-    it("should render on the mounting", async () => {
+    it("should render during the mounting", async () => {
       const renderSpy = jasmine.createSpy("[render]");
 
       class Test extends CorpusculeElement {

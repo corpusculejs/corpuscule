@@ -16,5 +16,6 @@
       "vars": "all",
       "varsIgnorePattern": "^_[a-zA-Z]*$"
     }],
+    "symbol-description": "off"
   }
 }
