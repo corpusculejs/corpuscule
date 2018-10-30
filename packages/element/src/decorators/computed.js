@@ -1,78 +1,44 @@
 import assertKind from "@corpuscule/utils/lib/assertKind";
-import useInitializer from "@corpuscule/utils/lib/useInitializer";
 
 const createComputingPair = () => {
-  const cache = new WeakMap();
-  const dirty = Symbol("dirty");
+  const dirty = Symbol();
 
-  const computed = deriver => ({
-    descriptor: {get: previousGet, set: previousSet},
-    initializer,
+  const computed = ({
+    descriptor: {get, set},
     key,
     kind,
     placement,
   }) => {
-    let getCallback;
-    let set;
-    let initializerCallback;
+    assertKind("computed", "getter", kind, get && !set);
 
-    if (deriver) {
-      const isMethod = kind === "method";
-
-      assertKind(
-        "computed",
-        "field or accessor",
-        kind,
-        // eslint-disable-next-line no-extra-parens
-        kind === "field" || (isMethod && (previousGet && previousSet)),
-      );
-
-      let setCallback;
-
-      if (isMethod) {
-        getCallback = instance => deriver(previousGet.call(instance));
-        setCallback = (instance, value) => previousSet.call(instance, value);
-      } else {
-        const privateName = new WeakMap();
-
-        getCallback = instance => deriver(privateName.get(instance));
-        setCallback = (instance, value) => privateName.set(instance, value);
-
-        initializerCallback = (instance) => {
-          privateName.set(instance, initializer.call(instance));
-        };
-      }
-
-      /* eslint-disable no-shadow, no-invalid-this */
-      set = function set(value) {
-        setCallback(this, value);
-        cache.set(this, dirty);
-      };
-      /* eslint-enable no-shadow, no-invalid-this */
-    } else {
-      assertKind("computed", "getter", kind, previousGet && !previousSet);
-      getCallback = instance => previousGet.call(instance);
-    }
+    const storage = Symbol();
+    const extrasPlacement = placement === "static" ? "static" : "own";
 
     return {
       descriptor: {
         configurable: true,
         enumerable: true,
         get() {
-          let value = cache.get(this);
-
-          if (value === dirty) {
-            value = getCallback(this);
-            cache.set(this, value);
+          if (this[dirty]) {
+            this[storage] = get.call(this);
+            this[dirty] = false;
           }
 
-          return value;
+          return this[storage];
         },
-        set,
       },
-      extras: initializerCallback ? [
-        useInitializer(initializerCallback, placement === "static"),
-      ] : undefined,
+      extras: [{
+        descriptor: {},
+        key: storage,
+        kind: "field",
+        placement: extrasPlacement,
+      }, {
+        descriptor: {},
+        initializer: () => true,
+        key: dirty,
+        kind: "field",
+        placement: extrasPlacement,
+      }],
       key,
       kind,
       placement,
@@ -98,31 +64,30 @@ const createComputingPair = () => {
 
     let get;
     let set;
-    let initializerCallback;
+    let initializerDescriptor;
 
     if (isMethod) {
       get = previousGet;
       set = previousSet;
-
-      initializerCallback = (instance) => {
-        cache.set(instance, dirty);
-      };
     } else {
-      const privateName = new WeakMap();
+      const storage = Symbol();
 
       /* eslint-disable no-shadow, no-invalid-this */
       get = function get() {
-        return privateName.get(this);
+        return this[storage];
       };
 
       set = function set(value) {
-        privateName.set(this, value);
+        this[storage] = value;
       };
       /* eslint-enable no-shadow, no-invalid-this */
 
-      initializerCallback = (instance) => {
-        privateName.set(instance, initializer.call(instance));
-        cache.set(instance, dirty);
+      initializerDescriptor = {
+        descriptor: {},
+        initializer,
+        key: storage,
+        kind: "field",
+        placement: placement === "static" ? "static" : "own",
       };
     }
 
@@ -133,12 +98,10 @@ const createComputingPair = () => {
         get,
         set(value) {
           set.call(this, value);
-          cache.set(this, dirty);
+          this[dirty] = true;
         },
       },
-      extras: [
-        useInitializer(initializerCallback, placement === "static"),
-      ],
+      extras: initializerDescriptor ? [initializerDescriptor] : undefined,
       key,
       kind: "method",
       placement: placement === "own" ? "prototype" : placement,

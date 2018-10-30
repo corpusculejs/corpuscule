@@ -1,8 +1,7 @@
-import useInitializer from "@corpuscule/utils/lib/useInitializer";
 import {assertElementDecoratorsKindAndPlacement} from "../utils";
 import {invalidate as $$invalidate} from "../tokens/internal";
+import {stateChangedCallback as $stateChangedCallback} from "../tokens/lifecycle";
 import {stateChangedStage} from "../tokens/stages";
-import {oldValueRegistry} from "../getOldValue";
 
 const state = ({
   initializer,
@@ -12,27 +11,29 @@ const state = ({
 }) => {
   assertElementDecoratorsKindAndPlacement("state", kind, placement);
 
-  const privateName = new WeakMap();
+  const storage = Symbol();
 
   return {
     descriptor: {
       configurable: true,
       enumerable: true,
       get() {
-        return privateName.get(this);
+        return this[storage];
       },
       set(value) {
-        oldValueRegistry.get(this).set(key, privateName.get(this));
-        privateName.set(this, value);
+        this[$stateChangedCallback](key, this[storage], value);
+
+        this[storage] = value;
         this[$$invalidate](stateChangedStage);
       },
     },
-    extras: [
-      useInitializer((instance) => {
-        privateName.set(instance, initializer.call(instance));
-        oldValueRegistry.set(instance, new Map([[key, undefined]]));
-      }),
-    ],
+    extras: [{
+      descriptor: {},
+      initializer,
+      key: storage,
+      kind: "field",
+      placement: "own",
+    }],
     key,
     kind: "method",
     placement: "prototype",

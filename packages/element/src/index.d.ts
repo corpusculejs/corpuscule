@@ -19,8 +19,10 @@ export const createComputingPair: () => ComputingPair;
 
 export const createRoot: unique symbol;
 export const didUpdate: unique symbol;
+export const propertyChangedCallback: unique symbol;
 export const render: unique symbol;
 export const shouldUpdate: unique symbol;
+export const stateChangedCallback: unique symbol;
 
 export class UnsafeStatic {
   public readonly value: unknown;
@@ -31,8 +33,6 @@ export const unsafeStatic: (value: unknown) => UnsafeStatic;
 
 // tslint:disable-next-line:array-type readonly-array
 export const dhtml: (strings: ReadonlyArray<string>, ...values: unknown[]) => TemplateResult;
-
-export const getOldValue: <T>(instance: T, key: keyof T) => unknown;
 
 export default class CorpusculeElement extends HTMLElement implements CustomElement {
   public static readonly is: string;
@@ -54,5 +54,9 @@ export default class CorpusculeElement extends HTMLElement implements CustomElem
 
   protected [didUpdate](): void;
 
+  protected [propertyChangedCallback]<K extends keyof this, V extends this[K]>(propertyName: K, oldValue: V, newValue: V): void;
+
   protected [render](): TemplateResult | null;
+
+  protected [stateChangedCallback](propertyName: keyof this, oldValue: unknown, newValue: unknown): void;
 }

@@ -1,4 +1,3 @@
-
 export const assertElementDecoratorsKindAndPlacement = (decoratorName, kind, placement) => {
   if (kind !== "field") {
     throw new TypeError(

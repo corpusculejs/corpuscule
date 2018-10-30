@@ -1,84 +1,97 @@
-import useInitializer from "@corpuscule/utils/lib/useInitializer";
 import {assertElementDecoratorsKindAndPlacement} from "../utils";
-import {invalidate as $$invalidate} from "../tokens/internal";
-import {propsChangedStage} from "../tokens/stages";
-import {oldValueRegistry} from "../getOldValue";
+import {
+  attributeInitializers as $$attributeInitializers,
+  attributes as $$attributes,
+} from "../tokens/internal";
 
-export const attributeRegistry = new WeakMap();
-
-const parseAttributeValue = (value, guard) => {
-  switch (guard) {
-    case Boolean:
-      return value !== null;
-    case Number:
-      return Number(value);
-    default:
-      return String(value);
+const assertGuard = (guard) => {
+  if (guard !== Boolean && guard !== Number && guard !== String) {
+    throw new TypeError("Guard for @attribute should be either Number, Boolean or String");
   }
 };
 
-const toAttribute = (instance, attributeName, value) => {
-  if (typeof value === "boolean") {
-    if (value) {
-      instance.setAttribute(attributeName, "");
-    } else {
-      instance.removeAttribute(attributeName);
-    }
+const fromAttribute = (instance, name, guard) => {
+  const value = instance.getAttribute(name);
+
+  if (guard === Boolean) {
+    return value !== null;
+  }
+
+  return value !== null
+    ? guard(value)
+    : undefined;
+};
+
+const toAttribute = (instance, name, value) => {
+  if (value === undefined || value === false) {
+    instance.removeAttribute(name);
   } else {
-    instance.setAttribute(attributeName, String(value));
+    instance.setAttribute(name, value === true ? "" : value);
   }
 };
 
-const attribute = (attributeName, guard) => ({
+export const initAttributes = (instance) => {
+  for (const property of instance.constructor[$$attributeInitializers]) {
+    instance[property]();
+  }
+};
+
+const attribute = (name, guard) => ({
   initializer,
   key,
   kind,
   placement,
 }) => {
   assertElementDecoratorsKindAndPlacement("attribute", kind, placement);
+  assertGuard(guard);
 
-  const guardType = guard.name.toLowerCase();
+  const guardType = typeof guard(null);
   const check = (value) => {
-    if (typeof value !== guardType) {
-      throw new TypeError(`Value applied to "${key}" is not ${guard.name}`);
+    if (value !== undefined && typeof value !== guardType) {
+      throw new TypeError(
+        `Value applied to "${key}" is not ${guard.name} or undefined`
+      );
     }
   };
+
+  const attributeInitializer = Symbol();
 
   return {
     descriptor: {
       configurable: true,
       enumerable: true,
       get() {
-        return parseAttributeValue(this.getAttribute(attributeName), guard);
+        return fromAttribute(this, name, guard);
       },
       set(value) {
         check(value);
-
-        const oldValue = parseAttributeValue(this.getAttribute(attributeName), guard);
-
-        if (value === oldValue) {
-          return;
-        }
-
-        oldValueRegistry.get(this).set(key, oldValue);
-        toAttribute(this, attributeName, value);
-
-        this[$$invalidate](propsChangedStage);
+        toAttribute(this, name, value);
       },
     },
-    extras: [
-      useInitializer((instance) => {
-        const value = initializer.call(instance);
-        check(value);
-        toAttribute(instance, value);
-        oldValueRegistry.set(instance, new Map([[key, undefined]]));
-      }),
-    ],
+    extras: [{
+      descriptor: {},
+      initializer() {
+        return () => {
+          if (this.hasAttribute(name)) {
+            return;
+          }
+
+          const value = initializer ? initializer.call(this) : undefined;
+          check(value);
+          toAttribute(this, name, value);
+        };
+      },
+      key: attributeInitializer,
+      kind: "field",
+      placement: "own",
+    }],
     finisher(target) {
-      if (attributeRegistry.has(target)) {
-        attributeRegistry.get(target).push(attributeName);
+      if (!target[$$attributes]) {
+        target[$$attributes] = [name];
+        target[$$attributeInitializers] = [attributeInitializer];
       } else {
-        attributeRegistry.set(target, [attributeName]);
+        target[$$attributes].push(name);
+        target[$$attributeInitializers].push(attributeInitializer);
       }
     },
     key,

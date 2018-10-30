@@ -1,24 +1,21 @@
 import {render} from "lit-html";
 import schedule from "./scheduler";
 import {
+  attributes as $$attributes,
   invalidate as $$invalidate,
+  mounting as $$mounting,
   rendering as $$rendering,
   root as $$root,
-  scheduler as $$scheduler,
+  valid as $$valid,
 } from "./tokens/internal";
 import {
   createRoot as $createRoot,
   didUpdate as $didUpdate,
+  propertyChangedCallback as $propertyChangedCallback,
   render as $render,
-  shouldUpdate as $shouldUpdate,
+  stateChangedCallback as $stateChangedCallback,
 } from "./tokens/lifecycle";
-import {
-  forceStage,
-  mountingStage,
-  propsChangedStage,
-  stateChangedStage,
-} from "./tokens/stages";
-import {attributeRegistry} from "./decorators/attribute";
+import {initAttributes} from "./decorators/attribute";
 
 export {default as attribute} from "./decorators/attribute";
 export {default as createComputingPair} from "./decorators/computed";
@@ -30,49 +27,41 @@ export * from "./tokens/lifecycle";
 
 export default class CorpusculeElement extends HTMLElement {
   static get observedAttributes() {
-    return attributeRegistry.has(this)
-      ? Array.from(attributeRegistry.get(this))
-      : [];
+    return this[$$attributes];
   }
 
   get elementRendering() {
     return this[$$rendering] || Promise.resolve();
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  get [$shouldUpdate]() {
-    return true;
-  }
-
   constructor() {
     super();
 
+    this[$$mounting] = true;
     this[$$root] = this[$createRoot]();
-    this[$$scheduler] = {
-      force: false,
-      mounting: false,
-      props: false,
-      valid: true,
-    };
+    this[$$valid] = true;
   }
 
-  async attributeChangedCallback(_, oldVal, newVal) {
+  attributeChangedCallback(_, oldVal, newVal) {
     if (oldVal === newVal) {
       return;
     }
 
-    await this[$$invalidate](propsChangedStage);
+    this[$$invalidate]();
   }
 
-  async connectedCallback() {
-    await this[$$invalidate](mountingStage);
+  connectedCallback() {
+    initAttributes(this);
+    this[$$invalidate]();
   }
 
   // eslint-disable-next-line no-empty-function, class-methods-use-this
   disconnectedCallback() {}
 
   forceUpdate() {
-    return this[$$invalidate](forceStage);
+    this[$$invalidate]();
+
+    return this[$$rendering];
   }
 
   [$createRoot]() {
@@ -82,63 +71,42 @@ export default class CorpusculeElement extends HTMLElement {
   // eslint-disable-next-line no-empty-function, class-methods-use-this
   [$didUpdate]() {}
 
+  // eslint-disable-next-line no-empty-function, class-methods-use-this
+  [$propertyChangedCallback]() {}
+
   // eslint-disable-next-line class-methods-use-this
   [$render]() {
     throw new Error("[render]() is not implemented");
   }
 
-  [$$invalidate](type) {
-    const {[$$scheduler]: scheduler} = this;
+  // eslint-disable-next-line no-empty-function, class-methods-use-this
+  [$stateChangedCallback]() {}
 
-    // eslint-disable-next-line default-case
-    switch (type) {
-      case forceStage:
-        scheduler.force = true;
-        break;
-      case mountingStage:
-        scheduler.mounting = true;
-        break;
-      case propsChangedStage:
-        scheduler.props = true;
-        break;
-      case stateChangedStage:
-        break;
+  [$$invalidate]() {
+    if (!this[$$valid]) {
+      return;
     }
 
-    if (!scheduler.valid) {
-      return this[$$rendering];
-    }
-
-    scheduler.valid = false;
+    this[$$valid] = false;
 
     // Setting all component properties takes time. So it is necessary to wait until this setting
     // is over and only then component is able to update. Starting rendering after Promise.resolve()
     // allows to have single rendering even if all component properties are changed.
     this[$$rendering] = schedule(() => {
-      const shouldUpdate = !scheduler.force && !scheduler.mounting
-        ? this[$shouldUpdate]
-        : true;
+      const rendered = this[$render]();
 
-      if (shouldUpdate) {
-        const rendered = this[$render]();
-
-        if (rendered) {
-          render(rendered, this[$$root]);
-        }
+      if (rendered) {
+        render(rendered, this[$$root]);
       }
 
-      const shouldRunDidUpdate = shouldUpdate && !scheduler.mounting;
+      const shouldRunDidUpdate = !this[$$mounting];
 
-      scheduler.mounting = false;
-      scheduler.force = false;
-      scheduler.props = false;
-      scheduler.valid = true;
+      this[$$mounting] = false;
+      this[$$valid] = true;
 
       if (shouldRunDidUpdate) {
         this[$didUpdate]();
       }
     });
-
-    return this[$$rendering];
   }
 }

@@ -1,8 +1,7 @@
-import useInitializer from "@corpuscule/utils/lib/useInitializer";
 import {assertElementDecoratorsKindAndPlacement} from "../utils";
 import {invalidate as $$invalidate} from "../tokens/internal";
+import {propertyChangedCallback as $propertyChangedCallback} from "../tokens/lifecycle";
 import {propsChangedStage} from "../tokens/stages";
-import {oldValueRegistry} from "../getOldValue";
 
 const property = (guard = null) => ({
   initializer,
@@ -12,7 +11,8 @@ const property = (guard = null) => ({
 }) => {
   assertElementDecoratorsKindAndPlacement("property", kind, placement);
 
-  const privateName = new WeakMap();
+  const storage = Symbol();
+
   const check = (value) => {
     if (guard && !guard(value)) {
       throw new TypeError(`Value applied to "${key}" has wrong type`);
@@ -24,31 +24,36 @@ const property = (guard = null) => ({
       configurable: true,
       enumerable: true,
       get() {
-        return privateName.get(this);
+        return this[storage];
       },
       set(value) {
         check(value);
 
-        const oldValue = privateName.get(this);
+        const oldValue = this[storage];
 
         if (value === oldValue) {
           return;
         }
 
-        oldValueRegistry.get(this).set(key, oldValue);
-        privateName.set(this, value);
+        this[$propertyChangedCallback](key, oldValue, value);
+
+        this[storage] = value;
 
         this[$$invalidate](propsChangedStage);
       },
     },
-    extras: [
-      useInitializer((instance) => {
-        const value = initializer.call(instance);
+    extras: [{
+      descriptor: {},
+      initializer() {
+        const value = initializer ? initializer.call(this) : undefined;
         check(value);
-        privateName.set(instance, value);
-        oldValueRegistry.set(instance, new Map([[key, undefined]]));
-      }),
-    ],
+
+        return value;
+      },
+      key: storage,
+      kind: "field",
+      placement: "own",
+    }],
     key,
     kind: "method",
     placement: "prototype",
