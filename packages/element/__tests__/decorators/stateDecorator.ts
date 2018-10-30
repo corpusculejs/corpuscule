@@ -1,19 +1,19 @@
 // tslint:disable:await-promise max-classes-per-file
-import {html, TemplateResult} from "lit-html";
+import {html, TemplateResult} from 'lit-html';
 // tslint:disable-next-line:no-implicit-dependencies
-import uuid from "uuid/v4";
-import {defineAndMount} from "../../../../test/utils";
-import CorpusculeElement, {render, state} from "../../src";
+import uuid from 'uuid/v4';
+import {defineAndMount} from '../../../../test/utils';
+import CorpusculeElement, {render, state} from '../../src';
 
 const testStateDecorator = () => {
-  describe("@state", () => {
+  describe('@state', () => {
     let elementName: string;
 
     beforeEach(() => {
       elementName = `x-${uuid()}`;
     });
 
-    it("should update on state change", async () => {
+    it('should update on state change', async () => {
       class Test extends CorpusculeElement {
         public static is: string = elementName;
 
@@ -32,14 +32,14 @@ const testStateDecorator = () => {
       const el = defineAndMount(Test);
       await el.elementRendering;
 
-      const node = el.shadowRoot!.getElementById("node")!;
+      const node = el.shadowRoot!.getElementById('node')!;
 
-      expect(node.textContent).toBe("#1");
+      expect(node.textContent).toBe('#1');
 
       el.updateIndexTo(2);
       await el.elementRendering;
 
-      expect(node.textContent).toBe("#2");
+      expect(node.textContent).toBe('#2');
     });
   });
 };

@@ -1,9 +1,9 @@
-import push from "./push";
-import {handleClick as $$handleClick} from "./tokens/internal";
+import push from './push';
+import {handleClick as $$handleClick} from './tokens/internal';
 
 export default class Link extends HTMLAnchorElement {
   static get is() {
-    return "corpuscule-link";
+    return 'corpuscule-link';
   }
 
   constructor() {
@@ -12,11 +12,11 @@ export default class Link extends HTMLAnchorElement {
   }
 
   connectedCallback() {
-    this.addEventListener("click", this[$$handleClick]);
+    this.addEventListener('click', this[$$handleClick]);
   }
 
   disconnectedCallback() {
-    this.removeEventListener("click", this[$$handleClick]);
+    this.removeEventListener('click', this[$$handleClick]);
   }
 
   [$$handleClick](e) {
@@ -25,4 +25,4 @@ export default class Link extends HTMLAnchorElement {
   }
 }
 
-customElements.define(Link.is, Link, {extends: "a"});
+customElements.define(Link.is, Link, {extends: 'a'});

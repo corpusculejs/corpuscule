@@ -1,20 +1,20 @@
 // tslint:disable:await-promise max-classes-per-file
-import {TemplateResult} from "lit-html";
+import {TemplateResult} from 'lit-html';
 // tslint:disable-next-line:no-implicit-dependencies
-import uuid from "uuid/v4";
-import {defineAndMount} from "../../../../test/utils";
-import CorpusculeElement, {didUnmount, render} from "../../src";
+import uuid from 'uuid/v4';
+import {defineAndMount} from '../../../../test/utils';
+import CorpusculeElement, {didUnmount, render} from '../../src';
 
 const testUnmounting = () => {
-  describe("unmounting stage", () => {
+  describe('unmounting stage', () => {
     let elementName: string;
 
     beforeEach(() => {
       elementName = `x-${uuid()}`;
     });
 
-    it("should call [didUnmount] when component is disconnected from DOM", async () => {
-      const didUnmountSpy = jasmine.createSpy("[didUnmount]");
+    it('should call [didUnmount] when component is disconnected from DOM', async () => {
+      const didUnmountSpy = jasmine.createSpy('[didUnmount]');
 
       class Test extends CorpusculeElement {
         public static readonly is: string = elementName;

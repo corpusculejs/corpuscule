@@ -1,32 +1,32 @@
 // tslint:disable:max-classes-per-file
-import {AnyAction, Store} from "redux";
+import {AnyAction, Store} from 'redux';
 // tslint:disable-next-line:no-implicit-dependencies
-import uuid from "uuid/v4";
-import {BasicConsumer, BasicProvider, defineAndMountContext} from "../../../test/utils";
+import uuid from 'uuid/v4';
+import {BasicConsumer, BasicProvider, defineAndMountContext} from '../../../test/utils';
 import {
   connect, connected, dispatcher,
   provider,
   store,
-} from "../src";
+} from '../src';
 
-describe("@corpuscule/redux", () => {
+describe('@corpuscule/redux', () => {
   let reduxState: {test: number};
   let reduxStore: jasmine.SpyObj<Store>;
   let unsubscribe: jasmine.Spy;
 
   beforeEach(() => {
     reduxState = {test: 10};
-    unsubscribe = jasmine.createSpy("unsubscribe");
-    reduxStore = jasmine.createSpyObj("store", ["dispatch", "getState", "subscribe"]);
+    unsubscribe = jasmine.createSpy('unsubscribe');
+    reduxStore = jasmine.createSpyObj('store', ['dispatch', 'getState', 'subscribe']);
     reduxStore.subscribe.and.returnValue(unsubscribe);
     reduxStore.getState.and.callFake(() => reduxState);
   });
 
   afterEach(() => {
-    document.body.innerHTML = ""; // tslint:disable-line:no-inner-html
+    document.body.innerHTML = ''; // tslint:disable-line:no-inner-html
   });
 
-  it("should subscribe to store", () => {
+  it('should subscribe to store', () => {
     @provider
     class Provider extends BasicProvider {
       public static is: string = `x-${uuid()}`;
@@ -43,7 +43,7 @@ describe("@corpuscule/redux", () => {
     expect(reduxStore.subscribe).toHaveBeenCalled();
   });
 
-  it("should allow to declare properties bound with store", () => {
+  it('should allow to declare properties bound with store', () => {
     @provider
     class Provider extends BasicProvider {
       public static is: string = `x-${uuid()}`;
@@ -65,7 +65,7 @@ describe("@corpuscule/redux", () => {
     expect(c.test).toBe(10);
   });
 
-  it("should update properties when store is updated", () => {
+  it('should update properties when store is updated', () => {
     @provider
     class Provider extends BasicProvider {
       public static is: string = `x-${uuid()}`;
@@ -90,7 +90,7 @@ describe("@corpuscule/redux", () => {
     expect(c.test).toBe(20);
   });
 
-  it("should unsubscribe from store before subscribing to a new one", () => {
+  it('should unsubscribe from store before subscribing to a new one', () => {
     @provider
     class Provider extends BasicProvider {
       public static is: string = `x-${uuid()}`;
@@ -103,7 +103,7 @@ describe("@corpuscule/redux", () => {
       public static is: string = `x-${uuid()}`;
     }
 
-    const nextStore = jasmine.createSpyObj("nextStore", ["subscribe"]);
+    const nextStore = jasmine.createSpyObj('nextStore', ['subscribe']);
 
     const [p] = defineAndMountContext(Provider, Connected);
 
@@ -115,10 +115,10 @@ describe("@corpuscule/redux", () => {
     expect(nextStore.subscribe).toHaveBeenCalled();
   });
 
-  it("should allow to define dispatchers", () => {
+  it('should allow to define dispatchers', () => {
     const externalActionCreator = (arg: number): AnyAction => ({
       arg,
-      type: "external",
+      type: 'external',
     });
 
     @provider
@@ -135,14 +135,14 @@ describe("@corpuscule/redux", () => {
       @dispatcher
       public external: typeof externalActionCreator = externalActionCreator;
 
-      private str: string = "test";
+      private str: string = 'test';
 
       @dispatcher
       public test(num: number): AnyAction {
         return {
           num,
           str: this.str,
-          type: "test",
+          type: 'test',
         };
       }
     }
@@ -154,13 +154,13 @@ describe("@corpuscule/redux", () => {
 
     expect(reduxStore.dispatch).toHaveBeenCalledWith({
       arg: 20,
-      type: "external",
+      type: 'external',
     });
 
     expect(reduxStore.dispatch).toHaveBeenCalledWith({
       num: 10,
-      str: "test",
-      type: "test",
+      str: 'test',
+      type: 'test',
     });
   });
 });
