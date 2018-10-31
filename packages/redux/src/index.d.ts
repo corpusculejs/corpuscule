@@ -1,4 +1,4 @@
-import createContext from "@corpuscule/context";
+import createContext from '@corpuscule/context';
 
 export type PropertyGetter<S> = (state: S) => any;
 
@@ -7,5 +7,5 @@ export const dispatcher: PropertyDecorator;
 
 export const connect: ClassDecorator;
 
-export const provider: ReturnType<typeof createContext>["provider"];
+export const provider: ReturnType<typeof createContext>['provider'];
 export const store: unique symbol;

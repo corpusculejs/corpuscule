@@ -1,6 +1,6 @@
-import createContext from "@corpuscule/context";
-import {CustomElement} from "@corpuscule/typings";
-import UniversalRouter, {Options, Route} from "universal-router";
+import createContext from '@corpuscule/context';
+import {CustomElement} from '@corpuscule/typings';
+import UniversalRouter, {Options, Route} from 'universal-router';
 
 export const layout: unique symbol;
 export const resolve: unique symbol;
@@ -8,7 +8,7 @@ export const resolve: unique symbol;
 export const createRouter: (routes: Route | ReadonlyArray<Route>, options?: Options) => UniversalRouter;
 
 export class Link extends HTMLAnchorElement implements CustomElement {
-  public static readonly is: "corpuscule-link";
+  public static readonly is: 'corpuscule-link';
 
   public connectedCallback(): void;
 
@@ -17,7 +17,7 @@ export class Link extends HTMLAnchorElement implements CustomElement {
 
 export const push: (path: string, title?: string) => void;
 
-export const provider: ReturnType<typeof createContext>["provider"];
+export const provider: ReturnType<typeof createContext>['provider'];
 export const router: unique symbol;
 
 export interface RouterOutlet<T> {

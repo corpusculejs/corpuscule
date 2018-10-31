@@ -1,16 +1,16 @@
 // tslint:disable:max-classes-per-file
 // tslint:disable-next-line:no-implicit-dependencies
-import uuid from "uuid/v4";
-import {BasicConsumer, BasicProvider, defineAndMountContext} from "../../../test/utils";
-import createContext from "../src";
+import uuid from 'uuid/v4';
+import {BasicConsumer, BasicProvider, defineAndMountContext} from '../../../test/utils';
+import createContext from '../src';
 
-describe("@corpuscule/context", () => {
+describe('@corpuscule/context', () => {
   afterEach(() => {
-    document.body.innerHTML = ""; // tslint:disable-line:no-inner-html
+    document.body.innerHTML = ''; // tslint:disable-line:no-inner-html
   });
 
-  describe("createContext", () => {
-    it("should create context", () => {
+  describe('createContext', () => {
+    it('should create context', () => {
       const {
         consumer,
         contextValue,
@@ -37,7 +37,7 @@ describe("@corpuscule/context", () => {
       expect(c[contextValue]).toBe(2);
     });
 
-    it("should provide context for all consumers", () => {
+    it('should provide context for all consumers', () => {
       const {
         consumer,
         contextValue,
@@ -72,7 +72,7 @@ describe("@corpuscule/context", () => {
       expect(c2[contextValue]).toBe(2);
     });
 
-    it("should allow to use default value for context", () => {
+    it('should allow to use default value for context', () => {
       const {
         consumer,
         contextValue,
@@ -96,7 +96,7 @@ describe("@corpuscule/context", () => {
       expect(c[contextValue]).toBe(5);
     });
 
-    it("should allow to set value dynamically", () => {
+    it('should allow to set value dynamically', () => {
       const {
         consumer,
         contextValue,
@@ -128,8 +128,8 @@ describe("@corpuscule/context", () => {
     });
 
     it("should call connectedCallback() and disconnectedCallback() of user's class", () => {
-      const connectedSpy = jasmine.createSpy("onConnect");
-      const disconnectedSpy = jasmine.createSpy("onDisconnect");
+      const connectedSpy = jasmine.createSpy('onConnect');
+      const disconnectedSpy = jasmine.createSpy('onDisconnect');
       const {
         consumer,
         contextValue,
@@ -176,7 +176,7 @@ describe("@corpuscule/context", () => {
       expect(disconnectedSpy).toHaveBeenCalledTimes(2);
     });
 
-    it("should stop providing value to disconnected consumers", () => {
+    it('should stop providing value to disconnected consumers', () => {
       const {
         consumer,
         contextValue,

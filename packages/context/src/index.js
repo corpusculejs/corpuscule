@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
-import assertKind from "@corpuscule/utils/lib/assertKind";
-import getSuperMethod from "@corpuscule/utils/lib/getSuperMethod";
+import assertKind from '@corpuscule/utils/lib/assertKind';
+import getSuperMethod from '@corpuscule/utils/lib/getSuperMethod';
 
 const randomString = () => {
   const arr = new Uint32Array(2);
@@ -9,23 +9,23 @@ const randomString = () => {
   return `${rnd1}${rnd2}`;
 };
 
-const connectedCallbackKey = "connectedCallback";
-const disconnectedCallbackKey = "disconnectedCallback";
+const connectedCallbackKey = 'connectedCallback';
+const disconnectedCallbackKey = 'disconnectedCallback';
 
 const createContext = (defaultValue) => {
   const eventName = randomString();
 
-  const $$consume = Symbol("consume");
-  const $$consumers = Symbol("consumers");
-  const $$subscribe = Symbol("subscribe");
-  const $$unsubscribe = Symbol("unsubscribe");
-  const $$value = Symbol("value");
+  const $$consume = Symbol();
+  const $$consumers = Symbol();
+  const $$subscribe = Symbol();
+  const $$unsubscribe = Symbol();
+  const $$value = Symbol();
 
-  const providingValue = Symbol("providingValue");
-  const contextValue = Symbol("contextValue");
+  const providingValue = Symbol('providingValue');
+  const contextValue = Symbol('contextValue');
 
   const provider = ({elements, kind}) => {
-    assertKind("provider", "class", kind);
+    assertKind('provider', 'class', kind);
 
     const providingValueMethod = elements.find(({key}) => key === providingValue);
 
@@ -52,8 +52,8 @@ const createContext = (defaultValue) => {
           },
         },
         key: connectedCallbackKey,
-        kind: "method",
-        placement: "prototype",
+        kind: 'method',
+        placement: 'prototype',
       }, {
         descriptor: {
           configurable: true,
@@ -64,8 +64,8 @@ const createContext = (defaultValue) => {
           },
         },
         key: disconnectedCallbackKey,
-        kind: "method",
-        placement: "prototype",
+        kind: 'method',
+        placement: 'prototype',
       }, {
         descriptor: {
           configurable: true,
@@ -82,16 +82,16 @@ const createContext = (defaultValue) => {
           },
         },
         key: providingValue,
-        kind: "method",
-        placement: "prototype",
+        kind: 'method',
+        placement: 'prototype',
       }, {
         descriptor: {
           writable: true,
         },
         initializer: () => [],
         key: $$consumers,
-        kind: "field",
-        placement: "own",
+        kind: 'field',
+        placement: 'own',
       }, {
         descriptor: {
           value(event) {
@@ -105,8 +105,8 @@ const createContext = (defaultValue) => {
           },
         },
         key: $$subscribe,
-        kind: "method",
-        placement: "own",
+        kind: 'method',
+        placement: 'own',
       }, {
         descriptor: {},
         initializer() {
@@ -115,23 +115,23 @@ const createContext = (defaultValue) => {
           };
         },
         key: $$unsubscribe,
-        kind: "field",
-        placement: "own",
+        kind: 'field',
+        placement: 'own',
       }, {
         descriptor: {
           writable: true,
         },
         initializer: () => defaultValue,
         key: $$value,
-        kind: "field",
-        placement: "own",
+        kind: 'field',
+        placement: 'own',
       }],
       kind,
     };
   };
 
   const consumer = ({elements, kind}) => {
-    assertKind("consumer", "class", kind);
+    assertKind('consumer', 'class', kind);
 
     const superConnectedCallback = getSuperMethod(connectedCallbackKey, elements);
     const superDisconnectedCallback = getSuperMethod(disconnectedCallbackKey, elements);
@@ -165,8 +165,8 @@ const createContext = (defaultValue) => {
           },
         },
         key: connectedCallbackKey,
-        kind: "method",
-        placement: "prototype",
+        kind: 'method',
+        placement: 'prototype',
       }, {
         descriptor: {
           configurable: true,
@@ -180,8 +180,8 @@ const createContext = (defaultValue) => {
           },
         },
         key: disconnectedCallbackKey,
-        kind: "method",
-        placement: "prototype",
+        kind: 'method',
+        placement: 'prototype',
       }, {
         descriptor: {},
         initializer() {
@@ -190,8 +190,8 @@ const createContext = (defaultValue) => {
           };
         },
         key: $$consume,
-        kind: "field",
-        placement: "own",
+        kind: 'field',
+        placement: 'own',
       }],
       kind,
     };

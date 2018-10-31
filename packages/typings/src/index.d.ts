@@ -15,4 +15,4 @@ export interface CustomElementClass<T> {
   new (...args: any[]): CustomElement & T; // tslint:disable-line:readonly-array
 }
 
-export type UncertainCustomElementClass<T> = CustomElementClass<T> | Omit<CustomElementClass<T>, "is">;
+export type UncertainCustomElementClass<T> = CustomElementClass<T> | Omit<CustomElementClass<T>, 'is'>;

@@ -1,4 +1,4 @@
-export const forceStage = Symbol("forceStage");
-export const mountingStage = Symbol("mountingStage");
-export const propsChangedStage = Symbol("propsChangedStage");
-export const stateChangedStage = Symbol("stateChangedStage");
+export const forceStage = Symbol();
+export const mountingStage = Symbol();
+export const propsChangedStage = Symbol();
+export const stateChangedStage = Symbol();

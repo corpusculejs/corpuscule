@@ -1,20 +1,20 @@
-import {TemplateResult} from "lit-html";
+import {TemplateResult} from 'lit-html';
 
 // tslint:disable:max-classes-per-file
 // tslint:disable-next-line:no-implicit-dependencies
-import uuid from "uuid/v4";
-import {defineAndMount} from "../../../../test/utils";
-import CorpusculeElement, {dhtml, element, render} from "../../src";
+import uuid from 'uuid/v4';
+import {defineAndMount} from '../../../../test/utils';
+import CorpusculeElement, {dhtml, element, render} from '../../src';
 
 const testElementDecorator = () => {
-  describe("@element", () => {
+  describe('@element', () => {
     let elementName: string;
 
     beforeEach(() => {
       elementName = `x-${uuid()}`;
     });
 
-    it("should define custom element", () => {
+    it('should define custom element', () => {
       @element(elementName)
       class Test extends HTMLElement {
       }
@@ -22,7 +22,7 @@ const testElementDecorator = () => {
       expect(customElements.get(elementName)).toBe(Test);
     });
 
-    it("should add to the class `is` static getter that contains element name", () => {
+    it('should add to the class `is` static getter that contains element name', () => {
       @element(elementName)
       class Test extends HTMLElement {
         public static readonly is: string;
@@ -31,7 +31,7 @@ const testElementDecorator = () => {
       expect(Test.is).toBe(elementName);
     });
 
-    it("should add to the class `tag` static getter that contains UnsafeStatic value for element", async () => {
+    it('should add to the class `tag` static getter that contains UnsafeStatic value for element', async () => {
       @element(`x-${uuid()}`)
       class Test1 extends CorpusculeElement {
         protected [render](): TemplateResult {
@@ -52,7 +52,7 @@ const testElementDecorator = () => {
 
       const inner: Test1 | null = el.shadowRoot!.querySelector(Test1.is);
       expect(inner).toEqual(jasmine.any(Test1));
-      expect(inner!.shadowRoot!.textContent).toContain("Test content");
+      expect(inner!.shadowRoot!.textContent).toContain('Test content');
     });
   });
 };

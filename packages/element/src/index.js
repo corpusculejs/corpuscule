@@ -1,10 +1,10 @@
-import {render} from "lit-html";
+import {render} from 'lit-html';
 import {
   attributeRegistry,
   propertyInitializerRegistry,
   stateInitializerRegistry,
-} from "./decorators";
-import schedule from "./scheduler";
+} from './decorators';
+import schedule from './scheduler';
 import {
   initializeValues as $$initializeValues,
   invalidate as $$invalidate,
@@ -16,7 +16,7 @@ import {
   root as $$root,
   scheduler as $$scheduler,
   states as $$states,
-} from "./tokens/internal";
+} from './tokens/internal';
 import {
   createRoot as $createRoot,
   didMount as $didMount,
@@ -25,21 +25,21 @@ import {
   deriveStateFromProps as $deriveStateFromProps,
   render as $render,
   shouldUpdate as $shouldUpdate,
-} from "./tokens/lifecycle";
+} from './tokens/lifecycle';
 import {
   forceStage,
   mountingStage,
   propsChangedStage,
   stateChangedStage,
-} from "./tokens/stages";
+} from './tokens/stages';
 import {
   parseAttributeValue,
   toAttribute,
-} from "./utils";
+} from './utils';
 
-export {attribute, element, property, state} from "./decorators";
-export {default as dhtml, unsafeStatic, UnsafeStatic} from "./dhtml";
-export * from "./tokens/lifecycle";
+export {attribute, element, property, state} from './decorators';
+export {default as dhtml, unsafeStatic, UnsafeStatic} from './dhtml';
+export * from './tokens/lifecycle';
 
 export default class CorpusculeElement extends HTMLElement {
   static get observedAttributes() {
@@ -122,7 +122,7 @@ export default class CorpusculeElement extends HTMLElement {
   }
 
   [$createRoot]() {
-    return this.attachShadow({mode: "open"});
+    return this.attachShadow({mode: 'open'});
   }
 
   // eslint-disable-next-line no-empty-function, class-methods-use-this
@@ -139,7 +139,7 @@ export default class CorpusculeElement extends HTMLElement {
 
   // eslint-disable-next-line class-methods-use-this
   [$render]() {
-    throw new Error("[render]() is not implemented");
+    throw new Error('[render]() is not implemented');
   }
 
   [$$invalidate](type) {

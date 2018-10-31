@@ -12,9 +12,9 @@ export const parseAttributeValue = (value, guard) => {
 };
 
 export const toAttribute = (instance, attributeName, value) => {
-  if (typeof value === "boolean") {
+  if (typeof value === 'boolean') {
     if (value) {
-      instance.setAttribute(attributeName, "");
+      instance.setAttribute(attributeName, '');
     } else {
       instance.removeAttribute(attributeName);
     }

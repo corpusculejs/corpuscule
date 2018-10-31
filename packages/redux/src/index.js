@@ -1,12 +1,12 @@
-import createContext from "@corpuscule/context";
+import createContext from '@corpuscule/context';
 import {
   context as $$context,
   subscribe as $$subscribe,
   unsubscribe as $$unsubscribe,
   update as $$update,
-} from "./tokens/internal";
-import {connectedRegistry} from "./decorators";
-import getSuperMethod from "@corpuscule/utils/lib/getSuperMethod";
+} from './tokens/internal';
+import {connectedRegistry} from './decorators';
+import getSuperMethod from '@corpuscule/utils/lib/getSuperMethod';
 
 const {
   consumer,
@@ -23,12 +23,12 @@ export {
 export {
   connected,
   dispatcher,
-} from "./decorators";
+} from './decorators';
 
-const disconnectedCallbackKey = "disconnectedCallback";
+const disconnectedCallbackKey = 'disconnectedCallback';
 
 export const connect = (classDescriptor) => {
-  if (classDescriptor.kind !== "class") {
+  if (classDescriptor.kind !== 'class') {
     throw new TypeError(`@connect can be applied only to class, not to ${classDescriptor.kind}`);
   }
 
@@ -50,8 +50,8 @@ export const connect = (classDescriptor) => {
         },
       },
       key: disconnectedCallbackKey,
-      kind: "method",
-      placement: "prototype",
+      kind: 'method',
+      placement: 'prototype',
     }, {
       descriptor: {
         set(value) {
@@ -65,8 +65,8 @@ export const connect = (classDescriptor) => {
         },
       },
       key: contextValue,
-      kind: "method",
-      placement: "prototype",
+      kind: 'method',
+      placement: 'prototype',
     }, {
       descriptor: {
         value() {
@@ -78,8 +78,8 @@ export const connect = (classDescriptor) => {
         },
       },
       key: $$subscribe,
-      kind: "method",
-      placement: "prototype",
+      kind: 'method',
+      placement: 'prototype',
     }, {
       descriptor: {
         value({getState}) {
@@ -99,8 +99,8 @@ export const connect = (classDescriptor) => {
         },
       },
       key: $$update,
-      kind: "method",
-      placement: "prototype",
+      kind: 'method',
+      placement: 'prototype',
     }],
     kind,
   };

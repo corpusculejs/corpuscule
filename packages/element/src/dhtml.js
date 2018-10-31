@@ -1,5 +1,5 @@
 /* eslint-disable max-depth */
-import {html} from "lit-html";
+import {html} from 'lit-html';
 
 export class UnsafeStatic {
   constructor(value) {

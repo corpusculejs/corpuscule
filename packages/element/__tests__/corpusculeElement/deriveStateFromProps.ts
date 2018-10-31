@@ -1,20 +1,20 @@
 // tslint:disable:await-promise max-classes-per-file
-import {TemplateResult} from "lit-html";
+import {TemplateResult} from 'lit-html';
 // tslint:disable-next-line:no-implicit-dependencies
-import uuid from "uuid/v4";
-import {defineAndMount} from "../../../../test/utils";
-import CorpusculeElement, {deriveStateFromProps, property, render, shouldUpdate, state} from "../../src";
+import uuid from 'uuid/v4';
+import {defineAndMount} from '../../../../test/utils';
+import CorpusculeElement, {deriveStateFromProps, property, render, shouldUpdate, state} from '../../src';
 
 const testDeriveStateFromProps = () => {
-  describe("[deriveStateFromProps]", () => {
+  describe('[deriveStateFromProps]', () => {
     let elementName: string;
 
     beforeEach(() => {
       elementName = `x-${uuid()}`;
     });
 
-    it("should provide changed state for [shouldUpdate]", async () => {
-      const shouldUpdateSpy = jasmine.createSpy("[shouldUpdate]");
+    it('should provide changed state for [shouldUpdate]', async () => {
+      const shouldUpdateSpy = jasmine.createSpy('[shouldUpdate]');
 
       class Test extends CorpusculeElement {
         public static readonly is: string = elementName;
@@ -59,8 +59,8 @@ const testDeriveStateFromProps = () => {
       );
     });
 
-    it("should provide changed state for [render]", async () => {
-      const renderSpy = jasmine.createSpy("[renderSpy]");
+    it('should provide changed state for [render]', async () => {
+      const renderSpy = jasmine.createSpy('[renderSpy]');
 
       class Test extends CorpusculeElement {
         public static readonly is: string = elementName;
@@ -90,8 +90,8 @@ const testDeriveStateFromProps = () => {
       expect(renderSpy).toHaveBeenCalledWith(3, 9);
     });
 
-    it("should be able to preserve previous state by returning null", async () => {
-      const shouldUpdateSpy = jasmine.createSpy("[shouldUpdate]");
+    it('should be able to preserve previous state by returning null', async () => {
+      const shouldUpdateSpy = jasmine.createSpy('[shouldUpdate]');
 
       class Test extends CorpusculeElement {
         public static readonly is: string = elementName;
@@ -135,8 +135,8 @@ const testDeriveStateFromProps = () => {
       expect(shouldUpdateSpy).toHaveBeenCalled();
     });
 
-    it("should be able to return partial state", async () => {
-      const shouldUpdateSpy = jasmine.createSpy("[shouldUpdate]");
+    it('should be able to return partial state', async () => {
+      const shouldUpdateSpy = jasmine.createSpy('[shouldUpdate]');
 
       class Test extends CorpusculeElement {
         public static readonly is: string = elementName;

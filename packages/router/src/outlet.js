@@ -1,11 +1,11 @@
-import createContext from "@corpuscule/context";
-import assertKind from "@corpuscule/utils/lib/assertKind";
-import getSuperMethod from "@corpuscule/utils/lib/getSuperMethod";
+import createContext from '@corpuscule/context';
+import assertKind from '@corpuscule/utils/lib/assertKind';
+import getSuperMethod from '@corpuscule/utils/lib/getSuperMethod';
 import {
   resolving as $$resolving,
   updateRoute as $$updateRoute,
-} from "./tokens/internal";
-import {layout, resolve} from "./tokens/lifecycle";
+} from './tokens/internal';
+import {layout, resolve} from './tokens/lifecycle';
 
 const {
   consumer,
@@ -19,11 +19,11 @@ export {
   router,
 };
 
-const connectedCallbackKey = "connectedCallback";
-const disconnectedCallbackKey = "disconnectedCallback";
+const connectedCallbackKey = 'connectedCallback';
+const disconnectedCallbackKey = 'disconnectedCallback';
 
 const outlet = routes => (classDescriptor) => {
-  assertKind("outlet", "class", classDescriptor.kind);
+  assertKind('outlet', 'class', classDescriptor.kind);
 
   const {elements, kind} = consumer(classDescriptor);
 
@@ -38,7 +38,7 @@ const outlet = routes => (classDescriptor) => {
       descriptor: {
         configurable: true,
         value() {
-          window.addEventListener("popstate", this[$$updateRoute]);
+          window.addEventListener('popstate', this[$$updateRoute]);
 
           superConnectedCallback(this);
 
@@ -46,28 +46,28 @@ const outlet = routes => (classDescriptor) => {
         },
       },
       key: connectedCallbackKey,
-      kind: "method",
-      placement: "prototype",
+      kind: 'method',
+      placement: 'prototype',
     }, {
       descriptor: {
         configurable: true,
         value() {
-          window.removeEventListener("popstate", this[$$updateRoute]);
+          window.removeEventListener('popstate', this[$$updateRoute]);
           superDisconnectedCallback(this);
         },
       },
       key: disconnectedCallbackKey,
-      kind: "method",
-      placement: "prototype",
+      kind: 'method',
+      placement: 'prototype',
     }, {
       descriptor: {
         get() {
           return this[$$resolving];
         },
       },
-      key: "routeResolving",
-      kind: "method",
-      placement: "prototype",
+      key: 'routeResolving',
+      kind: 'method',
+      placement: 'prototype',
     }, {
       descriptor: {
         configurable: true,
@@ -76,15 +76,15 @@ const outlet = routes => (classDescriptor) => {
         },
       },
       key: resolve,
-      kind: "method",
-      placement: "prototype",
+      kind: 'method',
+      placement: 'prototype',
     }, {
       descriptor: {},
       initializer() {
         return (pathOrEvent) => {
-          const path = typeof pathOrEvent === "string"
+          const path = typeof pathOrEvent === 'string'
             ? pathOrEvent
-            : pathOrEvent.state || "";
+            : pathOrEvent.state || '';
 
           const iter = this[resolve](path);
 
@@ -103,8 +103,8 @@ const outlet = routes => (classDescriptor) => {
         };
       },
       key: $$updateRoute,
-      kind: "field",
-      placement: "own",
+      kind: 'field',
+      placement: 'own',
     }],
     kind,
   };

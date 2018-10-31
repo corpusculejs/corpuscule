@@ -1,14 +1,14 @@
-import assertKind from "@corpuscule/utils/lib/assertKind";
-import {html} from "lit-html";
-import {style} from "./tokens";
+import assertKind from '@corpuscule/utils/lib/assertKind';
+import {html} from 'lit-html';
+import {style} from './tokens';
 
-export {link} from "./utils";
+export {link} from './utils';
 export {style};
 
 const stylePattern = /[{}]/;
 
 const styles = (...pathsOrStyles) => ({elements, kind}) => {
-  assertKind("styles", "class", kind);
+  assertKind('styles', 'class', kind);
 
   return {
     elements: [...elements.filter(({key}) => key !== style), {
@@ -25,8 +25,8 @@ const styles = (...pathsOrStyles) => ({elements, kind}) => {
         }`;
       },
       key: style,
-      kind: "field",
-      placement: "static",
+      kind: 'field',
+      placement: 'static',
     }],
     kind,
   };

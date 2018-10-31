@@ -7,14 +7,6 @@
   },
   "rules": {
     "callback-return": "off",
-    "global-require": "off",
-    "no-unused-vars": ["error", {
-      "args": "all",
-      "argsIgnorePattern": "^_[a-zA-Z]*$",
-      "caughtErrors": "all",
-      "caughtErrorsIgnorePattern": "^_[a-zA-Z]*$",
-      "vars": "all",
-      "varsIgnorePattern": "^_[a-zA-Z]*$"
-    }],
+    "global-require": "off"
   }
 }

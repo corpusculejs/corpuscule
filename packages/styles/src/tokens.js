@@ -1,1 +1,1 @@
-export const style = Symbol("style");
+export const style = Symbol('style');

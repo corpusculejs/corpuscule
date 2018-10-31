@@ -1,8 +1,8 @@
 // tslint:disable:await-promise max-classes-per-file
-import {TemplateResult} from "lit-html";
+import {TemplateResult} from 'lit-html';
 // tslint:disable-next-line:no-implicit-dependencies
-import uuid from "uuid/v4";
-import {defineAndMount} from "../../../../test/utils";
+import uuid from 'uuid/v4';
+import {defineAndMount} from '../../../../test/utils';
 import CorpusculeElement, {
   deriveStateFromProps,
   didMount,
@@ -10,19 +10,19 @@ import CorpusculeElement, {
   render,
   shouldUpdate,
   state,
-} from "../../src";
+} from '../../src';
 
 const testMounting = () => {
-  describe("mounting stage", () => {
+  describe('mounting stage', () => {
     let elementName: string;
 
     beforeEach(() => {
       elementName = `x-${uuid()}`;
     });
 
-    it("should call [deriveStateFromProps] after constructor", async () => {
-      const constructorSpy = jasmine.createSpy("constructor");
-      const deriveStateFromPropsSpy = jasmine.createSpy("[deriveStateFromProps]");
+    it('should call [deriveStateFromProps] after constructor', async () => {
+      const constructorSpy = jasmine.createSpy('constructor');
+      const deriveStateFromPropsSpy = jasmine.createSpy('[deriveStateFromProps]');
 
       class Test extends CorpusculeElement {
         public static readonly is: string = elementName;
@@ -52,8 +52,8 @@ const testMounting = () => {
       expect(deriveStateFromPropsSpy).toHaveBeenCalledWith({}, {});
     });
 
-    it("should skip calling [shouldUpdate] during mounting stage", async () => {
-      const shouldUpdateSpy = jasmine.createSpy("[shouldUpdate]");
+    it('should skip calling [shouldUpdate] during mounting stage', async () => {
+      const shouldUpdateSpy = jasmine.createSpy('[shouldUpdate]');
 
       class Test extends CorpusculeElement {
         public static readonly is: string = elementName;
@@ -75,8 +75,8 @@ const testMounting = () => {
       expect(shouldUpdateSpy).not.toHaveBeenCalled();
     });
 
-    it("should render on the mounting", async () => {
-      const renderSpy = jasmine.createSpy("[render]");
+    it('should render on the mounting', async () => {
+      const renderSpy = jasmine.createSpy('[render]');
 
       class Test extends CorpusculeElement {
         public static readonly is: string = elementName;
@@ -94,9 +94,9 @@ const testMounting = () => {
       expect(renderSpy).toHaveBeenCalled();
     });
 
-    it("should call [didMount] on mounting", async () => {
-      const renderSpy = jasmine.createSpy("[render]");
-      const didMountSpy = jasmine.createSpy("[didMount]");
+    it('should call [didMount] on mounting', async () => {
+      const renderSpy = jasmine.createSpy('[render]');
+      const didMountSpy = jasmine.createSpy('[didMount]');
 
       class Test extends CorpusculeElement {
         public static readonly is: string = elementName;
@@ -119,10 +119,10 @@ const testMounting = () => {
       expect(didMountSpy).toHaveBeenCalled();
     });
 
-    it("should start new re-rendering cycle if [didMount] changes state", async () => {
-      const renderSpy = jasmine.createSpy("[render]");
-      const didMountSpy = jasmine.createSpy("[didMount]");
-      const didUpdateSpy = jasmine.createSpy("[didUpdate]");
+    it('should start new re-rendering cycle if [didMount] changes state', async () => {
+      const renderSpy = jasmine.createSpy('[render]');
+      const didMountSpy = jasmine.createSpy('[didMount]');
+      const didUpdateSpy = jasmine.createSpy('[didUpdate]');
 
       class Test extends CorpusculeElement {
         public static readonly is: string = elementName;
@@ -156,8 +156,8 @@ const testMounting = () => {
       expect(didUpdateSpy).toHaveBeenCalledTimes(1);
     });
 
-    it("should avoid calling [didUpdate] during mounting", async () => {
-      const didUpdateSpy = jasmine.createSpy("[didMount]");
+    it('should avoid calling [didUpdate] during mounting', async () => {
+      const didUpdateSpy = jasmine.createSpy('[didMount]');
 
       class Test extends CorpusculeElement {
         public static readonly is: string = elementName;
