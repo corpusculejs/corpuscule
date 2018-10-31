@@ -15,11 +15,11 @@ const disconnectedCallbackKey = 'disconnectedCallback';
 const createContext = (defaultValue) => {
   const eventName = randomString();
 
-  const $$consume = Symbol('consume');
-  const $$consumers = Symbol('consumers');
-  const $$subscribe = Symbol('subscribe');
-  const $$unsubscribe = Symbol('unsubscribe');
-  const $$value = Symbol('value');
+  const $$consume = Symbol();
+  const $$consumers = Symbol();
+  const $$subscribe = Symbol();
+  const $$unsubscribe = Symbol();
+  const $$value = Symbol();
 
   const providingValue = Symbol('providingValue');
   const contextValue = Symbol('contextValue');
