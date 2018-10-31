@@ -1,21 +1,21 @@
 // tslint:disable:await-promise max-classes-per-file
-import {html, TemplateResult} from "lit-html";
+import {html, TemplateResult} from 'lit-html';
 // tslint:disable-next-line:no-implicit-dependencies
-import uuid from "uuid/v4";
-import {defineAndMount} from "../../../../test/utils";
+import uuid from 'uuid/v4';
+import {defineAndMount} from '../../../../test/utils';
 import CorpusculeElement, {
   attribute,
   didUpdate, property,
   render,
   state,
-} from "../../src";
-import testAttributeDecorator from "./attributeDecorator";
-import testElementDecorator from "./elementDecorator";
-import testPropertyDecorator from "./propertyDecorator";
-import testStateDecorator from "./stateDecorator";
+} from '../../src';
+import testAttributeDecorator from './attributeDecorator';
+import testElementDecorator from './elementDecorator';
+import testPropertyDecorator from './propertyDecorator';
+import testStateDecorator from './stateDecorator';
 
 const testDecorators = () => {
-  describe("decorators", () => {
+  describe('decorators', () => {
     let elementName: string;
 
     beforeEach(() => {
@@ -27,20 +27,20 @@ const testDecorators = () => {
     testPropertyDecorator();
     testStateDecorator();
 
-    it("should call [didUpdate]() with proper prevProperties and prevState", async () => {
-      const spy = jasmine.createSpy("OnUpdate");
+    it('should call [didUpdate]() with proper prevProperties and prevState', async () => {
+      const spy = jasmine.createSpy('OnUpdate');
 
       class Test extends CorpusculeElement {
         public static is: string = elementName;
 
-        @attribute("attr", String)
-        public attr: string = "zeroAttr";
+        @attribute('attr', String)
+        public attr: string = 'zeroAttr';
 
         @property()
-        public prop: string = "zeroProp";
+        public prop: string = 'zeroProp';
 
         // @ts-ignore
-        @state private state: string = "zeroState"; // tslint:disable-line:no-unused-variable
+        @state private state: string = 'zeroState'; // tslint:disable-line:no-unused-variable
 
         public updateState(str: string): void {
           this.state = str;
@@ -58,45 +58,45 @@ const testDecorators = () => {
       const el = defineAndMount(Test);
       await el.elementRendering;
 
-      el.setAttribute("attr", "oneAttr");
+      el.setAttribute('attr', 'oneAttr');
       await el.elementRendering;
 
       expect(spy)
         .toHaveBeenCalledWith({
-          attr: "zeroAttr",
-          prop: "zeroProp",
+          attr: 'zeroAttr',
+          prop: 'zeroProp',
         }, {
-          state: "zeroState",
+          state: 'zeroState',
         });
 
-      el.prop = "oneProp";
+      el.prop = 'oneProp';
       await el.elementRendering;
 
       expect(spy).toHaveBeenCalledWith({
-        attr: "oneAttr",
-        prop: "zeroProp",
+        attr: 'oneAttr',
+        prop: 'zeroProp',
       }, {
-        state: "zeroState",
+        state: 'zeroState',
       });
 
-      el.updateState("oneState");
+      el.updateState('oneState');
       await el.elementRendering;
 
       expect(spy).toHaveBeenCalledWith({
-        attr: "oneAttr",
-        prop: "oneProp",
+        attr: 'oneAttr',
+        prop: 'oneProp',
       }, {
-        state: "zeroState",
+        state: 'zeroState',
       });
 
-      el.setAttribute("attr", "twoAttr");
+      el.setAttribute('attr', 'twoAttr');
       await el.elementRendering;
 
       expect(spy).toHaveBeenCalledWith({
-        attr: "oneAttr",
-        prop: "oneProp",
+        attr: 'oneAttr',
+        prop: 'oneProp',
       }, {
-        state: "oneState",
+        state: 'oneState',
       });
     });
   });

@@ -1,8 +1,8 @@
 // tslint:disable:await-promise max-classes-per-file
-import {html, TemplateResult} from "lit-html";
+import {html, TemplateResult} from 'lit-html';
 // tslint:disable-next-line:no-implicit-dependencies
-import uuid from "uuid/v4";
-import {defineAndMount} from "../../../../test/utils";
+import uuid from 'uuid/v4';
+import {defineAndMount} from '../../../../test/utils';
 import CorpusculeElement, {
   attribute,
   deriveStateFromProps,
@@ -11,18 +11,18 @@ import CorpusculeElement, {
   render,
   shouldUpdate,
   state
-} from "../../src";
+} from '../../src';
 
 const testUpdating = () => {
-  describe("updating stage", () => {
+  describe('updating stage', () => {
     let elementName: string;
 
     beforeEach(() => {
       elementName = `x-${uuid()}`;
     });
 
-    it("should call [deriveStateFromProps] on attribute/property update", async () => {
-      const deriveStateFromPropsSpy = jasmine.createSpy("[deriveStateFromProps]");
+    it('should call [deriveStateFromProps] on attribute/property update', async () => {
+      const deriveStateFromPropsSpy = jasmine.createSpy('[deriveStateFromProps]');
 
       class Test extends CorpusculeElement {
         public static readonly is: string = elementName;
@@ -33,7 +33,7 @@ const testUpdating = () => {
           return null;
         }
 
-        @attribute("str", String) public str: string = "";
+        @attribute('str', String) public str: string = '';
         @property() public num: number = 0;
 
         protected [render](): TemplateResult | null {
@@ -44,21 +44,21 @@ const testUpdating = () => {
       const el = defineAndMount(Test);
       await el.elementRendering;
 
-      el.setAttribute("str", "test string");
+      el.setAttribute('str', 'test string');
       await el.elementRendering;
 
       expect(deriveStateFromPropsSpy).toHaveBeenCalledTimes(2);
-      expect(deriveStateFromPropsSpy).toHaveBeenCalledWith({str: "test string", num: 0}, {});
+      expect(deriveStateFromPropsSpy).toHaveBeenCalledWith({str: 'test string', num: 0}, {});
 
       el.num = 10;
       await el.elementRendering;
 
       expect(deriveStateFromPropsSpy).toHaveBeenCalledTimes(3);
-      expect(deriveStateFromPropsSpy).toHaveBeenCalledWith({str: "test string", num: 10}, {});
+      expect(deriveStateFromPropsSpy).toHaveBeenCalledWith({str: 'test string', num: 10}, {});
     });
 
-    it("should call [deriveStateFromProps] on state update", async () => {
-      const deriveStateFromPropsSpy = jasmine.createSpy("[deriveStateFromProps]");
+    it('should call [deriveStateFromProps] on state update', async () => {
+      const deriveStateFromPropsSpy = jasmine.createSpy('[deriveStateFromProps]');
 
       class Test extends CorpusculeElement {
         public static readonly is: string = elementName;
@@ -70,7 +70,7 @@ const testUpdating = () => {
         }
 
         // @ts-ignore
-        @state private str: string = "";
+        @state private str: string = '';
 
         public setStr(value: string): void {
           this.str = value;
@@ -84,15 +84,15 @@ const testUpdating = () => {
       const el = defineAndMount(Test);
       await el.elementRendering;
 
-      el.setStr("test string");
+      el.setStr('test string');
       await el.elementRendering;
 
       expect(deriveStateFromPropsSpy).toHaveBeenCalledTimes(2);
-      expect(deriveStateFromPropsSpy).toHaveBeenCalledWith({}, {str: "test string"});
+      expect(deriveStateFromPropsSpy).toHaveBeenCalledWith({}, {str: 'test string'});
     });
 
-    it("should call [shouldUpdate] on attribute/property update", async () => {
-      const shouldUpdateSpy = jasmine.createSpy("[shouldUpdate]");
+    it('should call [shouldUpdate] on attribute/property update', async () => {
+      const shouldUpdateSpy = jasmine.createSpy('[shouldUpdate]');
       let isMount = false;
 
       class Test extends CorpusculeElement {
@@ -109,7 +109,7 @@ const testUpdating = () => {
           return true;
         }
 
-        @attribute("str", String) public str: string = "";
+        @attribute('str', String) public str: string = '';
         @property() public num: number = 0;
 
         protected [didMount](): void {
@@ -128,14 +128,14 @@ const testUpdating = () => {
       const el = defineAndMount(Test);
       await el.elementRendering;
 
-      el.setAttribute("str", "test string");
+      el.setAttribute('str', 'test string');
       await el.elementRendering;
 
       expect(shouldUpdateSpy).toHaveBeenCalledTimes(1);
       expect(shouldUpdateSpy).toHaveBeenCalledWith(
-        {str: "test string", num: 0},
+        {str: 'test string', num: 0},
         {},
-        {str: "", num: 0},
+        {str: '', num: 0},
         {},
       );
 
@@ -144,15 +144,15 @@ const testUpdating = () => {
 
       expect(shouldUpdateSpy).toHaveBeenCalledTimes(2);
       expect(shouldUpdateSpy).toHaveBeenCalledWith(
-        {str: "test string", num: 10},
+        {str: 'test string', num: 10},
         {},
-        {str: "test string", num: 0},
+        {str: 'test string', num: 0},
         {},
       );
     });
 
-    it("should call [shouldUpdate] on state update", async () => {
-      const shouldUpdateSpy = jasmine.createSpy("[shouldUpdate]");
+    it('should call [shouldUpdate] on state update', async () => {
+      const shouldUpdateSpy = jasmine.createSpy('[shouldUpdate]');
       let isMount = false;
 
       class Test extends CorpusculeElement {
@@ -204,13 +204,13 @@ const testUpdating = () => {
       );
     });
 
-    it("should render on attribute/property/state changes", async () => {
-      const renderSpy = jasmine.createSpy("[render]");
+    it('should render on attribute/property/state changes', async () => {
+      const renderSpy = jasmine.createSpy('[render]');
 
       class Test extends CorpusculeElement {
         public static readonly is: string = elementName;
 
-        @attribute("str", String) public str: string = "start";
+        @attribute('str', String) public str: string = 'start';
         @property() public num: number = 10;
         @state private bool: boolean = false;
 
@@ -227,30 +227,30 @@ const testUpdating = () => {
 
       const el = defineAndMount(Test);
       await el.elementRendering;
-      expect(el.shadowRoot!.textContent).toContain("start, 10, false");
+      expect(el.shadowRoot!.textContent).toContain('start, 10, false');
 
-      el.setAttribute("str", "test string");
+      el.setAttribute('str', 'test string');
       await el.elementRendering;
-      expect(el.shadowRoot!.textContent).toContain("test string, 10, false");
+      expect(el.shadowRoot!.textContent).toContain('test string, 10, false');
 
       el.num = 20;
       await el.elementRendering;
-      expect(el.shadowRoot!.textContent).toContain("test string, 20, false");
+      expect(el.shadowRoot!.textContent).toContain('test string, 20, false');
 
       el.setBool(true);
       await el.elementRendering;
-      expect(el.shadowRoot!.textContent).toContain("test string, 20, true");
+      expect(el.shadowRoot!.textContent).toContain('test string, 20, true');
 
       expect(renderSpy).toHaveBeenCalledTimes(4);
     });
 
-    it("should call [didUpdate] after render is completed", async () => {
-      const didUpdateSpy = jasmine.createSpy("[didUpdate]");
+    it('should call [didUpdate] after render is completed', async () => {
+      const didUpdateSpy = jasmine.createSpy('[didUpdate]');
 
       class Test extends CorpusculeElement {
         public static readonly is: string = elementName;
 
-        @attribute("str", String) public str: string = "start";
+        @attribute('str', String) public str: string = 'start';
         @property() public num: number = 10;
         // @ts-ignore
         @state private bool: boolean = false;
@@ -271,38 +271,38 @@ const testUpdating = () => {
       const el = defineAndMount(Test);
       await el.elementRendering;
 
-      el.setAttribute("str", "test string");
+      el.setAttribute('str', 'test string');
       await el.elementRendering;
       expect(didUpdateSpy).toHaveBeenCalledWith(
-        {str: "start", num: 10},
+        {str: 'start', num: 10},
         {bool: false},
       );
 
       el.num = 20;
       await el.elementRendering;
       expect(didUpdateSpy).toHaveBeenCalledWith(
-        {str: "test string", num: 10},
+        {str: 'test string', num: 10},
         {bool: false},
       );
 
       el.setBool(true);
       await el.elementRendering;
       expect(didUpdateSpy).toHaveBeenCalledWith(
-        {str: "test string", num: 20},
+        {str: 'test string', num: 20},
         {bool: false},
       );
 
       el.setBool(false);
       await el.elementRendering;
       expect(didUpdateSpy).toHaveBeenCalledWith(
-        {str: "test string", num: 20},
+        {str: 'test string', num: 20},
         {bool: true},
       );
     });
 
-    it("should start new re-rendering cycle if [didUpdate] changes state", async () => {
-      const didUpdateSpy = jasmine.createSpy("[didUpdate]");
-      const renderSpy = jasmine.createSpy("[render]");
+    it('should start new re-rendering cycle if [didUpdate] changes state', async () => {
+      const didUpdateSpy = jasmine.createSpy('[didUpdate]');
+      const renderSpy = jasmine.createSpy('[render]');
 
       class Test extends CorpusculeElement {
         public static readonly is: string = elementName;
@@ -339,8 +339,8 @@ const testUpdating = () => {
       expect(renderSpy).toHaveBeenCalledTimes(3);
     });
 
-    it("should not render except mounting stage if [shouldUpdate] returns false", async () => {
-      const renderSpy = jasmine.createSpy("[render]");
+    it('should not render except mounting stage if [shouldUpdate] returns false', async () => {
+      const renderSpy = jasmine.createSpy('[render]');
 
       class Test extends CorpusculeElement {
         public static readonly is: string = elementName;
@@ -367,8 +367,8 @@ const testUpdating = () => {
       expect(renderSpy).toHaveBeenCalledTimes(1);
     });
 
-    it("should avoid calling [didUpdate] if [shouldUpdate] returns false", async () => {
-      const didUpdateSpy = jasmine.createSpy("[didUpdate]");
+    it('should avoid calling [didUpdate] if [shouldUpdate] returns false', async () => {
+      const didUpdateSpy = jasmine.createSpy('[didUpdate]');
 
       class Test extends CorpusculeElement {
         public static readonly is: string = elementName;

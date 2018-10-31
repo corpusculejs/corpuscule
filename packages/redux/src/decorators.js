@@ -1,11 +1,11 @@
-import addToRegistry from "@corpuscule/utils/lib/addToRegistry";
-import assertKind from "@corpuscule/utils/lib/assertKind";
-import {context as $$context} from "./tokens/internal";
+import addToRegistry from '@corpuscule/utils/lib/addToRegistry';
+import assertKind from '@corpuscule/utils/lib/assertKind';
+import {context as $$context} from './tokens/internal';
 
 export const connectedRegistry = new WeakMap();
 
 export const connected = getter => (descriptor) => {
-  assertKind("connected", "field", descriptor.kind);
+  assertKind('connected', 'field', descriptor.kind);
 
   return {
     ...descriptor,
@@ -22,12 +22,12 @@ export const dispatcher = ({
   kind,
   placement,
 }) => {
-  assertKind("dispatcher", "field or method", kind, kind === "method" || kind === "field");
+  assertKind('dispatcher', 'field or method', kind, kind === 'method' || kind === 'field');
 
-  if (kind === "field") {
+  if (kind === 'field') {
     const initialized = initializer ? initializer() : undefined;
 
-    if (!initialized || typeof initialized !== "function") {
+    if (!initialized || typeof initialized !== 'function') {
       throw new Error(`@dispatcher: "${key}" should be initialized with a function`);
     }
 
@@ -56,8 +56,8 @@ export const dispatcher = ({
         };
       },
       key,
-      kind: "field",
-      placement: "own",
+      kind: 'field',
+      placement: 'own',
     }],
     key,
     kind,

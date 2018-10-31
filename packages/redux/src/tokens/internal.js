@@ -1,4 +1,4 @@
-export const context = Symbol("context");
-export const subscribe = Symbol("subscribe");
-export const unsubscribe = Symbol("unsubscribe");
-export const update = Symbol("update");
+export const context = Symbol();
+export const subscribe = Symbol();
+export const unsubscribe = Symbol();
+export const update = Symbol();

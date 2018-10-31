@@ -1,20 +1,20 @@
-import addToRegistry from "@corpuscule/utils/lib/addToRegistry";
-import assertKind from "@corpuscule/utils/lib/assertKind";
+import addToRegistry from '@corpuscule/utils/lib/addToRegistry';
+import assertKind from '@corpuscule/utils/lib/assertKind';
 import {
   invalidate as $$invalidate,
   isMount as $$isMount,
   props as $$props,
   states as $$states,
-} from "./tokens/internal";
+} from './tokens/internal';
 import {
   propsChangedStage,
   stateChangedStage,
-} from "./tokens/stages";
+} from './tokens/stages';
 import {
   defaultPropertyOptions,
   toAttribute,
-} from "./utils";
-import {unsafeStatic} from "./dhtml";
+} from './utils';
+import {unsafeStatic} from './dhtml';
 
 export const attributeRegistry = new WeakMap();
 
@@ -27,7 +27,7 @@ export const attribute = (attributeName, guard, {pure} = defaultPropertyOptions)
   key,
   kind,
 }) => {
-  assertKind("attribute", "field", kind);
+  assertKind('attribute', 'field', kind);
 
   const guardingType = guard.name.toLowerCase();
 
@@ -63,8 +63,8 @@ export const attribute = (attributeName, guard, {pure} = defaultPropertyOptions)
       addToRegistry(propertyInitializerRegistry, target, key, initializer);
     },
     key,
-    kind: "method",
-    placement: "prototype",
+    kind: 'method',
+    placement: 'prototype',
   };
 };
 
@@ -73,7 +73,7 @@ export const property = (guard = null, {pure} = defaultPropertyOptions) => ({
   key,
   kind,
 }) => {
-  assertKind("property", "field", kind);
+  assertKind('property', 'field', kind);
 
   return {
     descriptor: {
@@ -102,13 +102,13 @@ export const property = (guard = null, {pure} = defaultPropertyOptions) => ({
       addToRegistry(propertyInitializerRegistry, target, key, initializer);
     },
     key,
-    kind: "method",
-    placement: "prototype",
+    kind: 'method',
+    placement: 'prototype',
   };
 };
 
 export const state = ({initializer, key, kind}) => {
-  assertKind("state", "field", kind);
+  assertKind('state', 'field', kind);
 
   return {
     descriptor: {
@@ -126,19 +126,19 @@ export const state = ({initializer, key, kind}) => {
       addToRegistry(stateInitializerRegistry, target, key, initializer);
     },
     key,
-    kind: "method",
-    placement: "prototype",
+    kind: 'method',
+    placement: 'prototype',
   };
 };
 
 export const element = name => ({kind, elements}) => {
-  assertKind("element", "class", kind);
+  assertKind('element', 'class', kind);
 
   const tag = unsafeStatic(name);
 
   return {
     elements: [
-      ...elements.filter(({key}) => key !== "is"),
+      ...elements.filter(({key}) => key !== 'is'),
       {
         descriptor: {
           configurable: true,
@@ -146,9 +146,9 @@ export const element = name => ({kind, elements}) => {
             return name;
           },
         },
-        key: "is",
-        kind: "method",
-        placement: "static",
+        key: 'is',
+        kind: 'method',
+        placement: 'static',
       },
       {
         descriptor: {
@@ -157,9 +157,9 @@ export const element = name => ({kind, elements}) => {
             return tag;
           },
         },
-        key: "tag",
-        kind: "method",
-        placement: "static",
+        key: 'tag',
+        kind: 'method',
+        placement: 'static',
       },
     ],
     finisher(target) {
