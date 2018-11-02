@@ -1,13 +1,13 @@
 /* eslint-disable no-console, sort-keys */
-const {exec} = require("child_process");
+const {exec} = require('child_process');
 const {
   copyFile,
   mkdir,
   readdir,
-} = require("fs");
-const rimraf = require("rimraf");
-const {promisify} = require("util");
-const {packages, definitions} = require("./project");
+} = require('fs');
+const rimraf = require('rimraf');
+const {promisify} = require('util');
+const {packages, definitions} = require('./project');
 
 const copyFileAsync = promisify(copyFile);
 const execAsync = promisify(exec);
@@ -19,7 +19,7 @@ const root = (pack, file) => `packages/${pack}/${file}`;
 const src = (pack, file) => `packages/${pack}/src/${file}`;
 const lib = (pack, file) => `packages/${pack}/lib/${file}`;
 
-const libDir = pack => root(pack, "lib");
+const libDir = pack => root(pack, 'lib');
 
 const recreateLib = async (pack) => {
   await rimrafAsync(libDir(pack));
@@ -29,7 +29,7 @@ const recreateLib = async (pack) => {
 const dtsPattern = /\.d\.ts/;
 
 const copyDtsFiles = async (pack) => {
-  const files = await readdirAsync(root(pack, "src"));
+  const files = await readdirAsync(root(pack, 'src'));
   await Promise.all(
     files
       .filter(file => dtsPattern.test(file))

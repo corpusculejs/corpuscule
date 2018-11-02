@@ -1,31 +1,31 @@
 /* eslint-disable sort-keys */
 // Karma configuration
 // Generated on Sun Apr 29 2018 20:36:45 GMT+0300 (RTZ 2 (зима))
-const webpack = require("./webpack.config");
+const webpack = require('./webpack.config');
 
-process.env.CHROME_BIN = require("puppeteer").executablePath();
+process.env.CHROME_BIN = require('puppeteer').executablePath();
 
 const isCI = !!process.env.CI;
 
 module.exports = (config) => {
   config.set({
     // Base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: "..",
+    basePath: '..',
 
     plugins: [
-      require("karma-webpack"),
-      require("karma-jasmine"),
-      require("karma-chrome-launcher"),
-      require("karma-coverage-istanbul-reporter"),
+      require('karma-webpack'),
+      require('karma-jasmine'),
+      require('karma-chrome-launcher'),
+      require('karma-coverage-istanbul-reporter'),
     ],
 
     // Frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ["jasmine"],
+    frameworks: ['jasmine'],
 
     // List of files / patterns to load in the browser
     files: [
-      "test/test.js",
+      'test/test.js',
     ],
 
     // List of files / patterns to exclude
@@ -34,12 +34,12 @@ module.exports = (config) => {
 
     // Preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-    preprocessors: {"test/test.js": ["webpack"]},
+    preprocessors: {'test/test.js': ['webpack']},
 
     // Test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ["progress", "coverage-istanbul"],
+    reporters: ['progress', 'coverage-istanbul'],
 
     // Web server port
     port: 9876,
@@ -56,7 +56,7 @@ module.exports = (config) => {
 
     // Start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: isCI ? ["ChromeHeadlessNoSandbox"] : ["ChromeHeadless"],
+    browsers: isCI ? ['ChromeHeadlessNoSandbox'] : ['ChromeHeadless'],
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the test and exits
@@ -69,21 +69,21 @@ module.exports = (config) => {
     webpack,
 
     coverageIstanbulReporter: {
-      reports: ["html", "lcovonly"],
-      dir: ".coverage",
+      reports: ['html', 'lcovonly'],
+      dir: '.coverage',
       combineBrowserReports: true,
       fixWebpackSourcePaths: true,
       skipFilesWithNoCoverage: true,
-      "report-config": {
-        html: {subdir: "html"},
-        lcovonly: {subdir: "lcov"},
+      'report-config': {
+        html: {subdir: 'html'},
+        lcovonly: {subdir: 'lcov'},
       },
     },
 
     customLaunchers: {
       ChromeHeadlessNoSandbox: {
-        base: "ChromeHeadless",
-        flags: ["--no-sandbox"],
+        base: 'ChromeHeadless',
+        flags: ['--no-sandbox'],
       },
     },
 

@@ -1,19 +1,19 @@
 /* eslint-disable sort-keys */
 module.exports = {
-  devtool: "inline-source-map",
-  mode: "development",
+  devtool: 'inline-source-map',
+  mode: 'development',
   resolve: {
     extensions: [
-      ".js",
-      ".ts",
+      '.js',
+      '.ts',
     ],
   },
   module: {
     rules: [
       {
         test: /\.js/,
-        loader: "istanbul-instrumenter-loader",
-        enforce: "post",
+        loader: 'istanbul-instrumenter-loader',
+        enforce: 'post',
         options: {
           esModules: true,
         },
@@ -23,18 +23,18 @@ module.exports = {
         test: /\.ts/,
         use: [
           {
-            loader: "babel-loader",
+            loader: 'babel-loader',
             options: {
               babelrc: false,
               cacheDirectory: true,
               cacheCompression: false,
               plugins: [
-                [require("@babel/plugin-proposal-decorators"), {decoratorsBeforeExport: true}],
-                require("@babel/plugin-proposal-class-properties"),
-                require("@babel/plugin-syntax-dynamic-import"),
+                [require('@babel/plugin-proposal-decorators'), {decoratorsBeforeExport: true}],
+                require('@babel/plugin-proposal-class-properties'),
+                require('@babel/plugin-syntax-dynamic-import'),
               ],
               presets: [
-                require("@babel/preset-typescript"),
+                require('@babel/preset-typescript'),
               ],
             },
           },

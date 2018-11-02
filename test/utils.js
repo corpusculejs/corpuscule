@@ -2,7 +2,7 @@
 
 export const mount = (elementOrName, beforeMount = () => undefined) => {
   const el = document.createElement(
-    typeof elementOrName === "string"
+    typeof elementOrName === 'string'
       ? elementOrName
       : elementOrName.is,
   );
@@ -32,7 +32,7 @@ export const defineAndMountContext = (provider, ...consumers) => {
     const consumerElement = document.createElement(consumer.is);
     list[i] = consumerElement;
 
-    const div = document.createElement("div");
+    const div = document.createElement('div');
     div.appendChild(consumerElement);
 
     fragment.appendChild(div);
@@ -50,7 +50,7 @@ export class BasicConsumer extends HTMLElement {
 export class BasicProvider extends HTMLElement {
   constructor() {
     super();
-    this.attachShadow({mode: "open"});
+    this.attachShadow({mode: 'open'});
   }
 
   connectedCallback() {
