@@ -1,10 +1,5 @@
-export const initializeValues = Symbol();
 export const invalidate = Symbol();
-export const isMount = Symbol();
-export const prevProps = Symbol();
-export const prevStates = Symbol();
-export const props = Symbol();
+export const mounting = Symbol();
 export const rendering = Symbol();
 export const root = Symbol();
-export const scheduler = Symbol();
-export const states = Symbol();
+export const valid = Symbol();
