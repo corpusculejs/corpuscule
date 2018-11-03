@@ -1,4 +1,4 @@
-import {assertElementDecoratorsKindAndPlacement} from './utils';
+import {assertElementDecoratorsKindAndPlacement} from '../utils';
 
 export const attributes = new WeakMap();
 const attributeInitializers = new WeakMap();
