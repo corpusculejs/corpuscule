@@ -14,13 +14,13 @@ import {
   render as $render,
   stateChangedCallback as $stateChangedCallback,
 } from './tokens/lifecycle';
-import {attributes, initAttributes} from './attribute';
+import {attributes, initAttributes} from './decorators/attribute';
 
-export {default as attribute} from './attribute';
-export {default as createComputingPair} from './computed';
-export {default as element} from './element';
-export {default as property} from './property';
-export {default as state} from './state';
+export {default as attribute} from './decorators/attribute';
+export {default as createComputingPair} from './decorators/computed';
+export {default as element} from './decorators/element';
+export {default as property} from './decorators/property';
+export {default as state} from './decorators/state';
 export {default as dhtml, unsafeStatic, UnsafeStatic} from './dhtml';
 export * from './tokens/lifecycle';
 

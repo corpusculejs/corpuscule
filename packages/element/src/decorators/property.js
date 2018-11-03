@@ -1,6 +1,6 @@
-import {assertElementDecoratorsKindAndPlacement} from './utils';
-import {invalidate as $$invalidate} from './tokens/internal';
-import {propertyChangedCallback as $propertyChangedCallback} from './tokens/lifecycle';
+import {assertElementDecoratorsKindAndPlacement} from '../utils';
+import {invalidate as $$invalidate} from '../tokens/internal';
+import {propertyChangedCallback as $propertyChangedCallback} from '../tokens/lifecycle';
 
 const property = (guard = null) => ({
   initializer,

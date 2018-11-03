@@ -1,6 +1,6 @@
-import {assertElementDecoratorsKindAndPlacement} from './utils';
-import {invalidate as $$invalidate} from './tokens/internal';
-import {stateChangedCallback as $stateChangedCallback} from './tokens/lifecycle';
+import {assertElementDecoratorsKindAndPlacement} from '../utils';
+import {invalidate as $$invalidate} from '../tokens/internal';
+import {stateChangedCallback as $stateChangedCallback} from '../tokens/lifecycle';
 
 const state = ({
   initializer,
