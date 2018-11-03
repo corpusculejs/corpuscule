@@ -1,66 +1,120 @@
 import assertKind from '@corpuscule/utils/lib/assertKind';
 
-const createComputingEntanglement = () => {
-  const registry = new WeakMap();
-  const observables = [];
+const createComputingPair = () => {
+  const dirty = Symbol();
 
   const computed = ({
-    descriptor: {get},
+    descriptor: {get, set},
     key,
     kind,
     placement,
   }) => {
-    assertKind('computed', 'getter', kind, !!get);
+    assertKind('computed', 'getter', kind, get && !set);
+
+    const storage = Symbol();
+    const extrasPlacement = placement === 'static' ? 'static' : 'own';
 
     return {
       descriptor: {
         configurable: true,
+        enumerable: true,
         get() {
-          let record = registry.get(this);
-
-          if (!record) {
-            record = {
-              cache: new Map(observables.map(property => [property, null])),
-              value: null,
-            };
-
-            registry.set(this, record);
+          if (this[dirty]) {
+            this[storage] = get.call(this);
+            this[dirty] = false;
           }
 
-          let isValueUpdated = false;
-
-          for (const [watchingProperty, oldValue] of record.cache) {
-            const newValue = this[watchingProperty];
-
-            if (newValue !== oldValue) {
-              if (!isValueUpdated) {
-                record.value = get.call(this);
-                isValueUpdated = true;
-              }
-
-              record.cache.set(watchingProperty, newValue);
-            }
-          }
-
-          return record.value;
+          return this[storage];
         },
       },
+      extras: [
+        {
+          descriptor: {},
+          key: storage,
+          kind: 'field',
+          placement: extrasPlacement,
+        }, {
+          descriptor: {},
+          initializer: () => true,
+          key: dirty,
+          kind: 'field',
+          placement: extrasPlacement,
+        },
+      ],
       key,
       kind,
       placement,
     };
   };
 
-  const observe = (descriptor) => {
-    const {key, kind} = descriptor;
-    assertKind('observe', 'field or method', kind, kind === 'field' || kind === 'method');
+  const observer = ({
+    descriptor: {get: previousGet, set: previousSet},
+    key,
+    kind,
+    initializer,
+    placement,
+  }) => {
+    const isMethod = kind === 'method';
 
-    observables.push(key);
+    assertKind(
+      'observer',
+      'field or accessor',
+      kind,
+      // eslint-disable-next-line no-extra-parens
+      kind === 'field' || (
+        isMethod && (
+          previousGet || previousSet
+        )
+      ),
+    );
 
-    return descriptor;
+    let get;
+    let set;
+    let initializerDescriptor;
+
+    if (isMethod) {
+      get = previousGet;
+      set = previousSet;
+    } else {
+      const storage = Symbol();
+
+      /* eslint-disable no-shadow, no-invalid-this */
+      get = function get() {
+        return this[storage];
+      };
+
+      set = function set(value) {
+        this[storage] = value;
+      };
+      /* eslint-enable no-shadow, no-invalid-this */
+
+      initializerDescriptor = {
+        descriptor: {},
+        initializer,
+        key: storage,
+        kind: 'field',
+        placement: placement === 'static' ? 'static' : 'own',
+      };
+    }
+
+    return {
+      descriptor: {
+        configurable: true,
+        enumerable: true,
+        get,
+        set(value) {
+          set.call(this, value);
+          this[dirty] = true;
+        },
+      },
+      extras: initializerDescriptor ? [initializerDescriptor] : undefined,
+      key,
+      kind: 'method',
+      placement: placement === 'own' ? 'prototype' : placement,
+    };
   };
 
-  return {computed, observe};
+  return {computed, observer};
 };
 
-export default createComputingEntanglement;
+export default createComputingPair;
