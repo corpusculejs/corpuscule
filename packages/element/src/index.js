@@ -14,7 +14,6 @@ import {
   render as $render,
   stateChangedCallback as $stateChangedCallback,
 } from './tokens/lifecycle';
-import {attributes, initAttributes} from './decorators/attribute';
 
 export {default as attribute} from './decorators/attribute';
 export {default as createComputingPair} from './decorators/computingPair';
@@ -25,10 +24,6 @@ export {default as dhtml, unsafeStatic, UnsafeStatic} from './dhtml';
 export * from './tokens/lifecycle';
 
 export default class CorpusculeElement extends HTMLElement {
-  static get observedAttributes() {
-    return attributes.get(this);
-  }
-
   get elementRendering() {
     return this[$$rendering] || Promise.resolve();
   }
@@ -50,7 +45,6 @@ export default class CorpusculeElement extends HTMLElement {
   }
 
   connectedCallback() {
-    initAttributes(this);
     this[$$invalidate]();
   }
 
