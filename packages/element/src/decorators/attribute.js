@@ -1,3 +1,4 @@
+import addToRegistry from '@corpuscule/utils/lib/addToRegistry';
 import {assertElementDecoratorsKindAndPlacement} from '../utils';
 
 export const attributes = new WeakMap();
@@ -93,13 +94,8 @@ const attribute = (name, guard) => ({
       },
     ],
     finisher(target) {
-      if (!attributes.has(target)) {
-        attributes.set(target, [name]);
-        attributeInitializers.set(target, [attributeInitializer]);
-      } else {
-        attributes.get(target).push(name);
-        attributeInitializers.get(target).push(attributeInitializer);
-      }
+      addToRegistry(attributes, target, name);
+      addToRegistry(attributeInitializers, target, attributeInitializer);
     },
     key,
     kind: 'method',
