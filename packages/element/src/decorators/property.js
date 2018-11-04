@@ -40,7 +40,9 @@ const property = (guard = null) => ({
     },
     extras: [
       {
-        descriptor: {},
+        descriptor: {
+          writable: true,
+        },
         initializer() {
           const value = initializer ? initializer.call(this) : undefined;
           check(value);

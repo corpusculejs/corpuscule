@@ -1,9 +1,11 @@
 import testAttributeDecorator from './decorators/attribute';
 import testComputingPair from './decorators/computingPair';
 import testElementDecorator from './decorators/element';
+import testPropertyDecorator from './decorators/property';
 
 describe('@corpuscule/element', () => {
   testAttributeDecorator();
-  testElementDecorator();
   testComputingPair();
+  testElementDecorator();
+  testPropertyDecorator();
 });
