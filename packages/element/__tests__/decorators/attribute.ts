@@ -1,13 +1,12 @@
 // tslint:disable:max-classes-per-file
 import {attribute} from '../../src';
-import {initAttributes} from '../../src/decorators/attribute';
 
 class HTMLElementMock {
+  public static readonly observedAttributes?: ReadonlyArray<string>;
   public readonly attributes: Map<string, string> = new Map();
 
-  public connectedCallback(): void {
-    initAttributes(this);
-  }
+  // tslint:disable-next-line:no-empty
+  public connectedCallback(): void {}
 
   public getAttribute(key: string): string | null {
     return this.attributes.has(key)
@@ -149,6 +148,18 @@ const testAttributeDecorator = () => {
         ['bool', ''],
         ['num', '10'],
       ]));
+    });
+
+    it('initializes and fills "observedAttributes"', () => {
+      class Test extends HTMLElementMock {
+        @attribute('a1', Boolean)
+        public attr1: boolean = true;
+
+        @attribute('a2', String)
+        public attr2: string = 'str';
+      }
+
+      expect(Test.observedAttributes).toEqual(['a1', 'a2']);
     });
 
     it('throws an error if guard is not Number, String or Boolean', () => {

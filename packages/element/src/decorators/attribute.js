@@ -1,8 +1,4 @@
-import addToRegistry from '@corpuscule/utils/lib/addToRegistry';
 import {assertElementDecoratorsKindAndPlacement} from '../utils';
-
-export const attributes = new WeakMap();
-const attributeInitializers = new WeakMap();
 
 const assertGuard = (guard) => {
   if (guard !== Boolean && guard !== Number && guard !== String) {
@@ -30,18 +26,6 @@ const toAttribute = (instance, name, value) => {
   }
 };
 
-export const initAttributes = (instance) => {
-  const initializers = attributeInitializers.get(instance.constructor);
-
-  if (!initializers) {
-    return;
-  }
-
-  for (const property of initializers) {
-    instance[property]();
-  }
-};
-
 const attribute = (name, guard) => ({
   initializer,
   key,
@@ -60,8 +44,6 @@ const attribute = (name, guard) => ({
     }
   };
 
-  const attributeInitializer = Symbol();
-
   return {
     descriptor: {
       configurable: true,
@@ -74,28 +56,28 @@ const attribute = (name, guard) => ({
         toAttribute(this, name, value);
       },
     },
-    extras: [
-      {
-        descriptor: {},
-        initializer() {
-          return () => {
-            if (this.hasAttribute(name)) {
-              return;
-            }
-
-            const value = initializer ? initializer.call(this) : undefined;
-            check(value);
-            toAttribute(this, name, value);
-          };
-        },
-        key: attributeInitializer,
-        kind: 'field',
-        placement: 'own',
-      },
-    ],
     finisher(target) {
-      addToRegistry(attributes, target, name);
-      addToRegistry(attributeInitializers, target, attributeInitializer);
+      if (Array.isArray(target.observedAttributes)) {
+        target.observedAttributes.push(name);
+      } else {
+        target.observedAttributes = [name];
+      }
+
+      const superConnectedCallback = target.prototype.connectedCallback;
+
+      target.prototype.connectedCallback = function connectedCallback() {
+        if (superConnectedCallback) {
+          superConnectedCallback.call(this);
+        }
+
+        if (this.hasAttribute(name)) {
+          return;
+        }
+
+        const value = initializer ? initializer.call(this) : undefined;
+        check(value);
+        toAttribute(this, name, value);
+      };
     },
     key,
     kind: 'method',
