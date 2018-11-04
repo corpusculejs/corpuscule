@@ -1,5 +1,4 @@
 // tslint:disable:max-classes-per-file
-
 import getSuperMethod from '../src/getSuperMethod';
 
 const testGetSuperMethod = () => {
@@ -32,7 +31,7 @@ const testGetSuperMethod = () => {
       };
     });
 
-    it('should call currenly existing method if it exists', () => {
+    it('calls currently existing method if it exists', () => {
       const spy = jasmine.createSpy('testMethod');
 
       @decorator
@@ -50,7 +49,7 @@ const testGetSuperMethod = () => {
       expect(decoratorSpy).toHaveBeenCalled();
     });
 
-    it('should call super testMethod if it does not exists in current class', () => {
+    it('calls super testMethod if it does not exists in current class', () => {
       const spy = jasmine.createSpy('connectedCallback');
 
       class BaseTest {
@@ -71,7 +70,7 @@ const testGetSuperMethod = () => {
       expect(decoratorSpy).toHaveBeenCalled();
     });
 
-    it('should call nothing if no super method exists', () => {
+    it('calls nothing if no super method exists', () => {
       @decorator
       class Test {} // tslint:disable-line:no-unnecessary-class
 
