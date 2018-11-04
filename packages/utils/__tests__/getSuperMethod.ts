@@ -2,7 +2,7 @@
 
 import getSuperMethod from '../src/getSuperMethod';
 
-const getSuperMethodTest = () => {
+const testGetSuperMethod = () => {
   describe('getSuperMethod', () => {
     let decorator: ReturnType<typeof getSuperMethod>;
     let decoratorSpy: jasmine.Spy;
@@ -84,4 +84,4 @@ const getSuperMethodTest = () => {
   });
 };
 
-export default getSuperMethodTest;
+export default testGetSuperMethod;

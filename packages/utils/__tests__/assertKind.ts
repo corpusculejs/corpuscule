@@ -1,6 +1,6 @@
 import assertKind from '../src/assertKind';
 
-const assertKindTest = () => {
+const testAssertKind = () => {
   describe('assertKind', () => {
     it('should throw an error when expected and received kinds are different', () => {
       expect(() => {
@@ -28,4 +28,4 @@ const assertKindTest = () => {
   });
 };
 
-export default assertKindTest;
+export default testAssertKind;
