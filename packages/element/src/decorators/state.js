@@ -28,7 +28,9 @@ const state = ({
     },
     extras: [
       {
-        descriptor: {},
+        descriptor: {
+          writable: true,
+        },
         initializer,
         key: storage,
         kind: 'field',
