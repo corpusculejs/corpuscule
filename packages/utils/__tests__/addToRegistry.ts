@@ -2,7 +2,7 @@
 
 import addToRegistry from '../src/addToRegistry';
 
-const addToRegistryTest = () => {
+const testAddToRegistry = () => {
   describe('addToRegistry', () => {
     class Test {}
 
@@ -48,4 +48,4 @@ const addToRegistryTest = () => {
   });
 };
 
-export default addToRegistryTest;
+export default testAddToRegistry;
