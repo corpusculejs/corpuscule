@@ -17,7 +17,7 @@ const fromAttribute = (instance, name, guard) => {
   }
 
   return value !== null
-    ? guard(value)
+    ? guard === String ? value : guard(value)
     : undefined;
 };
 
