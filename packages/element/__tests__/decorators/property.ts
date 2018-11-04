@@ -53,7 +53,7 @@ const testPropertyDecorator = () => {
       expect(test.prop).toBeUndefined();
     });
 
-    it('runs [propertyChangedCallback] on property change', () => {
+    it('runs [propertyChangedCallback] and [$$invalidate] on property change', () => {
       class Test extends CorpusculeElementMock {
         @property()
         public prop: number = 10;
@@ -64,17 +64,6 @@ const testPropertyDecorator = () => {
 
       expect(propertyChangedCallbackSpy).toHaveBeenCalledWith('prop', 10, 20);
       expect(propertyChangedCallbackSpy).toHaveBeenCalledTimes(1);
-    });
-
-    it('runs [$$invalidate] on property change', () => {
-      class Test extends CorpusculeElementMock {
-        @property()
-        public prop: number = 10;
-      }
-
-      const test = new Test();
-      test.prop = 20;
-
       expect(invalidateSpy).toHaveBeenCalledTimes(1);
     });
 
