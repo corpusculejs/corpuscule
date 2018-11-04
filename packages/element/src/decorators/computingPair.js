@@ -29,12 +29,16 @@ const createComputingPair = () => {
       },
       extras: [
         {
-          descriptor: {},
+          descriptor: {
+            writable: true,
+          },
           key: storage,
           kind: 'field',
           placement: extrasPlacement,
         }, {
-          descriptor: {},
+          descriptor: {
+            writable: true,
+          },
           initializer: () => true,
           key: dirty,
           kind: 'field',
@@ -62,9 +66,7 @@ const createComputingPair = () => {
       kind,
       // eslint-disable-next-line no-extra-parens
       kind === 'field' || (
-        isMethod && (
-          previousGet || previousSet
-        )
+        isMethod && previousGet && previousSet
       ),
     );
 
@@ -89,7 +91,9 @@ const createComputingPair = () => {
       /* eslint-enable no-shadow, no-invalid-this */
 
       initializerDescriptor = {
-        descriptor: {},
+        descriptor: {
+          writable: true,
+        },
         initializer,
         key: storage,
         kind: 'field',
