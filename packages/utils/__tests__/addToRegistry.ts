@@ -1,5 +1,4 @@
 // tslint:disable:max-classes-per-file no-unnecessary-class
-
 import addToRegistry from '../src/addToRegistry';
 
 const testAddToRegistry = () => {
