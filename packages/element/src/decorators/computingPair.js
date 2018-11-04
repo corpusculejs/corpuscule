@@ -3,7 +3,7 @@ import assertKind from '@corpuscule/utils/lib/assertKind';
 const createComputingPair = () => {
   const dirty = Symbol();
 
-  const computed = ({
+  const computer = ({
     descriptor: {get, set},
     key,
     kind,
@@ -114,7 +114,7 @@ const createComputingPair = () => {
     };
   };
 
-  return {computed, observer};
+  return {computer, observer};
 };
 
 export default createComputingPair;

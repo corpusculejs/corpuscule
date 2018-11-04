@@ -3,7 +3,7 @@ import {CustomElement} from '@corpuscule/typings';
 import {TemplateResult} from 'lit-html';
 
 export interface ComputingPair {
-  readonly computed: MethodDecorator;
+  readonly computer: MethodDecorator;
   readonly observer: PropertyDecorator;
 }
 
