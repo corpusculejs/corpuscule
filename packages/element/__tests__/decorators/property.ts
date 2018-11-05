@@ -91,7 +91,7 @@ const testPropertyDecorator = () => {
       }).toThrow(new TypeError('Value applied to "prop" has wrong type'));
     });
 
-    it('does not call [propertyChangedCallback] and [$$invalidate] if value is the same', () => {
+    it('does not call [propertyChangedCallback] and [$$invalidate] if values are identical', () => {
       const propertyChangedCallbackSpy = jasmine.createSpy('onPropertyChanged');
       const invalidateSpy = jasmine.createSpy('onInvalidate');
 
