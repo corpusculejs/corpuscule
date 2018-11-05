@@ -202,11 +202,11 @@ const testAttributeDecorator = () => {
       test.attribute = 'test';
 
       expect(attributeChangedCallbackSpy).toHaveBeenCalledWith('attr', 'str', 'test');
-      expect(attributeChangedCallbackSpy).toHaveBeenCalledTimes(2);
-      expect(invalidateSpy).toHaveBeenCalledTimes(2);
+      expect(attributeChangedCallbackSpy).toHaveBeenCalledTimes(1);
+      expect(invalidateSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('ignores update if values are identical', () => {
+    it('does not call attributeChangedCallback and [$$invalidate] if values are identical', () => {
       const attributeChangedCallbackSpy = jasmine.createSpy('onAttributeChange');
       const invalidateSpy = jasmine.createSpy('onInvalidate');
 
@@ -228,8 +228,8 @@ const testAttributeDecorator = () => {
 
       test.attribute = 10;
 
-      expect(attributeChangedCallbackSpy).toHaveBeenCalledTimes(1);
-      expect(invalidateSpy).toHaveBeenCalledTimes(1);
+      expect(attributeChangedCallbackSpy).not.toHaveBeenCalled();
+      expect(invalidateSpy).not.toHaveBeenCalled();
     });
 
     it('throws an error if guard is not Number, String or Boolean', () => {
