@@ -1,8 +1,4 @@
-import {invalidate as $$invalidate} from '../tokens/internal';
 import {assertElementDecoratorsKindAndPlacement} from '../utils';
-
-const preparations = new WeakSet();
-const mountingPhase = new WeakMap();
 
 const assertGuard = (guard) => {
   if (guard !== Boolean && guard !== Number && guard !== String) {
@@ -80,31 +76,8 @@ const attribute = (name, guard) => ({
 
         const value = initializer ? initializer.call(this) : undefined;
         check(value);
-        mountingPhase.set(this, true);
         toAttribute(this, name, value);
-        mountingPhase.set(this, false);
       };
-
-      if (preparations.has(target)) {
-        return;
-      }
-
-      const superAttributeChangedCallback = target.prototype.attributeChangedCallback;
-
-      target.prototype.attributeChangedCallback =
-        function attributeChangedCallback(attributeName, oldVal, newVal) {
-          if (oldVal === newVal || mountingPhase.get(this)) {
-            return;
-          }
-
-          if (superAttributeChangedCallback) {
-            superAttributeChangedCallback.call(this, attributeName, oldVal, newVal);
-          }
-
-          this[$$invalidate]();
-        };
-
-      preparations.add(target);
     },
     key,
     kind: 'method',

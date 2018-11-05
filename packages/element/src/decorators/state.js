@@ -1,5 +1,4 @@
 import {assertElementDecoratorsKindAndPlacement} from '../utils';
-import {invalidate as $$invalidate} from '../tokens/internal';
 import {stateChangedCallback as $stateChangedCallback} from '../tokens/lifecycle';
 
 const state = ({
@@ -21,9 +20,7 @@ const state = ({
       },
       set(value) {
         this[$stateChangedCallback](key, this[storage], value);
-
         this[storage] = value;
-        this[$$invalidate]();
       },
     },
     extras: [
