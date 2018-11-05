@@ -1,4 +1,7 @@
+import {invalidate as $$invalidate} from '../tokens/internal';
 import {assertElementDecoratorsKindAndPlacement} from '../utils';
+
+const attributeChangedCallbackRegistry = new WeakSet();
 
 const assertGuard = (guard) => {
   if (guard !== Boolean && guard !== Number && guard !== String) {
@@ -78,6 +81,27 @@ const attribute = (name, guard) => ({
         check(value);
         toAttribute(this, name, value);
       };
+
+      if (attributeChangedCallbackRegistry.has(target)) {
+        return;
+      }
+
+      const superAttributeChangedCallback = target.prototype.attributeChangedCallback;
+
+      target.prototype.attributeChangedCallback =
+        function attributeChangedCallback(attributeName, oldVal, newVal) {
+          if (oldVal === newVal) {
+            return;
+          }
+
+          if (superAttributeChangedCallback) {
+            superAttributeChangedCallback.call(this, attributeName, oldVal, newVal);
+          }
+
+          this[$$invalidate]();
+        };
+
+      attributeChangedCallbackRegistry.add(target);
     },
     key,
     kind: 'method',

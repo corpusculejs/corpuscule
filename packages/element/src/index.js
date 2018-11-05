@@ -36,12 +36,8 @@ export default class CorpusculeElement extends HTMLElement {
     this[$$root] = this[$createRoot]();
   }
 
-  attributeChangedCallback(_, oldVal, newVal) {
-    if (oldVal === newVal) {
-      return;
-    }
-
-    this[$$invalidate]();
+  // eslint-disable-next-line no-empty-function, class-methods-use-this
+  attributeChangedCallback() {
   }
 
   connectedCallback() {
