@@ -1,6 +1,5 @@
 // tslint:disable:max-classes-per-file
 import {state, stateChangedCallback} from '../../src';
-import {invalidate as $$invalidate} from '../../src/tokens/internal';
 
 class CorpusculeElementMock {
   public [stateChangedCallback](
@@ -8,10 +7,6 @@ class CorpusculeElementMock {
     _oldValue: unknown,
     _newValue: unknown,
   ): void { // tslint:disable-line:no-empty
-  }
-
-  // tslint:disable-next-line:no-empty
-  public [$$invalidate](): void {
   }
 }
 
@@ -34,7 +29,6 @@ const testStateDecorator = () => {
 
     it('runs [stateChangedCallback] and [$$invalidate] on state property change', () => {
       const stateChangedCallbackSpy = jasmine.createSpy('onPropertyChanged');
-      const invalidateSpy = jasmine.createSpy('onInvalidate');
 
       class Test extends CorpusculeElementMock {
         @state
@@ -43,10 +37,6 @@ const testStateDecorator = () => {
         public [stateChangedCallback](...args: Array<unknown>): void {
           stateChangedCallbackSpy(...args);
         }
-
-        public [$$invalidate](): void {
-          invalidateSpy();
-        }
       }
 
       const test = new Test();
@@ -54,7 +44,6 @@ const testStateDecorator = () => {
 
       expect(stateChangedCallbackSpy).toHaveBeenCalledWith('prop', 10, 20);
       expect(stateChangedCallbackSpy).toHaveBeenCalledTimes(1);
-      expect(invalidateSpy).toHaveBeenCalledTimes(1);
     });
   });
 };

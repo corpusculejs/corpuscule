@@ -1,6 +1,5 @@
 // tslint:disable:max-classes-per-file
 import {property, propertyChangedCallback} from '../../src';
-import {invalidate as $$invalidate} from '../../src/tokens/internal';
 
 class CorpusculeElementMock {
   public [propertyChangedCallback](
@@ -8,10 +7,6 @@ class CorpusculeElementMock {
     _oldValue: unknown,
     _newValue: unknown,
   ): void { // tslint:disable-line:no-empty
-  }
-
-  // tslint:disable-next-line:no-empty
-  public [$$invalidate](): void {
   }
 }
 
@@ -43,9 +38,8 @@ const testPropertyDecorator = () => {
       expect(test.prop).toBeUndefined();
     });
 
-    it('runs [propertyChangedCallback] and [$$invalidate] on property change', () => {
+    it('runs [propertyChangedCallback] on property change', () => {
       const propertyChangedCallbackSpy = jasmine.createSpy('onPropertyChanged');
-      const invalidateSpy = jasmine.createSpy('onInvalidate');
 
       class Test extends CorpusculeElementMock {
         @property()
@@ -54,10 +48,6 @@ const testPropertyDecorator = () => {
         public [propertyChangedCallback](...args: Array<unknown>): void {
           propertyChangedCallbackSpy(...args);
         }
-
-        public [$$invalidate](): void {
-          invalidateSpy();
-        }
       }
 
       const test = new Test();
@@ -65,7 +55,6 @@ const testPropertyDecorator = () => {
 
       expect(propertyChangedCallbackSpy).toHaveBeenCalledWith('prop', 10, 20);
       expect(propertyChangedCallbackSpy).toHaveBeenCalledTimes(1);
-      expect(invalidateSpy).toHaveBeenCalledTimes(1);
     });
 
     it('throws an error if value does not fit guard during initialization', () => {
@@ -89,31 +78,6 @@ const testPropertyDecorator = () => {
       expect(() => {
         test.prop = 'string';
       }).toThrow(new TypeError('Value applied to "prop" has wrong type'));
-    });
-
-    it('does not call [propertyChangedCallback] and [$$invalidate] if values are identical', () => {
-      const propertyChangedCallbackSpy = jasmine.createSpy('onPropertyChanged');
-      const invalidateSpy = jasmine.createSpy('onInvalidate');
-
-      class Test extends CorpusculeElementMock {
-        @property()
-        public prop: number = 10;
-
-        public [propertyChangedCallback](...args: Array<unknown>): void {
-          propertyChangedCallbackSpy(...args);
-        }
-
-        public [$$invalidate](): void {
-          invalidateSpy();
-        }
-      }
-
-      const test = new Test();
-
-      test.prop = 10;
-
-      expect(propertyChangedCallbackSpy).not.toHaveBeenCalled();
-      expect(invalidateSpy).not.toHaveBeenCalled();
     });
   });
 };

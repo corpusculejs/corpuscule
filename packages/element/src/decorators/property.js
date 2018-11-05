@@ -1,5 +1,4 @@
 import {assertElementDecoratorsKindAndPlacement} from '../utils';
-import {invalidate as $$invalidate} from '../tokens/internal';
 import {propertyChangedCallback as $propertyChangedCallback} from '../tokens/lifecycle';
 
 const property = (guard = null) => ({
@@ -27,15 +26,8 @@ const property = (guard = null) => ({
       },
       set(value) {
         check(value);
-        const oldValue = this[storage];
-
-        if (value === oldValue) {
-          return;
-        }
-
-        this[$propertyChangedCallback](key, oldValue, value);
+        this[$propertyChangedCallback](key, this[storage], value);
         this[storage] = value;
-        this[$$invalidate]();
       },
     },
     extras: [

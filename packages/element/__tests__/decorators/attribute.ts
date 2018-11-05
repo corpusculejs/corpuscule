@@ -1,6 +1,5 @@
 // tslint:disable:max-classes-per-file
 import {attribute} from '../../src';
-import {invalidate as $$invalidate} from '../../src/tokens/internal';
 
 class CorpusculeElementMock {
   public static readonly observedAttributes?: ReadonlyArray<string>;
@@ -40,9 +39,6 @@ class CorpusculeElementMock {
     );
     this.attributes.set(key, v);
   }
-
-  // tslint:disable-next-line:no-empty
-  public [$$invalidate](): void {}
 }
 
 const testAttributeDecorator = () => {
@@ -179,9 +175,8 @@ const testAttributeDecorator = () => {
       expect(Test.observedAttributes).toEqual(['a1', 'a2']);
     });
 
-    it('runs "attributeChangedCallback" and [$$invalidate] on change', () => {
+    it('runs "attributeChangedCallback" on change', () => {
       const attributeChangedCallbackSpy = jasmine.createSpy('onAttributeChange');
-      const invalidateSpy = jasmine.createSpy('onInvalidate');
 
       class Test extends CorpusculeElementMock {
         @attribute('attr', String)
@@ -189,10 +184,6 @@ const testAttributeDecorator = () => {
 
         public attributeChangedCallback(...args: Array<unknown>): void {
           attributeChangedCallbackSpy(...args);
-        }
-
-        public [$$invalidate](): void {
-          invalidateSpy();
         }
       }
 
@@ -202,34 +193,7 @@ const testAttributeDecorator = () => {
       test.attribute = 'test';
 
       expect(attributeChangedCallbackSpy).toHaveBeenCalledWith('attr', 'str', 'test');
-      expect(attributeChangedCallbackSpy).toHaveBeenCalledTimes(1);
-      expect(invalidateSpy).toHaveBeenCalledTimes(1);
-    });
-
-    it('does not call attributeChangedCallback and [$$invalidate] if values are identical', () => {
-      const attributeChangedCallbackSpy = jasmine.createSpy('onAttributeChange');
-      const invalidateSpy = jasmine.createSpy('onInvalidate');
-
-      class Test extends CorpusculeElementMock {
-        @attribute('attr', Number)
-        public attribute: number = 10;
-
-        public attributeChangedCallback(...args: Array<unknown>): void {
-          attributeChangedCallbackSpy(...args);
-        }
-
-        public [$$invalidate](): void {
-          invalidateSpy();
-        }
-      }
-
-      const test = new Test();
-      test.connectedCallback();
-
-      test.attribute = 10;
-
-      expect(attributeChangedCallbackSpy).not.toHaveBeenCalled();
-      expect(invalidateSpy).not.toHaveBeenCalled();
+      expect(attributeChangedCallbackSpy).toHaveBeenCalledTimes(2);
     });
 
     it('throws an error if guard is not Number, String or Boolean', () => {
