@@ -2,31 +2,21 @@
 import {property, propertyChangedCallback} from '../../src';
 import {invalidate as $$invalidate} from '../../src/tokens/internal';
 
+class CorpusculeElementMock {
+  public [propertyChangedCallback](
+    _key: PropertyKey,
+    _oldValue: unknown,
+    _newValue: unknown,
+  ): void { // tslint:disable-line:no-empty
+  }
+
+  // tslint:disable-next-line:no-empty
+  public [$$invalidate](): void {
+  }
+}
+
 const testPropertyDecorator = () => {
   describe('@property', () => {
-    let propertyChangedCallbackSpy: jasmine.Spy;
-    let invalidateSpy: jasmine.Spy;
-    let CorpusculeElementMock: any; // tslint:disable-line:naming-convention
-
-    beforeEach(() => {
-      propertyChangedCallbackSpy = jasmine.createSpy('onPropertyChanged');
-      invalidateSpy = jasmine.createSpy('onInvalidate');
-
-      CorpusculeElementMock = class {
-        public [propertyChangedCallback](
-          key: PropertyKey,
-          oldValue: unknown,
-          newValue: unknown,
-        ): void {
-          propertyChangedCallbackSpy(key, oldValue, newValue);
-        }
-
-        public [$$invalidate](): void {
-          invalidateSpy();
-        }
-      };
-    });
-
     it('initializes, gets and sets property', () => {
       class Test extends CorpusculeElementMock {
         @property()
@@ -54,9 +44,20 @@ const testPropertyDecorator = () => {
     });
 
     it('runs [propertyChangedCallback] and [$$invalidate] on property change', () => {
+      const propertyChangedCallbackSpy = jasmine.createSpy('onPropertyChanged');
+      const invalidateSpy = jasmine.createSpy('onInvalidate');
+
       class Test extends CorpusculeElementMock {
         @property()
         public prop: number = 10;
+
+        public [propertyChangedCallback](...args: Array<unknown>): void {
+          propertyChangedCallbackSpy(...args);
+        }
+
+        public [$$invalidate](): void {
+          invalidateSpy();
+        }
       }
 
       const test = new Test();
@@ -91,9 +92,20 @@ const testPropertyDecorator = () => {
     });
 
     it('does not call [propertyChangedCallback] and [$$invalidate] if value is the same', () => {
+      const propertyChangedCallbackSpy = jasmine.createSpy('onPropertyChanged');
+      const invalidateSpy = jasmine.createSpy('onInvalidate');
+
       class Test extends CorpusculeElementMock {
         @property()
         public prop: number = 10;
+
+        public [propertyChangedCallback](...args: Array<unknown>): void {
+          propertyChangedCallbackSpy(...args);
+        }
+
+        public [$$invalidate](): void {
+          invalidateSpy();
+        }
       }
 
       const test = new Test();
