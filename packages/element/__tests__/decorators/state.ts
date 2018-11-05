@@ -2,31 +2,21 @@
 import {state, stateChangedCallback} from '../../src';
 import {invalidate as $$invalidate} from '../../src/tokens/internal';
 
+class CorpusculeElementMock {
+  public [stateChangedCallback](
+    _key: PropertyKey,
+    _oldValue: unknown,
+    _newValue: unknown,
+  ): void { // tslint:disable-line:no-empty
+  }
+
+  // tslint:disable-next-line:no-empty
+  public [$$invalidate](): void {
+  }
+}
+
 const testStateDecorator = () => {
   describe('@state', () => {
-    let stateChangedCallbackSpy: jasmine.Spy;
-    let invalidateSpy: jasmine.Spy;
-    let CorpusculeElementMock: any; // tslint:disable-line:naming-convention
-
-    beforeEach(() => {
-      stateChangedCallbackSpy = jasmine.createSpy('onPropertyChanged');
-      invalidateSpy = jasmine.createSpy('onInvalidate');
-
-      CorpusculeElementMock = class {
-        public [stateChangedCallback](
-          key: PropertyKey,
-          oldValue: unknown,
-          newValue: unknown,
-        ): void {
-          stateChangedCallbackSpy(key, oldValue, newValue);
-        }
-
-        public [$$invalidate](): void {
-          invalidateSpy();
-        }
-      };
-    });
-
     it('initializes, gets and sets state properties', () => {
       class Test extends CorpusculeElementMock {
         @state
@@ -43,9 +33,20 @@ const testStateDecorator = () => {
     });
 
     it('runs [stateChangedCallback] and [$$invalidate] on state property change', () => {
+      const stateChangedCallbackSpy = jasmine.createSpy('onPropertyChanged');
+      const invalidateSpy = jasmine.createSpy('onInvalidate');
+
       class Test extends CorpusculeElementMock {
         @state
         public prop: number = 10;
+
+        public [stateChangedCallback](...args: Array<unknown>): void {
+          stateChangedCallbackSpy(...args);
+        }
+
+        public [$$invalidate](): void {
+          invalidateSpy();
+        }
       }
 
       const test = new Test();
