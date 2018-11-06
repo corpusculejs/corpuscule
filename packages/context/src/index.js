@@ -48,7 +48,7 @@ const createContext = (defaultValue) => {
               this[providingValue] = providingValueMethod.initializer();
             }
 
-            superConnectedCallback(this);
+            superConnectedCallback.call(this);
           },
         },
         key: connectedCallbackKey,
@@ -60,7 +60,7 @@ const createContext = (defaultValue) => {
           enumerable: true,
           value() {
             this.removeEventListener(eventName, this[$$subscribe]);
-            superDisconnectedCallback(this);
+            superDisconnectedCallback.call(this);
           },
         },
         key: disconnectedCallbackKey,
@@ -161,7 +161,7 @@ const createContext = (defaultValue) => {
               throw new Error(`No provider found for ${this.constructor.name}`);
             }
 
-            superConnectedCallback(this);
+            superConnectedCallback.call(this);
           },
         },
         key: connectedCallbackKey,
@@ -176,7 +176,7 @@ const createContext = (defaultValue) => {
               this[$$unsubscribe](this[$$consume]);
             }
 
-            superDisconnectedCallback(this);
+            superDisconnectedCallback.call(this);
           },
         },
         key: disconnectedCallbackKey,

@@ -40,7 +40,7 @@ const outlet = routes => (classDescriptor) => {
         value() {
           window.addEventListener('popstate', this[$$updateRoute]);
 
-          superConnectedCallback(this);
+          superConnectedCallback.call(this);
 
           this[$$updateRoute](location.pathname);
         },
@@ -53,7 +53,7 @@ const outlet = routes => (classDescriptor) => {
         configurable: true,
         value() {
           window.removeEventListener('popstate', this[$$updateRoute]);
-          superDisconnectedCallback(this);
+          superDisconnectedCallback.call(this);
         },
       },
       key: disconnectedCallbackKey,

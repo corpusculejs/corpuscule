@@ -19,7 +19,7 @@ const testGetSuperMethod = () => {
             descriptor: {
               value(this: any): void {
                 decoratorSpy();
-                superTest(this); // tslint:disable-line:no-invalid-this
+                superTest.call(this); // tslint:disable-line:no-invalid-this
               },
             },
             key,

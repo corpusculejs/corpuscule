@@ -42,7 +42,7 @@ export const connect = (classDescriptor) => {
         configurable: true,
         enumerable: true,
         value() {
-          superDisconnectedCallback(this);
+          superDisconnectedCallback.call(this);
 
           if (this[$$unsubscribe]) {
             this[$$unsubscribe]();
