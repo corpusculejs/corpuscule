@@ -1,50 +1,11 @@
 // tslint:disable:max-classes-per-file
 import {attribute} from '../../src';
-
-class CorpusculeElementMock {
-  public static readonly observedAttributes?: ReadonlyArray<string>;
-  public readonly attributes: Map<string, string> = new Map();
-
-  public attributeChangedCallback(
-    _key: PropertyKey,
-    _oldValue: string | null,
-    _newValue: string | null,
-  ): void {} // tslint:disable-line:no-empty
-
-  // tslint:disable-next-line:no-empty
-  public connectedCallback(): void {}
-
-  public getAttribute(key: string): string | null {
-    return this.attributes.has(key)
-      ? this.attributes.get(key)!
-      : null;
-  }
-
-  public hasAttribute(key: string): boolean {
-    return this.attributes.has(key);
-  }
-
-  public removeAttribute(key: string): void {
-    this.attributes.delete(key);
-  }
-
-  public setAttribute(key: string, value: unknown): void {
-    const v = String(value);
-    this.attributeChangedCallback(
-      key,
-      this.attributes.has(key)
-        ? this.attributes.get(key)!
-        : null,
-      v,
-    );
-    this.attributes.set(key, v);
-  }
-}
+import {HTMLElementMock} from '../utils';
 
 const testAttributeDecorator = () => {
   describe('@attribute', () => {
     it('gets string attribute', () => {
-      class Test extends CorpusculeElementMock {
+      class Test extends HTMLElementMock {
         public readonly attributes: Map<string, string> = new Map([['attr', 'str']]);
 
         @attribute('attr', String)
@@ -58,7 +19,7 @@ const testAttributeDecorator = () => {
     });
 
     it('properly gets boolean attribute', () => {
-      class Test extends CorpusculeElementMock {
+      class Test extends HTMLElementMock {
         public readonly attributes: Map<string, string> = new Map([
           ['a1', ''],
         ]);
@@ -78,7 +39,7 @@ const testAttributeDecorator = () => {
     });
 
     it('properly gets number attributes', () => {
-      class Test extends CorpusculeElementMock {
+      class Test extends HTMLElementMock {
         public readonly attributes: Map<string, string> = new Map([['num', '10']]);
 
         @attribute('num', Number)
@@ -92,7 +53,7 @@ const testAttributeDecorator = () => {
     });
 
     it('sets string attribute', () => {
-      class Test extends CorpusculeElementMock {
+      class Test extends HTMLElementMock {
         @attribute('attr', String)
         public attribute?: string;
       }
@@ -106,7 +67,7 @@ const testAttributeDecorator = () => {
     });
 
     it('properly sets boolean attributes', () => {
-      class Test extends CorpusculeElementMock {
+      class Test extends HTMLElementMock {
         public readonly attributes: Map<string, string> = new Map([
           ['a2', ''],
         ]);
@@ -128,7 +89,7 @@ const testAttributeDecorator = () => {
     });
 
     it('properly sets number attribute', () => {
-      class Test extends CorpusculeElementMock {
+      class Test extends HTMLElementMock {
         @attribute('num', Number)
         public numAttribute?: number;
       }
@@ -142,7 +103,7 @@ const testAttributeDecorator = () => {
     });
 
     it('initializes attributes', () => {
-      class Test extends CorpusculeElementMock {
+      class Test extends HTMLElementMock {
         @attribute('str', String)
         public strAttribute: string = 'str';
 
@@ -164,7 +125,7 @@ const testAttributeDecorator = () => {
     });
 
     it('initializes and fills "observedAttributes"', () => {
-      class Test extends CorpusculeElementMock {
+      class Test extends HTMLElementMock {
         @attribute('a1', Boolean)
         public attr1: boolean = true;
 
@@ -178,7 +139,7 @@ const testAttributeDecorator = () => {
     it('runs "attributeChangedCallback" on change', () => {
       const attributeChangedCallbackSpy = jasmine.createSpy('onAttributeChange');
 
-      class Test extends CorpusculeElementMock {
+      class Test extends HTMLElementMock {
         @attribute('attr', String)
         public attribute: string = 'str';
 
@@ -207,7 +168,7 @@ const testAttributeDecorator = () => {
     });
 
     it('throws an error if value does not fit guard', () => {
-      class Test extends CorpusculeElementMock {
+      class Test extends HTMLElementMock {
         @attribute('num', Number)
         public numAttribute?: number;
       }
@@ -221,7 +182,7 @@ const testAttributeDecorator = () => {
     });
 
     it('gets undefined if no attribute exist', () => {
-      class Test extends CorpusculeElementMock {
+      class Test extends HTMLElementMock {
         @attribute('num', Number)
         public numAttribute?: number;
       }
