@@ -9,7 +9,7 @@ const testAttributeDecorator = () => {
         public readonly attributes: Map<string, string> = new Map([['attr', 'str']]);
 
         @attribute('attr', String)
-        public attribute?: string;
+        public attribute: string | null = null;
       }
 
       const test = new Test();
@@ -25,10 +25,10 @@ const testAttributeDecorator = () => {
         ]);
 
         @attribute('a1', Boolean)
-        public attr1?: boolean;
+        public attr1: boolean | null = null;
 
         @attribute('a2', Boolean)
-        public attr2?: boolean;
+        public attr2: boolean | null = null;
       }
 
       const test = new Test();
@@ -43,7 +43,7 @@ const testAttributeDecorator = () => {
         public readonly attributes: Map<string, string> = new Map([['num', '10']]);
 
         @attribute('num', Number)
-        public numAttribute?: number;
+        public numAttribute: number | null = null;
       }
 
       const test = new Test();
@@ -55,7 +55,7 @@ const testAttributeDecorator = () => {
     it('sets string attribute', () => {
       class Test extends HTMLElementMock {
         @attribute('attr', String)
-        public attribute?: string;
+        public attribute: string | null = null;
       }
 
       const test = new Test();
@@ -73,10 +73,10 @@ const testAttributeDecorator = () => {
         ]);
 
         @attribute('a1', Boolean)
-        public attr1?: boolean;
+        public attr1: boolean | null = null;
 
         @attribute('a2', Boolean)
-        public attr2?: boolean;
+        public attr2: boolean | null = null;
       }
 
       const test = new Test();
@@ -91,7 +91,7 @@ const testAttributeDecorator = () => {
     it('properly sets number attribute', () => {
       class Test extends HTMLElementMock {
         @attribute('num', Number)
-        public numAttribute?: number;
+        public numAttribute: number | null = null;
       }
 
       const test = new Test();
@@ -102,35 +102,13 @@ const testAttributeDecorator = () => {
       expect(test.attributes).toEqual(new Map([['num', '10']]));
     });
 
-    it('initializes attributes', () => {
-      class Test extends HTMLElementMock {
-        @attribute('str', String)
-        public strAttribute: string = 'str';
-
-        @attribute('bool', Boolean)
-        public boolAttribute: boolean = true;
-
-        @attribute('num', Number)
-        public numAttribute: number = 10;
-      }
-
-      const test = new Test();
-      test.connectedCallback();
-
-      expect(test.attributes).toEqual(new Map([
-        ['str', 'str'],
-        ['bool', ''],
-        ['num', '10'],
-      ]));
-    });
-
     it('initializes and fills "observedAttributes"', () => {
       class Test extends HTMLElementMock {
         @attribute('a1', Boolean)
-        public attr1: boolean = true;
+        public attr1: boolean | null = null;
 
         @attribute('a2', String)
-        public attr2: string = 'str';
+        public attr2: string | null = null;
       }
 
       expect(Test.observedAttributes).toEqual(['a1', 'a2']);
@@ -141,7 +119,7 @@ const testAttributeDecorator = () => {
 
       class Test extends HTMLElementMock {
         @attribute('attr', String)
-        public attribute: string = 'str';
+        public attribute: string | null = null;
 
         public attributeChangedCallback(...args: Array<unknown>): void {
           attributeChangedCallbackSpy(...args);
@@ -149,12 +127,11 @@ const testAttributeDecorator = () => {
       }
 
       const test = new Test();
-      test.connectedCallback();
 
       test.attribute = 'test';
 
-      expect(attributeChangedCallbackSpy).toHaveBeenCalledWith('attr', 'str', 'test');
-      expect(attributeChangedCallbackSpy).toHaveBeenCalledTimes(2);
+      expect(attributeChangedCallbackSpy).toHaveBeenCalledWith('attr', null, 'test');
+      expect(attributeChangedCallbackSpy).toHaveBeenCalledTimes(1);
     });
 
     it('throws an error if guard is not Number, String or Boolean', () => {
@@ -162,7 +139,7 @@ const testAttributeDecorator = () => {
         // @ts-ignore
         class Test {
           @attribute('attr', Object as any)
-          public attribute?: object;
+          public attribute: object | null = null;
         }
       }).toThrow(new TypeError('Guard for @attribute should be either Number, Boolean or String'));
     });
@@ -170,7 +147,7 @@ const testAttributeDecorator = () => {
     it('throws an error if value does not fit guard', () => {
       class Test extends HTMLElementMock {
         @attribute('num', Number)
-        public numAttribute?: number;
+        public numAttribute: number | null = null;
       }
 
       const test = new Test();
@@ -181,16 +158,16 @@ const testAttributeDecorator = () => {
       }).toThrow(new TypeError('Value applied to "numAttribute" is not Number or undefined'));
     });
 
-    it('gets undefined if no attribute exist', () => {
+    it('gets null if no attribute exist', () => {
       class Test extends HTMLElementMock {
         @attribute('num', Number)
-        public numAttribute?: number;
+        public numAttribute: number | null = null;
       }
 
       const test = new Test();
       test.connectedCallback();
 
-      expect(test.numAttribute).toBeUndefined();
+      expect(test.numAttribute).toBeNull();
     });
   });
 };
