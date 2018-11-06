@@ -1,14 +1,16 @@
+/* eslint-disable no-invalid-this */
+
 const getSuperMethod = (name, elements) => {
   const method = elements.find(({key}) => key === name);
 
-  return (instance) => {
+  return function superMethod(...args) {
     if (method) {
-      method.descriptor.value.call(instance);
+      method.descriptor.value.apply(this, args);
     } else {
-      const superClass = Object.getPrototypeOf(instance.constructor.prototype);
+      const superClass = Object.getPrototypeOf(this.constructor.prototype);
 
       if (superClass[name]) {
-        superClass[name].call(instance);
+        superClass[name].apply(this, args);
       }
     }
   };
