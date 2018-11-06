@@ -27,7 +27,7 @@ const testStateDecorator = () => {
       expect(test.prop).toBe(20);
     });
 
-    it('runs [stateChangedCallback] and [$$invalidate] on state property change', () => {
+    it('runs [stateChangedCallback] on state property change', () => {
       const stateChangedCallbackSpy = jasmine.createSpy('onPropertyChanged');
 
       class Test extends CorpusculeElementMock {
