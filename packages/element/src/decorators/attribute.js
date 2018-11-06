@@ -1,11 +1,5 @@
 import {assertElementDecoratorsKindAndPlacement} from '../utils';
 
-const assertGuard = (guard) => {
-  if (guard !== Boolean && guard !== Number && guard !== String) {
-    throw new TypeError('Guard for @attribute should be either Number, Boolean or String');
-  }
-};
-
 const fromAttribute = (instance, name, guard) => {
   const value = instance.getAttribute(name);
 
@@ -15,7 +9,7 @@ const fromAttribute = (instance, name, guard) => {
 
   return value !== null
     ? guard === String ? value : guard(value)
-    : undefined;
+    : null;
 };
 
 const toAttribute = (instance, name, value) => {
@@ -27,13 +21,15 @@ const toAttribute = (instance, name, value) => {
 };
 
 const attribute = (name, guard) => ({
-  initializer,
   key,
   kind,
   placement,
 }) => {
   assertElementDecoratorsKindAndPlacement('attribute', kind, placement);
-  assertGuard(guard);
+
+  if (guard !== Boolean && guard !== Number && guard !== String) {
+    throw new TypeError('Guard for @attribute should be either Number, Boolean or String');
+  }
 
   const guardType = typeof guard(null);
   const check = (value) => {
@@ -62,22 +58,6 @@ const attribute = (name, guard) => ({
       } else {
         target.observedAttributes = [name];
       }
-
-      const superConnectedCallback = target.prototype.connectedCallback;
-
-      target.prototype.connectedCallback = function connectedCallback() {
-        if (superConnectedCallback) {
-          superConnectedCallback.call(this);
-        }
-
-        if (this.hasAttribute(name)) {
-          return;
-        }
-
-        const value = initializer ? initializer.call(this) : undefined;
-        check(value);
-        toAttribute(this, name, value);
-      };
     },
     key,
     kind: 'method',
