@@ -12,12 +12,28 @@ module.exports = {
     rules: [
       {
         test: /\.js/,
-        loader: 'istanbul-instrumenter-loader',
-        enforce: 'post',
-        options: {
-          esModules: true,
-        },
-        exclude: /node_modules|__tests__/,
+        use: [
+          {
+            loader: 'istanbul-instrumenter-loader',
+            options: {
+              esModules: true,
+            },
+          },
+          {
+            loader: 'babel-loader',
+            options: {
+              babelrc: false,
+              cacheDirectory: true,
+              cacheCompression: false,
+              plugins: [
+                require('@babel/plugin-proposal-object-rest-spread'),
+                require('@babel/plugin-proposal-class-properties'),
+              ],
+            },
+          },
+        ],
+        include: /packages/,
+        exclude: /node_modules|__tests__|lib/,
       },
       {
         test: /\.ts/,
