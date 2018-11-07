@@ -352,6 +352,25 @@ const testElementDecorator = () => {
 
       expect(rendererSpy).toHaveBeenCalledWith('render', root);
     });
+
+    it('allows extending existing element', () => {
+      @element('x-test1')
+      class Test1 extends HTMLElementMock {
+        public [render](): null {
+          return null;
+        }
+      }
+
+      @element('x-test2')
+      // @ts-ignore
+      class Test2 extends Test1 {
+        public [render](): null {
+          return null;
+        }
+      }
+
+      expect(customElements.define).toHaveBeenCalledTimes(2);
+    });
   });
 };
 
