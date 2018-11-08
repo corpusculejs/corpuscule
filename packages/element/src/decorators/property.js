@@ -1,5 +1,6 @@
 import {assertElementDecoratorsKindAndPlacement} from '../utils';
 import {propertyChangedCallback as $propertyChangedCallback} from '../tokens/lifecycle';
+import {accessor, privateField} from '@corpuscule/utils/lib/descriptors';
 
 const property = (guard = null) => ({
   initializer,
@@ -17,24 +18,9 @@ const property = (guard = null) => ({
     }
   };
 
-  return {
-    descriptor: {
-      configurable: true,
-      enumerable: true,
-      get() {
-        return this[storage];
-      },
-      set(value) {
-        check(value);
-        this[$propertyChangedCallback](key, this[storage], value);
-        this[storage] = value;
-      },
-    },
+  return accessor({
     extras: [
-      {
-        descriptor: {
-          writable: true,
-        },
+      privateField({
         initializer() {
           const value = initializer ? initializer.call(this) : undefined;
           check(value);
@@ -42,14 +28,18 @@ const property = (guard = null) => ({
           return value;
         },
         key: storage,
-        kind: 'field',
-        placement: 'own',
-      },
+      }),
     ],
+    get() {
+      return this[storage];
+    },
     key,
-    kind: 'method',
-    placement: 'prototype',
-  };
+    set(value) {
+      check(value);
+      this[$propertyChangedCallback](key, this[storage], value);
+      this[storage] = value;
+    },
+  });
 };
 
 export default property;

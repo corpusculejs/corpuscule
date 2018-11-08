@@ -1,5 +1,6 @@
 import {assertElementDecoratorsKindAndPlacement} from '../utils';
 import {stateChangedCallback as $stateChangedCallback} from '../tokens/lifecycle';
+import {accessor, privateField} from '@corpuscule/utils/lib/descriptors';
 
 const state = ({
   initializer,
@@ -11,33 +12,22 @@ const state = ({
 
   const storage = Symbol();
 
-  return {
-    descriptor: {
-      configurable: true,
-      enumerable: true,
-      get() {
-        return this[storage];
-      },
-      set(value) {
-        this[$stateChangedCallback](key, this[storage], value);
-        this[storage] = value;
-      },
-    },
+  return accessor({
     extras: [
-      {
-        descriptor: {
-          writable: true,
-        },
+      privateField({
         initializer,
         key: storage,
-        kind: 'field',
-        placement: 'own',
-      },
+      }),
     ],
+    get() {
+      return this[storage];
+    },
     key,
-    kind: 'method',
-    placement: 'prototype',
-  };
+    set(value) {
+      this[$stateChangedCallback](key, this[storage], value);
+      this[storage] = value;
+    },
+  });
 };
 
 export default state;

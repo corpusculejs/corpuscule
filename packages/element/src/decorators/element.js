@@ -18,47 +18,21 @@ import {
   root as $$root,
   valid as $$valid,
 } from '../tokens/internal';
+import {
+  method,
+  privateField,
+  privateMethod,
+  readonlyField,
+  toStatic,
+} from '@corpuscule/utils/lib/descriptors';
 
 const corpusculeElements = new WeakSet();
 const connectedCallbackKey = 'connectedCallback';
 const attributeChangedCallbackKey = 'attributeChangedCallback';
 
 // eslint-disable-next-line no-empty-function
-const noop = () => {};
-
-const method = (key, value) => (
-  {
-    descriptor: {
-      configurable: true,
-      enumerable: true,
-      value,
-    },
-    key,
-    kind: 'method',
-    placement: 'prototype',
-  }
-);
-
-const field = (key, initializer) => ({
-  descriptor: {
-    writable: true,
-  },
-  initializer,
-  key,
-  kind: 'field',
-  placement: 'own',
-});
-
-const staticField = (key, initializer) => ({
-  descriptor: {
-    configurable: true,
-    enumerable: true,
-  },
-  initializer,
-  key,
-  kind: 'field',
-  placement: 'static',
-});
+const noop = () => {
+};
 
 const element = name => ({kind, elements}) => {
   assertKind('element', 'class', kind);
@@ -75,20 +49,32 @@ const element = name => ({kind, elements}) => {
   const fallbacks = [];
 
   if (!elements.find(({key}) => key === $renderer)) {
-    fallbacks.push(staticField($renderer, () => renderer));
+    fallbacks.push(toStatic(readonlyField({
+      initializer: () => renderer,
+      key: $renderer,
+    })));
   }
 
   if (!elements.find(({key}) => key === $scheduler)) {
-    fallbacks.push(staticField($scheduler, () => scheduler));
+    fallbacks.push(toStatic(readonlyField({
+      initializer: () => scheduler,
+      key: $scheduler,
+    })));
   }
 
   if (!elements.find(({key}) => key === $updatedCallback)) {
-    fallbacks.push(method($updatedCallback, noop));
+    fallbacks.push(method({
+      key: $updatedCallback,
+      value: noop,
+    }));
   }
 
   if (!elements.find(({key}) => key === $createRoot)) {
-    fallbacks.push(method($createRoot, function createRoot() {
-      return this.attachShadow({mode: 'open'});
+    fallbacks.push(method({
+      key: $createRoot,
+      value() {
+        return this.attachShadow({mode: 'open'});
+      },
     }));
   }
 
@@ -114,21 +100,33 @@ const element = name => ({kind, elements}) => {
         kind: 'method',
         placement: 'static',
       },
-      field($$connected, () => false),
-      field($$valid, () => true),
-      field($$root, function initializer() {
-        return this[$createRoot]();
+      privateField({
+        initializer: () => false,
+        key: $$connected,
       }),
-      method(connectedCallbackKey, function connectedCallback() {
-        if (superConnectedCallback) {
-          superConnectedCallback.call(this);
-        }
+      privateField({
+        initializer: () => true,
+        key: $$valid,
+      }),
+      privateField({
+        initializer() {
+          return this[$createRoot]();
+        },
+        key: $$root,
+      }),
+      method({
+        key: connectedCallbackKey,
+        value() {
+          if (superConnectedCallback) {
+            superConnectedCallback.call(this);
+          }
 
-        this[$$invalidate]();
+          this[$$invalidate]();
+        },
       }),
-      method(
-        attributeChangedCallbackKey,
-        function attributeChangedCallback(attributeName, oldValue, newValue) {
+      method({
+        key: attributeChangedCallbackKey,
+        value(attributeName, oldValue, newValue) {
           if (oldValue === newValue || !this[$$connected]) {
             return;
           }
@@ -139,10 +137,10 @@ const element = name => ({kind, elements}) => {
 
           this[$$invalidate]();
         },
-      ),
-      method(
-        $propertyChangedCallback,
-        function propertyChangedCallback(propertyName, oldValue, newValue) {
+      }),
+      method({
+        key: $propertyChangedCallback,
+        value(propertyName, oldValue, newValue) {
           if (oldValue === newValue || !this[$$connected]) {
             return;
           }
@@ -153,10 +151,10 @@ const element = name => ({kind, elements}) => {
 
           this[$$invalidate]();
         },
-      ),
-      method(
-        $stateChangedCallback,
-        function stateChangedCallback(stateName, oldValue, newValue) {
+      }),
+      method({
+        key: $stateChangedCallback,
+        value(stateName, oldValue, newValue) {
           if (!this[$$connected]) {
             return;
           }
@@ -167,43 +165,39 @@ const element = name => ({kind, elements}) => {
 
           this[$$invalidate]();
         },
-      ),
-      {
-        descriptor: {
-          value() {
-            if (!this[$$valid]) {
-              return;
+      }),
+      privateMethod({
+        key: $$invalidate,
+        value() {
+          if (!this[$$valid]) {
+            return;
+          }
+
+          const {
+            [$renderer]: render,
+            [$scheduler]: schedule,
+          } = this.constructor;
+
+          this[$$valid] = false;
+
+          schedule(() => {
+            const rendered = this[$render]();
+
+            if (rendered) {
+              render(rendered, this[$$root]);
             }
 
-            const {
-              [$renderer]: render,
-              [$scheduler]: schedule,
-            } = this.constructor;
+            const shouldRunUpdatedCallback = this[$$connected];
 
-            this[$$valid] = false;
+            this[$$connected] = true;
+            this[$$valid] = true;
 
-            schedule(() => {
-              const rendered = this[$render]();
-
-              if (rendered) {
-                render(rendered, this[$$root]);
-              }
-
-              const shouldRunUpdatedCallback = this[$$connected];
-
-              this[$$connected] = true;
-              this[$$valid] = true;
-
-              if (shouldRunUpdatedCallback) {
-                this[$updatedCallback]();
-              }
-            });
-          },
+            if (shouldRunUpdatedCallback) {
+              this[$updatedCallback]();
+            }
+          });
         },
-        key: $$invalidate,
-        kind: 'method',
-        placement: 'prototype',
-      },
+      }),
     ],
     finisher(target) {
       customElements.define(name, target);
