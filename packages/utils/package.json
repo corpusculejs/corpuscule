@@ -11,5 +11,8 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/corpusculejs/corpuscule.git"
+  },
+  "dependencies": {
+    "@corpuscule/typings": "^0.3.0"
   }
 }
