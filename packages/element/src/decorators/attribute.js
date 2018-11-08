@@ -13,7 +13,7 @@ const fromAttribute = (instance, name, guard) => {
 };
 
 const toAttribute = (instance, name, value) => {
-  if (value === undefined || value === false) {
+  if (value == null || value === false) {
     instance.removeAttribute(name);
   } else {
     instance.setAttribute(name, value === true ? '' : value);
@@ -33,7 +33,7 @@ const attribute = (name, guard) => ({
 
   const guardType = typeof guard(null);
   const check = (value) => {
-    if (value !== undefined && typeof value !== guardType) {
+    if (value != null && typeof value !== guardType) {
       throw new TypeError(
         `Value applied to "${key}" is not ${guard.name} or undefined`,
       );

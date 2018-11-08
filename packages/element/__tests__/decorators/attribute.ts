@@ -169,6 +169,23 @@ const testAttributeDecorator = () => {
 
       expect(test.numAttribute).toBeNull();
     });
+
+    it('accepts both null and undefined as a value of attribute', () => {
+      class Test extends HTMLElementMock {
+        @attribute('a1', Number)
+        public a1: number | null = 10;
+
+        @attribute('a2', Number)
+        public a2?: number | null = 20;
+      }
+
+      const test = new Test();
+
+      expect(() => {
+        test.a1 = null;
+        test.a2 = undefined;
+      }).not.toThrow();
+    });
   });
 };
 
