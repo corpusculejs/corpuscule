@@ -25,8 +25,9 @@ import {
   readonlyField,
   toStatic,
 } from '@corpuscule/utils/lib/descriptors';
+import {unsafeStatic} from '../withUnsafeStatic';
 
-const corpusculeElements = new WeakSet();
+export const corpusculeElements = new WeakMap();
 const connectedCallbackKey = 'connectedCallback';
 const attributeChangedCallbackKey = 'attributeChangedCallback';
 
@@ -201,7 +202,7 @@ const element = name => ({kind, elements}) => {
     ],
     finisher(target) {
       customElements.define(name, target);
-      corpusculeElements.add(target);
+      corpusculeElements.set(target, unsafeStatic(name));
     },
     kind,
   };
