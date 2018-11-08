@@ -1,4 +1,5 @@
 import {assertElementDecoratorsKindAndPlacement} from '../utils';
+import {accessor} from '@corpuscule/utils/lib/descriptors';
 
 const fromAttribute = (instance, name, guard) => {
   const value = instance.getAttribute(name);
@@ -40,18 +41,7 @@ const attribute = (name, guard) => ({
     }
   };
 
-  return {
-    descriptor: {
-      configurable: true,
-      enumerable: true,
-      get() {
-        return fromAttribute(this, name, guard);
-      },
-      set(value) {
-        check(value);
-        toAttribute(this, name, value);
-      },
-    },
+  return accessor({
     finisher(target) {
       if (Array.isArray(target.observedAttributes)) {
         target.observedAttributes.push(name);
@@ -59,10 +49,15 @@ const attribute = (name, guard) => ({
         target.observedAttributes = [name];
       }
     },
+    get() {
+      return fromAttribute(this, name, guard);
+    },
     key,
-    kind: 'method',
-    placement: 'prototype',
-  };
+    set(value) {
+      check(value);
+      toAttribute(this, name, value);
+    },
+  });
 };
 
 export default attribute;

@@ -1,4 +1,5 @@
 import assertKind from '@corpuscule/utils/lib/assertKind';
+import {accessor, privateField} from '@corpuscule/utils/lib/descriptors';
 
 const createComputingPair = () => {
   const dirty = Symbol();
@@ -12,41 +13,26 @@ const createComputingPair = () => {
 
     const storage = Symbol();
 
-    return {
-      descriptor: {
-        configurable: true,
-        enumerable: true,
-        get() {
-          if (this[dirty]) {
-            this[storage] = get.call(this);
-            this[dirty] = false;
-          }
-
-          return this[storage];
-        },
-      },
+    return accessor({
       extras: [
-        {
-          descriptor: {
-            writable: true,
-          },
+        privateField({
           key: storage,
-          kind: 'field',
-          placement: 'own',
-        }, {
-          descriptor: {
-            writable: true,
-          },
+        }),
+        privateField({
           initializer: () => true,
           key: dirty,
-          kind: 'field',
-          placement: 'own',
-        },
+        }),
       ],
+      get() {
+        if (this[dirty]) {
+          this[storage] = get.call(this);
+          this[dirty] = false;
+        }
+
+        return this[storage];
+      },
       key,
-      kind,
-      placement: 'own',
-    };
+    });
   };
 
   const observer = ({
@@ -67,52 +53,41 @@ const createComputingPair = () => {
       ),
     );
 
-    let get;
-    let set;
+    let descriptor;
     let initializerDescriptor;
 
     if (isMethod) {
-      get = previousGet;
-      set = previousSet;
+      descriptor = {
+        get: previousGet,
+        set: previousSet,
+      };
     } else {
       const storage = Symbol();
 
-      /* eslint-disable no-shadow, no-invalid-this */
-      get = function get() {
-        return this[storage];
-      };
-
-      set = function set(value) {
-        this[storage] = value;
-      };
-      /* eslint-enable no-shadow, no-invalid-this */
-
-      initializerDescriptor = {
-        descriptor: {
-          writable: true,
+      descriptor = {
+        get() {
+          return this[storage];
         },
+        set(value) {
+          this[storage] = value;
+        },
+      };
+
+      initializerDescriptor = privateField({
         initializer,
         key: storage,
-        kind: 'field',
-        placement: 'own',
-      };
+      });
     }
 
-    return {
-      descriptor: {
-        configurable: true,
-        enumerable: true,
-        get,
-        set(value) {
-          set.call(this, value);
-          this[dirty] = true;
-        },
-      },
+    return accessor({
       extras: initializerDescriptor ? [initializerDescriptor] : undefined,
+      get: descriptor.get,
       key,
-      kind: 'method',
-      placement: 'prototype',
-    };
+      set(value) {
+        descriptor.set.call(this, value);
+        this[dirty] = true;
+      },
+    });
   };
 
   return {computer, observer};
