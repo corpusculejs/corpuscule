@@ -35,5 +35,8 @@ export class UnsafeStatic {
 
 export const unsafeStatic: (value: unknown) => UnsafeStatic;
 
-// tslint:disable-next-line:array-type readonly-array
-export const dhtml: (strings: ReadonlyArray<string>, ...values: unknown[]) => TemplateResult;
+export const withCorpusculeElement:
+  // tslint:disable-next-line:readonly-array
+  (processor: (strings: TemplateStringsArray, ...values: any[]) => TemplateResult) =>
+    // tslint:disable-next-line:readonly-array
+    (strings: TemplateStringsArray, ...values: any[]) => TemplateResult;
