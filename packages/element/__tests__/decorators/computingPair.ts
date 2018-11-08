@@ -107,33 +107,6 @@ const testComputingPair = () => {
       expect(repeatGetTenTimes(test, 'computed')).toBe('20 of str');
       expect(spy).toHaveBeenCalledTimes(2);
     });
-
-    it('works with static fields', () => {
-      const spy = jasmine.createSpy('onCompute');
-
-      // tslint:disable-next-line:no-unnecessary-class
-      class Test {
-        @c.observer
-        public static observed1: string = 'str';
-
-        @c.observer
-        public static observed2: number = 10;
-
-        @c.computer
-        public static get computed(): string {
-          spy();
-
-          return `${this.observed2} of ${this.observed1}`;
-        }
-      }
-
-      expect(repeatGetTenTimes(Test, 'computed')).toBe('10 of str');
-
-      Test.observed2 = 20;
-
-      expect(repeatGetTenTimes(Test, 'computed')).toBe('20 of str');
-      expect(spy).toHaveBeenCalledTimes(2);
-    });
   });
 };
 

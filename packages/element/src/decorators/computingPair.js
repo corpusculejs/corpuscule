@@ -7,12 +7,10 @@ const createComputingPair = () => {
     descriptor: {get, set},
     key,
     kind,
-    placement,
   }) => {
     assertKind('computed', 'getter', kind, get && !set);
 
     const storage = Symbol();
-    const extrasPlacement = placement === 'static' ? 'static' : 'own';
 
     return {
       descriptor: {
@@ -34,7 +32,7 @@ const createComputingPair = () => {
           },
           key: storage,
           kind: 'field',
-          placement: extrasPlacement,
+          placement: 'own',
         }, {
           descriptor: {
             writable: true,
@@ -42,12 +40,12 @@ const createComputingPair = () => {
           initializer: () => true,
           key: dirty,
           kind: 'field',
-          placement: extrasPlacement,
+          placement: 'own',
         },
       ],
       key,
       kind,
-      placement,
+      placement: 'own',
     };
   };
 
@@ -56,7 +54,6 @@ const createComputingPair = () => {
     key,
     kind,
     initializer,
-    placement,
   }) => {
     const isMethod = kind === 'method';
 
@@ -97,7 +94,7 @@ const createComputingPair = () => {
         initializer,
         key: storage,
         kind: 'field',
-        placement: placement === 'static' ? 'static' : 'own',
+        placement: 'own',
       };
     }
 
@@ -114,7 +111,7 @@ const createComputingPair = () => {
       extras: initializerDescriptor ? [initializerDescriptor] : undefined,
       key,
       kind: 'method',
-      placement: placement === 'own' ? 'prototype' : placement,
+      placement: 'prototype',
     };
   };
 
