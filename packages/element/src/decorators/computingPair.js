@@ -1,4 +1,4 @@
-import assertKind from '@corpuscule/utils/lib/assertKind';
+import {assertKind} from '@corpuscule/utils/lib/asserts';
 import {accessor, privateField} from '@corpuscule/utils/lib/descriptors';
 
 const createComputingPair = () => {

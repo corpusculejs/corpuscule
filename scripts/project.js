@@ -6,7 +6,7 @@ const packages = {
   styles: ['index'],
   utils: [
     'addToRegistry',
-    'assertKind',
+    'asserts',
     'descriptors',
     'getSuperMethod',
     'compose',
