@@ -168,7 +168,7 @@ const element = name => ({kind, elements}) => {
             const rendered = this[$render]();
 
             if (rendered) {
-              render(rendered, this[$$root]);
+              render(rendered, this[$$root], {eventContext: this});
             }
 
             const shouldRunUpdatedCallback = this[$$connected];
