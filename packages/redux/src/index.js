@@ -6,6 +6,7 @@ import {
   update as $$update,
 } from './tokens/internal';
 import {connectedRegistry} from './decorators';
+import {accessor, method} from '@corpuscule/utils/lib/descriptors';
 import getSuperMethod from '@corpuscule/utils/lib/getSuperMethod';
 
 const {
@@ -37,10 +38,12 @@ export const connect = (classDescriptor) => {
   const superDisconnectedCallback = getSuperMethod(disconnectedCallbackKey, elements);
 
   return {
-    elements: [...elements.filter(({key}) => key !== disconnectedCallbackKey), {
-      descriptor: {
-        configurable: true,
-        enumerable: true,
+    elements: [
+      ...elements.filter(({key}) => key !== disconnectedCallbackKey),
+
+      // Public
+      method({
+        key: disconnectedCallbackKey,
         value() {
           superDisconnectedCallback.call(this);
 
@@ -48,12 +51,11 @@ export const connect = (classDescriptor) => {
             this[$$unsubscribe]();
           }
         },
-      },
-      key: disconnectedCallbackKey,
-      kind: 'method',
-      placement: 'prototype',
-    }, {
-      descriptor: {
+      }),
+
+      // Protected
+      accessor({
+        key: contextValue,
         set(value) {
           this[$$context] = value;
 
@@ -63,12 +65,11 @@ export const connect = (classDescriptor) => {
 
           this[$$subscribe]();
         },
-      },
-      key: contextValue,
-      kind: 'method',
-      placement: 'prototype',
-    }, {
-      descriptor: {
+      }),
+
+      // Private
+      method({
+        key: $$subscribe,
         value() {
           this[$$update](this[$$context]);
 
@@ -76,12 +77,9 @@ export const connect = (classDescriptor) => {
             this[$$update](this[$$context]);
           });
         },
-      },
-      key: $$subscribe,
-      kind: 'method',
-      placement: 'prototype',
-    }, {
-      descriptor: {
+      }, {isPrivate: true}),
+      method({
+        key: $$update,
         value({getState}) {
           const registry = connectedRegistry.get(this.constructor);
 
@@ -97,11 +95,8 @@ export const connect = (classDescriptor) => {
             }
           }
         },
-      },
-      key: $$update,
-      kind: 'method',
-      placement: 'prototype',
-    }],
+      }, {isPrivate: true}),
+    ],
     kind,
   };
 };

@@ -3,60 +3,55 @@ const publicDescriptor = {
   enumerable: true,
 };
 
-// Methods
-export const method = ({extras, finisher, key, value}) => ({
+export const field = (
+  {extras, finisher, initializer, key},
+  {isPrivate = false, isReadonly = false, isStatic = false} = {},
+) => ({
   descriptor: {
-    ...publicDescriptor,
-    value,
+    ...isPrivate ? {} : publicDescriptor,
+    ...isReadonly ? {} : {writable: true},
   },
-  extras,
-  finisher,
-  key,
-  kind: 'method',
-  placement: 'prototype',
-});
-
-export const accessor = params => ({
-  ...method(params),
-  descriptor: {
-    ...publicDescriptor,
-    get: params.get,
-    set: params.set,
-  },
-});
-
-export const privateMethod = params => ({
-  ...method(params),
-  descriptor: {
-    value: params.value,
-  },
-});
-
-// Fields
-export const readonlyField = ({extras, finisher, initializer, key}) => ({
-  descriptor: publicDescriptor,
   extras,
   finisher,
   initializer,
   key,
   kind: 'field',
-  placement: 'own',
+  placement: isStatic ? 'static' : 'own',
 });
 
-export const privateField = params => ({
-  ...readonlyField(params),
-  descriptor: {
-    writable: true,
-  },
-});
+export const method = (
+  {extras, finisher, key, value},
+  {isBound = false, isPrivate = false, isStatic = false} = {},
+) => {
+  if (isBound) {
+    return field({
+      extras,
+      finisher,
+      initializer() {
+        return value.bind(this);
+      },
+      key,
+    }, {isPrivate, isReadonly: true, isStatic});
+  }
 
-export const boundMethod = params => ({
-  ...readonlyField(params),
-  descriptor: {},
-});
+  return {
+    descriptor: isPrivate ? {value} : {...publicDescriptor, value},
+    extras,
+    finisher,
+    key,
+    kind: 'method',
+    placement: isStatic ? 'static' : 'prototype',
+  };
+};
 
-// Other
-export const toStatic = descriptor => ({
-  ...descriptor,
-  placement: 'static',
+export const accessor = (
+  {extras, finisher, key, get, set},
+  {isPrivate = false, isStatic = false} = {},
+) => ({
+  descriptor: isPrivate ? {get, set} : {...publicDescriptor, get, set},
+  extras,
+  finisher,
+  key,
+  kind: 'method',
+  placement: isStatic ? 'static' : 'prototype',
 });

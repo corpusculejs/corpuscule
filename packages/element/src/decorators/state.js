@@ -1,6 +1,6 @@
 import {assertElementDecoratorsKind} from '../utils';
 import {stateChangedCallback as $stateChangedCallback} from '../tokens/lifecycle';
-import {accessor, privateField} from '@corpuscule/utils/lib/descriptors';
+import {accessor, field} from '@corpuscule/utils/lib/descriptors';
 import {assertPlacement} from '@corpuscule/utils/lib/asserts';
 
 const state = ({
@@ -16,10 +16,10 @@ const state = ({
 
   return accessor({
     extras: [
-      privateField({
+      field({
         initializer,
         key: storage,
-      }),
+      }, {isPrivate: true}),
     ],
     get() {
       return this[storage];

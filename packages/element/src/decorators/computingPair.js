@@ -1,5 +1,5 @@
 import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
-import {accessor, privateField} from '@corpuscule/utils/lib/descriptors';
+import {accessor, field} from '@corpuscule/utils/lib/descriptors';
 
 const createComputingPair = () => {
   const dirty = Symbol();
@@ -17,13 +17,13 @@ const createComputingPair = () => {
 
     return accessor({
       extras: [
-        privateField({
+        field({
           key: storage,
-        }),
-        privateField({
+        }, {isPrivate: true}),
+        field({
           initializer: () => true,
           key: dirty,
-        }),
+        }, {isPrivate: true}),
       ],
       get() {
         if (this[dirty]) {
@@ -81,10 +81,10 @@ const createComputingPair = () => {
         },
       };
 
-      initializerDescriptor = privateField({
+      initializerDescriptor = field({
         initializer,
         key: storage,
-      });
+      }, {isPrivate: true});
     }
 
     return accessor({

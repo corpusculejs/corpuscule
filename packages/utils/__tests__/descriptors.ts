@@ -1,11 +1,8 @@
 import {ExtendedPropertyDescriptor} from '@corpuscule/typings';
 import {
   accessor,
-  boundMethod,
+  field,
   method,
-  privateField, privateMethod,
-  readonlyField,
-  toStatic,
 } from '../src/descriptors';
 
 const testDescriptors = () => {
@@ -13,185 +10,203 @@ const testDescriptors = () => {
     const extras: ExtendedPropertyDescriptor[] = [];
     const finisher = () => {}; // tslint:disable-line:no-empty
 
-    describe('methods', () => {
-      it('"method" creates method descriptor', () => {
-        const testValue = 10;
-        const result = method({
+    describe('field', () => {
+      it('creates public field by default', () => {
+        const initializer = () => 10;
+
+        const result = field({
           extras,
           finisher,
+          initializer,
           key: 'test',
-          value(): number {
-            return testValue;
-          },
         });
 
         expect(result).toEqual({
           descriptor: {
             configurable: true,
             enumerable: true,
-            value: jasmine.any(Function),
-          },
-          extras,
-          finisher,
-          key: 'test',
-          kind: 'method',
-          placement: 'prototype',
-        });
-
-        expect(result.descriptor.value()).toBe(10);
-      });
-
-      it('"accessor" creates accessor descriptor', () => {
-        let testValue = 10;
-        const result = accessor({
-          extras,
-          finisher,
-          key: 'test',
-          get(): number {
-            return testValue;
-          },
-          set(v: number): void {
-            testValue = v;
-          },
-        });
-
-        expect(result).toEqual({
-          descriptor: {
-            configurable: true,
-            enumerable: true,
-            get: jasmine.any(Function),
-            set: jasmine.any(Function),
-          },
-          extras,
-          finisher,
-          key: 'test',
-          kind: 'method',
-          placement: 'prototype',
-        });
-
-        expect(result.descriptor.get!()).toBe(10);
-        result.descriptor.set!(20);
-        expect(testValue).toBe(20);
-      });
-
-      it('"privateMethod" creates method descriptor', () => {
-        const testValue = 10;
-        const result = privateMethod({
-          extras,
-          finisher,
-          key: 'test',
-          value(): number {
-            return testValue;
-          },
-        });
-
-        expect(result).toEqual({
-          descriptor: {
-            value: jasmine.any(Function),
-          },
-          extras,
-          finisher,
-          key: 'test',
-          kind: 'method',
-          placement: 'prototype',
-        });
-
-        expect(result.descriptor.value()).toBe(10);
-      });
-    });
-
-    describe('fields', () => {
-      it('"readonlyField" creates readonly field descriptor', () => {
-        const testValue = 10;
-
-        const result = readonlyField({
-          extras,
-          finisher,
-          key: 'test',
-          initializer(): number {
-            return testValue;
-          },
-        });
-
-        expect(result).toEqual({
-          descriptor: {
-            configurable: true,
-            enumerable: true,
-          },
-          extras,
-          finisher,
-          initializer: jasmine.any(Function),
-          key: 'test',
-          kind: 'field',
-          placement: 'own',
-        });
-
-        expect(result.initializer!()).toBe(10);
-      });
-
-      it('"privateField" creates field descriptor', () => {
-        const testValue = 10;
-
-        const result = privateField({
-          extras,
-          finisher,
-          key: 'test',
-          initializer(): number {
-            return testValue;
-          },
-        });
-
-        expect(result).toEqual({
-          descriptor: {
             writable: true,
           },
           extras,
           finisher,
-          initializer: jasmine.any(Function),
+          initializer,
           key: 'test',
           kind: 'field',
           placement: 'own',
         });
-
-        expect(result.initializer!()).toBe(10);
       });
 
-      it('"boundMethod" creates bound method descriptor', () => {
-        const result = boundMethod({
+      it('creates private field', () => {
+        const result = field({
           extras,
           finisher,
+          initializer: () => 10,
           key: 'test',
-          initializer(): () => unknown {
-            return () => this.finisher; // tslint:disable-line:no-invalid-this
-          },
-        });
+        }, {isPrivate: true});
 
-        expect(result).toEqual({
-          descriptor: {},
+        expect(result.descriptor).toEqual({
+          writable: true,
+        });
+      });
+
+      it('creates readonly field', () => {
+        const result = field({
           extras,
           finisher,
-          initializer: jasmine.any(Function),
+          initializer: () => 10,
           key: 'test',
-          kind: 'field',
-          placement: 'own',
-        });
+        }, {isReadonly: true});
 
-        const bound = result.initializer!() as () => unknown;
-        expect(bound()).toBe(finisher);
+        expect(result.descriptor).toEqual({
+          configurable: true,
+          enumerable: true,
+        });
+      });
+
+      it('creates static field', () => {
+        const result = field({
+          extras,
+          finisher,
+          initializer: () => 10,
+          key: 'test',
+        }, {isStatic: true});
+
+        expect(result.placement).toBe('static');
       });
     });
 
-    it('"toStatic" converts any extended property descriptor to a static one', () => {
-      expect(toStatic({
-        descriptor: {},
-        key: 'test',
-        kind: 'field',
-        placement: 'own',
-      })).toEqual({
-        descriptor: {},
-        key: 'test',
-        kind: 'field',
-        placement: 'static',
+    describe('method', () => {
+      it('creates method descriptor by default', () => {
+        const value = () => 10;
+
+        const result = method({
+          extras,
+          finisher,
+          key: 'test',
+          value,
+        });
+
+        expect(result).toEqual({
+          descriptor: {
+            configurable: true,
+            enumerable: true,
+            value,
+          },
+          extras,
+          finisher,
+          key: 'test',
+          kind: 'method',
+          placement: 'prototype',
+        });
+      });
+
+      it('creates bound method', () => {
+        const result = method({
+          extras,
+          finisher,
+          key: 'test',
+          value(): unknown {
+            return this.finisher; // tslint:disable-line:no-invalid-this
+          },
+        }, {isBound: true});
+
+        expect(result).toEqual({
+          descriptor: {
+            configurable: true,
+            enumerable: true,
+          },
+          extras,
+          finisher,
+          initializer: jasmine.any(Function),
+          key: 'test',
+          kind: 'field',
+          placement: 'own',
+        });
+
+        const fn = result.initializer!() as () => unknown;
+        expect(fn()).toBe(finisher);
+      });
+
+      it('creates private method', () => {
+        const value = () => 10;
+
+        const result = method({
+          extras,
+          finisher,
+          key: 'test',
+          value,
+        }, {isPrivate: true});
+
+        expect(result.descriptor).toEqual({
+          value,
+        });
+      });
+
+      it('creates static method', () => {
+        const result = method({
+          extras,
+          finisher,
+          key: 'test',
+          value: () => 10,
+        }, {isStatic: true});
+
+        expect(result.placement).toBe('static');
+      });
+    });
+
+    describe('accessor', () => {
+      const get = () => {}; // tslint:disable-line:no-empty
+      const set = () => {}; // tslint:disable-line:no-empty
+
+      it('creates accessor by default', () => {
+        const result = accessor({
+          extras,
+          finisher,
+          get,
+          key: 'test',
+          set,
+        });
+
+        expect(result).toEqual({
+          descriptor: {
+            configurable: true,
+            enumerable: true,
+            get,
+            set,
+          },
+          extras,
+          finisher,
+          key: 'test',
+          kind: 'method',
+          placement: 'prototype',
+        });
+      });
+
+      it('creates private method', () => {
+        const result = accessor({
+          extras,
+          finisher,
+          get,
+          key: 'test',
+          set,
+        }, {isPrivate: true});
+
+        expect(result.descriptor).toEqual({
+          get,
+          set,
+        });
+      });
+
+      it('creates static method', () => {
+        const result = accessor({
+          extras,
+          finisher,
+          get,
+          key: 'test',
+          set,
+        }, {isStatic: true});
+
+        expect(result.placement).toBe('static');
       });
     });
   });

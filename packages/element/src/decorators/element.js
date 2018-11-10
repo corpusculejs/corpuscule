@@ -18,13 +18,7 @@ import {
   root as $$root,
   valid as $$valid,
 } from '../tokens/internal';
-import {
-  method,
-  privateField,
-  privateMethod,
-  readonlyField,
-  toStatic,
-} from '@corpuscule/utils/lib/descriptors';
+import {field, method} from '@corpuscule/utils/lib/descriptors';
 
 const attributeChangedCallbackKey = 'attributeChangedCallback';
 const connectedCallbackKey = 'connectedCallback';
@@ -33,6 +27,19 @@ const isCorpusculeElementKey = 'isCorpusculeElement';
 // eslint-disable-next-line no-empty-function
 const noop = () => {
 };
+
+const filteringNames = [
+  'is',
+  isCorpusculeElementKey,
+  attributeChangedCallbackKey,
+  connectedCallbackKey,
+  $createRoot,
+  $propertyChangedCallback,
+  $renderer,
+  $scheduler,
+  $stateChangedCallback,
+  $updatedCallback,
+];
 
 const element = name => ({kind, elements}) => {
   assertKind('element', 'class', kind);
@@ -46,78 +53,38 @@ const element = name => ({kind, elements}) => {
     throw new Error('[render]() is not implemented');
   }
 
-  const fallbacks = [];
-
-  if (!elements.find(({key}) => key === $renderer)) {
-    fallbacks.push(toStatic(readonlyField({
-      initializer: () => renderer,
-      key: $renderer,
-    })));
-  }
-
-  if (!elements.find(({key}) => key === $scheduler)) {
-    fallbacks.push(toStatic(readonlyField({
-      initializer: () => scheduler,
-      key: $scheduler,
-    })));
-  }
-
-  if (!elements.find(({key}) => key === $updatedCallback)) {
-    fallbacks.push(method({
-      key: $updatedCallback,
-      value: noop,
-    }));
-  }
-
-  if (!elements.find(({key}) => key === $createRoot)) {
-    fallbacks.push(method({
-      key: $createRoot,
-      value() {
-        return this.attachShadow({mode: 'open'});
-      },
-    }));
-  }
+  const existingCreateRoot = elements.find(({key}) => key === $createRoot);
+  const existingRenderer = elements.find(({key}) => key === $renderer);
+  const existingScheduler = elements.find(({key}) => key === $scheduler);
+  const existingUpdatedCallback = elements.find(({key}) => key === $updatedCallback);
 
   return {
     elements: [
-      ...elements.filter(({key}) =>
-        key !== 'is'
-        && key !== isCorpusculeElementKey
-        && key !== attributeChangedCallbackKey
-        && key !== connectedCallbackKey
-        && key !== $propertyChangedCallback
-        && key !== $stateChangedCallback,
-      ),
-      ...fallbacks,
-      toStatic(readonlyField({
+      ...elements.filter(({key}) => !filteringNames.includes(key)),
+
+      // Static
+      field({
         initializer: () => name,
         key: 'is',
-      })),
-      toStatic(readonlyField({
+      }, {isReadonly: true, isStatic: true}),
+      field({
         initializer: () => true,
         key: isCorpusculeElementKey,
-      })),
-      privateField({
-        initializer: () => false,
-        key: $$connected,
-      }),
-      privateField({
-        initializer: () => true,
-        key: $$valid,
-      }),
-      privateField({
-        initializer() {
-          return this[$createRoot]();
-        },
-        key: $$root,
-      }),
+      }, {isReadonly: true, isStatic: true}),
+      field({
+        initializer: existingRenderer ? existingRenderer.initializer : () => renderer,
+        key: $renderer,
+      }, {isReadonly: true, isStatic: true}),
+      field({
+        initializer: existingScheduler ? existingScheduler.initializer : () => scheduler,
+        key: $scheduler,
+      }, {isReadonly: true, isStatic: true}),
+
+      // Public
       method({
         key: connectedCallbackKey,
         value() {
-          if (superConnectedCallback) {
-            superConnectedCallback.call(this);
-          }
-
+          superConnectedCallback.call(this);
           this[$$invalidate]();
         },
       }),
@@ -128,12 +95,18 @@ const element = name => ({kind, elements}) => {
             return;
           }
 
-          if (superAttributeChangedCallback) {
-            superAttributeChangedCallback.call(this, attributeName, oldValue, newValue);
-          }
-
+          superAttributeChangedCallback.call(this, attributeName, oldValue, newValue);
           this[$$invalidate]();
         },
+      }),
+
+      // Protected
+      method({
+        key: $createRoot,
+        value() {
+          return this.attachShadow({mode: 'open'});
+        },
+        ...existingCreateRoot ? {value: existingCreateRoot.descriptor.value} : {},
       }),
       method({
         key: $propertyChangedCallback,
@@ -142,10 +115,7 @@ const element = name => ({kind, elements}) => {
             return;
           }
 
-          if (superPropertyChangedCallback) {
-            superPropertyChangedCallback.call(this, propertyName, oldValue, newValue);
-          }
-
+          superPropertyChangedCallback.call(this, propertyName, oldValue, newValue);
           this[$$invalidate]();
         },
       }),
@@ -156,14 +126,31 @@ const element = name => ({kind, elements}) => {
             return;
           }
 
-          if (superStateChangedCallback) {
-            superStateChangedCallback.call(this, stateName, oldValue, newValue);
-          }
-
+          superStateChangedCallback.call(this, stateName, oldValue, newValue);
           this[$$invalidate]();
         },
       }),
-      privateMethod({
+      method({
+        key: $updatedCallback,
+        value: existingUpdatedCallback ? existingUpdatedCallback.descriptor.value : noop,
+      }),
+
+      // Private
+      field({
+        initializer: () => false,
+        key: $$connected,
+      }, {isPrivate: true}),
+      field({
+        initializer: () => true,
+        key: $$valid,
+      }, {isPrivate: true}),
+      field({
+        initializer() {
+          return this[$createRoot]();
+        },
+        key: $$root,
+      }, {isPrivate: true}),
+      method({
         key: $$invalidate,
         value() {
           if (!this[$$valid]) {
@@ -194,7 +181,7 @@ const element = name => ({kind, elements}) => {
             }
           });
         },
-      }),
+      }, {isPrivate: true}),
     ],
     finisher(target) {
       customElements.define(name, target);
