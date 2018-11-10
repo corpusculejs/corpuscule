@@ -1,5 +1,10 @@
 /* eslint-disable max-classes-per-file */
-import assertKind from '@corpuscule/utils/lib/assertKind';
+import {assertKind} from '@corpuscule/utils/lib/asserts';
+import {
+  accessor,
+  field,
+  method,
+} from '@corpuscule/utils/lib/descriptors';
 import getSuperMethod from '@corpuscule/utils/lib/getSuperMethod';
 
 const randomString = () => {
@@ -33,14 +38,16 @@ const createContext = (defaultValue) => {
     const superDisconnectedCallback = getSuperMethod(disconnectedCallbackKey, elements);
 
     return {
-      elements: [...elements.filter(({key}) =>
-        key !== connectedCallbackKey
-        && key !== disconnectedCallbackKey
-        && key !== providingValue,
-      ), {
-        descriptor: {
-          configurable: true,
-          enumerable: true,
+      elements: [
+        ...elements.filter(({key}) =>
+          key !== connectedCallbackKey
+          && key !== disconnectedCallbackKey
+          && key !== providingValue,
+        ),
+
+        // Public
+        method({
+          key: connectedCallbackKey,
           value() {
             this.addEventListener(eventName, this[$$subscribe]);
 
@@ -48,31 +55,23 @@ const createContext = (defaultValue) => {
               this[providingValue] = providingValueMethod.initializer();
             }
 
-            superConnectedCallback(this);
+            superConnectedCallback.call(this);
           },
-        },
-        key: connectedCallbackKey,
-        kind: 'method',
-        placement: 'prototype',
-      }, {
-        descriptor: {
-          configurable: true,
-          enumerable: true,
+        }),
+        method({
+          key: disconnectedCallbackKey,
           value() {
             this.removeEventListener(eventName, this[$$subscribe]);
-            superDisconnectedCallback(this);
+            superDisconnectedCallback.call(this);
           },
-        },
-        key: disconnectedCallbackKey,
-        kind: 'method',
-        placement: 'prototype',
-      }, {
-        descriptor: {
-          configurable: true,
-          enumerable: true,
+        }),
+
+        // Protected
+        accessor({
           get() {
             return this[$$value];
           },
+          key: providingValue,
           set(v) {
             this[$$value] = v;
 
@@ -80,20 +79,25 @@ const createContext = (defaultValue) => {
               cb(v);
             }
           },
-        },
-        key: providingValue,
-        kind: 'method',
-        placement: 'prototype',
-      }, {
-        descriptor: {
-          writable: true,
-        },
-        initializer: () => [],
-        key: $$consumers,
-        kind: 'field',
-        placement: 'own',
-      }, {
-        descriptor: {
+        }),
+
+        // Private
+        field({
+          initializer: () => [],
+          key: $$consumers,
+        }, {isPrivate: true}),
+        field({
+          initializer: () => defaultValue,
+          key: $$value,
+        }, {isPrivate: true}),
+        method({
+          key: $$unsubscribe,
+          value(consume) {
+            this[$$consumers] = this[$$consumers].filter(p => p !== consume);
+          },
+        }, {isBound: true, isPrivate: true}),
+        method({
+          key: $$subscribe,
           value(event) {
             const {consume} = event.detail;
 
@@ -103,29 +107,8 @@ const createContext = (defaultValue) => {
             event.detail.unsubscribe = this[$$unsubscribe];
             event.stopPropagation();
           },
-        },
-        key: $$subscribe,
-        kind: 'method',
-        placement: 'own',
-      }, {
-        descriptor: {},
-        initializer() {
-          return (consume) => {
-            this[$$consumers] = this[$$consumers].filter(p => p !== consume);
-          };
-        },
-        key: $$unsubscribe,
-        kind: 'field',
-        placement: 'own',
-      }, {
-        descriptor: {
-          writable: true,
-        },
-        initializer: () => defaultValue,
-        key: $$value,
-        kind: 'field',
-        placement: 'own',
-      }],
+        }, {isPrivate: true}),
+      ],
       kind,
     };
   };
@@ -137,14 +120,16 @@ const createContext = (defaultValue) => {
     const superDisconnectedCallback = getSuperMethod(disconnectedCallbackKey, elements);
 
     return {
-      elements: [...elements.filter(({key}) =>
-        key !== connectedCallbackKey
-        && key !== disconnectedCallbackKey
-        && key !== contextValue,
-      ), {
-        descriptor: {
-          configurable: true,
-          enumerable: true,
+      elements: [
+        ...elements.filter(({key}) =>
+          key !== connectedCallbackKey
+          && key !== disconnectedCallbackKey
+          && key !== contextValue,
+        ),
+
+        // Public
+        method({
+          key: connectedCallbackKey,
           value() {
             const event = new CustomEvent(eventName, {
               bubbles: true,
@@ -161,38 +146,28 @@ const createContext = (defaultValue) => {
               throw new Error(`No provider found for ${this.constructor.name}`);
             }
 
-            superConnectedCallback(this);
+            superConnectedCallback.call(this);
           },
-        },
-        key: connectedCallbackKey,
-        kind: 'method',
-        placement: 'prototype',
-      }, {
-        descriptor: {
-          configurable: true,
-          enumerable: true,
+        }),
+        method({
+          key: disconnectedCallbackKey,
           value() {
             if (this[$$unsubscribe]) {
               this[$$unsubscribe](this[$$consume]);
             }
 
-            superDisconnectedCallback(this);
+            superDisconnectedCallback.call(this);
           },
-        },
-        key: disconnectedCallbackKey,
-        kind: 'method',
-        placement: 'prototype',
-      }, {
-        descriptor: {},
-        initializer() {
-          return (v) => {
+        }),
+
+        // Private
+        method({
+          key: $$consume,
+          value(v) {
             this[contextValue] = v;
-          };
-        },
-        key: $$consume,
-        kind: 'field',
-        placement: 'own',
-      }],
+          },
+        }, {isBound: true, isPrivate: true}),
+      ],
       kind,
     };
   };

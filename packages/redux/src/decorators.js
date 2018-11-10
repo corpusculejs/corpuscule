@@ -1,5 +1,6 @@
 import addToRegistry from '@corpuscule/utils/lib/addToRegistry';
-import assertKind from '@corpuscule/utils/lib/assertKind';
+import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
+import {method} from '@corpuscule/utils/lib/descriptors';
 import {context as $$context} from './tokens/internal';
 
 export const connectedRegistry = new WeakMap();
@@ -22,7 +23,12 @@ export const dispatcher = ({
   kind,
   placement,
 }) => {
-  assertKind('dispatcher', 'field or method', kind, kind === 'method' || kind === 'field');
+  assertKind('dispatcher', 'field or method', kind, {
+    correct: kind === 'method' || kind === 'field',
+  });
+  assertPlacement('dispatcher', 'own or prototype', placement, {
+    correct: placement === 'own' || placement === 'prototype',
+  });
 
   if (kind === 'field') {
     const initialized = initializer ? initializer() : undefined;
@@ -31,34 +37,24 @@ export const dispatcher = ({
       throw new Error(`@dispatcher: "${key}" should be initialized with a function`);
     }
 
-    return {
-      descriptor,
-      initializer() {
-        return (...args) => {
-          this[$$context].dispatch(initialized.apply(this, args));
-        };
-      },
+    return method({
       key,
-      kind,
-      placement,
-    };
+      value(...args) {
+        this[$$context].dispatch(initialized.apply(this, args));
+      },
+    }, {isBound: true});
   }
 
   return {
     descriptor,
-    extras: [{
-      descriptor: {
-        configurable: true,
-      },
-      initializer() {
-        return (...args) => {
+    extras: [
+      method({
+        key,
+        value(...args) {
           this[$$context].dispatch(descriptor.value.apply(this, args));
-        };
-      },
-      key,
-      kind: 'field',
-      placement: 'own',
-    }],
+        },
+      }, {isBound: true}),
+    ],
     key,
     kind,
     placement,

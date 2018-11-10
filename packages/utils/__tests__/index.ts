@@ -1,9 +1,11 @@
-import addToRegistryTest from './addToRegistry';
-import assertKindTest from './assertKind';
-import getSuperMethodTest from './getSuperMethod';
+import testAddToRegistry from './addToRegistry';
+import testAsserts from './asserts';
+import testDescriptors from './descriptors';
+import testGetSuperMethod from './getSuperMethod';
 
 describe('@corpuscule/utils', () => {
-  addToRegistryTest();
-  assertKindTest();
-  getSuperMethodTest();
+  testAddToRegistry();
+  testAsserts();
+  testDescriptors();
+  testGetSuperMethod();
 });

@@ -1,8 +1,7 @@
 // tslint:disable:max-classes-per-file
-
 import getSuperMethod from '../src/getSuperMethod';
 
-const getSuperMethodTest = () => {
+const testGetSuperMethod = () => {
   describe('getSuperMethod', () => {
     let decorator: ReturnType<typeof getSuperMethod>;
     let decoratorSpy: jasmine.Spy;
@@ -20,7 +19,7 @@ const getSuperMethodTest = () => {
             descriptor: {
               value(this: any): void {
                 decoratorSpy();
-                superTest(this); // tslint:disable-line:no-invalid-this
+                superTest.call(this); // tslint:disable-line:no-invalid-this
               },
             },
             key,
@@ -32,7 +31,7 @@ const getSuperMethodTest = () => {
       };
     });
 
-    it('should call currenly existing method if it exists', () => {
+    it('calls currently existing method if it exists', () => {
       const spy = jasmine.createSpy('testMethod');
 
       @decorator
@@ -50,7 +49,7 @@ const getSuperMethodTest = () => {
       expect(decoratorSpy).toHaveBeenCalled();
     });
 
-    it('should call super testMethod if it does not exists in current class', () => {
+    it('calls super testMethod if it does not exists in current class', () => {
       const spy = jasmine.createSpy('connectedCallback');
 
       class BaseTest {
@@ -71,7 +70,7 @@ const getSuperMethodTest = () => {
       expect(decoratorSpy).toHaveBeenCalled();
     });
 
-    it('should call nothing if no super method exists', () => {
+    it('calls nothing if no super method exists', () => {
       @decorator
       class Test {} // tslint:disable-line:no-unnecessary-class
 
@@ -84,4 +83,4 @@ const getSuperMethodTest = () => {
   });
 };
 
-export default getSuperMethodTest;
+export default testGetSuperMethod;

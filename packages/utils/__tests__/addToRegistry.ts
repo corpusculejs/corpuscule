@@ -1,36 +1,50 @@
 // tslint:disable:max-classes-per-file no-unnecessary-class
-
 import addToRegistry from '../src/addToRegistry';
 
-const addToRegistryTest = () => {
+const testAddToRegistry = () => {
   describe('addToRegistry', () => {
     class Test {}
 
-    let registry: WeakMap<any, Map<string, string>>;
+    describe('Map', () => {
+      let registry: WeakMap<any, Map<string, string>>;
 
-    beforeEach(() => {
-      registry = new WeakMap();
+      beforeEach(() => {
+        registry = new WeakMap();
+      });
+
+      it('creates a new global record in registry', () => {
+        addToRegistry(registry, Test, 'key', 'value');
+        expect(registry.get(Test)).toEqual(new Map([['key', 'value']]));
+      });
+
+      it('adds local record to a global record', () => {
+        registry.set(Test, new Map([['foo', 'bar']]));
+
+        addToRegistry(registry, Test, 'key', 'value');
+        expect(registry.get(Test)).toEqual(new Map([['foo', 'bar'], ['key', 'value']]));
+      });
     });
 
-    it('should create a new global record in registry if it still does not have it', () => {
-      expect(registry.has(Test)).not.toBeTruthy();
+    describe('Array', () => {
+      let registry: WeakMap<any, string[]>;
 
-      addToRegistry(registry, Test, 'key', 'value');
+      beforeEach(() => {
+        registry = new WeakMap();
+      });
 
-      expect(registry.has(Test)).toBeTruthy();
-      expect(registry.get(Test)).toEqual(new Map([['key', 'value']]));
-    });
+      it('creates a new global record in registry', () => {
+        addToRegistry(registry, Test, 'value');
+        expect(registry.get(Test)).toEqual(['value']);
+      });
 
-    it('should add local record to a global record if global one already exists', () => {
-      registry.set(Test, new Map([['foo', 'bar']]));
+      it('adds local record to a global record', () => {
+        registry.set(Test, ['foo']);
 
-      expect(registry.has(Test));
-
-      addToRegistry(registry, Test, 'key', 'value');
-
-      expect(registry.get(Test)).toEqual(new Map([['foo', 'bar'], ['key', 'value']]));
+        addToRegistry(registry, Test, 'value');
+        expect(registry.get(Test)).toEqual(['foo', 'value']);
+      });
     });
   });
 };
 
-export default addToRegistryTest;
+export default testAddToRegistry;

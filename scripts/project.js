@@ -1,16 +1,13 @@
 const packages = {
   context: ['index'],
-  element: [
-    'computed',
-    'dhtml',
-    'index',
-  ],
+  element: ['index'],
   redux: ['index'],
   router: ['index'],
   styles: ['index'],
   utils: [
     'addToRegistry',
-    'assertKind',
+    'asserts',
+    'descriptors',
     'getSuperMethod',
     'compose',
   ],

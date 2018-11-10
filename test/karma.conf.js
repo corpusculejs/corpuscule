@@ -3,8 +3,6 @@
 // Generated on Sun Apr 29 2018 20:36:45 GMT+0300 (RTZ 2 (зима))
 const webpack = require('./webpack.config');
 
-process.env.CHROME_BIN = require('puppeteer').executablePath();
-
 const isCI = !!process.env.CI;
 
 module.exports = (config) => {
@@ -47,8 +45,12 @@ module.exports = (config) => {
     // Enable / disable colors in the output (reporters and logs)
     colors: true,
 
-    // Level of logging
-    // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
+    // Level of logging. Possible values:
+    // config.LOG_DISABLE
+    // || config.LOG_ERROR
+    // || config.LOG_WARN
+    // || config.LOG_INFO
+    // || config.LOG_DEBUG
     logLevel: config.LOG_INFO,
 
     // Enable / disable watching file and executing test whenever any file changes
@@ -56,7 +58,7 @@ module.exports = (config) => {
 
     // Start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: isCI ? ['ChromeHeadlessNoSandbox'] : ['ChromeHeadless'],
+    browsers: isCI ? ['ChromeHeadlessNoSandbox'] : ['Chrome'],
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the test and exits

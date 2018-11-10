@@ -1,7 +1,7 @@
 export const createRoot = Symbol('createRoot');
-export const didMount = Symbol('didMount');
-export const didUpdate = Symbol('didUpdate');
-export const didUnmount = Symbol('didUnmount');
-export const deriveStateFromProps = Symbol('deriveStateFromProps');
+export const updatedCallback = Symbol('updatedCallback');
+export const propertyChangedCallback = Symbol('propertyChangedCallback');
 export const render = Symbol('render');
-export const shouldUpdate = Symbol('shouldUpdate');
+export const renderer = Symbol('renderer');
+export const scheduler = Symbol('scheduler');
+export const stateChangedCallback = Symbol('stateChangedCallback');
