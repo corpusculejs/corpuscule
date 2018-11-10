@@ -10,8 +10,8 @@ const createComputingPair = () => {
     kind,
     placement,
   }) => {
-    assertKind('computed', 'getter', kind, get && !set);
-    assertPlacement('attribute', 'own', placement);
+    assertKind('computed', 'getter', kind, {correct: get && !set});
+    assertPlacement('computed', 'prototype', placement);
 
     const storage = Symbol();
 
@@ -50,12 +50,16 @@ const createComputingPair = () => {
       'observer',
       'field or accessor',
       kind,
-      // eslint-disable-next-line no-extra-parens
-      kind === 'field' || (
-        isMethod && previousGet && previousSet
-      ),
+      {
+        // eslint-disable-next-line no-extra-parens
+        correct: kind === 'field' || (
+          isMethod && previousGet && previousSet
+        ),
+      }
     );
-    assertPlacement('attribute', 'own', placement);
+    assertPlacement('observer', 'own or prototype', placement, {
+      correct: placement === 'own' || placement === 'prototype',
+    });
 
     let descriptor;
     let initializerDescriptor;
