@@ -25,11 +25,10 @@ import {
   readonlyField,
   toStatic,
 } from '@corpuscule/utils/lib/descriptors';
-import {unsafeStatic} from '../withUnsafeStatic';
 
-export const corpusculeElements = new WeakMap();
-const connectedCallbackKey = 'connectedCallback';
 const attributeChangedCallbackKey = 'attributeChangedCallback';
+const connectedCallbackKey = 'connectedCallback';
+const isCorpusculeElementKey = 'isCorpusculeElement';
 
 // eslint-disable-next-line no-empty-function
 const noop = () => {
@@ -83,24 +82,21 @@ const element = name => ({kind, elements}) => {
     elements: [
       ...elements.filter(({key}) =>
         key !== 'is'
+        && key !== isCorpusculeElementKey
         && key !== attributeChangedCallbackKey
         && key !== connectedCallbackKey
         && key !== $propertyChangedCallback
         && key !== $stateChangedCallback,
       ),
       ...fallbacks,
-      {
-        descriptor: {
-          configurable: true,
-          enumerable: true,
-          get() {
-            return name;
-          },
-        },
+      toStatic(readonlyField({
+        initializer: () => name,
         key: 'is',
-        kind: 'method',
-        placement: 'static',
-      },
+      })),
+      toStatic(readonlyField({
+        initializer: () => true,
+        key: isCorpusculeElementKey,
+      })),
       privateField({
         initializer: () => false,
         key: $$connected,
@@ -202,7 +198,6 @@ const element = name => ({kind, elements}) => {
     ],
     finisher(target) {
       customElements.define(name, target);
-      corpusculeElements.set(target, unsafeStatic(name));
     },
     kind,
   };
