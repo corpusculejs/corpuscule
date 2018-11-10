@@ -371,6 +371,19 @@ const testElementDecorator = () => {
 
       expect(customElements.define).toHaveBeenCalledTimes(2);
     });
+
+    it('contains property "isCorpusculeElement"', () => {
+      @element('x-test')
+      class Test {
+        public static readonly isCorpusculeElement: boolean;
+
+        public [render](): null {
+          return null;
+        }
+      }
+
+      expect(Test.isCorpusculeElement).toBeTruthy();
+    });
   });
 };
 
