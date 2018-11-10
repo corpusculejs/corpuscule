@@ -1,4 +1,4 @@
-import assertKind from '@corpuscule/utils/lib/assertKind';
+import {assertKind} from '@corpuscule/utils/lib/asserts';
 import {html} from 'lit-html';
 import {style} from './tokens';
 

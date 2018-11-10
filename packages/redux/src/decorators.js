@@ -1,5 +1,5 @@
 import addToRegistry from '@corpuscule/utils/lib/addToRegistry';
-import assertKind from '@corpuscule/utils/lib/assertKind';
+import {assertKind} from '@corpuscule/utils/lib/asserts';
 import {context as $$context} from './tokens/internal';
 
 export const connectedRegistry = new WeakMap();

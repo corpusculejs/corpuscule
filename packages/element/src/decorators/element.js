@@ -1,5 +1,5 @@
 /* eslint-disable no-invalid-this, prefer-arrow-callback */
-import assertKind from '@corpuscule/utils/lib/assertKind';
+import {assertKind} from '@corpuscule/utils/lib/asserts';
 import getSuperMethod from '@corpuscule/utils/lib/getSuperMethod';
 import {render as renderer} from 'lit-html';
 import scheduler from '../scheduler';
