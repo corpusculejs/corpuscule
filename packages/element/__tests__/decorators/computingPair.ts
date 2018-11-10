@@ -107,6 +107,37 @@ const testComputingPair = () => {
       expect(repeatGetTenTimes(test, 'computed')).toBe('20 of str');
       expect(spy).toHaveBeenCalledTimes(2);
     });
+
+    it('can be used multiple times', () => {
+      const spy1 = jasmine.createSpy('onCompute1');
+      const spy2 = jasmine.createSpy('onCompute2');
+
+      class Test {
+        @c.observer
+        public observed: string = 'str';
+
+        @c.computer
+        public get computed1(): string {
+          spy1();
+
+          return `foo: ${this.observed}`;
+        }
+
+        @c.computer
+        public get computed2(): string {
+          spy2();
+
+          return `bar: ${this.observed}`;
+        }
+      }
+
+      const test = new Test();
+
+      expect(repeatGetTenTimes(test, 'computed1')).toBe('foo: str');
+      expect(repeatGetTenTimes(test, 'computed2')).toBe('bar: str');
+      expect(spy1).toHaveBeenCalledTimes(1);
+      expect(spy2).toHaveBeenCalledTimes(1);
+    });
   });
 };
 
