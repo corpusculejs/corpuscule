@@ -1,17 +1,25 @@
-import {corpusculeElements} from './decorators/element';
-import {withUnsafeStatic} from './withUnsafeStatic';
+import {unsafeStatic, withUnsafeStatic} from './withUnsafeStatic';
+
+const cache = new WeakMap();
 
 const withCorpusculeElement = (processor) => {
   const processorWithUnsafeStatic = withUnsafeStatic(processor);
 
   return (strings, ...values) => {
     for (let i = 0; i < values.length; i++) {
-      if (typeof values[i] === 'object' && corpusculeElements.has(values[i])) {
-        values[i] = corpusculeElements.get(values[i]);
+      if (typeof values[i] === 'function' && values[i].isCorpusculeElement) {
+        let value = cache.get(values[i]);
+
+        if (!value) {
+          value = unsafeStatic(values[i].is);
+          cache.set(values[i], value);
+        }
+
+        values[i] = value;
       }
     }
 
-    return processorWithUnsafeStatic(strings, values);
+    return processorWithUnsafeStatic(strings, ...values);
   };
 };
 
