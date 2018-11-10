@@ -1,6 +1,6 @@
 import {assertElementDecoratorsKind} from '../utils';
 import {propertyChangedCallback as $propertyChangedCallback} from '../tokens/lifecycle';
-import {accessor, privateField} from '@corpuscule/utils/lib/descriptors';
+import {accessor, field} from '@corpuscule/utils/lib/descriptors';
 import {assertPlacement} from '@corpuscule/utils/lib/asserts';
 
 const property = (guard = null) => ({
@@ -22,7 +22,7 @@ const property = (guard = null) => ({
 
   return accessor({
     extras: [
-      privateField({
+      field({
         initializer() {
           const value = initializer ? initializer.call(this) : undefined;
           check(value);
@@ -30,7 +30,7 @@ const property = (guard = null) => ({
           return value;
         },
         key: storage,
-      }),
+      }, {isPrivate: true}),
     ],
     get() {
       return this[storage];
