@@ -1,6 +1,7 @@
 {
   "extends": ["tslint-config-poetez"],
   "rules": {
-    "no-unused-variable": false
+    "no-unused-variable": false,
+    "ter-padded-blocks": false
   }
 }

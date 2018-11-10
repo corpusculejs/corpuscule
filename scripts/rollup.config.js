@@ -8,6 +8,9 @@ const babelPlugin = babel({
       loose: true,
       useBuiltIns: true,
     }],
+    [require('@babel/plugin-proposal-class-properties'), {
+      loose: true,
+    }],
     require('@babel/plugin-syntax-dynamic-import'),
   ],
 });

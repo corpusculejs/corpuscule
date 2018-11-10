@@ -1,64 +1,42 @@
 // tslint:disable:max-classes-per-file
-import {CustomElement} from '@corpuscule/typings';
-import {TemplateResult} from 'lit-html';
+import {render as litHtmlRender, TemplateResult} from 'lit-html';
 
-export interface PropertyOptions {
-  readonly pure?: boolean;
+export interface ComputingPair {
+  readonly computer: MethodDecorator;
+  readonly observer: PropertyDecorator;
 }
+
+export type ElementRenderer = typeof litHtmlRender;
+export type ElementScheduler = (callback: () => void) => Promise<void>;
 
 export type AttributeGuard = BooleanConstructor | NumberConstructor | StringConstructor;
 export type PropertyGuard = (value: unknown) => boolean;
 
-export const attribute: (attributeName: string, guard: AttributeGuard, options?: PropertyOptions) => PropertyDecorator;
+export const attribute: (attributeName: string, guard: AttributeGuard) => PropertyDecorator;
 export const element: (name: string) => ClassDecorator;
-export const property: (guard?: PropertyGuard, options?: PropertyOptions) => PropertyDecorator;
+export const property: (guard?: PropertyGuard) => PropertyDecorator;
 export const state: PropertyDecorator;
 
+export const createComputingPair: () => ComputingPair;
+
 export const createRoot: unique symbol;
-export const didMount: unique symbol;
-export const didUpdate: unique symbol;
-export const didUnmount: unique symbol;
-export const deriveStateFromProps: unique symbol;
+export const updatedCallback: unique symbol;
+export const propertyChangedCallback: unique symbol;
 export const render: unique symbol;
-export const shouldUpdate: unique symbol;
+export const renderer: unique symbol;
+export const scheduler: unique symbol;
+export const stateChangedCallback: unique symbol;
 
 export class UnsafeStatic {
   public readonly value: unknown;
+
   public constructor(value: unknown);
 }
 
 export const unsafeStatic: (value: unknown) => UnsafeStatic;
 
-// tslint:disable-next-line:array-type readonly-array
-export const dhtml: (strings: ReadonlyArray<string>, ...values: unknown[]) => TemplateResult;
-
-export default class CorpusculeElement extends HTMLElement implements CustomElement {
-  public static readonly is: string;
-  public static readonly tag: UnsafeStatic;
-
-  public static readonly observableAttributes: ReadonlyArray<PropertyKey>;
-
-  protected static [deriveStateFromProps](props: unknown, states: unknown): unknown | null;
-
-  protected static [shouldUpdate](nextProps: unknown, nextState: unknown, prevProps: unknown, prevState: unknown): boolean;
-
-  public readonly elementRendering: Promise<void>;
-
-  public attributeChangedCallback(attrName: string, oldVal: string, newVal: string): Promise<void>;
-
-  public connectedCallback(): Promise<void>;
-
-  public disconnectedCallback(): void;
-
-  public forceUpdate(): Promise<void>;
-
-  protected [createRoot](): Element | DocumentFragment;
-
-  protected [didMount](): void;
-
-  protected [didUpdate](prevProperties: unknown, prevStates: unknown): void;
-
-  protected [didUnmount](): void;
-
-  protected [render](): TemplateResult | null;
-}
+export const withCorpusculeElement:
+  // tslint:disable-next-line:readonly-array
+  (processor: (strings: TemplateStringsArray, ...values: any[]) => TemplateResult) =>
+    // tslint:disable-next-line:readonly-array
+    (strings: TemplateStringsArray, ...values: any[]) => TemplateResult;

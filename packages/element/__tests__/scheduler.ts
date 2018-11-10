@@ -1,122 +1,59 @@
-// tslint:disable:max-classes-per-file
-import {html, TemplateResult} from 'lit-html';
-import {unsafeHTML} from 'lit-html/directives/unsafe-html';
-// tslint:disable-next-line:no-implicit-dependencies
-import uuid from 'uuid/v4';
-import {defineAndMount} from '../../../test/utils';
-import CorpusculeElement, {didMount, property, render} from '../src';
+// tslint:disable:no-floating-promises
+
+import schedule from '../src/scheduler';
 
 const testScheduler = () => {
-  describe('scheduler', () => {
-    let elementName: string;
-    let nesting: number;
+  describe('schedule', () => {
+    it('uses single requestAnimationFrame for all nested tasks', () => {
+      const taskSpy = jasmine.createSpy('task');
 
-    beforeEach(() => {
-      nesting = 0;
-      elementName = `x-${uuid()}`;
-    });
+      const raf = spyOn(window, 'requestAnimationFrame').and
+        .callFake((callback: () => void) => {
+          callback();
+        });
 
-    it('should use requestAnimationFrame to initialize rendering', async () => {
-      const raf = spyOn(window, 'requestAnimationFrame').and.callThrough();
+      let nesting = 0;
 
-      class Test extends CorpusculeElement {
-        public static is: string = elementName;
+      const task = () => {
+        taskSpy();
 
-        protected [didMount](): void {
-          nesting += 1;
+        if (nesting === 2) {
+          return;
         }
 
-        protected [render](): TemplateResult {
-          return nesting === 2
-            ? html`<div>${nesting}</div>`
-            : html`${unsafeHTML(`<${elementName}/>`)}`;
-        }
-      }
+        schedule(task);
+        nesting += 1;
+      };
 
-      const el = defineAndMount(Test);
+      schedule(task);
 
-      await el.elementRendering;
-
+      expect(taskSpy).toHaveBeenCalledTimes(3);
       expect(raf).toHaveBeenCalledTimes(1);
-
-      const firstNestning = el.shadowRoot!.querySelector(elementName);
-      expect(firstNestning).not.toBeNull();
-
-      const secondNesting = firstNestning!.shadowRoot!.querySelector(elementName);
-      expect(secondNesting).not.toBeNull();
-
-      const div = secondNesting!.shadowRoot!.querySelector('div');
-      expect(div).not.toBeNull();
-      expect(div!.textContent).toContain('2');
     });
 
-    it('should consistently wait until all properties in all nested components are set', async () => {
-      const renderSpy = jasmine.createSpy('render');
+    it('consistently rejects rendering promises until the top one', async () => {
+      const rejectSpy = jasmine.createSpy('onCatch');
 
-      class Test extends CorpusculeElement {
-        public static is: string = 'x-test-wait';
+      let nesting = 0;
 
-        @property() public num: number = 0;
-        @property() public str: string = '';
-        @property() public bool: boolean = false;
-
-        protected [didMount](): void {
-          nesting += 1;
+      const task = () => {
+        if (nesting === 2) {
+          throw new Error('foo');
         }
 
-        protected [render](): TemplateResult {
-          renderSpy();
-          expect(this.num).toBe(10);
-          expect(this.str).toBe('test string');
-          expect(this.bool).toBeTruthy();
+        schedule(task).catch(() => {
+          rejectSpy();
+        });
 
-          return nesting === 2
-            ? html`<div>${nesting}</div>`
-            : html`<x-test-wait .num="${10}" .str="${'test string'}" .bool=${true}/>`;
-        }
+        nesting += 1;
+      };
+
+      try {
+        await schedule(task);
+      } catch (e) {
+        expect(e.message).toBe('foo');
+        expect(rejectSpy).toHaveBeenCalledTimes(2);
       }
-
-      const el = defineAndMount(Test, (element) => {
-        element.num = 10;
-        element.str = 'test string';
-        element.bool = true;
-      });
-
-      await el.elementRendering;
-
-      expect(renderSpy).toHaveBeenCalledTimes(3);
-    });
-
-    it('should consistently reject rendering promises until the top one', async () => {
-      class Test1 extends CorpusculeElement {
-        public static is: string = 'x-test-reject-1';
-
-        protected [render](): TemplateResult | null {
-          return html`<x-test-reject-2/>`;
-        }
-      }
-
-      class Test2 extends CorpusculeElement {
-        public static is: string = 'x-test-reject-2';
-
-        protected [render](): TemplateResult | null {
-          return html`<x-test-reject-3/>`;
-        }
-      }
-
-      customElements.define(Test2.is, Test2);
-
-      class Test3 extends CorpusculeElement {
-        public static is: string = 'x-test-reject-3';
-      }
-
-      customElements.define(Test3.is, Test3);
-
-      const el = defineAndMount(Test1);
-
-      return el.elementRendering.catch(({message}) => {
-        expect(message).toBe('[render]() is not implemented');
-      });
     });
   });
 };
