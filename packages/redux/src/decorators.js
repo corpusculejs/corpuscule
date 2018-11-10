@@ -22,7 +22,9 @@ export const dispatcher = ({
   kind,
   placement,
 }) => {
-  assertKind('dispatcher', 'field or method', kind, kind === 'method' || kind === 'field');
+  assertKind('dispatcher', 'field or method', kind, {
+    correct: kind === 'method' || kind === 'field',
+  });
 
   if (kind === 'field') {
     const initialized = initializer ? initializer() : undefined;
