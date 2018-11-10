@@ -1,5 +1,6 @@
-import {assertElementDecoratorsKindAndPlacement} from '../utils';
+import {assertElementDecoratorsKind} from '../utils';
 import {accessor} from '@corpuscule/utils/lib/descriptors';
+import {assertPlacement} from '@corpuscule/utils/lib/asserts';
 
 const fromAttribute = (instance, name, guard) => {
   const value = instance.getAttribute(name);
@@ -26,7 +27,8 @@ const attribute = (name, guard) => ({
   kind,
   placement,
 }) => {
-  assertElementDecoratorsKindAndPlacement('attribute', kind, placement);
+  assertElementDecoratorsKind('attribute', kind);
+  assertPlacement('attribute', 'own', placement);
 
   if (guard !== Boolean && guard !== Number && guard !== String) {
     throw new TypeError('Guard for @attribute should be either Number, Boolean or String');
