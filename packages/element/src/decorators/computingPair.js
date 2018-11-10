@@ -1,4 +1,4 @@
-import {assertKind} from '@corpuscule/utils/lib/asserts';
+import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
 import {accessor, privateField} from '@corpuscule/utils/lib/descriptors';
 
 const createComputingPair = () => {
@@ -8,8 +8,10 @@ const createComputingPair = () => {
     descriptor: {get, set},
     key,
     kind,
+    placement,
   }) => {
     assertKind('computed', 'getter', kind, get && !set);
+    assertPlacement('attribute', 'own', placement);
 
     const storage = Symbol();
 
@@ -37,9 +39,10 @@ const createComputingPair = () => {
 
   const observer = ({
     descriptor: {get: previousGet, set: previousSet},
+    initializer,
     key,
     kind,
-    initializer,
+    placement,
   }) => {
     const isMethod = kind === 'method';
 
@@ -52,6 +55,7 @@ const createComputingPair = () => {
         isMethod && previousGet && previousSet
       ),
     );
+    assertPlacement('attribute', 'own', placement);
 
     let descriptor;
     let initializerDescriptor;

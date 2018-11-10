@@ -1,6 +1,7 @@
-import {assertElementDecoratorsKindAndPlacement} from '../utils';
+import {assertElementDecoratorsKind} from '../utils';
 import {propertyChangedCallback as $propertyChangedCallback} from '../tokens/lifecycle';
 import {accessor, privateField} from '@corpuscule/utils/lib/descriptors';
+import {assertPlacement} from '@corpuscule/utils/lib/asserts';
 
 const property = (guard = null) => ({
   initializer,
@@ -8,7 +9,8 @@ const property = (guard = null) => ({
   kind,
   placement,
 }) => {
-  assertElementDecoratorsKindAndPlacement('property', kind, placement);
+  assertElementDecoratorsKind('property', kind);
+  assertPlacement('property', 'own', placement);
 
   const storage = Symbol();
 
