@@ -12,6 +12,7 @@ export type MethodParams =
   & Pick<ExtendedPropertyDescriptor, 'extras' | 'finisher' | 'key'>;
 
 export const accessor: (params: AccessorParams) => ExtendedPropertyDescriptor;
+export const boundMethod: (params: FieldParams) => ExtendedPropertyDescriptor;
 export const method: (params: MethodParams) => ExtendedPropertyDescriptor;
 export const privateField: (params: FieldParams) => ExtendedPropertyDescriptor;
 export const privateMethod: (params: MethodParams) => ExtendedPropertyDescriptor;
