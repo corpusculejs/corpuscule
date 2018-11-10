@@ -2,7 +2,7 @@ import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
 import {accessor, field} from '@corpuscule/utils/lib/descriptors';
 
 const createComputingPair = () => {
-  const dirty = Symbol();
+  const registry = Symbol();
 
   const computer = ({
     descriptor: {get, set},
@@ -14,6 +14,7 @@ const createComputingPair = () => {
     assertPlacement('computed', 'prototype', placement);
 
     const storage = Symbol();
+    const pristine = Symbol();
 
     return accessor({
       extras: [
@@ -21,14 +22,21 @@ const createComputingPair = () => {
           key: storage,
         }, {isPrivate: true}),
         field({
-          initializer: () => true,
-          key: dirty,
+          initializer: () => false,
+          key: pristine,
         }, {isPrivate: true}),
       ],
+      finisher(target) {
+        if (target[registry]) {
+          target[registry].push(pristine);
+        } else {
+          target[registry] = [pristine];
+        }
+      },
       get() {
-        if (this[dirty]) {
+        if (!this[pristine]) {
           this[storage] = get.call(this);
-          this[dirty] = false;
+          this[pristine] = true;
         }
 
         return this[storage];
@@ -46,17 +54,11 @@ const createComputingPair = () => {
   }) => {
     const isMethod = kind === 'method';
 
-    assertKind(
-      'observer',
-      'field or accessor',
-      kind,
-      {
-        // eslint-disable-next-line no-extra-parens
-        correct: kind === 'field' || (
-          isMethod && previousGet && previousSet
-        ),
-      }
-    );
+    assertKind('observer', 'field or accessor', kind, {
+      correct: kind === 'field' || ( // eslint-disable-line no-extra-parens
+        isMethod && previousGet && previousSet
+      ),
+    });
     assertPlacement('observer', 'own or prototype', placement, {
       correct: placement === 'own' || placement === 'prototype',
     });
@@ -93,7 +95,10 @@ const createComputingPair = () => {
       key,
       set(value) {
         descriptor.set.call(this, value);
-        this[dirty] = true;
+
+        for (const pristine of this.constructor[registry]) {
+          this[pristine] = false;
+        }
       },
     });
   };
