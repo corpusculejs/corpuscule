@@ -203,7 +203,7 @@ const testElementDecorator = () => {
       const [renderCallback] = schedulerSpy.calls.mostRecent().args;
       renderCallback();
 
-      expect(rendererSpy).toHaveBeenCalledWith('rendered string', jasmine.any(HTMLElement));
+      expect(rendererSpy).toHaveBeenCalledWith('rendered string', jasmine.any(HTMLElement), jasmine.any(Object));
     });
 
     it(
@@ -350,7 +350,7 @@ const testElementDecorator = () => {
       const [renderCallback] = schedulerSpy.calls.mostRecent().args;
       renderCallback();
 
-      expect(rendererSpy).toHaveBeenCalledWith('render', root);
+      expect(rendererSpy).toHaveBeenCalledWith('render', root, jasmine.any(Object));
     });
 
     it('allows extending existing element', () => {
