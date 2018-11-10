@@ -1,6 +1,7 @@
 import {ExtendedPropertyDescriptor} from '@corpuscule/typings';
 import {
   accessor,
+  boundMethod,
   method,
   privateField, privateMethod,
   readonlyField,
@@ -153,6 +154,30 @@ const testDescriptors = () => {
         });
 
         expect(result.initializer!()).toBe(10);
+      });
+
+      it('"boundMethod" creates bound method descriptor', () => {
+        const result = boundMethod({
+          extras,
+          finisher,
+          key: 'test',
+          initializer(): () => unknown {
+            return () => this.finisher; // tslint:disable-line:no-invalid-this
+          },
+        });
+
+        expect(result).toEqual({
+          descriptor: {},
+          extras,
+          finisher,
+          initializer: jasmine.any(Function),
+          key: 'test',
+          kind: 'field',
+          placement: 'own',
+        });
+
+        const bound = result.initializer!() as () => unknown;
+        expect(bound()).toBe(finisher);
       });
     });
 

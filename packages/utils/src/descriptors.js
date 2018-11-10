@@ -50,6 +50,11 @@ export const privateField = params => ({
   },
 });
 
+export const boundMethod = params => ({
+  ...readonlyField(params),
+  descriptor: {},
+});
+
 // Other
 export const toStatic = descriptor => ({
   ...descriptor,
