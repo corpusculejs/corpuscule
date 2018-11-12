@@ -90,8 +90,8 @@ const createComputingPair = () => {
     }
 
     return accessor({
+      ...descriptor,
       extras: initializerDescriptor ? [initializerDescriptor] : undefined,
-      get: descriptor.get,
       key,
       set(value) {
         descriptor.set.call(this, value);
