@@ -10,7 +10,7 @@ import {
   render as $render,
   renderer as $renderer,
   scheduler as $scheduler,
-  stateChangedCallback as $stateChangedCallback,
+  internalChangedCallback as $internalChangedCallback,
 } from '../tokens/lifecycle';
 import {
   connected as $$connected,
@@ -37,7 +37,7 @@ const filteringNames = [
   $propertyChangedCallback,
   $renderer,
   $scheduler,
-  $stateChangedCallback,
+  $internalChangedCallback,
   $updatedCallback,
 ];
 
@@ -47,7 +47,7 @@ const element = name => ({kind, elements}) => {
   const superAttributeChangedCallback = getSuperMethod(attributeChangedCallbackKey, elements);
   const superConnectedCallback = getSuperMethod(connectedCallbackKey, elements);
   const superPropertyChangedCallback = getSuperMethod($propertyChangedCallback, elements);
-  const superStateChangedCallback = getSuperMethod($stateChangedCallback, elements);
+  const superInternalChangedCallback = getSuperMethod($internalChangedCallback, elements);
 
   if (!elements.find(({key}) => key === $render)) {
     throw new Error('[render]() is not implemented');
@@ -109,6 +109,17 @@ const element = name => ({kind, elements}) => {
         ...existingCreateRoot ? {value: existingCreateRoot.descriptor.value} : {},
       }),
       method({
+        key: $internalChangedCallback,
+        value(internalName, oldValue, newValue) {
+          if (!this[$$connected]) {
+            return;
+          }
+
+          superInternalChangedCallback.call(this, internalName, oldValue, newValue);
+          this[$$invalidate]();
+        },
+      }),
+      method({
         key: $propertyChangedCallback,
         value(propertyName, oldValue, newValue) {
           if (oldValue === newValue || !this[$$connected]) {
@@ -116,17 +127,6 @@ const element = name => ({kind, elements}) => {
           }
 
           superPropertyChangedCallback.call(this, propertyName, oldValue, newValue);
-          this[$$invalidate]();
-        },
-      }),
-      method({
-        key: $stateChangedCallback,
-        value(stateName, oldValue, newValue) {
-          if (!this[$$connected]) {
-            return;
-          }
-
-          superStateChangedCallback.call(this, stateName, oldValue, newValue);
           this[$$invalidate]();
         },
       }),
