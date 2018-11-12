@@ -14,18 +14,18 @@ export type PropertyGuard = (value: unknown) => boolean;
 
 export const attribute: (attributeName: string, guard: AttributeGuard) => PropertyDecorator;
 export const element: (name: string) => ClassDecorator;
+export const internal: PropertyDecorator;
 export const property: (guard?: PropertyGuard) => PropertyDecorator;
-export const state: PropertyDecorator;
 
 export const createComputingPair: () => ComputingPair;
 
 export const createRoot: unique symbol;
-export const updatedCallback: unique symbol;
+export const internalChangedCallback: unique symbol;
 export const propertyChangedCallback: unique symbol;
 export const render: unique symbol;
 export const renderer: unique symbol;
 export const scheduler: unique symbol;
-export const stateChangedCallback: unique symbol;
+export const updatedCallback: unique symbol;
 
 export class UnsafeStatic {
   public readonly value: unknown;

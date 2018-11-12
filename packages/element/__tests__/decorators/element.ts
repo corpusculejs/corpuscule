@@ -2,9 +2,11 @@
 import {
   createRoot,
   element,
+  internalChangedCallback,
   propertyChangedCallback,
   render, renderer,
-  scheduler, stateChangedCallback, updatedCallback,
+  scheduler,
+  updatedCallback,
 } from '../../src';
 import {HTMLElementMock} from '../utils';
 
@@ -129,16 +131,16 @@ const testElementDecorator = () => {
       expect(schedulerSpy).toHaveBeenCalledTimes(2);
     });
 
-    it('re-renders on each [stateChangedCallback]', () => {
-      const stateChangedCallbackSpy = jasmine.createSpy('onStateChange');
+    it('re-renders on each [internalChangedCallback]', () => {
+      const internalChangedCallbackSpy = jasmine.createSpy('onInternalChange');
 
       @element('x-test')
       class Test extends HTMLElementMock {
         public static readonly [renderer]: jasmine.Spy = rendererSpy;
         public static readonly [scheduler]: jasmine.Spy = schedulerSpy;
 
-        public [stateChangedCallback](...args: Array<unknown>): void {
-          stateChangedCallbackSpy(...args);
+        public [internalChangedCallback](...args: Array<unknown>): void {
+          internalChangedCallbackSpy(...args);
         }
 
         protected [render](): null {
@@ -152,8 +154,8 @@ const testElementDecorator = () => {
       const [renderCallback] = schedulerSpy.calls.mostRecent().args;
       renderCallback();
 
-      test[stateChangedCallback]('test', 'old', 'new');
-      expect(stateChangedCallbackSpy).toHaveBeenCalledWith('test', 'old', 'new');
+      test[internalChangedCallback]('test', 'old', 'new');
+      expect(internalChangedCallbackSpy).toHaveBeenCalledWith('test', 'old', 'new');
       expect(schedulerSpy).toHaveBeenCalledTimes(2);
     });
 
@@ -207,11 +209,11 @@ const testElementDecorator = () => {
     });
 
     it(
-      'does not allow to run re-render if old and new values are identical (except for state)',
+      'does not allow to run re-render if old and new values are identical (except for internal)',
       () => {
         const attributeChangedCallbackSpy = jasmine.createSpy('onAttributeChange');
         const propertyChangedCallbackSpy = jasmine.createSpy('onPropertyChange');
-        const stateChangedCallbackSpy = jasmine.createSpy('onStateChange');
+        const internalChangedCallbackSpy = jasmine.createSpy('onInternalChange');
 
         @element('x-test')
         class Test extends HTMLElementMock {
@@ -225,8 +227,8 @@ const testElementDecorator = () => {
             propertyChangedCallbackSpy(...args);
           }
 
-          public [stateChangedCallback](...args: Array<unknown>): void {
-            stateChangedCallbackSpy(...args);
+          public [internalChangedCallback](...args: Array<unknown>): void {
+            internalChangedCallbackSpy(...args);
           }
 
           protected [render](): null {
@@ -243,12 +245,12 @@ const testElementDecorator = () => {
 
         test.attributeChangedCallback('attr', 'same', 'same');
         test[propertyChangedCallback]('prop', 'same', 'same');
-        test[stateChangedCallback]('state', 'same', 'same');
+        test[internalChangedCallback]('internal', 'same', 'same');
 
         expect(attributeChangedCallbackSpy).not.toHaveBeenCalled();
         expect(propertyChangedCallbackSpy).not.toHaveBeenCalled();
 
-        expect(stateChangedCallbackSpy).toHaveBeenCalled();
+        expect(internalChangedCallbackSpy).toHaveBeenCalled();
         expect(schedulerSpy).toHaveBeenCalledTimes(1);
       },
     );
@@ -256,7 +258,7 @@ const testElementDecorator = () => {
     it('does not allow to use [updatedCallback] and changed callbacks when not connected', () => {
       const attributeChangedCallbackSpy = jasmine.createSpy('onAttributeChange');
       const propertyChangedCallbackSpy = jasmine.createSpy('onPropertyChange');
-      const stateChangedCallbackSpy = jasmine.createSpy('onStateChange');
+      const internalChangedCallbackSpy = jasmine.createSpy('onInternalChange');
 
       @element('x-test')
       class Test extends HTMLElementMock {
@@ -270,8 +272,8 @@ const testElementDecorator = () => {
           propertyChangedCallbackSpy(...args);
         }
 
-        public [stateChangedCallback](...args: Array<unknown>): void {
-          stateChangedCallbackSpy(...args);
+        public [internalChangedCallback](...args: Array<unknown>): void {
+          internalChangedCallbackSpy(...args);
         }
 
         protected [render](): null {
@@ -284,14 +286,14 @@ const testElementDecorator = () => {
 
       test.attributeChangedCallback('attr', 'old', 'new');
       test[propertyChangedCallback]('attr', 'old', 'new');
-      test[stateChangedCallback]('attr', 'old', 'new');
+      test[internalChangedCallback]('attr', 'old', 'new');
 
       const [renderCallback] = schedulerSpy.calls.mostRecent().args;
       renderCallback();
 
       expect(attributeChangedCallbackSpy).not.toHaveBeenCalled();
       expect(propertyChangedCallbackSpy).not.toHaveBeenCalled();
-      expect(stateChangedCallbackSpy).not.toHaveBeenCalled();
+      expect(internalChangedCallbackSpy).not.toHaveBeenCalled();
       // only during the connection
       expect(schedulerSpy).toHaveBeenCalledTimes(1);
     });

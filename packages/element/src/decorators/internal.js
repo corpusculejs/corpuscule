@@ -1,16 +1,16 @@
 import {assertElementDecoratorsKind} from '../utils';
-import {stateChangedCallback as $stateChangedCallback} from '../tokens/lifecycle';
+import {internalChangedCallback as $internalChangedCallback} from '../tokens/lifecycle';
 import {accessor, field} from '@corpuscule/utils/lib/descriptors';
 import {assertPlacement} from '@corpuscule/utils/lib/asserts';
 
-const state = ({
+const internal = ({
   initializer,
   key,
   kind,
   placement,
 }) => {
-  assertElementDecoratorsKind('state', kind);
-  assertPlacement('state', 'own', placement);
+  assertElementDecoratorsKind('internal', kind);
+  assertPlacement('internal', 'own', placement);
 
   const storage = Symbol();
 
@@ -26,10 +26,10 @@ const state = ({
     },
     key,
     set(value) {
-      this[$stateChangedCallback](key, this[storage], value);
+      this[$internalChangedCallback](key, this[storage], value);
       this[storage] = value;
     },
   });
 };
 
-export default state;
+export default internal;
