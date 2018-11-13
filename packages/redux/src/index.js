@@ -1,4 +1,7 @@
 import createContext from '@corpuscule/context';
+import {assertKind} from '@corpuscule/utils/lib/asserts';
+import {accessor, method} from '@corpuscule/utils/lib/descriptors';
+import getSuperMethods from '@corpuscule/utils/lib/getSuperMethods';
 import {
   context as $$context,
   subscribe as $$subscribe,
@@ -6,8 +9,6 @@ import {
   update as $$update,
 } from './tokens/internal';
 import {connectedRegistry} from './decorators';
-import {accessor, method} from '@corpuscule/utils/lib/descriptors';
-import getSuperMethod from '@corpuscule/utils/lib/getSuperMethod';
 
 const {
   consumer,
@@ -29,13 +30,10 @@ export {
 const disconnectedCallbackKey = 'disconnectedCallback';
 
 export const connect = (classDescriptor) => {
-  if (classDescriptor.kind !== 'class') {
-    throw new TypeError(`@connect can be applied only to class, not to ${classDescriptor.kind}`);
-  }
+  assertKind('connect', 'class', classDescriptor.kind);
 
   const {elements, kind} = consumer(classDescriptor);
-
-  const superDisconnectedCallback = getSuperMethod(disconnectedCallbackKey, elements);
+  const [superDisconnectedCallback] = getSuperMethods(elements, [disconnectedCallbackKey]);
 
   return {
     elements: [
