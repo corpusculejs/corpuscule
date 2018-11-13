@@ -5,7 +5,7 @@ import {
   field,
   method,
 } from '@corpuscule/utils/lib/descriptors';
-import getSuperMethod from '@corpuscule/utils/lib/getSuperMethod';
+import getSuperMethods from '@corpuscule/utils/lib/getSuperMethods';
 
 const randomString = () => {
   const arr = new Uint32Array(2);
@@ -16,6 +16,8 @@ const randomString = () => {
 
 const connectedCallbackKey = 'connectedCallback';
 const disconnectedCallbackKey = 'disconnectedCallback';
+
+const methods = [connectedCallbackKey, disconnectedCallbackKey];
 
 const createContext = (defaultValue) => {
   const eventName = randomString();
@@ -32,29 +34,24 @@ const createContext = (defaultValue) => {
   const provider = ({elements, kind}) => {
     assertKind('provider', 'class', kind);
 
-    const providingValueMethod = elements.find(({key}) => key === providingValue);
+    const {
+      initializer: providingValueInitializer = null,
+    } = elements.find(({key}) => key === providingValue) || {};
 
-    const superConnectedCallback = getSuperMethod(connectedCallbackKey, elements);
-    const superDisconnectedCallback = getSuperMethod(disconnectedCallbackKey, elements);
+    const [
+      superConnectedCallback,
+      superDisconnectedCallback,
+    ] = getSuperMethods(elements, methods);
 
     return {
       elements: [
-        ...elements.filter(({key}) =>
-          key !== connectedCallbackKey
-          && key !== disconnectedCallbackKey
-          && key !== providingValue,
-        ),
+        ...elements.filter(({key}) => !methods.includes(key) && key !== providingValue),
 
         // Public
         method({
           key: connectedCallbackKey,
           value() {
             this.addEventListener(eventName, this[$$subscribe]);
-
-            if (providingValueMethod && providingValueMethod.initializer) {
-              this[providingValue] = providingValueMethod.initializer();
-            }
-
             superConnectedCallback.call(this);
           },
         }),
@@ -87,7 +84,7 @@ const createContext = (defaultValue) => {
           key: $$consumers,
         }, {isPrivate: true}),
         field({
-          initializer: () => defaultValue,
+          initializer: providingValueInitializer || (() => defaultValue),
           key: $$value,
         }, {isPrivate: true}),
         method({
@@ -116,16 +113,14 @@ const createContext = (defaultValue) => {
   const consumer = ({elements, kind}) => {
     assertKind('consumer', 'class', kind);
 
-    const superConnectedCallback = getSuperMethod(connectedCallbackKey, elements);
-    const superDisconnectedCallback = getSuperMethod(disconnectedCallbackKey, elements);
+    const [
+      superConnectedCallback,
+      superDisconnectedCallback,
+    ] = getSuperMethods(elements, methods);
 
     return {
       elements: [
-        ...elements.filter(({key}) =>
-          key !== connectedCallbackKey
-          && key !== disconnectedCallbackKey
-          && key !== contextValue,
-        ),
+        ...elements.filter(({key}) => !methods.includes(key) && key !== contextValue),
 
         // Public
         method({

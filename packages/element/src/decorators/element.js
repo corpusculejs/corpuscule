@@ -1,6 +1,6 @@
 /* eslint-disable no-invalid-this, prefer-arrow-callback */
 import {assertKind} from '@corpuscule/utils/lib/asserts';
-import getSuperMethod from '@corpuscule/utils/lib/getSuperMethod';
+import getSuperMethods from '@corpuscule/utils/lib/getSuperMethods';
 import {render as renderer} from 'lit-html';
 import scheduler from '../scheduler';
 import {
@@ -25,38 +25,54 @@ const connectedCallbackKey = 'connectedCallback';
 const isCorpusculeElementKey = 'isCorpusculeElement';
 
 // eslint-disable-next-line no-empty-function
-const noop = () => {
-};
+const noop = () => {};
+
+const fields = [
+  $renderer,
+  $scheduler,
+];
+
+const methods = [
+  attributeChangedCallbackKey,
+  connectedCallbackKey,
+  $createRoot,
+  $internalChangedCallback,
+  $propertyChangedCallback,
+  $updatedCallback,
+];
 
 const filteringNames = [
   'is',
   isCorpusculeElementKey,
-  attributeChangedCallbackKey,
-  connectedCallbackKey,
-  $createRoot,
-  $propertyChangedCallback,
-  $renderer,
-  $scheduler,
-  $internalChangedCallback,
-  $updatedCallback,
+  ...fields,
+  ...methods,
 ];
 
 const element = name => ({kind, elements}) => {
   assertKind('element', 'class', kind);
 
-  const superAttributeChangedCallback = getSuperMethod(attributeChangedCallbackKey, elements);
-  const superConnectedCallback = getSuperMethod(connectedCallbackKey, elements);
-  const superPropertyChangedCallback = getSuperMethod($propertyChangedCallback, elements);
-  const superInternalChangedCallback = getSuperMethod($internalChangedCallback, elements);
-
   if (!elements.find(({key}) => key === $render)) {
     throw new Error('[render]() is not implemented');
   }
 
-  const existingCreateRoot = elements.find(({key}) => key === $createRoot);
-  const existingRenderer = elements.find(({key}) => key === $renderer);
-  const existingScheduler = elements.find(({key}) => key === $scheduler);
-  const existingUpdatedCallback = elements.find(({key}) => key === $updatedCallback);
+  const [
+    superAttributeChangedCallback,
+    superConnectedCallback,
+    superCreateRoot,
+    superInternalChangedCallback,
+    superPropertyChangedCallback,
+    superUpdatedCallback,
+  ] = getSuperMethods(elements, methods, {
+    [$createRoot]() {
+      return this.attachShadow({mode: 'open'});
+    },
+    [$updatedCallback]: noop,
+  });
+
+  const [
+    {initializer: existingRenderer = () => renderer} = {},
+    {initializer: existingScheduler = () => scheduler} = {},
+  ] = fields.map(fieldName => elements.find(({key}) => key === fieldName));
 
   return {
     elements: [
@@ -72,11 +88,11 @@ const element = name => ({kind, elements}) => {
         key: isCorpusculeElementKey,
       }, {isReadonly: true, isStatic: true}),
       field({
-        initializer: existingRenderer ? existingRenderer.initializer : () => renderer,
+        initializer: existingRenderer,
         key: $renderer,
       }, {isReadonly: true, isStatic: true}),
       field({
-        initializer: existingScheduler ? existingScheduler.initializer : () => scheduler,
+        initializer: existingScheduler,
         key: $scheduler,
       }, {isReadonly: true, isStatic: true}),
 
@@ -103,10 +119,7 @@ const element = name => ({kind, elements}) => {
       // Protected
       method({
         key: $createRoot,
-        value() {
-          return this.attachShadow({mode: 'open'});
-        },
-        ...existingCreateRoot ? {value: existingCreateRoot.descriptor.value} : {},
+        value: superCreateRoot,
       }),
       method({
         key: $internalChangedCallback,
@@ -132,7 +145,7 @@ const element = name => ({kind, elements}) => {
       }),
       method({
         key: $updatedCallback,
-        value: existingUpdatedCallback ? existingUpdatedCallback.descriptor.value : noop,
+        value: superUpdatedCallback,
       }),
 
       // Private

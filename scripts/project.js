@@ -7,9 +7,9 @@ const packages = {
   utils: [
     'addToRegistry',
     'asserts',
-    'descriptors',
-    'getSuperMethod',
     'compose',
+    'descriptors',
+    'getSuperMethods',
   ],
 };
 
