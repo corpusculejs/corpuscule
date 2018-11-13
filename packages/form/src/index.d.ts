@@ -5,7 +5,7 @@ import {
   FormApi,
   FormState,
   FormSubscription, IsEqual,
-} from "final-form";
+} from 'final-form';
 
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
@@ -29,17 +29,17 @@ export interface FormDecoratorParams {
 }
 
 export interface Form {
-  readonly [debug]?: Config["debug"];
-  readonly [destroyOnUnregister]?: Config["destroyOnUnregister"];
+  readonly [debug]?: Config['debug'];
+  readonly [destroyOnUnregister]?: Config['destroyOnUnregister'];
   readonly [formApi]: FormApi;
   readonly [formState]: FormState;
-  readonly [initialValues]?: Config["initialValues"];
+  readonly [initialValues]?: Config['initialValues'];
   readonly [initialValuesEqual]?: (a?: object, b?: object) => boolean;
-  readonly [keepDirtyOnReinitialize]?: Config["keepDirtyOnReinitialize"];
-  readonly [mutators]?: Config["mutators"];
-  readonly [onSubmit]?: Config["onSubmit"];
-  readonly [validateForm]?: Config["validate"];
-  readonly [validateOnBlur]?: Config["validateOnBlur"];
+  readonly [keepDirtyOnReinitialize]?: Config['keepDirtyOnReinitialize'];
+  readonly [mutators]?: Config['mutators'];
+  readonly [onSubmit]?: Config['onSubmit'];
+  readonly [validateForm]?: Config['validate'];
+  readonly [validateOnBlur]?: Config['validateOnBlur'];
 }
 
 export const form: (params: FormDecoratorParams) => any;
@@ -65,21 +65,20 @@ export interface FieldInputProps<T> {
   readonly value: T;
 }
 
-export interface FieldMetaProps extends Omit<
-  FieldState,
-  "blur" | "change" | "focus" | "length" | "name" | "value"
-> {}
+export interface FieldMetaProps extends Omit<FieldState,
+  'blur' | 'change' | 'focus' | 'length' | 'name' | 'value'> {
+}
 
 export interface Field<T> {
   readonly [allowNull]?: boolean;
   readonly [format]?: ((value: any, name: string) => any) | null;
   readonly [formatOnBlur]?: boolean;
-  readonly [parse]?: ((value: any, name: string) => any) | null;
-  readonly [name]: string;
+  readonly [input]: FieldInputProps<T>;
   readonly [isEqual]?: IsEqual;
+  readonly [meta]: FieldMetaProps;
+  readonly [name]: string;
+  readonly [parse]?: ((value: any, name: string) => any) | null;
   readonly [subscription]?: FieldSubscription;
   readonly [validateField]?: (value: any, allValues: object) => any;
   readonly [value]?: T;
-  readonly [input]: FieldInputProps<T>;
-  readonly [meta]: FieldMetaProps;
 }

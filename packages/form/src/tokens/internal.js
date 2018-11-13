@@ -1,3 +1,2 @@
-export const handleSubmit = Symbol("handleSubmit");
-export const options = Symbol("options");
-export const unsubscriptions = Symbol("unsubscriptions");
+export const submit = Symbol('submit');
+export const unsubscriptions = Symbol('unsubscriptions');
