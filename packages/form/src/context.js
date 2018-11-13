@@ -1,4 +1,4 @@
-import createContext from "@corpuscule/context";
+import createContext from '@corpuscule/context';
 
 export const {
   consumer,

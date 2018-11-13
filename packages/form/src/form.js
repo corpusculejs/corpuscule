@@ -1,175 +1,152 @@
-import assertKind from "@corpuscule/utils/lib/assertKind";
-import getSuperMethod from "@corpuscule/utils/lib/getSuperMethod";
-import shallowEqual from "@corpuscule/utils/lib/shallowEqual";
-import {createForm} from "final-form";
+import {assertKind} from '@corpuscule/utils/lib/asserts';
+import {accessor, field, method} from '@corpuscule/utils/lib/descriptors';
+import getSuperMethods from '@corpuscule/utils/lib/getSuperMethods';
+import shallowEqual from '@corpuscule/utils/lib/shallowEqual';
+import {createForm} from 'final-form';
 import {
   provider,
-  providingValue as $$form,
-} from "./context";
+  providingValue as $formApi,
+} from './context';
 import {
   debug as $debug,
-  destroyOnUnregister as $destroyOnUnregister,
-  formApi as $formApi,
-  formState as $formState,
-  initialValues as $initialValues,
-  initialValuesEqual as $initialValuesEqual,
+  destroyOnUnregister as $destroyOnUnregister, formState as $formState,
+  initialValues as $initialValues, initialValuesEqual as $initialValuesEqual,
   keepDirtyOnReinitialize as $keepDirtyOnReinitialize,
   mutators as $mutators,
   onSubmit as $onSubmit,
   validateForm as $validate,
   validateOnBlur as $validateOnBlur,
-} from "./tokens/form";
-import {
-  handleSubmit as $$handleSubmit,
-  options as $$options,
-  unsubscriptions as $$unsubscriptions,
-} from "./tokens/internal";
-import {all} from "./utils";
+} from './tokens/form';
+import {submit as $$submit, unsubscriptions as $$unsubscriptions} from './tokens/internal';
+import {all} from './utils';
 
-const connectedCallbackKey = "connectedCallback";
-const disconnectedCallbackKey = "disconnectedCallback";
-const configOptions = [
-  $debug,
-  $destroyOnUnregister,
-  $initialValues,
-  $keepDirtyOnReinitialize,
-  $mutators,
-  $onSubmit,
-  $validate,
-  $validateOnBlur,
+const configOptions = new Map([
+  [$debug, 'debug'],
+  [$destroyOnUnregister, 'destroyOnUnregister'],
+  [$initialValues, 'initialValues'],
+  [$keepDirtyOnReinitialize, 'keepDirtyOnReinitialize'],
+  [$mutators, 'mutators'],
+  [$onSubmit, 'onSubmit'],
+  [$validate, 'validate'],
+  [$validateOnBlur, 'validateOnBlur'],
+]);
+
+const connectedCallbackKey = 'connectedCallback';
+const disconnectedCallbackKey = 'disconnectedCallback';
+
+const methods = [
+  connectedCallbackKey,
+  disconnectedCallbackKey,
 ];
 
-const form = ({decorators, subscription}) => (classDescriptor) => {
-  assertKind("form", "class", classDescriptor.kind);
+const form = ({decorators, subscription = all}) => (classDescriptor) => {
+  assertKind('form', 'class', classDescriptor.kind);
 
   const {elements, kind} = provider(classDescriptor);
 
-  const superConnectedCallback = getSuperMethod(connectedCallbackKey, elements);
-  const superDisconnectedCallback = getSuperMethod(disconnectedCallbackKey, elements);
+  const [
+    superConnectedCallback,
+    superDisconnectedCallback,
+  ] = getSuperMethods(elements, methods);
 
-  const configElements = elements.filter(({key}) => configOptions.includes(key));
+  const configElements = elements.filter(({key}) => configOptions.has(key));
+  const configInitializers = configElements
+    .map(({descorator: {value}, initializer, key, kind: optionKind}) => [
+      configOptions.get(key),
+      optionKind === 'field' ? initializer : () => value,
+    ]);
+
+  const configDescriptors = configElements.map(({key}) => accessor({
+    get() {
+      return this[$formApi][configOptions.get(key)];
+    },
+    key,
+    ...key === $initialValues ? {
+      set(initialValues) {
+        if (!(this[$initialValuesEqual] || shallowEqual)(
+          this[key],
+          initialValues,
+        )) {
+          this[$formApi].initialize(initialValues);
+        }
+      },
+    } : {
+      set(optionValue) {
+        if (this[key] !== optionValue) {
+          this[$formApi].setConfig(
+            configOptions.get(key),
+            typeof optionValue === 'function' ? optionValue.bind(this) : optionValue,
+          );
+        }
+      },
+    },
+  }));
 
   return {
     elements: [
-      ...elements.filter(({key}) =>
-        key !== connectedCallbackKey
-        && key !== disconnectedCallbackKey
-        && !configOptions.includes(key)
-      ),
-      ...configOptions.map(option => ({
-        descriptor: {
-          get() {
-            return this[$$options].get(option);
-          },
-          set: option === $initialValues ? function setInitialValues(values) {
-            if (!(this[$initialValuesEqual] || shallowEqual)(
-              this[$$options].get($initialValues),
-              values
-            )) {
-              this[$$options].set($initialValues, values);
+      ...elements.filter(({key}) => !methods.includes(key) && !configOptions.has(key)),
+      ...configDescriptors,
 
-              if (this[$$form]) {
-                this[$$form].initialize(values);
-              }
-            }
-          } : function setOption(value) {
-            if (this[$$options][option] !== value) {
-              this[$$options].set(option, typeof value === "function" ? value.bind(this) : value);
-
-              if (this[$$form]) {
-                this[$$form].setConfig(option, this[$$options].get(option));
-              }
-            }
-          },
-        },
-        key: option,
-        kind: "method",
-        placement: "prototype",
-      })),
-      {
-        descriptor: {
-          value() {
-            for (const {key, initializer} of configElements) {
-              this[key] = initializer.call(this);
-            }
-
-            this[$$form] = createForm(this[$$options]);
-
-            if (decorators) {
-              for (const decorate of decorators) {
-                this[$$unsubscriptions].push(decorate(this[$$form]));
-              }
-            }
-
-            this[$$unsubscriptions].push(
-              this[$$form].subscribe((state) => {
-                this[$formState] = state;
-              }, subscription || all)
-            );
-
-            this.addEventListener("submit", this[$$handleSubmit]);
-
-            return superConnectedCallback(this);
-          },
-        },
+      // Public
+      method({
         key: connectedCallbackKey,
-        kind: "method",
-        placement: "prototype",
-      },
-      {
-        descriptor: {
-          value() {
-            for (const unsubscribe of this[$$unsubscriptions]) {
-              unsubscribe();
+        value() {
+          if (decorators) {
+            for (const decorate of decorators) {
+              this[$$unsubscriptions].push(decorate(this[$formApi]));
             }
+          }
 
-            this.removeEventListener("submit", this[$$handleSubmit]);
+          this[$$unsubscriptions].push(
+            this[$formApi].subscribe((state) => {
+              this[$formState] = state;
+            }, subscription),
+          );
 
-            superDisconnectedCallback();
-          },
+          this.addEventListener('onSubmit', this[$$submit]);
+
+          superConnectedCallback.call(this);
         },
+      }),
+      method({
         key: disconnectedCallbackKey,
-        kind: "method",
-        placement: "prototype",
-      },
-      {
-        descriptor: {
-          get() {
-            return this[$$form];
-          },
+        value() {
+          for (const unsubscribe of this[$$unsubscriptions]) {
+            unsubscribe();
+          }
+
+          this.removeEventListener('onSubmit', this[$$submit]);
+
+          superDisconnectedCallback.call(this);
+        },
+      }),
+
+      // Protected
+      field({
+        initializer() {
+          return createForm(configInitializers.reduce((acc, [key, initializer]) => {
+            acc[key] = initializer.call(this);
+
+            return acc;
+          }, {}));
         },
         key: $formApi,
-        kind: "method",
-        placement: "prototype",
-      },
-      {
-        descriptor: {},
-        initializer() {
-          return (event) => {
-            event.preventDefault();
-            event.stopPropagation();
+      }, {isReadonly: true}),
 
-            this[$$form].submit();
-          };
-        },
-        key: $$handleSubmit,
-        kind: "field",
-        placement: "own",
-      },
-      {
-        descriptor: {},
-        initializer: () => new Map(),
-        key: $$options,
-        kind: "field",
-        placement: "own",
-      },
-      {
-        descriptor: {},
+      // Private
+      field({
         initializer: () => [],
         key: $$unsubscriptions,
-        kind: "field",
-        placement: "own",
-      },
+      }, {isPrivate: true}),
+      method({
+        key: $$submit,
+        value(e) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          this[$formApi].submit();
+        },
+      }, {isBound: true, isPrivate: true}),
     ],
     kind,
   };
