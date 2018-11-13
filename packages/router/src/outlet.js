@@ -1,12 +1,12 @@
 import createContext from '@corpuscule/context';
 import {assertKind} from '@corpuscule/utils/lib/asserts';
-import getSuperMethod from '@corpuscule/utils/lib/getSuperMethod';
+import {accessor, method} from '@corpuscule/utils/lib/descriptors';
+import getSuperMethods from '@corpuscule/utils/lib/getSuperMethods';
 import {
   resolving as $$resolving,
   updateRoute as $$updateRoute,
 } from './tokens/internal';
 import {layout, resolve} from './tokens/lifecycle';
-import {accessor, method} from '@corpuscule/utils/lib/descriptors';
 
 const {
   consumer,
@@ -23,27 +23,30 @@ export {
 const connectedCallbackKey = 'connectedCallback';
 const disconnectedCallbackKey = 'disconnectedCallback';
 
+const methods = [
+  connectedCallbackKey,
+  disconnectedCallbackKey,
+];
+
 const outlet = routes => (classDescriptor) => {
   assertKind('outlet', 'class', classDescriptor.kind);
 
   const {elements, kind} = consumer(classDescriptor);
 
-  const superConnectedCallback = getSuperMethod(connectedCallbackKey, elements);
-  const superDisconnectedCallback = getSuperMethod(disconnectedCallbackKey, elements);
+  const [
+    superConnectedCallback,
+    superDisconnectedCallback,
+  ] = getSuperMethods(elements, methods);
 
   return {
     elements: [
-      ...elements.filter(({key}) =>
-        key !== connectedCallbackKey
-        && key !== disconnectedCallbackKey,
-      ),
+      ...elements.filter(({key}) => !methods.includes(key)),
 
       // Public
       method({
         key: connectedCallbackKey,
         value() {
           window.addEventListener('popstate', this[$$updateRoute]);
-
           superConnectedCallback.call(this);
 
           this[$$updateRoute](location.pathname);
