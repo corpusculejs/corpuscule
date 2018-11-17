@@ -1,8 +1,9 @@
 import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
+import createDualDescriptor from '@corpuscule/utils/lib/createDualDescriptor';
 import {accessor, field} from '@corpuscule/utils/lib/descriptors';
 
 const createComputingPair = () => {
-  const registry = Symbol();
+  const registry = new WeakMap();
 
   const computer = ({
     descriptor: {get, set},
@@ -14,7 +15,7 @@ const createComputingPair = () => {
     assertPlacement('computed', 'prototype', placement);
 
     const storage = Symbol();
-    const pristine = Symbol();
+    const correct = Symbol();
 
     return accessor({
       extras: [
@@ -23,20 +24,20 @@ const createComputingPair = () => {
         }, {isPrivate: true}),
         field({
           initializer: () => false,
-          key: pristine,
+          key: correct,
         }, {isPrivate: true}),
       ],
       finisher(target) {
-        if (target[registry]) {
-          target[registry].push(pristine);
+        if (registry.has(target)) {
+          registry.get(target).push(correct);
         } else {
-          target[registry] = [pristine];
+          registry.set(target, [correct]);
         }
       },
       get() {
-        if (!this[pristine]) {
+        if (!this[correct]) {
           this[storage] = get.call(this);
-          this[pristine] = true;
+          this[correct] = true;
         }
 
         return this[storage];
@@ -46,7 +47,7 @@ const createComputingPair = () => {
   };
 
   const observer = ({
-    descriptor: {get: previousGet, set: previousSet},
+    descriptor,
     initializer,
     key,
     kind,
@@ -55,49 +56,27 @@ const createComputingPair = () => {
     const isMethod = kind === 'method';
 
     assertKind('observer', 'field or accessor', kind, {
-      correct: kind === 'field' || ( // eslint-disable-line no-extra-parens
-        isMethod && previousGet && previousSet
-      ),
+      // eslint-disable-next-line no-extra-parens
+      correct: kind === 'field' || (isMethod && descriptor.get && descriptor.set),
     });
     assertPlacement('observer', 'own or prototype', placement, {
       correct: placement === 'own' || placement === 'prototype',
     });
 
-    let descriptor;
-    let initializerDescriptor;
-
-    if (isMethod) {
-      descriptor = {
-        get: previousGet,
-        set: previousSet,
-      };
-    } else {
-      const storage = Symbol();
-
-      descriptor = {
-        get() {
-          return this[storage];
-        },
-        set(value) {
-          this[storage] = value;
-        },
-      };
-
-      initializerDescriptor = field({
-        initializer,
-        key: storage,
-      }, {isPrivate: true});
-    }
+    const [
+      {get, set},
+      initializerDescriptor,
+    ] = createDualDescriptor(descriptor, initializer);
 
     return accessor({
-      ...descriptor,
       extras: initializerDescriptor ? [initializerDescriptor] : undefined,
+      get,
       key,
       set(value) {
-        descriptor.set.call(this, value);
+        set.call(this, value);
 
-        for (const pristine of this.constructor[registry]) {
-          this[pristine] = false;
+        for (const correct of registry.get(this.constructor)) {
+          this[correct] = false;
         }
       },
     });

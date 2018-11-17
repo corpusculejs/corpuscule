@@ -102,6 +102,10 @@ const element = (
         initializer: () => true,
         key: isCorpusculeElementKey,
       }, {isReadonly: true, isStatic: true}),
+      field({
+        initializer: () => [],
+        key: 'observedAttributes',
+      }, {isReadonly: true, isStatic: true}),
 
       // Public
       method({
