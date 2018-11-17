@@ -2,8 +2,8 @@
 import {assertKind} from '@corpuscule/utils/lib/asserts';
 import getSuperMethods from '@corpuscule/utils/lib/getSuperMethods';
 import {field, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
+import defaultScheduler from '@corpuscule/utils/lib/scheduler';
 import {render as defaultRenderer} from 'lit-html';
-import defaultScheduler from '../scheduler';
 import {
   createRoot as $createRoot,
   updatedCallback as $updatedCallback,

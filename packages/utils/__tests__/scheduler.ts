@@ -2,7 +2,7 @@
 
 import schedule from '../src/scheduler';
 
-const testScheduler = () => {
+const testSchedule = () => {
   describe('schedule', () => {
     it('uses single requestAnimationFrame for all nested tasks', () => {
       const taskSpy = jasmine.createSpy('task');
@@ -58,4 +58,4 @@ const testScheduler = () => {
   });
 };
 
-export default testScheduler;
+export default testSchedule;
