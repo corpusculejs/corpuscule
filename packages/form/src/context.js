@@ -2,7 +2,7 @@ import createContext from '@corpuscule/context';
 
 export const {
   consumer,
-  contextValue: $$formInstance,
+  contextValue,
   provider,
   providingValue,
 } = createContext();
