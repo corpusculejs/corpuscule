@@ -1,4 +1,7 @@
-export const lifecycleKeys = ['connectedCallback', 'disconnectedCallback'];
+export const lifecycleKeys = [
+  'connectedCallback',
+  'disconnectedCallback',
+];
 
 const publicDescriptor = {
   configurable: true,
