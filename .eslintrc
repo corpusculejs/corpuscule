@@ -7,6 +7,7 @@
   },
   "rules": {
     "callback-return": "off",
-    "global-require": "off"
+    "global-require": "off",
+    "no-extra-parens": "off"
   }
 }
