@@ -7,25 +7,25 @@
  * @source https://github.com/facebook/fbjs/blob/master/packages/fbjs/src/core/__tests__/shallowEqual-test.js
  */
 
-import shallowEqual from "../src/shallowEqual";
+import shallowEqual from '../src/shallowEqual';
 
 const shallowEqualTest = () => {
-  describe("shallowEqual", () => {
-    it("returns false if either argument is null", () => {
+  describe('shallowEqual', () => {
+    it('returns false if either argument is null', () => {
       expect(shallowEqual(null, {})).toBe(false);
       expect(shallowEqual({}, null)).toBe(false);
     });
 
-    it("returns true if both arguments are null or undefined", () => {
+    it('returns true if both arguments are null or undefined', () => {
       expect(shallowEqual(null, null)).toBe(true);
       expect(shallowEqual(undefined, undefined)).toBe(true);
     });
 
-    it("returns true if arguments are not objects and are equal", () => {
+    it('returns true if arguments are not objects and are equal', () => {
       expect(shallowEqual(1, 1)).toBe(true);
     });
 
-    it("returns true if arguments are shallow equal", () => {
+    it('returns true if arguments are shallow equal', () => {
       expect(
         shallowEqual(
           {a: 1, b: 2, c: 3},
@@ -34,7 +34,7 @@ const shallowEqualTest = () => {
       ).toBe(true);
     });
 
-    it("returns true when comparing NaN", () => {
+    it('returns true when comparing NaN', () => {
       expect(shallowEqual(NaN, NaN)).toBe(true);
 
       expect(
@@ -45,7 +45,7 @@ const shallowEqualTest = () => {
       ).toBe(true);
     });
 
-    it("returns false if arguments are not objects and not equal", () => {
+    it('returns false if arguments are not objects and not equal', () => {
       expect(
         shallowEqual(
           1,
@@ -54,7 +54,7 @@ const shallowEqualTest = () => {
       ).toBe(false);
     });
 
-    it("returns false if only one argument is not an object", () => {
+    it('returns false if only one argument is not an object', () => {
       expect(
         shallowEqual(
           1,
@@ -63,7 +63,7 @@ const shallowEqualTest = () => {
       ).toBe(false);
     });
 
-    it("returns false if first argument has too many keys", () => {
+    it('returns false if first argument has too many keys', () => {
       expect(
         shallowEqual(
           {a: 1, b: 2, c: 3},
@@ -72,7 +72,7 @@ const shallowEqualTest = () => {
       ).toBe(false);
     });
 
-    it("returns false if second argument has too many keys", () => {
+    it('returns false if second argument has too many keys', () => {
       expect(
         shallowEqual(
           {a: 1, b: 2},
@@ -81,7 +81,7 @@ const shallowEqualTest = () => {
       ).toBe(false);
     });
 
-    it("returns false if arguments are not shallow equal", () => {
+    it('returns false if arguments are not shallow equal', () => {
       expect(
         shallowEqual(
           {a: 1, b: 2, c: {}},
