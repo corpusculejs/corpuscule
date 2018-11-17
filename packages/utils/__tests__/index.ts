@@ -3,6 +3,7 @@ import testAsserts from './asserts';
 import testCreateDualDescriptor from './createDualDescriptor';
 import testDescriptors from './descriptors';
 import testGetSuperMethod from './getSuperMethods';
+import testSchedule from './scheduler';
 
 describe('@corpuscule/utils', () => {
   testAddToRegistry();
@@ -10,4 +11,5 @@ describe('@corpuscule/utils', () => {
   testCreateDualDescriptor();
   testDescriptors();
   testGetSuperMethod();
+  testSchedule();
 });

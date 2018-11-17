@@ -11,6 +11,7 @@ const packages = {
     'descriptors',
     'getSuperMethods',
     'shallowEqual',
+    'scheduler',
   ],
 };
 
