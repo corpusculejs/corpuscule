@@ -9,8 +9,9 @@ import {
 import getSuperMethods from '@corpuscule/utils/lib/getSuperMethods';
 import scheduler from '@corpuscule/utils/lib/scheduler';
 import shallowEqual from '@corpuscule/utils/lib/shallowEqual';
-import {consumer, contextValue as $form} from './context';
+import {consumer, contextValue as $$form} from './context';
 import {
+  formApi as $formApi,
   input as $input,
   meta as $meta,
   scheduler as $scheduler,
@@ -18,7 +19,6 @@ import {
 import {
   configMap as $$configMap,
   formState as $$formState,
-  listener as $$listener,
   onBlur as $$onBlur,
   onChange as $$onChange,
   onFocus as $$onFocus,
@@ -129,6 +129,7 @@ const field = (classDescriptor) => {
 
   const [
     superConnectedCallback,
+    superDisconnectedCallback,
   ] = getSuperMethods(elements, lifecycleKeys);
 
   const {
@@ -151,6 +152,7 @@ const field = (classDescriptor) => {
         key: disconnectedCallbackKey,
         value() {
           this[$$unsubscribe]();
+          superDisconnectedCallback.call(this);
         },
       }),
 
@@ -159,6 +161,12 @@ const field = (classDescriptor) => {
         initializer: schedulerMethod,
         key: $scheduler,
       }, {isReadonly: true, isStatic: true}),
+      accessor({
+        get() {
+          return this[$$form];
+        },
+        key: $formApi,
+      }),
 
       // Private
       ffield({
@@ -177,13 +185,6 @@ const field = (classDescriptor) => {
         initializer: () => true,
         key: $$updatingValid,
       }),
-      method({
-        key: $$listener,
-        value(state) {
-          this[$$formState] = state;
-          this[$$update]();
-        },
-      }, {isBound: true, isPrivate: true}),
       method({
         key: $$onBlur,
         value() {
@@ -250,9 +251,14 @@ const field = (classDescriptor) => {
               [map.get('validateFields')]: validateFields,
             } = this;
 
-            this[$$unsubscribe] = this[$form].registerField(
+            const listener = (state) => {
+              this[$$formState] = state;
+              this[$$update]();
+            };
+
+            this[$$unsubscribe] = this[$$form].registerField(
               name,
-              this[$$listener],
+              listener,
               subscription || all,
               {
                 getValidator: () => this[map.get('validate')],

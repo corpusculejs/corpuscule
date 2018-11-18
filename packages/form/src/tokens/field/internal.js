@@ -1,6 +1,5 @@
 export const configMap = Symbol();
 export const formState = Symbol();
-export const listener = Symbol();
 export const onBlur = Symbol();
 export const onChange = Symbol();
 export const onFocus = Symbol();

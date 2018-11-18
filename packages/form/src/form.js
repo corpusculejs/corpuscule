@@ -1,3 +1,4 @@
+/* eslint-disable no-invalid-this, prefer-arrow-callback */
 import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
 import {accessor, field, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
 import getSuperMethods from '@corpuscule/utils/lib/getSuperMethods';
@@ -46,15 +47,12 @@ export const formConfig = configKey => ({
   if (kind === 'method' && descriptor.value) {
     return {
       descriptor,
-      extras: [
-        field({
-          initializer() {
-            this[$formApi].setConfig(configKey, descriptor.value.bind(this));
-          },
-          // TODO: replace with initializer when https://github.com/babel/babel/pull/9008 is merged
-          key: Symbol(),
-        }, {isPrivate: true}),
-      ],
+      finisher(target) {
+        // eslint-disable-next-line func-names
+        target[$$configInitializers].push(function () {
+          this[$formApi].setConfig(configKey, descriptor.value.bind(this));
+        });
+      },
       key,
       kind,
       placement,
@@ -99,7 +97,7 @@ export const formConfig = configKey => ({
   });
 };
 
-const form = ({decorators, subscription = all}) => (classDescriptor) => {
+const form = ({decorators, subscription = all} = {}) => (classDescriptor) => {
   assertKind('form', 'class', classDescriptor.kind);
 
   const {elements, kind} = provider(classDescriptor);
@@ -129,7 +127,7 @@ const form = ({decorators, subscription = all}) => (classDescriptor) => {
             }, subscription),
           );
 
-          this.addEventListener('onSubmit', this[$$submit]);
+          this.addEventListener('submit', this[$$submit]);
 
           superConnectedCallback.call(this);
         },
@@ -143,7 +141,7 @@ const form = ({decorators, subscription = all}) => (classDescriptor) => {
 
           this[$$unsubscriptions] = [];
 
-          this.removeEventListener('onSubmit', this[$$submit]);
+          this.removeEventListener('submit', this[$$submit]);
           superDisconnectedCallback.call(this);
         },
       }),
