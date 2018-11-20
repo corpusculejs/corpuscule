@@ -1,4 +1,4 @@
-import {field} from '../lib/descriptors';
+import {field} from './descriptors';
 
 const createDualDescriptor = (descriptor, initializer) => {
   if (descriptor.get && descriptor.set) {
