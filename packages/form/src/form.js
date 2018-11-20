@@ -12,14 +12,9 @@ import {
   formState as $formState,
   initialValuesEqual as $initialValuesEqual,
 } from './tokens/form/lifecycle';
-import {
-  configInitializers as $$configInitializers,
-  submit as $$submit,
-  unsubscriptions as $$unsubscriptions,
-} from './tokens/form/internal';
 import {all} from './utils';
 
-const configMap = new Map(configOptions.map(key => [Symbol(key), key]));
+const configInitializers = new WeakMap();
 
 const [
   connectedCallbackKey,
@@ -49,7 +44,7 @@ export const formConfig = configKey => ({
       descriptor,
       finisher(target) {
         // eslint-disable-next-line func-names
-        target[$$configInitializers].push(function () {
+        configInitializers.get(target).push(function () {
           this[$formApi].setConfig(configKey, descriptor.value.bind(this));
         });
       },
@@ -80,7 +75,7 @@ export const formConfig = configKey => ({
 
   return accessor({
     finisher(target) {
-      target[$$configInitializers].push(initializer);
+      configInitializers.get(target).push(initializer);
     },
     ...get ? {get} : {
       get() {
@@ -107,9 +102,12 @@ const form = ({decorators, subscription = all} = {}) => (classDescriptor) => {
     superDisconnectedCallback,
   ] = getSuperMethods(elements, lifecycleKeys);
 
+  const $$submit = Symbol();
+  const $$unsubscriptions = Symbol();
+
   return {
     elements: [
-      ...elements.filter(({key}) => !lifecycleKeys.includes(key) && !configMap.has(key)),
+      ...elements.filter(({key}) => !lifecycleKeys.includes(key)),
 
       // Public
       method({
@@ -149,7 +147,7 @@ const form = ({decorators, subscription = all} = {}) => (classDescriptor) => {
       // Protected
       field({
         initializer() {
-          return createForm(this.constructor[$$configInitializers].reduce((
+          return createForm(configInitializers.get(this.constructor).reduce((
             acc,
             [key, initializer],
           ) => {
@@ -164,10 +162,6 @@ const form = ({decorators, subscription = all} = {}) => (classDescriptor) => {
       // Private
       field({
         initializer: () => [],
-        key: $$configInitializers,
-      }, {isPrivate: true, isStatic: true}),
-      field({
-        initializer: () => [],
         key: $$unsubscriptions,
       }, {isPrivate: true}),
       method({
@@ -180,6 +174,9 @@ const form = ({decorators, subscription = all} = {}) => (classDescriptor) => {
         },
       }, {isBound: true, isPrivate: true}),
     ],
+    finisher(target) {
+      configInitializers.set(target, []);
+    },
     kind,
   };
 };

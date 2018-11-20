@@ -16,18 +16,6 @@ import {
   meta as $meta,
   scheduler as $scheduler,
 } from './tokens/field/lifecycle';
-import {
-  configMap as $$configMap,
-  formState as $$formState,
-  onBlur as $$onBlur,
-  onChange as $$onChange,
-  onFocus as $$onFocus,
-  subscribe as $$subscribe,
-  subscribingValid as $$subscribingValid,
-  unsubscribe as $$unsubscribe,
-  update as $$update,
-  updatingValid as $$updatingValid,
-} from './tokens/field/internal';
 import {all} from './utils';
 
 const [
@@ -49,6 +37,10 @@ const configOptions = [
   'value',
 ];
 
+const configMap = new WeakMap();
+const subscribe = new WeakMap();
+const update = new WeakMap();
+
 export const fieldConfig = configKey => ({
   descriptor,
   initializer,
@@ -68,7 +60,7 @@ export const fieldConfig = configKey => ({
   }
 
   const finisher = (target) => {
-    target[$$configMap].set(configKey, key);
+    configMap.get(target).set(configKey, key);
   };
 
   if (kind === 'method' && descriptor.value) {
@@ -107,13 +99,13 @@ export const fieldConfig = configKey => ({
             ? value !== oldValue
             : !shallowEqual(value, oldValue)
         ) {
-          this[$$subscribe]();
+          this[subscribe.get(this.constructor)]();
         }
       },
     } : {
       set(value) {
         if (value !== get.call(this)) {
-          this[$$update]();
+          this[update.get(this.constructor)]();
         }
 
         set.call(this, value);
@@ -124,6 +116,16 @@ export const fieldConfig = configKey => ({
 
 const field = (classDescriptor) => {
   assertKind('field', 'class', classDescriptor.kind);
+
+  const $$formState = Symbol();
+  const $$onBlur = Symbol();
+  const $$onChange = Symbol();
+  const $$onFocus = Symbol();
+  const $$subscribe = Symbol();
+  const $$subscribingValid = Symbol();
+  const $$unsubscribe = Symbol();
+  const $$update = Symbol();
+  const $$updatingValid = Symbol();
 
   const {elements, kind} = consumer(classDescriptor);
 
@@ -170,10 +172,6 @@ const field = (classDescriptor) => {
 
       // Private
       ffield({
-        initializer: () => new Map(),
-        key: $$configMap,
-      }, {isPrivate: true, isStatic: true}),
-      ffield({
         initializer: () => true,
         key: $$subscribingValid,
       }),
@@ -188,8 +186,9 @@ const field = (classDescriptor) => {
       method({
         key: $$onBlur,
         value() {
+          const map = configMap.get(this.constructor);
+
           const {
-            [$$configMap]: map,
             [map.get('format')]: format,
             [map.get('formatOnBlur')]: formatOnBlur,
           } = this;
@@ -211,7 +210,8 @@ const field = (classDescriptor) => {
       method({
         key: $$onChange,
         value(value) {
-          const parse = this[this[$$configMap].get('parse')];
+          const map = configMap.get(this.constructor);
+          const parse = this[map.get('parse')];
 
           const {
             change,
@@ -243,8 +243,9 @@ const field = (classDescriptor) => {
           this.constructor[$scheduler](() => {
             this[$$unsubscribe]();
 
+            const map = configMap.get(this.constructor);
+
             const {
-              [$$configMap]: map,
               [map.get('isEqual')]: isEqual,
               [map.get('name')]: name,
               [map.get('subscription')]: subscription,
@@ -281,8 +282,9 @@ const field = (classDescriptor) => {
           this[$$updatingValid] = false;
 
           this.constructor[$scheduler](() => {
+            const map = configMap.get(this.constructor);
+
             const {
-              [$$configMap]: map,
               [map.get('format')]: format,
               [map.get('formatOnBlur')]: formatOnBlur,
               [map.get('name')]: name,
@@ -313,6 +315,11 @@ const field = (classDescriptor) => {
         },
       }, {isPrivate: true}),
     ],
+    finisher(target) {
+      configMap.set(target, new Map());
+      subscribe.set(target, $$subscribe);
+      update.set(target, $$update);
+    },
     kind,
   };
 };
