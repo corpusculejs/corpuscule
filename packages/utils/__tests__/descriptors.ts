@@ -73,6 +73,14 @@ const testDescriptors = () => {
 
         expect(result.placement).toBe('static');
       });
+
+      it('creates initializer field', () => {
+        const result = field({
+          initializer: () => 10,
+        });
+
+        expect(result.key).toEqual(jasmine.any(Symbol));
+      });
     });
 
     describe('method', () => {

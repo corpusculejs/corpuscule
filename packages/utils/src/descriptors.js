@@ -19,7 +19,7 @@ export const field = (
   extras,
   finisher,
   initializer,
-  key,
+  key: key || Symbol(),
   kind: 'field',
   placement: isStatic ? 'static' : 'own',
 });

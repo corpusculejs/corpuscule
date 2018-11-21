@@ -17,8 +17,9 @@ export type AccessorParams =
   Pick<PropertyDescriptor, 'get' | 'set'>
   & Pick<ExtendedPropertyDescriptor, 'extras' | 'finisher' | 'key'>;
 
-export type FieldParams =
-  Pick<ExtendedPropertyDescriptor, 'extras' | 'finisher' | 'key' | 'initializer'>;
+export interface FieldParams extends Pick<ExtendedPropertyDescriptor, 'extras' | 'finisher' | 'initializer'> {
+  readonly key?: ExtendedPropertyDescriptor['key'];
+}
 
 export type MethodParams =
   Pick<PropertyDescriptor, 'value'>
