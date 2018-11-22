@@ -1,5 +1,4 @@
 import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
-import createDualDescriptor from '@corpuscule/utils/lib/createDualDescriptor';
 import {
   accessor,
   field as ffield,
@@ -48,6 +47,8 @@ export const fieldConfig = configKey => ({
   kind,
   placement,
 }) => {
+  const {get, set, value} = descriptor;
+
   assertKind('fieldConfig', 'not class', kind, {
     correct: kind !== 'class',
   });
@@ -63,13 +64,13 @@ export const fieldConfig = configKey => ({
     configMap.get(target).set(configKey, key);
   };
 
-  if (kind === 'method' && descriptor.value) {
+  if (kind === 'method' && value) {
     return {
       descriptor,
       extras: [
         method({
           key,
-          value: descriptor.value,
+          value,
         }, {isBound: true}),
       ],
       finisher,
@@ -79,37 +80,35 @@ export const fieldConfig = configKey => ({
     };
   }
 
-  const [
-    {get, set},
-    initializerDescriptor,
-  ] = createDualDescriptor(descriptor, initializer, kind === 'method');
-
   return accessor({
-    extras: initializerDescriptor ? [initializerDescriptor] : undefined,
     finisher,
     get,
+    initializer,
     key,
-    ...configKey === 'name' || configKey === 'subscription' ? {
-      set(value) {
-        const oldValue = get.call(this);
-        set.call(this, value);
+    set,
+  }, {
+    adjust({get: originalGet, set: originalSet}) {
+      return {
+        get: originalGet,
+        set: configKey === 'name' || configKey === 'subscription' ? function (v) {
+          const oldValue = originalGet.call(this);
+          originalSet.call(this, v);
 
-        if (
-          configKey === 'name'
-            ? value !== oldValue
-            : !shallowEqual(value, oldValue)
-        ) {
-          this[subscribe.get(this.constructor)]();
-        }
-      },
-    } : {
-      set(value) {
-        if (value !== get.call(this)) {
-          this[update.get(this.constructor)]();
-        }
+          if (
+            configKey === 'name'
+              ? v !== oldValue
+              : !shallowEqual(v, oldValue)
+          ) {
+            this[subscribe.get(this.constructor)]();
+          }
+        } : function (v) {
+          if (v !== originalGet.call(this)) {
+            this[update.get(this.constructor)]();
+          }
 
-        set.call(this, value);
-      },
+          originalSet.call(this, v);
+        },
+      };
     },
   });
 };

@@ -1,5 +1,4 @@
 import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
-import createDualDescriptor from '@corpuscule/utils/lib/createDualDescriptor';
 import {accessor, field} from '@corpuscule/utils/lib/descriptors';
 
 const createComputingPair = () => {
@@ -47,7 +46,7 @@ const createComputingPair = () => {
   };
 
   const observer = ({
-    descriptor,
+    descriptor: {get, set},
     initializer,
     key,
     kind,
@@ -57,27 +56,29 @@ const createComputingPair = () => {
 
     assertKind('observer', 'field or accessor', kind, {
       // eslint-disable-next-line no-extra-parens
-      correct: kind === 'field' || (isMethod && descriptor.get && descriptor.set),
+      correct: kind === 'field' || (isMethod && get && set),
     });
     assertPlacement('observer', 'own or prototype', placement, {
       correct: placement === 'own' || placement === 'prototype',
     });
 
-    const [
-      {get, set},
-      initializerDescriptor,
-    ] = createDualDescriptor(descriptor, initializer);
-
     return accessor({
-      extras: initializerDescriptor ? [initializerDescriptor] : undefined,
       get,
+      initializer,
       key,
-      set(value) {
-        set.call(this, value);
+      set,
+    }, {
+      adjust({get: originalGet, set: originalSet}) {
+        return {
+          get: originalGet,
+          set(value) {
+            originalSet.call(this, value);
 
-        for (const correct of registry.get(this.constructor)) {
-          this[correct] = false;
-        }
+            for (const correct of registry.get(this.constructor)) {
+              this[correct] = false;
+            }
+          },
+        };
       },
     });
   };

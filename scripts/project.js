@@ -8,7 +8,6 @@ const packages = {
     'addToRegistry',
     'asserts',
     'compose',
-    'createDualDescriptor',
     'descriptors',
     'getSuperMethods',
     'shallowEqual',
