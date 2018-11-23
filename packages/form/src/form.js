@@ -1,4 +1,3 @@
-/* eslint-disable no-invalid-this, prefer-arrow-callback */
 import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
 import {accessor, field, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
 import getSuperMethods from '@corpuscule/utils/lib/getSuperMethods';
@@ -28,8 +27,12 @@ export const formConfig = configKey => ({
   kind,
   placement,
 }) => {
-  assertKind('formConfig', 'not class', kind, {
-    correct: kind !== 'class',
+  const {get, set, value} = descriptor;
+
+  assertKind('formConfig', 'properties, methods or full accessors', kind, {
+    correct: kind === 'field' || (
+      kind === 'method' && (value || (get && set))
+    ),
   });
   assertPlacement('formConfig', 'own or prototype', placement, {
     correct: placement === 'own' || placement === 'prototype',
@@ -39,14 +42,18 @@ export const formConfig = configKey => ({
     throw new TypeError(`${configKey} is not one of the Final Form configuration keys`);
   }
 
-  if (kind === 'method' && descriptor.value) {
+  if (kind === 'method' && value) {
     return {
       descriptor,
       finisher(target) {
-        // eslint-disable-next-line func-names
-        configInitializers.get(target).push(function () {
-          this[$formApi].setConfig(configKey, descriptor.value.bind(this));
-        });
+        configInitializers
+          .get(target)
+          .push([
+            key,
+            function () {
+              return value.bind(this);
+            },
+          ]);
       },
       key,
       kind,
@@ -54,41 +61,38 @@ export const formConfig = configKey => ({
     };
   }
 
-  const {get, set} = descriptor;
-
-  const configSetter = configKey === 'initialValues' ? {
-    set(initialValues) {
-      if (!(this[$initialValuesEqual] || shallowEqual)(
-        this[key],
-        initialValues,
-      )) {
-        this[$formApi].initialize(initialValues);
-      }
-    },
-  } : {
-    set(value) {
-      if (this[key] !== value) {
-        this[$formApi].setConfig(configKey, value);
-      }
-    },
+  const updateForm = configKey === 'initialValues' ? function (initialValues) {
+    if (!(this[$initialValuesEqual] || shallowEqual)(
+      this[key],
+      initialValues,
+    )) {
+      this[$formApi].initialize(initialValues);
+    }
+  } : function (v) {
+    if (this[key] !== v) {
+      this[$formApi].setConfig(configKey, v);
+    }
   };
 
   return accessor({
     finisher(target) {
-      configInitializers.get(target).push(initializer);
+      configInitializers
+        .get(target)
+        .push([
+          key,
+          get ? function () {
+            return get.call(this);
+          } : initializer,
+        ]);
     },
-    ...get ? {get} : {
-      get() {
-        return this[$formApi].get(configKey);
-      },
+    get: get || function () {
+      return this[$formApi].get(configKey);
     },
     key,
-    ...set ? {
-      set(value) {
-        configSetter.set.call(this, value);
-        set.call(this, value);
-      },
-    } : configSetter,
+    set: set ? function (v) {
+      updateForm.call(this, v);
+      set.call(this, v);
+    } : updateForm,
   });
 };
 
@@ -147,19 +151,22 @@ const form = ({decorators, subscription = all} = {}) => (classDescriptor) => {
       // Protected
       field({
         initializer() {
-          return createForm(configInitializers.get(this.constructor).reduce((
-            acc,
-            [key, initializer],
-          ) => {
-            acc[key] = initializer.call(this);
+          return createForm(configInitializers.get(this.constructor)
+            .reduce((acc, [key, initializer]) => {
+              acc[key] = initializer ? initializer.call(this) : undefined;
 
-            return acc;
-          }, {}));
+              return acc;
+            }, {}));
         },
         key: $formApi,
       }, {isReadonly: true}),
 
       // Private
+      field({
+        initializer() {
+          configInitializers.set(this, []);
+        },
+      }, {isPrivate: true, isStatic: true}),
       field({
         initializer: () => [],
         key: $$unsubscriptions,
@@ -174,9 +181,6 @@ const form = ({decorators, subscription = all} = {}) => (classDescriptor) => {
         },
       }, {isBound: true, isPrivate: true}),
     ],
-    finisher(target) {
-      configInitializers.set(target, []);
-    },
     kind,
   };
 };
