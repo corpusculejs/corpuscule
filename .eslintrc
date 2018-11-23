@@ -8,6 +8,9 @@
   "rules": {
     "callback-return": "off",
     "global-require": "off",
-    "no-extra-parens": "off"
+    "func-names": "off",
+    "no-extra-parens": "off",
+    "no-invalid-this": "off",
+    "prefer-arrow-callback": "off"
   }
 }

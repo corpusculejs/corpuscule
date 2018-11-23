@@ -1,6 +1,7 @@
 {
   "extends": ["tslint-config-poetez"],
   "rules": {
+    "max-classes-per-file": false,
     "no-unused-variable": false,
     "ter-padded-blocks": false
   }
