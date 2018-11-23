@@ -20,7 +20,7 @@ const [
   disconnectedCallbackKey,
 ] = lifecycleKeys;
 
-export const formConfig = configKey => ({
+export const formOption = configKey => ({
   descriptor,
   initializer,
   key,
@@ -29,12 +29,12 @@ export const formConfig = configKey => ({
 }) => {
   const {get, set, value} = descriptor;
 
-  assertKind('formConfig', 'properties, methods or full accessors', kind, {
+  assertKind('formOption', 'properties, methods or full accessors', kind, {
     correct: kind === 'field' || (
       kind === 'method' && (value || (get && set))
     ),
   });
-  assertPlacement('formConfig', 'own or prototype', placement, {
+  assertPlacement('formOption', 'own or prototype', placement, {
     correct: placement === 'own' || placement === 'prototype',
   });
 

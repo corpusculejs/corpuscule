@@ -40,7 +40,7 @@ const configMap = new WeakMap();
 const subscribe = new WeakMap();
 const update = new WeakMap();
 
-export const fieldConfig = configKey => ({
+export const fieldOption = configKey => ({
   descriptor,
   initializer,
   key,
@@ -49,10 +49,10 @@ export const fieldConfig = configKey => ({
 }) => {
   const {get, set, value} = descriptor;
 
-  assertKind('fieldConfig', 'not class', kind, {
+  assertKind('fieldOption', 'not class', kind, {
     correct: kind !== 'class',
   });
-  assertPlacement('fieldConfig', 'own or prototype', placement, {
+  assertPlacement('fieldOption', 'own or prototype', placement, {
     correct: placement === 'own' || placement === 'prototype',
   });
 
