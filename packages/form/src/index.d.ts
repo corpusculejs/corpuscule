@@ -24,7 +24,7 @@ export interface Form {
   readonly [initialValuesEqual]?: (a?: object, b?: object) => boolean;
 }
 
-export const formConfig: (configKey: FormConfigKey) => PropertyDecorator;
+export const formOption: (configKey: FormConfigKey) => PropertyDecorator;
 export const form: (params?: FormDecoratorParams) => ClassDecorator;
 
 export const input: unique symbol;
@@ -56,5 +56,5 @@ export interface Field<T> {
   readonly [meta]: FieldMetaProps;
 }
 
-export const fieldConfig: (configKey: FieldConfigKey) => PropertyDecorator;
+export const fieldOption: (configKey: FieldConfigKey) => PropertyDecorator;
 export const field: ClassDecorator;
