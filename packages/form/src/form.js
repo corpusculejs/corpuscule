@@ -85,14 +85,20 @@ export const formOption = configKey => ({
           } : initializer,
         ]);
     },
-    get: get || function () {
-      return this[$formApi].get(configKey);
-    },
+    get,
+    initializer,
     key,
-    set: set ? function (v) {
-      updateForm.call(this, v);
-      set.call(this, v);
-    } : updateForm,
+    set,
+  }, {
+    adjust({get: originGet, set: originSet}) {
+      return {
+        get: originGet,
+        set(v) {
+          updateForm.call(this, v);
+          originSet.call(this, v);
+        },
+      };
+    },
   });
 };
 
@@ -151,12 +157,14 @@ const form = ({decorators, subscription = all} = {}) => (classDescriptor) => {
       // Protected
       field({
         initializer() {
-          return createForm(configInitializers.get(this.constructor)
-            .reduce((acc, [key, initializer]) => {
-              acc[key] = initializer ? initializer.call(this) : undefined;
+          return createForm(
+            configInitializers.get(this.constructor)
+              .reduce((acc, [key, initializer]) => {
+                acc[key] = initializer ? initializer.call(this) : undefined;
 
-              return acc;
-            }, {}));
+                return acc;
+              }, {}),
+          );
         },
         key: $formApi,
       }, {isReadonly: true}),
