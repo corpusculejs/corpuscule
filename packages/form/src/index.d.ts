@@ -11,7 +11,7 @@ export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
 export const formApi: unique symbol;
 export const formState: unique symbol;
-export const initialValuesEqual: unique symbol;
+export const compareInitialValues: unique symbol;
 
 export interface FormDecoratorParams {
   readonly decorators?: ReadonlyArray<Decorator>;
@@ -21,7 +21,7 @@ export interface FormDecoratorParams {
 export interface Form {
   readonly [formApi]: FormApi;
   readonly [formState]: FormState;
-  readonly [initialValuesEqual]?: (a?: object, b?: object) => boolean;
+  readonly [compareInitialValues]?: (a?: object, b?: object) => boolean;
 }
 
 export const formOption: (configKey: FormConfigKey) => PropertyDecorator;
