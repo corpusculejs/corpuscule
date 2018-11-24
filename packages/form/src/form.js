@@ -39,7 +39,7 @@ export const formOption = configKey => ({
   });
 
   if (!configOptions.includes(configKey)) {
-    throw new TypeError(`${configKey} is not one of the Final Form configuration keys`);
+    throw new TypeError(`"${configKey}" is not one of the Final Form configuration keys`);
   }
 
   if (kind === 'method' && value) {
