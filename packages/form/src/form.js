@@ -9,7 +9,7 @@ import {
 } from './context';
 import {
   formState as $formState,
-  initialValuesEqual as $initialValuesEqual,
+  compareInitialValues as $compareInitialValues,
 } from './tokens/form/lifecycle';
 import {all} from './utils';
 
@@ -62,7 +62,7 @@ export const formOption = configKey => ({
   }
 
   const updateForm = configKey === 'initialValues' ? function (initialValues) {
-    if (!(this[$initialValuesEqual] || shallowEqual)(
+    if (!(this[$compareInitialValues] || shallowEqual)(
       this[key],
       initialValues,
     )) {

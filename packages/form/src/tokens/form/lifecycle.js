@@ -1,3 +1,3 @@
 export const formState = Symbol('formState');
-export const initialValuesEqual = Symbol('initialValuesEqual');
+export const compareInitialValues = Symbol('compareInitialValues');
 
