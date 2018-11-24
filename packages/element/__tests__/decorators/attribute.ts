@@ -1,6 +1,7 @@
 import {HTMLElementMock} from '../../../../test/utils';
 
 // tslint:disable:max-classes-per-file
+import {HTMLElementMock} from '../../../../test/utils';
 import {attribute} from '../../src';
 
 const testAttributeDecorator = () => {
