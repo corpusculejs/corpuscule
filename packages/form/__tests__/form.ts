@@ -1,12 +1,12 @@
 // tslint:disable:no-unused-expression
 import {FormApi, FormState} from 'final-form';
+import {createForm, formSpyObject} from '../../../test/mocks/finalForm';
 import {HTMLElementMock} from '../../../test/utils';
 import {compareInitialValues, Form, form, formApi, formOption, formState} from '../src';
 import {all} from '../src/utils';
-import {createForm, formSpyObject} from './mocks/finalForm';
 
 const testForm = () => {
-  describe('form', () => {
+  describe('@form', () => {
     let unsubscribe: jasmine.Spy;
 
     beforeEach(() => {
@@ -125,7 +125,7 @@ const testForm = () => {
     it('throws an error if key is not one of the config options', () => {
       expect(() => {
         @form()
-        // @ts-ignore
+          // @ts-ignore
         class Test implements Form {
           public [formApi]: FormApi;
           public [formState]: FormState;
@@ -187,6 +187,7 @@ const testForm = () => {
 
     it('uses [compareInitialValues] to check initial values equality if set', () => {
       const compareInitialValuesSpy = jasmine.createSpy('compareInitialValues');
+
       @form()
       class Test implements Form {
         public [formApi]: FormApi;
