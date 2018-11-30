@@ -1,3 +1,5 @@
+import {HTMLElementMock} from '../../../../test/utils';
+
 // tslint:disable:no-unnecessary-class max-classes-per-file no-unbound-method no-empty
 import {
   createRoot,
@@ -8,7 +10,6 @@ import {
   scheduler,
   updatedCallback,
 } from '../../src';
-import {HTMLElementMock} from '../utils';
 
 const testElementDecorator = () => {
   describe('@element', () => {
