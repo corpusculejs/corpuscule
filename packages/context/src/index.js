@@ -104,7 +104,7 @@ const createContext = (defaultValue) => {
             event.detail.unsubscribe = this[$$unsubscribe];
             event.stopPropagation();
           },
-        }, {isPrivate: true}),
+        }, {isBound: true, isPrivate: true}),
       ],
       kind,
     };
