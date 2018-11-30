@@ -1,6 +1,7 @@
+import {HTMLElementMock} from '../../../../test/utils';
+
 // tslint:disable:max-classes-per-file
 import {attribute} from '../../src';
-import {HTMLElementMock} from '../utils';
 
 const testAttributeDecorator = () => {
   describe('@attribute', () => {
