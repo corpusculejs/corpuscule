@@ -1,7 +1,26 @@
 // tslint:disable:max-classes-per-file
 // tslint:disable-next-line:no-implicit-dependencies
-import {HTMLElementMock} from '../../../test/utils';
+import {Constructor, HTMLElementMock} from '../../../test/utils';
 import createContext from '../src';
+
+export const createContextElements = <T extends HTMLElementMock, U extends HTMLElementMock>(
+  providerConstructor: Constructor<T>,
+  consumerConstructor: Constructor<U>,
+  consumersNumber: number = 1,
+) => { // tslint:disable-line:readonly-array
+  const consumers = new Array(consumersNumber);
+  const provider = new providerConstructor();
+  provider.connectedCallback();
+
+  for (let i = 0; i < consumersNumber; i++) { // tslint:disable-line:no-increment-decrement
+    consumers[i] = new consumerConstructor();
+
+    consumers[i].addParent(provider);
+    consumers[i].connectedCallback();
+  }
+
+  return [provider, ...consumers];
+};
 
 describe('@corpuscule/context', () => {
   describe('createContext', () => {
@@ -23,13 +42,7 @@ describe('@corpuscule/context', () => {
         public [contextValue]: number;
       }
 
-      const providerElement = new Provider();
-      const consumerElement = new Consumer();
-
-      consumerElement.addParent(providerElement);
-
-      providerElement.connectedCallback();
-      consumerElement.connectedCallback();
+      const [, consumerElement] = createContextElements(Provider, Consumer);
       expect(consumerElement[contextValue]).toBe(2);
     });
 
@@ -51,16 +64,7 @@ describe('@corpuscule/context', () => {
         public [contextValue]: number;
       }
 
-      const providerElement = new Provider();
-      const consumerElement1 = new Consumer();
-      const consumerElement2 = new Consumer();
-
-      consumerElement1.addParent(providerElement);
-      consumerElement2.addParent(providerElement);
-
-      providerElement.connectedCallback();
-      consumerElement1.connectedCallback();
-      consumerElement2.connectedCallback();
+      const [, consumerElement1, consumerElement2] = createContextElements(Provider, Consumer, 2);
 
       expect(consumerElement1[contextValue]).toBe(2);
       expect(consumerElement2[contextValue]).toBe(2);
@@ -84,13 +88,7 @@ describe('@corpuscule/context', () => {
         public [contextValue]: number;
       }
 
-      const providerElement = new Provider();
-      const consumerElement = new Consumer();
-
-      consumerElement.addParent(providerElement);
-
-      providerElement.connectedCallback();
-      consumerElement.connectedCallback();
+      const [providerElement, consumerElement] = createContextElements(Provider, Consumer);
 
       expect(providerElement[providingValue]).toBe(2);
       expect(consumerElement[contextValue]).toBe(2);
@@ -114,13 +112,7 @@ describe('@corpuscule/context', () => {
         public [contextValue]: number;
       }
 
-      const providerElement = new Provider();
-      const consumerElement = new Consumer();
-
-      consumerElement.addParent(providerElement);
-
-      providerElement.connectedCallback();
-      consumerElement.connectedCallback();
+      const [providerElement, consumerElement] = createContextElements(Provider, Consumer);
 
       providerElement[providingValue] = 10;
 
@@ -163,13 +155,7 @@ describe('@corpuscule/context', () => {
         }
       }
 
-      const providerElement = new Provider();
-      const consumerElement = new Consumer();
-
-      consumerElement.addParent(providerElement);
-
-      providerElement.connectedCallback();
-      consumerElement.connectedCallback();
+      const [providerElement, consumerElement] = createContextElements(Provider, Consumer);
 
       providerElement.disconnectedCallback();
       consumerElement.disconnectedCallback();
@@ -196,13 +182,7 @@ describe('@corpuscule/context', () => {
         public [contextValue]: number;
       }
 
-      const providerElement = new Provider();
-      const consumerElement = new Consumer();
-
-      consumerElement.addParent(providerElement);
-
-      providerElement.connectedCallback();
-      consumerElement.connectedCallback();
+      const [providerElement, consumerElement] = createContextElements(Provider, Consumer);
 
       consumerElement.disconnectedCallback();
 
@@ -246,15 +226,9 @@ describe('@corpuscule/context', () => {
         public [contextValue]: number;
       }
 
-      const providerElement = new Provider();
-      const consumerElement = new Consumer();
+      const [providerElement, consumerElement] = createContextElements(Provider, Consumer);
 
-      consumerElement.addParent(providerElement);
-
-      providerElement.connectedCallback();
-      consumerElement.connectedCallback();
-
-      (providerElement as any)[providingValue] = 10;
+      providerElement[providingValue] = 10;
 
       expect(consumerElement[contextValue]).toBe(10);
     });
