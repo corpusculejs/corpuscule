@@ -1,8 +1,13 @@
 /* eslint-disable sort-keys */
+const {resolve} = require('path');
+
 module.exports = {
   devtool: 'inline-source-map',
   mode: 'development',
   resolve: {
+    alias: {
+      '@corpuscule/context': resolve(__dirname, './mocks/context'),
+    },
     extensions: [
       '.js',
       '.ts',
