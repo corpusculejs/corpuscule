@@ -6,7 +6,14 @@ import {context as $$context} from './tokens/internal';
 export const connectedRegistry = new WeakMap();
 
 export const connected = getter => (descriptor) => {
-  assertKind('connected', 'field', descriptor.kind);
+  const {
+    descriptor: {get, set},
+    kind,
+  } = descriptor;
+
+  assertKind('connected', 'field or accessor', kind, {
+    correct: kind === 'field' || (kind === 'method' && get && set), // eslint-disable-line no-extra-parens
+  });
 
   return {
     ...descriptor,
@@ -34,13 +41,13 @@ export const dispatcher = ({
     const initialized = initializer ? initializer() : undefined;
 
     if (!initialized || typeof initialized !== 'function') {
-      throw new Error(`@dispatcher: "${key}" should be initialized with a function`);
+      throw new TypeError(`@dispatcher: "${key}" should be initialized with a function`);
     }
 
     return method({
       key,
       value(...args) {
-        this[$$context].dispatch(initialized.apply(this, args));
+        this[$$context].dispatch(initialized(...args));
       },
     }, {isBound: true});
   }
