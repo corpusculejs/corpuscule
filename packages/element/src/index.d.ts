@@ -6,14 +6,16 @@ export interface ComputingPair {
   readonly observer: PropertyDecorator;
 }
 
-export type ElementRenderer = typeof litHtmlRender;
-export type ElementScheduler = (callback: () => void) => Promise<void>;
+export interface ElementOptions {
+  readonly renderer?: typeof litHtmlRender;
+  readonly scheduler?: (callback: () => void) => Promise<void>;
+}
 
 export type AttributeGuard = BooleanConstructor | NumberConstructor | StringConstructor;
 export type PropertyGuard = (value: unknown) => boolean;
 
 export const attribute: (attributeName: string, guard: AttributeGuard) => PropertyDecorator;
-export const element: (name: string) => ClassDecorator;
+export const element: (name: string, options?: ElementOptions) => ClassDecorator;
 export const internal: PropertyDecorator;
 export const property: (guard?: PropertyGuard) => PropertyDecorator;
 
@@ -23,8 +25,6 @@ export const createRoot: unique symbol;
 export const internalChangedCallback: unique symbol;
 export const propertyChangedCallback: unique symbol;
 export const render: unique symbol;
-export const renderer: unique symbol;
-export const scheduler: unique symbol;
 export const updatedCallback: unique symbol;
 
 export class UnsafeStatic {
