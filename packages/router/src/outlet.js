@@ -2,9 +2,6 @@ import createContext from '@corpuscule/context';
 import {assertKind} from '@corpuscule/utils/lib/asserts';
 import {lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
 import getSuperMethods from '@corpuscule/utils/lib/getSuperMethods';
-import {
-  updateRoute as $$updateRoute,
-} from './tokens/internal';
 import {layout, resolve} from './tokens/lifecycle';
 
 const {
@@ -35,6 +32,8 @@ const outlet = routes => (classDescriptor) => {
   assertKind('outlet', 'class', classDescriptor.kind);
 
   const {elements, kind} = consumer(classDescriptor);
+
+  const $$updateRoute = Symbol();
 
   const [
     superConnectedCallback,

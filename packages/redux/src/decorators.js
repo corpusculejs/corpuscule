@@ -1,7 +1,7 @@
 import addToRegistry from '@corpuscule/utils/lib/addToRegistry';
 import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
 import {method} from '@corpuscule/utils/lib/descriptors';
-import {context as $$context} from './tokens/internal';
+import {contextMap} from './utils';
 
 export const connectedRegistry = new WeakMap();
 
@@ -47,7 +47,8 @@ export const dispatcher = ({
     return method({
       key,
       value(...args) {
-        this[$$context].dispatch(initialized(...args));
+        this[contextMap.get(this.constructor)]
+          .dispatch(initialized(...args));
       },
     }, {isBound: true});
   }
@@ -58,7 +59,8 @@ export const dispatcher = ({
       method({
         key,
         value(...args) {
-          this[$$context].dispatch(descriptor.value.apply(this, args));
+          this[contextMap.get(this.constructor)]
+            .dispatch(descriptor.value.apply(this, args));
         },
       }, {isBound: true}),
     ],
