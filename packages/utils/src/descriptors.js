@@ -1,3 +1,5 @@
+export const lifecycleKeys = ['connectedCallback', 'disconnectedCallback'];
+
 const publicDescriptor = {
   configurable: true,
   enumerable: true,

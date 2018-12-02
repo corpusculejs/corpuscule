@@ -93,7 +93,13 @@ export class HTMLElementMock {
 
   dispatchEvent(event) {
     for (const {listeners} of this.nestingChain) {
-      for (const listener of listeners.get(event.type)) {
+      const list = listeners.get(event.type);
+
+      if (!list) {
+        continue;
+      }
+
+      for (const listener of list) {
         listener(event);
       }
     }

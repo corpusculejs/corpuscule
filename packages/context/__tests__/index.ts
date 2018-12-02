@@ -1,14 +1,28 @@
 // tslint:disable:max-classes-per-file
 // tslint:disable-next-line:no-implicit-dependencies
-import uuid from 'uuid/v4';
-import {BasicConsumer, BasicProvider, defineAndMountContext} from '../../../test/utils';
+import {Constructor, HTMLElementMock} from '../../../test/utils';
 import createContext from '../src';
 
-describe('@corpuscule/context', () => {
-  afterEach(() => {
-    document.body.innerHTML = ''; // tslint:disable-line:no-inner-html
-  });
+export const createContextElements = <T extends HTMLElementMock, U extends HTMLElementMock>(
+  providerConstructor: Constructor<T>,
+  consumerConstructor: Constructor<U>,
+  consumersNumber: number = 1,
+) => { // tslint:disable-line:readonly-array
+  const consumers = new Array(consumersNumber);
+  const provider = new providerConstructor();
+  provider.connectedCallback();
 
+  for (let i = 0; i < consumersNumber; i++) { // tslint:disable-line:no-increment-decrement
+    consumers[i] = new consumerConstructor();
+
+    consumers[i].addParent(provider);
+    consumers[i].connectedCallback();
+  }
+
+  return [provider, ...consumers];
+};
+
+describe('@corpuscule/context', () => {
   describe('createContext', () => {
     it('should create context', () => {
       const {
@@ -19,22 +33,17 @@ describe('@corpuscule/context', () => {
       } = createContext();
 
       @provider
-      class TestProvider extends BasicProvider {
-        public static readonly is: string = `x-${uuid()}`;
-
-        protected [providingValue]: number = 2;
+      class Provider extends HTMLElementMock {
+        public [providingValue]: number = 2;
       }
 
       @consumer
-      class TestConsumer extends BasicConsumer {
-        public static readonly is: string = `x-${uuid()}`;
-
-        protected [contextValue]?: number;
+      class Consumer extends HTMLElementMock {
+        public [contextValue]: number;
       }
 
-      const [, c] = defineAndMountContext(TestProvider, TestConsumer);
-
-      expect(c[contextValue]).toBe(2);
+      const [, consumerElement] = createContextElements(Provider, Consumer);
+      expect(consumerElement[contextValue]).toBe(2);
     });
 
     it('should provide context for all consumers', () => {
@@ -46,30 +55,19 @@ describe('@corpuscule/context', () => {
       } = createContext();
 
       @provider
-      class TestProvider extends BasicProvider {
-        public static readonly is: string = `x-${uuid()}`;
-
-        protected [providingValue]: number = 2;
+      class Provider extends HTMLElementMock {
+        public [providingValue]: number = 2;
       }
 
       @consumer
-      class TestConsumer1 extends BasicConsumer {
-        public static readonly is: string = `x-${uuid()}`;
-
-        protected [contextValue]?: number;
+      class Consumer extends HTMLElementMock {
+        public [contextValue]: number;
       }
 
-      @consumer
-      class TestConsumer2 extends BasicConsumer {
-        public static readonly is: string = `x-${uuid()}`;
+      const [, consumerElement1, consumerElement2] = createContextElements(Provider, Consumer, 2);
 
-        protected [contextValue]?: number;
-      }
-
-      const [, c1, c2] = defineAndMountContext(TestProvider, TestConsumer1, TestConsumer2);
-
-      expect(c1[contextValue]).toBe(2);
-      expect(c2[contextValue]).toBe(2);
+      expect(consumerElement1[contextValue]).toBe(2);
+      expect(consumerElement2[contextValue]).toBe(2);
     });
 
     it('should allow to use default value for context', () => {
@@ -77,23 +75,23 @@ describe('@corpuscule/context', () => {
         consumer,
         contextValue,
         provider,
-      } = createContext(5);
+        providingValue,
+      } = createContext(2);
 
       @provider
-      class TestProvider extends BasicProvider {
-        public static readonly is: string = `x-${uuid()}`;
+      class Provider extends HTMLElementMock {
+        public [providingValue]: number;
       }
 
       @consumer
-      class TestConsumer extends BasicConsumer {
-        public static readonly is: string = `x-${uuid()}`;
-
-        protected [contextValue]?: number;
+      class Consumer extends HTMLElementMock {
+        public [contextValue]: number;
       }
 
-      const [, c] = defineAndMountContext(TestProvider, TestConsumer);
+      const [providerElement, consumerElement] = createContextElements(Provider, Consumer);
 
-      expect(c[contextValue]).toBe(5);
+      expect(providerElement[providingValue]).toBe(2);
+      expect(consumerElement[contextValue]).toBe(2);
     });
 
     it('should allow to set value dynamically', () => {
@@ -102,32 +100,26 @@ describe('@corpuscule/context', () => {
         contextValue,
         provider,
         providingValue,
-      } = createContext();
+      } = createContext(2);
 
       @provider
-      class TestProvider extends BasicProvider {
-        public static readonly is: string = `x-${uuid()}`;
-
-        protected [providingValue]: number = 2;
+      class Provider extends HTMLElementMock {
+        public [providingValue]: number;
       }
 
       @consumer
-      class TestConsumer extends BasicConsumer {
-        public static readonly is: string = `x-${uuid()}`;
-
-        protected [contextValue]?: number;
+      class Consumer extends HTMLElementMock {
+        public [contextValue]: number;
       }
 
-      const [p, c] = defineAndMountContext(TestProvider, TestConsumer);
+      const [providerElement, consumerElement] = createContextElements(Provider, Consumer);
 
-      expect(c[contextValue]).toBe(2);
+      providerElement[providingValue] = 10;
 
-      p[providingValue] = 5;
-
-      expect(c[contextValue]).toBe(5);
+      expect(consumerElement[contextValue]).toBe(10);
     });
 
-    it("should call connectedCallback() and disconnectedCallback() of user's class", () => {
+    it('should call connectedCallback() and disconnectedCallback() of user\'s class', () => {
       const connectedSpy = jasmine.createSpy('onConnect');
       const disconnectedSpy = jasmine.createSpy('onDisconnect');
       const {
@@ -138,14 +130,11 @@ describe('@corpuscule/context', () => {
       } = createContext();
 
       @provider
-      class TestProvider extends BasicProvider {
-        public static readonly is: string = `x-${uuid()}`;
-
-        protected [providingValue]: number = 2;
+      class Provider extends HTMLElementMock {
+        public [providingValue]: number;
 
         public connectedCallback(): void {
           connectedSpy();
-          super.connectedCallback();
         }
 
         public disconnectedCallback(): void {
@@ -154,10 +143,8 @@ describe('@corpuscule/context', () => {
       }
 
       @consumer
-      class TestConsumer extends BasicConsumer {
-        public static readonly is: string = `x-${uuid()}`;
-
-        protected [contextValue]?: number;
+      class Consumer extends HTMLElementMock {
+        public [contextValue]: number;
 
         public connectedCallback(): void {
           connectedSpy();
@@ -168,9 +155,10 @@ describe('@corpuscule/context', () => {
         }
       }
 
-      const [p] = defineAndMountContext(TestProvider, TestConsumer);
+      const [providerElement, consumerElement] = createContextElements(Provider, Consumer);
 
-      document.body.removeChild(p);
+      providerElement.disconnectedCallback();
+      consumerElement.disconnectedCallback();
 
       expect(connectedSpy).toHaveBeenCalledTimes(2);
       expect(disconnectedSpy).toHaveBeenCalledTimes(2);
@@ -185,55 +173,64 @@ describe('@corpuscule/context', () => {
       } = createContext();
 
       @provider
-      class TestProvider extends BasicProvider {
-        public static readonly is: string = `x-${uuid()}`;
-
-        protected [providingValue]: number = 2;
+      class Provider extends HTMLElementMock {
+        public [providingValue]: number = 2;
       }
 
       @consumer
-      class TestConsumer1 extends BasicConsumer {
-        public static readonly is: string = `x-${uuid()}`;
-
-        protected [contextValue]?: number;
+      class Consumer extends HTMLElementMock {
+        public [contextValue]: number;
       }
 
-      @consumer
-      class TestConsumer2 extends BasicConsumer {
-        public static readonly is: string = `x-${uuid()}`;
+      const [providerElement, consumerElement] = createContextElements(Provider, Consumer);
 
-        protected [contextValue]?: number;
-      }
+      consumerElement.disconnectedCallback();
 
-      const [p, c1, c2] = defineAndMountContext(TestProvider, TestConsumer1, TestConsumer2);
+      providerElement[providingValue] = 10;
 
-      expect(c1[contextValue]).toBe(2);
-      expect(c2[contextValue]).toBe(2);
-
-      c1.remove();
-      p[providingValue] = 3;
-
-      expect(c2[contextValue]).toBe(3);
-      expect(c1[contextValue]).toBe(2);
+      expect(consumerElement[contextValue]).toBe(2);
     });
-    // it("should throw an error if no provider exists for context", () => {
-    //   const {
-    //     consumer,
-    //     contextValue,
-    //   } = createContext();
-    //
-    //   @consumer
-    //   class TestConsumer extends HTMLElement {
-    //     public static readonly is: string = `x-${uuid()}`;
-    //
-    //     public [contextValue]?: number;
-    //   }
-    //
-    //   customElements.define(TestConsumer.is, TestConsumer);
-    //   const el = document.createElement(TestConsumer.is);
-    //   expect(() => {
-    //     document.body.appendChild(el);
-    //   }).toThrowError("No provider found for TestConsumer");
-    // });
+
+    it('should throw an error if no provider exists for context', () => {
+      const {
+        consumer,
+        contextValue,
+      } = createContext();
+
+      @consumer
+      class Consumer extends HTMLElementMock {
+        public [contextValue]: number;
+      }
+
+      const consumerElement = new Consumer();
+
+      expect(() => {
+        consumerElement.connectedCallback();
+      }).toThrowError('No provider found for Consumer');
+    });
+
+    it('allows to not declare [providingValue] in the class constructor', () => {
+      const {
+        consumer,
+        contextValue,
+        provider,
+        providingValue,
+      } = createContext();
+
+      @provider
+      class Provider extends HTMLElementMock {
+      }
+
+      @consumer
+      class Consumer extends HTMLElementMock {
+        public [contextValue]: number;
+      }
+
+      const [providerElement, consumerElement] = createContextElements(Provider, Consumer);
+
+      providerElement[providingValue] = 10;
+
+      expect(consumerElement[contextValue]).toBe(10);
+    });
   });
 });

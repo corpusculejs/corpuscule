@@ -1,5 +1,4 @@
 // tslint:disable:max-classes-per-file
-
 export interface Constructor<T> {
   new(...args: any[]): T; // tslint:disable-line:readonly-array
 }
