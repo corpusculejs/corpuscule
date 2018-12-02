@@ -12,12 +12,6 @@ import {
   scheduler as $scheduler,
   internalChangedCallback as $internalChangedCallback,
 } from '../tokens/lifecycle';
-import {
-  connected as $$connected,
-  invalidate as $$invalidate,
-  root as $$root,
-  valid as $$valid,
-} from '../tokens/internal';
 import {field, method} from '@corpuscule/utils/lib/descriptors';
 
 const attributeChangedCallbackKey = 'attributeChangedCallback';
@@ -54,6 +48,11 @@ const element = name => ({kind, elements}) => {
   if (!elements.find(({key}) => key === $render)) {
     throw new Error('[render]() is not implemented');
   }
+
+  const $$connected = Symbol();
+  const $$invalidate = Symbol();
+  const $$root = Symbol();
+  const $$valid = Symbol();
 
   const [
     superAttributeChangedCallback,

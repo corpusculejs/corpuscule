@@ -2,13 +2,8 @@ import createContext from '@corpuscule/context';
 import {assertKind} from '@corpuscule/utils/lib/asserts';
 import {accessor, method} from '@corpuscule/utils/lib/descriptors';
 import getSuperMethods from '@corpuscule/utils/lib/getSuperMethods';
-import {
-  context as $$context,
-  subscribe as $$subscribe,
-  unsubscribe as $$unsubscribe,
-  update as $$update,
-} from './tokens/internal';
 import {connectedRegistry} from './decorators';
+import {contextMap} from './utils';
 
 const {
   consumer,
@@ -33,6 +28,12 @@ export const connect = (classDescriptor) => {
   assertKind('connect', 'class', classDescriptor.kind);
 
   const {elements, kind} = consumer(classDescriptor);
+
+  const $$context = Symbol();
+  const $$subscribe = Symbol();
+  const $$unsubscribe = Symbol();
+  const $$update = Symbol();
+
   const [superDisconnectedCallback] = getSuperMethods(elements, [disconnectedCallbackKey]);
 
   return {
@@ -95,6 +96,9 @@ export const connect = (classDescriptor) => {
         },
       }, {isPrivate: true}),
     ],
+    finisher(target) {
+      contextMap.set(target, $$context);
+    },
     kind,
   };
 };

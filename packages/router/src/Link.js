@@ -1,5 +1,6 @@
 import push from './push';
-import {handleClick as $$handleClick} from './tokens/internal';
+
+const $$handleClick = Symbol();
 
 export default class Link extends HTMLAnchorElement {
   static get is() {
