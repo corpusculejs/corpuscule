@@ -19,16 +19,15 @@ createContext.and.returnValue(context);
 
 export default createContext;
 
-export const createMockedContextElements = <T extends HTMLElementMock, U extends HTMLElementMock>(
-  providerConstructor: Constructor<T>,
-  consumerConstructor: Constructor<U>,
-  consumerNumber: number = 1,
-) => {
-  const consumers = new Array(consumerNumber);
+export const createMockedContextElements = <T extends HTMLElementMock[]>(
+  ...constructors: {[K in keyof T]: Constructor<T[K]>}
+): T => {
+  const [providerConstructor, ...consumerConstructors] = constructors;
+  const consumers = new Array(consumerConstructors.length);
   const provider = new providerConstructor();
 
-  for (let i = 0; i < consumerNumber; i++) { // tslint:disable-line:no-increment-decrement
-    consumers[i] = new consumerConstructor();
+  for (let i = 0; i < consumerConstructors.length; i++) { // tslint:disable-line:no-increment-decrement
+    consumers[i] = new consumerConstructors[i]();
     consumers[i][context.contextValue] = (provider as any)[context.providingValue];
   }
 
@@ -59,5 +58,5 @@ export const createMockedContextElements = <T extends HTMLElementMock, U extends
     consumer.connectedCallback();
   }
 
-  return [provider, ...consumers];
+  return [provider, ...consumers] as T;
 };
