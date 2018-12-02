@@ -1,125 +1,230 @@
 // tslint:disable:max-classes-per-file
-import UniversalRouter, {Routes} from 'universal-router';
-// tslint:disable-next-line:no-implicit-dependencies
-import uuid from 'uuid/v4';
-import {BasicConsumer, BasicProvider, defineAndMountContext} from '../../../test/utils';
+import UniversalRouter from 'universal-router';
+import {createMockedContextElements} from '../../../test/mocks/context';
+import {HTMLElementMock} from '../../../test/utils';
 import {
-  createRouter,
   layout,
   outlet,
   provider,
-  router as $router,
+  router, RouterOutlet,
 } from '../src';
 
 const outletTest = () => {
   describe('outlet', () => {
-    const basicLocation = location.pathname;
+    const routes = [
+      {
+        action: () => 'Test',
+      },
+      {
+        action: () => 'Test2',
+        path: '/test2',
+      },
+    ];
 
-    const childrenRoutes: Routes = [{
-      action: () => 'Child Root',
-      path: '',
-    }, {
-      action: () => 'Child Branch',
-      path: '/child',
-    }];
+    const otherRoute = {
+      action: () => 'Other',
+    };
 
-    const routes: Routes = [{
-      action: () => 'Test Root',
-      path: '',
-    }, {
-      action: () => 'Test Branch',
-      path: '#test',
-    }, {
-      children: childrenRoutes,
-      path: '#parent',
-    }];
+    const fakeResolve = (path: string) => {
+      const [root, test2] = routes;
 
-    const router = createRouter(routes, {
-      baseUrl: basicLocation,
+      switch (path) {
+        case '/test2':
+          return [test2.action(), {route: test2}];
+        case '/nowhere':
+          return undefined;
+        case '/other-route':
+          return [otherRoute.action(), {route: otherRoute}];
+        default:
+          return [root.action(), {route: root}];
+      }
+    };
+
+    let initialResolve: () => void;
+    let finalResolve: () => void;
+
+    let initialPromise: Promise<void>;
+    let finalPromise: Promise<void>;
+
+    let appRouter: jasmine.SpyObj<UniversalRouter>;
+
+    beforeEach(() => {
+      appRouter = jasmine.createSpyObj('router', [
+        'resolve',
+      ]);
+
+      appRouter.resolve.and.callFake(fakeResolve);
+
+      initialPromise = new Promise((r) => {
+        initialResolve = r;
+      });
+
+      finalPromise = new Promise((r) => {
+        finalResolve = r;
+      });
     });
 
-    it('should create a router outlet that contains initial layout', async () => {
+    it('creates router outlet that fills layout on popstate event', async () => {
       @provider
-      class Provider extends BasicProvider {
-        public static is: string = `x-${uuid()}`;
-
-        protected readonly [$router]: UniversalRouter = router;
+      class Provider extends HTMLElementMock {
+        public readonly [router]: UniversalRouter = appRouter;
       }
 
       @outlet(routes)
-      class Test extends BasicConsumer {
-        public static is: string = `x-${uuid()}`;
+      class Outlet extends HTMLElementMock implements RouterOutlet<string> {
+        public initial: boolean = true;
+        public storage: string = '';
 
-        public readonly [layout]: string;
+        public get [layout](): string {
+          return this.storage;
+        }
+
+        public set [layout](value: string) {
+          this.storage = value;
+
+          if (this.initial) {
+            initialResolve();
+            this.initial = false;
+          } else {
+            finalResolve();
+          }
+        }
       }
 
-      const [, o] = defineAndMountContext(Provider, Test);
+      const [, outletElement] = createMockedContextElements(Provider, Outlet);
 
-      await (o as any).routeResolving;
+      await initialPromise;
 
-      expect(o[layout]).toBe('Test Root');
+      expect(outletElement[layout]).toBe('Test');
+
+      window.dispatchEvent(new PopStateEvent('popstate', {
+        state: '/test2',
+      }));
+
+      await finalPromise;
+
+      expect(outletElement[layout]).toBe('Test2');
     });
 
-    it("should get new layout on 'popstate' event", async () => {
-      @provider
-      class Provider extends BasicProvider {
-        public static is: string = `x-${uuid()}`;
+    it('ignores path that wasn\'t in the routes', async () => {
+      appRouter.resolve.and.callFake((path: string) => {
+        finalResolve();
 
-        protected readonly [$router]: UniversalRouter = router;
+        return fakeResolve(path);
+      });
+
+      @provider
+      class Provider extends HTMLElementMock {
+        public readonly [router]: UniversalRouter = appRouter;
       }
 
       @outlet(routes)
-      class Test extends BasicConsumer {
-        public static is: string = `x-${uuid()}`;
+      class Outlet extends HTMLElementMock implements RouterOutlet<string> {
+        public initial: boolean = true;
+        public storage: string = '';
 
-        public readonly [layout]: string;
+        public get [layout](): string {
+          return this.storage;
+        }
+
+        public set [layout](value: string) {
+          this.storage = value;
+
+          if (this.initial) {
+            initialResolve();
+            this.initial = false;
+          }
+        }
       }
 
-      const [, o] = defineAndMountContext(Provider, Test);
+      const [, outletElement] = createMockedContextElements(Provider, Outlet);
 
-      dispatchEvent(new PopStateEvent('popstate', {state: `${basicLocation}#test`}));
+      await initialPromise;
 
-      await (o as any).routeResolving;
+      expect(outletElement[layout]).toBe('Test');
 
-      expect(o[layout]).toBe('Test Branch');
+      window.dispatchEvent(new PopStateEvent('popstate', {
+        state: '/nowhere',
+      }));
+
+      await finalPromise;
+
+      expect(outletElement[layout]).toBe('Test');
     });
 
-    it('should ignore layouts for another routes', async () => {
-      @provider
-      class Provider extends BasicProvider {
-        public static is: string = `x-${uuid()}`;
+    it('ignores routes that are not in current component route list', async () => {
+      appRouter.resolve.and.callFake((path: string) => {
+        finalResolve();
 
-        protected readonly [$router]: UniversalRouter = router;
+        return fakeResolve(path);
+      });
+
+      @provider
+      class Provider extends HTMLElementMock {
+        public readonly [router]: UniversalRouter = appRouter;
       }
 
       @outlet(routes)
-      class Test extends BasicConsumer {
-        public static is: string = `x-${uuid()}`;
+      class Outlet extends HTMLElementMock implements RouterOutlet<string> {
+        public initial: boolean = true;
+        public storage: string = '';
 
-        public readonly [layout]: string;
+        public get [layout](): string {
+          return this.storage;
+        }
+
+        public set [layout](value: string) {
+          this.storage = value;
+
+          if (this.initial) {
+            initialResolve();
+            this.initial = false;
+          }
+        }
       }
 
-      @outlet(childrenRoutes)
-      class Child extends BasicConsumer {
-        public static is: string = `x-${uuid()}`;
+      const [, outletElement] = createMockedContextElements(Provider, Outlet);
 
-        public readonly [layout]: string;
+      await initialPromise;
+
+      expect(outletElement[layout]).toBe('Test');
+
+      window.dispatchEvent(new PopStateEvent('popstate', {
+        state: '/other-route',
+      }));
+
+      await finalPromise;
+
+      expect(outletElement[layout]).toBe('Test');
+    });
+
+    it('calls user\'s connectedCallback and disconnectedCallback methods', () => {
+      const connectedSpy = jasmine.createSpy('connectedCallback');
+      const disconnectedSpy = jasmine.createSpy('disconnectedCallback');
+
+      @provider
+      class Provider extends HTMLElementMock {
+        public readonly [router]: UniversalRouter = appRouter;
       }
 
-      const [, test, child] = defineAndMountContext(Provider, Test, Child);
+      @outlet(routes)
+      class Outlet extends HTMLElementMock {
+        public connectedCallback(): void {
+          connectedSpy();
+        }
 
-      dispatchEvent(new PopStateEvent('popstate', {state: `${basicLocation}#parent`}));
+        public disconnectedCallback(): void {
+          disconnectedSpy();
+        }
+      }
 
-      await (child as any).routeResolving;
+      const [, outletElement] = createMockedContextElements(Provider, Outlet);
 
-      expect(child[layout]).toBe('Child Root');
+      expect(connectedSpy).toHaveBeenCalled();
 
-      dispatchEvent(new PopStateEvent('popstate', {state: `${basicLocation}#parent/child`}));
+      outletElement.disconnectedCallback();
 
-      await (child as any).routeResolving;
-
-      expect(child[layout]).toBe('Child Branch');
-      expect(test[layout]).toBe('Test Root');
+      expect(disconnectedSpy).toHaveBeenCalled();
     });
   });
 };
