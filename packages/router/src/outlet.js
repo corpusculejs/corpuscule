@@ -1,9 +1,8 @@
 import createContext from '@corpuscule/context';
 import {assertKind} from '@corpuscule/utils/lib/asserts';
-import {accessor, method} from '@corpuscule/utils/lib/descriptors';
+import {lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
 import getSuperMethods from '@corpuscule/utils/lib/getSuperMethods';
 import {
-  resolving as $$resolving,
   updateRoute as $$updateRoute,
 } from './tokens/internal';
 import {layout, resolve} from './tokens/lifecycle';
@@ -20,13 +19,17 @@ export {
   router,
 };
 
-const connectedCallbackKey = 'connectedCallback';
-const disconnectedCallbackKey = 'disconnectedCallback';
-
 const methods = [
+  ...lifecycleKeys,
+  resolve,
+];
+
+const filteringNames = methods;
+
+const [
   connectedCallbackKey,
   disconnectedCallbackKey,
-];
+] = lifecycleKeys;
 
 const outlet = routes => (classDescriptor) => {
   assertKind('outlet', 'class', classDescriptor.kind);
@@ -36,11 +39,16 @@ const outlet = routes => (classDescriptor) => {
   const [
     superConnectedCallback,
     superDisconnectedCallback,
-  ] = getSuperMethods(elements, methods);
+    superResolve,
+  ] = getSuperMethods(elements, methods, {
+    *[resolve](path) {
+      return yield path;
+    },
+  });
 
   return {
     elements: [
-      ...elements.filter(({key}) => !methods.includes(key)),
+      ...elements.filter(({key}) => !filteringNames.includes(key)),
 
       // Public
       method({
@@ -59,43 +67,34 @@ const outlet = routes => (classDescriptor) => {
           superDisconnectedCallback.call(this);
         },
       }),
-      accessor({
-        get() {
-          return this[$$resolving];
-        },
-        key: 'routeResolving',
-      }),
 
       // Protected
       method({
         key: resolve,
-        *value(path) {
-          return yield path;
-        },
+        value: superResolve,
       }),
 
       // Private
       method({
         key: $$updateRoute,
-        value(pathOrEvent) {
+        async value(pathOrEvent) {
           const path = typeof pathOrEvent === 'string'
             ? pathOrEvent
             : pathOrEvent.state || '';
 
           const iter = this[resolve](path);
 
-          this[$$resolving] = this[contextValue].resolve(iter.next().value)
-            .then((resolved) => {
-              if (resolved === undefined) {
-                return;
-              }
+          const resolved = await this[contextValue].resolve(iter.next().value);
 
-              const [result, {route}] = resolved;
+          if (resolved === undefined) {
+            return;
+          }
 
-              if (routes.includes(route)) {
-                this[layout] = iter.next(result).value;
-              }
-            });
+          const [result, {route}] = resolved;
+
+          if (routes.includes(route)) {
+            this[layout] = iter.next(result).value;
+          }
         },
       }, {isBound: true, isPrivate: true}),
     ],
