@@ -24,6 +24,11 @@ export type MethodParams =
   Pick<PropertyDescriptor, 'value'>
   & Pick<ExtendedPropertyDescriptor, 'extras' | 'finisher' | 'key'>;
 
+export const lifecycleKeys: [
+  'connectedCallback',
+  'disconnectedCallback'
+];
+
 export const accessor: (params: AccessorParams, options?: DescriptorOptions) => ExtendedPropertyDescriptor;
 export const field: (params: FieldParams, options?: FieldOptions) => ExtendedPropertyDescriptor;
 export const method: (params: MethodParams, options?: MethodOptions) => ExtendedPropertyDescriptor;
