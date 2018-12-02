@@ -21,9 +21,8 @@ export const provider: ReturnType<typeof createContext>['provider'];
 export const router: unique symbol;
 
 export interface RouterOutlet<T> {
-  readonly routeResolving: Promise<void>;
   readonly [layout]: T;
-  [resolve](path: string): IterableIterator<any>;
+  [resolve]?(path: string): IterableIterator<any>;
 }
 
 export const outlet: (routes: ReadonlyArray<Route>) => ClassDecorator;
