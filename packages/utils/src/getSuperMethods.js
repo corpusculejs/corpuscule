@@ -10,7 +10,7 @@ const getSuperMethods = (elements, names, defaults = {}) => names.map((name) => 
         const superClass = Object.getPrototypeOf(this.constructor.prototype);
 
         if (superClass && typeof superClass[name] === 'function') {
-          return superClass[name].apply(this, args);
+          return superClass[name](...args);
         }
       }
 

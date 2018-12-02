@@ -1,36 +1,23 @@
 /* eslint-disable no-invalid-this, prefer-arrow-callback */
 import {assertKind} from '@corpuscule/utils/lib/asserts';
 import getSuperMethods from '@corpuscule/utils/lib/getSuperMethods';
-import {render as renderer} from 'lit-html';
-import scheduler from '../scheduler';
+import {field, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
+import {render as defaultRenderer} from 'lit-html';
+import defaultScheduler from '../scheduler';
 import {
   createRoot as $createRoot,
   updatedCallback as $updatedCallback,
   propertyChangedCallback as $propertyChangedCallback,
   render as $render,
-  renderer as $renderer,
-  scheduler as $scheduler,
   internalChangedCallback as $internalChangedCallback,
 } from '../tokens/lifecycle';
-import {
-  connected as $$connected,
-  invalidate as $$invalidate,
-  root as $$root,
-  valid as $$valid,
-} from '../tokens/internal';
-import {field, method} from '@corpuscule/utils/lib/descriptors';
 
 const attributeChangedCallbackKey = 'attributeChangedCallback';
-const connectedCallbackKey = 'connectedCallback';
+const [connectedCallbackKey] = lifecycleKeys;
 const isCorpusculeElementKey = 'isCorpusculeElement';
 
 // eslint-disable-next-line no-empty-function
 const noop = () => {};
-
-const fields = [
-  $renderer,
-  $scheduler,
-];
 
 const methods = [
   attributeChangedCallbackKey,
@@ -44,11 +31,44 @@ const methods = [
 const filteringNames = [
   'is',
   isCorpusculeElementKey,
-  ...fields,
   ...methods,
 ];
 
-const element = name => ({kind, elements}) => {
+const connectedMap = new WeakMap();
+const rendererMap = new WeakMap();
+const rootMap = new WeakMap();
+const schedulerMap = new WeakMap();
+const validMap = new WeakMap();
+
+const invalidate = (self) => {
+  if (!validMap.get(self)) {
+    return;
+  }
+
+  validMap.set(self, false);
+
+  schedulerMap.get(self.constructor)(() => {
+    const rendered = self[$render]();
+
+    if (rendered) {
+      rendererMap.get(self.constructor)(rendered, rootMap.get(self), {eventContext: self});
+    }
+
+    const shouldRunUpdatedCallback = connectedMap.get(self);
+
+    connectedMap.set(self, true);
+    validMap.set(self, true);
+
+    if (shouldRunUpdatedCallback) {
+      self[$updatedCallback]();
+    }
+  });
+};
+
+const element = (
+  name,
+  {renderer = defaultRenderer, scheduler = defaultScheduler} = {},
+) => ({kind, elements}) => {
   assertKind('element', 'class', kind);
 
   if (!elements.find(({key}) => key === $render)) {
@@ -69,11 +89,6 @@ const element = name => ({kind, elements}) => {
     [$updatedCallback]: noop,
   });
 
-  const [
-    {initializer: existingRenderer = () => renderer} = {},
-    {initializer: existingScheduler = () => scheduler} = {},
-  ] = fields.map(fieldName => elements.find(({key}) => key === fieldName));
-
   return {
     elements: [
       ...elements.filter(({key}) => !filteringNames.includes(key)),
@@ -87,32 +102,24 @@ const element = name => ({kind, elements}) => {
         initializer: () => true,
         key: isCorpusculeElementKey,
       }, {isReadonly: true, isStatic: true}),
-      field({
-        initializer: existingRenderer,
-        key: $renderer,
-      }, {isReadonly: true, isStatic: true}),
-      field({
-        initializer: existingScheduler,
-        key: $scheduler,
-      }, {isReadonly: true, isStatic: true}),
 
       // Public
       method({
         key: connectedCallbackKey,
         value() {
           superConnectedCallback.call(this);
-          this[$$invalidate]();
+          invalidate(this);
         },
       }),
       method({
         key: attributeChangedCallbackKey,
         value(attributeName, oldValue, newValue) {
-          if (oldValue === newValue || !this[$$connected]) {
+          if (oldValue === newValue || !connectedMap.get(this)) {
             return;
           }
 
           superAttributeChangedCallback.call(this, attributeName, oldValue, newValue);
-          this[$$invalidate]();
+          invalidate(this);
         },
       }),
 
@@ -124,23 +131,23 @@ const element = name => ({kind, elements}) => {
       method({
         key: $internalChangedCallback,
         value(internalName, oldValue, newValue) {
-          if (!this[$$connected]) {
+          if (!connectedMap.get(this)) {
             return;
           }
 
           superInternalChangedCallback.call(this, internalName, oldValue, newValue);
-          this[$$invalidate]();
+          invalidate(this);
         },
       }),
       method({
         key: $propertyChangedCallback,
         value(propertyName, oldValue, newValue) {
-          if (oldValue === newValue || !this[$$connected]) {
+          if (oldValue === newValue || !connectedMap.get(this)) {
             return;
           }
 
           superPropertyChangedCallback.call(this, propertyName, oldValue, newValue);
-          this[$$invalidate]();
+          invalidate(this);
         },
       }),
       method({
@@ -148,56 +155,19 @@ const element = name => ({kind, elements}) => {
         value: superUpdatedCallback,
       }),
 
-      // Private
-      field({
-        initializer: () => false,
-        key: $$connected,
-      }, {isPrivate: true}),
-      field({
-        initializer: () => true,
-        key: $$valid,
-      }, {isPrivate: true}),
+      // Initializer
       field({
         initializer() {
-          return this[$createRoot]();
+          connectedMap.set(this, false);
+          rootMap.set(this, this[$createRoot]());
+          validMap.set(this, true);
         },
-        key: $$root,
-      }, {isPrivate: true}),
-      method({
-        key: $$invalidate,
-        value() {
-          if (!this[$$valid]) {
-            return;
-          }
-
-          const {
-            [$renderer]: render,
-            [$scheduler]: schedule,
-          } = this.constructor;
-
-          this[$$valid] = false;
-
-          schedule(() => {
-            const rendered = this[$render]();
-
-            if (rendered) {
-              render(rendered, this[$$root], {eventContext: this});
-            }
-
-            const shouldRunUpdatedCallback = this[$$connected];
-
-            this[$$connected] = true;
-            this[$$valid] = true;
-
-            if (shouldRunUpdatedCallback) {
-              this[$updatedCallback]();
-            }
-          });
-        },
-      }, {isPrivate: true}),
+      }),
     ],
     finisher(target) {
       customElements.define(name, target);
+      rendererMap.set(target, renderer);
+      schedulerMap.set(target, scheduler);
     },
     kind,
   };

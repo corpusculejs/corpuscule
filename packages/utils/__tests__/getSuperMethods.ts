@@ -90,6 +90,31 @@ const testGetSuperMethod = () => {
       superMethod();
       expect(methodSpy).toHaveBeenCalled();
     });
+
+    it('works correctly if super method created for several classes in inheritance chain', () => {
+      const methodSpy = jasmine.createSpy('method');
+
+      const [superMethod] = getSuperMethods([], ['method']);
+
+      class PreBasic {
+        public method(): void {
+          methodSpy();
+        }
+      }
+
+      class Basic extends PreBasic {
+        public method(): void {
+          superMethod.call(this);
+        }
+      }
+
+      class Test extends Basic {}
+
+      const test = new Test();
+
+      superMethod.call(test);
+      expect(methodSpy).toHaveBeenCalled();
+    });
   });
 };
 
