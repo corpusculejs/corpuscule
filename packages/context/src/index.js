@@ -22,17 +22,16 @@ const methods = [connectedCallbackKey, disconnectedCallbackKey];
 const createContext = (defaultValue) => {
   const eventName = randomString();
 
-  const $$consume = Symbol();
-  const $$consumers = Symbol();
-  const $$subscribe = Symbol();
-  const $$unsubscribe = Symbol();
-  const $$value = Symbol();
-
-  const providingValue = Symbol('providingValue');
-  const contextValue = Symbol('contextValue');
+  const providingValue = Symbol();
+  const contextValue = Symbol();
 
   const provider = ({elements, kind}) => {
     assertKind('provider', 'class', kind);
+
+    const $$consumers = Symbol();
+    const $$subscribe = Symbol();
+    const $$unsubscribe = Symbol();
+    const $$value = Symbol();
 
     const {
       initializer: providingValueInitializer = null,
@@ -112,6 +111,9 @@ const createContext = (defaultValue) => {
 
   const consumer = ({elements, kind}) => {
     assertKind('consumer', 'class', kind);
+
+    const $$consume = Symbol();
+    const $$unsubscribe = Symbol();
 
     const [
       superConnectedCallback,
