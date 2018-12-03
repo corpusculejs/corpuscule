@@ -20,6 +20,12 @@ const [
   disconnectedCallbackKey,
 ] = lifecycleKeys;
 
+const filteringNames = [
+  ...lifecycleKeys,
+  $formApi,
+  $formState,
+];
+
 export const formOption = configKey => ({
   descriptor,
   initializer,
@@ -117,7 +123,7 @@ const form = ({decorators, subscription = all} = {}) => (classDescriptor) => {
 
   return {
     elements: [
-      ...elements.filter(({key}) => !lifecycleKeys.includes(key)),
+      ...elements.filter(({key}) => !filteringNames.includes(key)),
 
       // Public
       method({
