@@ -9,9 +9,11 @@ export {
 export const formSpyObject = jasmine.createSpyObj('finalForm', [
   'get',
   'initialize',
+  'registerField',
   'setConfig',
   'submit',
   'subscribe',
 ]);
+
 export const createForm = jasmine.createSpy('createForm');
 createForm.and.returnValue(formSpyObject);
