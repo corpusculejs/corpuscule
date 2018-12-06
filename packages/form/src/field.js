@@ -8,13 +8,15 @@ import {
 import getSuperMethods from '@corpuscule/utils/lib/getSuperMethods';
 import scheduler from '@corpuscule/utils/lib/scheduler';
 import shallowEqual from '@corpuscule/utils/lib/shallowEqual';
-import {consumer, contextValue as $$form} from './context';
 import {
-  formApi as $formApi,
+  consumer,
+  contextValue as $$form,
+  providingValue as $formApi,
+} from './context';
+import {
   input as $input,
   meta as $meta,
-  scheduler as $scheduler,
-} from './tokens/field/lifecycle';
+} from './tokens/lifecycle';
 import {all} from './utils';
 
 const [

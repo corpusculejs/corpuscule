@@ -10,7 +10,7 @@ import {
 import {
   formState as $formState,
   compareInitialValues as $compareInitialValues,
-} from './tokens/form/lifecycle';
+} from './tokens/lifecycle';
 import {all} from './utils';
 
 const configInitializers = new WeakMap();
