@@ -6,7 +6,7 @@ export interface ComputingPair {
   readonly observer: PropertyDecorator;
 }
 
-export interface ElementOptions {
+export interface ElementDecoratorParams {
   readonly renderer?: typeof litHtmlRender;
   readonly scheduler?: (callback: () => void) => Promise<void>;
 }
@@ -15,7 +15,7 @@ export type AttributeGuard = BooleanConstructor | NumberConstructor | StringCons
 export type PropertyGuard = (value: unknown) => boolean;
 
 export const attribute: (attributeName: string, guard: AttributeGuard) => PropertyDecorator;
-export const element: (name: string, options?: ElementOptions) => ClassDecorator;
+export const element: (name: string, params?: ElementDecoratorParams) => ClassDecorator;
 export const internal: PropertyDecorator;
 export const property: (guard?: PropertyGuard) => PropertyDecorator;
 
