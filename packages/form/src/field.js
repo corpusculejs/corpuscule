@@ -6,7 +6,7 @@ import {
   lifecycleKeys,
 } from '@corpuscule/utils/lib/descriptors';
 import getSuperMethods from '@corpuscule/utils/lib/getSuperMethods';
-import scheduler from '@corpuscule/utils/lib/scheduler';
+import defaultScheduler from '@corpuscule/utils/lib/scheduler';
 import shallowEqual from '@corpuscule/utils/lib/shallowEqual';
 import {
   consumer,
@@ -24,6 +24,13 @@ const [
   disconnectedCallbackKey,
 ] = lifecycleKeys;
 
+const filterNames = [
+  ...lifecycleKeys,
+  $formApi,
+  $input,
+  $meta,
+];
+
 const noop = () => {}; // eslint-disable-line no-empty-function
 
 const configOptions = [
@@ -38,9 +45,20 @@ const configOptions = [
   'value',
 ];
 
-const configMap = new WeakMap();
-const subscribe = new WeakMap();
-const update = new WeakMap();
+const configPropertyNames = new Map(configOptions.map(option => [option, new WeakMap()]));
+const subscribePropertyName = new WeakMap();
+const updatePropertyName = new WeakMap();
+
+const getConfigProperties =
+  (self, ...keys) => keys.map((key) => {
+    const name = configPropertyNames.get(key).get(self.constructor);
+
+    if (typeof name === 'string' || typeof name === 'symbol') {
+      return self[name];
+    }
+
+    return undefined;
+  });
 
 export const fieldOption = configKey => ({
   descriptor,
@@ -63,7 +81,7 @@ export const fieldOption = configKey => ({
   }
 
   const finisher = (target) => {
-    configMap.get(target).set(configKey, key);
+    configPropertyNames.get(configKey).set(target, key);
   };
 
   if (kind === 'method' && value) {
@@ -101,11 +119,11 @@ export const fieldOption = configKey => ({
               ? v !== oldValue
               : !shallowEqual(v, oldValue)
           ) {
-            this[subscribe.get(this.constructor)]();
+            this[subscribePropertyName.get(this.constructor)]();
           }
         } : function (v) {
           if (v !== originalGet.call(this)) {
-            this[update.get(this.constructor)]();
+            this[updatePropertyName.get(this.constructor)]();
           }
 
           originalSet.call(this, v);
@@ -115,7 +133,7 @@ export const fieldOption = configKey => ({
   });
 };
 
-const field = (classDescriptor) => {
+const field = ({scheduler = defaultScheduler} = {}) => (classDescriptor) => {
   assertKind('field', 'class', classDescriptor.kind);
 
   const $$formState = Symbol();
@@ -135,13 +153,9 @@ const field = (classDescriptor) => {
     superDisconnectedCallback,
   ] = getSuperMethods(elements, lifecycleKeys);
 
-  const {
-    initializer: schedulerMethod = () => scheduler,
-  } = elements.find(({key}) => key === $scheduler) || {};
-
   return {
     elements: [
-      ...elements.filter(({key}) => !lifecycleKeys.includes(key)),
+      ...elements.filter(({key}) => !filterNames.includes(key)),
 
       // Public
       method({
@@ -160,10 +174,6 @@ const field = (classDescriptor) => {
       }),
 
       // Protected
-      ffield({
-        initializer: schedulerMethod,
-        key: $scheduler,
-      }, {isReadonly: true, isStatic: true}),
       accessor({
         get() {
           return this[$$form];
@@ -187,12 +197,10 @@ const field = (classDescriptor) => {
       method({
         key: $$onBlur,
         value() {
-          const map = configMap.get(this.constructor);
-
-          const {
-            [map.get('format')]: format,
-            [map.get('formatOnBlur')]: formatOnBlur,
-          } = this;
+          const [
+            format,
+            formatOnBlur,
+          ] = getConfigProperties(this, 'format', 'formatOnBlur');
 
           const {
             blur,
@@ -211,8 +219,7 @@ const field = (classDescriptor) => {
       method({
         key: $$onChange,
         value(value) {
-          const map = configMap.get(this.constructor);
-          const parse = this[map.get('parse')];
+          const [parse] = getConfigProperties(this, 'parse');
 
           const {
             change,
@@ -241,17 +248,15 @@ const field = (classDescriptor) => {
 
           this[$$subscribingValid] = false;
 
-          this.constructor[$scheduler](() => {
+          scheduler(() => {
             this[$$unsubscribe]();
 
-            const map = configMap.get(this.constructor);
-
-            const {
-              [map.get('isEqual')]: isEqual,
-              [map.get('name')]: name,
-              [map.get('subscription')]: subscription,
-              [map.get('validateFields')]: validateFields,
-            } = this;
+            const [
+              isEqual,
+              name,
+              subscription,
+              validateFields,
+            ] = getConfigProperties(this, 'isEqual', 'name', 'subscription', 'validateFields');
 
             const listener = (state) => {
               this[$$formState] = state;
@@ -263,7 +268,7 @@ const field = (classDescriptor) => {
               listener,
               subscription || all,
               {
-                getValidator: () => this[map.get('validate')],
+                getValidator: () => getConfigProperties(this, 'validate')[0],
                 isEqual,
                 validateFields,
               },
@@ -282,14 +287,12 @@ const field = (classDescriptor) => {
 
           this[$$updatingValid] = false;
 
-          this.constructor[$scheduler](() => {
-            const map = configMap.get(this.constructor);
-
-            const {
-              [map.get('format')]: format,
-              [map.get('formatOnBlur')]: formatOnBlur,
-              [map.get('name')]: name,
-            } = this;
+          scheduler(() => {
+            const [
+              format,
+              formatOnBlur,
+              name,
+            ] = getConfigProperties(this, 'format', 'formatOnBlur', 'name');
 
             const {
               blur: _b,
@@ -317,9 +320,8 @@ const field = (classDescriptor) => {
       }, {isPrivate: true}),
     ],
     finisher(target) {
-      configMap.set(target, new Map());
-      subscribe.set(target, $$subscribe);
-      update.set(target, $$update);
+      subscribePropertyName.set(target, $$subscribe);
+      updatePropertyName.set(target, $$update);
     },
     kind,
   };
