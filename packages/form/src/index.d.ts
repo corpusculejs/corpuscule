@@ -27,9 +27,6 @@ export interface Form {
 export const formOption: (configKey: FormConfigKey) => PropertyDecorator;
 export const form: (params?: FormDecoratorParams) => ClassDecorator;
 
-export const input: unique symbol;
-export const meta: unique symbol;
-
 export interface FieldInputProps<T> {
   readonly name: string;
   readonly onBlur: (event: Event) => void;
@@ -51,7 +48,11 @@ export type FieldConfigKey =
 
 export type FieldMetaProps = Omit<FieldState, 'blur' | 'change' | 'focus' | 'length' | 'name' | 'value'>;
 
+export const input: unique symbol;
+export const meta: unique symbol;
+
 export interface Field<T> {
+  readonly [formApi]: FormApi;
   readonly [input]: FieldInputProps<T>;
   readonly [meta]: FieldMetaProps;
 }
