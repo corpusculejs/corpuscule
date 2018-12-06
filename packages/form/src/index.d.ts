@@ -48,6 +48,10 @@ export type FieldConfigKey =
 
 export type FieldMetaProps = Omit<FieldState, 'blur' | 'change' | 'focus' | 'length' | 'name' | 'value'>;
 
+export interface FieldDecoratorParams {
+  readonly scheduler?: (callback: () => void) => Promise<void>;
+}
+
 export const input: unique symbol;
 export const meta: unique symbol;
 
@@ -58,4 +62,4 @@ export interface Field<T> {
 }
 
 export const fieldOption: (configKey: FieldConfigKey) => PropertyDecorator;
-export const field: ClassDecorator;
+export const field: (params?: FieldDecoratorParams) => ClassDecorator;
