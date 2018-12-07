@@ -36,7 +36,7 @@ export const method = (
         return value.bind(this);
       },
       key,
-    }, {isPrivate, isReadonly: true, isStatic});
+    }, {isPrivate, isStatic});
   }
 
   return {

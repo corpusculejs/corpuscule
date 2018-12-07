@@ -122,6 +122,7 @@ const testDescriptors = () => {
           descriptor: {
             configurable: true,
             enumerable: true,
+            writable: true,
           },
           extras,
           finisher,
