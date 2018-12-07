@@ -29,9 +29,9 @@ export const form: (params?: FormDecoratorParams) => ClassDecorator;
 
 export interface FieldInputProps<T> {
   readonly name: string;
-  readonly onBlur: (event: Event) => void;
-  readonly onChange: (event: Event | T) => void;
-  readonly onFocus: (event: Event) => void;
+  readonly onBlur: () => void;
+  readonly onChange: (value: T) => void;
+  readonly onFocus: () => void;
   readonly value: T;
 }
 
