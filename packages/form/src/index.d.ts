@@ -43,7 +43,7 @@ export type FieldConfigKey =
   | 'parse'
   | 'subscription'
   | 'validate'
-  | 'validateField'
+  | 'validateFields'
   | 'value';
 
 export type FieldMetaProps = Omit<FieldState, 'blur' | 'change' | 'focus' | 'length' | 'name' | 'value'>;
