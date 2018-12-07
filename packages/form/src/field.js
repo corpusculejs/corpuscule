@@ -41,7 +41,7 @@ const configOptions = [
   'parse',
   'subscription',
   'validate',
-  'validateField',
+  'validateFields',
   'value',
 ];
 
@@ -291,14 +291,14 @@ const field = ({scheduler = defaultScheduler} = {}) => (classDescriptor) => {
             const [
               format,
               formatOnBlur,
-              name,
-            ] = getConfigProperties(this, 'format', 'formatOnBlur', 'name');
+            ] = getConfigProperties(this, 'format', 'formatOnBlur');
 
             const {
               blur: _b,
               change: _c,
               focus: _f,
-              name: _n,
+              name,
+              length: _l,
               value,
               ...meta
             } = this[$$formState];
