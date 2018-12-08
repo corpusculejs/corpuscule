@@ -10,8 +10,8 @@ const createFormContext = () => {
     providingValue,
   } = createContext();
 
-  const form = createFormDecorator({provider, providingValue});
-  const field = createFieldDecorator({consumer, contextValue, providingValue});
+  const form = createFormDecorator(provider, providingValue);
+  const field = createFieldDecorator(consumer, providingValue, contextValue);
 
   return {
     field,
