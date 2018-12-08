@@ -99,103 +99,99 @@ export const formOption = configKey => ({
   });
 };
 
-const createFormDecorator = (provider, $formApi) => {
-  const filteringNames = [
-    ...lifecycleKeys,
-    $formState,
-  ];
+const createFormDecorator = (
+  provider,
+  $formApi,
+) => ({decorators, subscription = all} = {}) => (classDescriptor) => {
+  assertKind('form', 'class', classDescriptor.kind);
 
-  return ({decorators, subscription = all} = {}) => (classDescriptor) => {
-    assertKind('form', 'class', classDescriptor.kind);
+  const {elements, kind} = provider(classDescriptor);
 
-    const {elements, kind} = provider(classDescriptor);
+  const [
+    superConnectedCallback,
+    superDisconnectedCallback,
+  ] = getSuperMethods(elements, lifecycleKeys);
 
-    const [
-      superConnectedCallback,
-      superDisconnectedCallback,
-    ] = getSuperMethods(elements, lifecycleKeys);
+  const $$submit = Symbol();
+  const $$unsubscriptions = Symbol();
 
-    const $$submit = Symbol();
-    const $$unsubscriptions = Symbol();
+  return {
+    elements: [
+      ...elements.filter(({key}) => !lifecycleKeys.includes(key) && key !== $formState),
 
-    return {
-      elements: [
-        ...elements.filter(({key}) => !filteringNames.includes(key)),
-
-        // Public
-        method({
-          key: connectedCallbackKey,
-          value() {
-            if (decorators) {
-              for (const decorate of decorators) {
-                this[$$unsubscriptions].push(decorate(this[$formApi]));
-              }
+      // Public
+      method({
+        key: connectedCallbackKey,
+        value() {
+          if (decorators) {
+            for (const decorate of decorators) {
+              this[$$unsubscriptions].push(decorate(this[$formApi]));
             }
+          }
 
-            this[$$unsubscriptions].push(
-              this[$formApi].subscribe((state) => {
-                this[$formState] = state;
-              }, subscription),
-            );
+          this[$$unsubscriptions].push(
+            this[$formApi].subscribe((state) => {
+              this[$formState] = state;
+            }, subscription),
+          );
 
-            this.addEventListener('submit', this[$$submit]);
+          this.addEventListener('submit', this[$$submit]);
 
-            superConnectedCallback.call(this);
-          },
-        }),
-        method({
-          key: disconnectedCallbackKey,
-          value() {
-            for (const unsubscribe of this[$$unsubscriptions]) {
-              unsubscribe();
-            }
+          superConnectedCallback.call(this);
+        },
+      }),
+      method({
+        key: disconnectedCallbackKey,
+        value() {
+          for (const unsubscribe of this[$$unsubscriptions]) {
+            unsubscribe();
+          }
 
-            this[$$unsubscriptions] = [];
+          this[$$unsubscriptions] = [];
 
-            this.removeEventListener('submit', this[$$submit]);
-            superDisconnectedCallback.call(this);
-          },
-        }),
+          this.removeEventListener('submit', this[$$submit]);
+          superDisconnectedCallback.call(this);
+        },
+      }),
 
-        // Protected
-        field({
-          initializer() {
-            this[$formApi] = createForm(
-              configInitializers.get(this.constructor)
-                .reduce((acc, [key, initializer]) => {
-                  acc[key] = initializer ? initializer.call(this) : undefined;
+      // Protected
+      field({
+        initializer() {
+          this[$formApi] = createForm(
+            configInitializers.get(this.constructor)
+              .reduce((acc, [key, initializer]) => {
+                acc[key] = initializer ? initializer.call(this) : undefined;
 
-                  return acc;
-                }, {}),
-            );
-          },
-        }),
+                return acc;
+              }, {}),
+          );
+        },
+      }),
 
-        // Private
-        field({
-          initializer() {
-            configInitializers.set(this, []);
-          },
-        }, {isPrivate: true, isStatic: true}),
-        field({
-          initializer: () => [],
-          key: $$unsubscriptions,
-        }, {isPrivate: true}),
-        method({
-          key: $$submit,
-          value(e) {
-            e.preventDefault();
-            e.stopPropagation();
+      // Private
+      field({
+        initializer() {
+          configInitializers.set(this, []);
+        },
+      }, {isPrivate: true, isStatic: true}),
+      field({
+        initializer: () => [],
+        key: $$unsubscriptions,
+      }, {isPrivate: true}),
+      method({
+        key: $$submit,
+        value(e) {
+          e.preventDefault();
+          e.stopPropagation();
 
-            this[$formApi].submit();
-          },
-        }, {isBound: true, isPrivate: true}),
-      ],
-      finisher(target) {
-        formApiPropertyName.set(target, $formApi);
-      },
-      kind,
-    };
+          this[$formApi].submit();
+        },
+      }, {isBound: true, isPrivate: true}),
+    ],
+    finisher(target) {
+      formApiPropertyName.set(target, $formApi);
+    },
+    kind,
   };
 };
 
