@@ -99,10 +99,7 @@ export const formOption = configKey => ({
   });
 };
 
-const createFormDecorator = ({
-  provider,
-  providingValue: $formApi,
-}) => {
+const createFormDecorator = (provider, $formApi) => {
   const filteringNames = [
     ...lifecycleKeys,
     $formApi,

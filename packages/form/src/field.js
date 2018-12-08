@@ -121,11 +121,7 @@ export const fieldOption = configKey => ({
   });
 };
 
-const createField = ({
-  consumer,
-  contextValue: $$form,
-  providingValue: $formApi,
-}) => {
+const createField = (consumer, $formApi, $$form) => {
   const filterNames = [
     ...lifecycleKeys,
     $formApi,
