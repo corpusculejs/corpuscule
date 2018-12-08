@@ -1,6 +1,6 @@
 import {ExtendedPropertyDescriptor} from '@corpuscule/typings';
 import {
-  accessor,
+  accessor, AccessorMethods,
   field,
   method,
 } from '../src/descriptors';
@@ -73,6 +73,14 @@ const testDescriptors = () => {
 
         expect(result.placement).toBe('static');
       });
+
+      it('creates initializer field', () => {
+        const result = field({
+          initializer: () => 10,
+        });
+
+        expect(result.key).toEqual(jasmine.any(Symbol));
+      });
     });
 
     describe('method', () => {
@@ -114,6 +122,7 @@ const testDescriptors = () => {
           descriptor: {
             configurable: true,
             enumerable: true,
+            writable: true,
           },
           extras,
           finisher,
@@ -155,8 +164,13 @@ const testDescriptors = () => {
     });
 
     describe('accessor', () => {
-      const get = () => {}; // tslint:disable-line:no-empty
-      const set = () => {}; // tslint:disable-line:no-empty
+      let get: jasmine.Spy;
+      let set: jasmine.Spy;
+
+      beforeEach(() => {
+        get = jasmine.createSpy('get');
+        set = jasmine.createSpy('set');
+      });
 
       it('creates accessor by default', () => {
         const result = accessor({
@@ -207,6 +221,121 @@ const testDescriptors = () => {
         }, {isStatic: true});
 
         expect(result.placement).toBe('static');
+      });
+
+      it('creates accessor with field if original element has initializer', () => {
+        const initializer = () => 10;
+
+        const result = accessor({
+          extras,
+          finisher,
+          initializer,
+          key: 'test',
+        });
+
+        expect(result).toEqual({
+          descriptor: {
+            configurable: true,
+            enumerable: true,
+            get: jasmine.any(Function),
+            set: jasmine.any(Function),
+          },
+          extras: [{
+            descriptor: {
+              writable: true,
+            },
+            extras: undefined,
+            finisher: undefined,
+            initializer,
+            key: jasmine.any(Symbol),
+            kind: 'field',
+            placement: 'own',
+          } as any],
+          finisher,
+          key: 'test',
+          kind: 'method',
+          placement: 'prototype',
+        });
+
+        const [{key}] = result.extras!;
+
+        const testObj = {
+          [key]: 20,
+        };
+
+        expect(result.descriptor.get!.call(testObj)).toBe(20);
+        result.descriptor.set!.call(testObj, 30);
+        expect(testObj[key as string]).toBe(30);
+      });
+
+      it('allows to create accessor with field and get them in array instead of extra', () => {
+        const initializer = () => 10;
+
+        const result = accessor({
+          initializer,
+          key: 'test',
+        }, {toArray: true});
+
+        expect(result).toEqual([
+          {
+            descriptor: {
+              configurable: true,
+              enumerable: true,
+              get: jasmine.any(Function),
+              set: jasmine.any(Function),
+            },
+            extras: undefined,
+            finisher: undefined,
+            key: 'test',
+            kind: 'method',
+            placement: 'prototype',
+          },
+          {
+            descriptor: {
+              writable: true,
+            },
+            extras: undefined,
+            finisher: undefined,
+            initializer,
+            key: jasmine.any(Symbol),
+            kind: 'field',
+            placement: 'own',
+          } as any,
+        ]);
+      });
+
+      it('allows to adjust internally created set and get', () => {
+        const adjustedGetSpy = jasmine.createSpy('adjustedGet');
+        const adjustedSetSpy = jasmine.createSpy('adjustedSet');
+
+        const result = accessor({
+          get,
+          key: 'test',
+          set,
+        }, {
+          adjust({get: originalGet, set: originalSet}: AccessorMethods): AccessorMethods {
+            return {
+              get(): unknown {
+                adjustedGetSpy();
+
+                return originalGet();
+              },
+              set(v: unknown): void {
+                adjustedSetSpy(v);
+                originalSet(v);
+              },
+            };
+          },
+        });
+
+        result.descriptor.get!();
+        expect(get).toHaveBeenCalledTimes(1);
+        expect(adjustedGetSpy).toHaveBeenCalledTimes(1);
+
+        result.descriptor.set!(100);
+
+        expect(set).toHaveBeenCalledWith(100);
+        expect(adjustedSetSpy).toHaveBeenCalledWith(100);
       });
     });
   });

@@ -1,4 +1,7 @@
-export const lifecycleKeys = ['connectedCallback', 'disconnectedCallback'];
+export const lifecycleKeys = [
+  'connectedCallback',
+  'disconnectedCallback',
+];
 
 const publicDescriptor = {
   configurable: true,
@@ -16,7 +19,7 @@ export const field = (
   extras,
   finisher,
   initializer,
-  key,
+  key: key || Symbol(),
   kind: 'field',
   placement: isStatic ? 'static' : 'own',
 });
@@ -33,7 +36,7 @@ export const method = (
         return value.bind(this);
       },
       key,
-    }, {isPrivate, isReadonly: true, isStatic});
+    }, {isPrivate, isStatic});
   }
 
   return {
@@ -47,13 +50,58 @@ export const method = (
 };
 
 export const accessor = (
-  {extras, finisher, key, get, set},
-  {isPrivate = false, isStatic = false} = {},
-) => ({
-  descriptor: isPrivate ? {get, set} : {...publicDescriptor, get, set},
-  extras,
-  finisher,
-  key,
-  kind: 'method',
-  placement: isStatic ? 'static' : 'prototype',
-});
+  {extras, finisher, initializer, key, get, set},
+  {
+    adjust = methods => methods,
+    isPrivate = false,
+    isStatic = false,
+    toArray = false,
+  } = {},
+) => {
+  let accessorMethods;
+  let accessorField;
+
+  if (initializer) {
+    const storage = Symbol();
+
+    accessorMethods = adjust({
+      get() {
+        return this[storage];
+      },
+      set(value) {
+        this[storage] = value;
+      },
+    });
+
+    accessorField = field({
+      initializer,
+      key: storage,
+    }, {isPrivate: true});
+  } else {
+    accessorMethods = adjust({get, set});
+  }
+
+  const result = {
+    descriptor: isPrivate ? accessorMethods : {...publicDescriptor, ...accessorMethods},
+    extras,
+    finisher,
+    key,
+    kind: 'method',
+    placement: isStatic ? 'static' : 'prototype',
+  };
+
+  if (accessorField) {
+    return toArray ? [
+      result,
+      accessorField,
+    ] : {
+      ...result,
+      extras: Array.isArray(extras) ? [
+        ...extras,
+        accessorField,
+      ] : [accessorField],
+    };
+  }
+
+  return result;
+};

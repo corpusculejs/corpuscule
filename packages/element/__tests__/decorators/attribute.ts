@@ -1,12 +1,12 @@
-import {HTMLElementMock} from '../../../../test/utils';
-
 // tslint:disable:max-classes-per-file
+import {HTMLElementMock} from '../../../../test/utils';
 import {attribute} from '../../src';
 
 const testAttributeDecorator = () => {
   describe('@attribute', () => {
     it('gets string attribute', () => {
       class Test extends HTMLElementMock {
+        public static readonly observedAttributes: ReadonlyArray<string> = [];
         public readonly attributes: Map<string, string> = new Map([['attr', 'str']]);
 
         @attribute('attr', String)
@@ -21,6 +21,7 @@ const testAttributeDecorator = () => {
 
     it('properly gets boolean attribute', () => {
       class Test extends HTMLElementMock {
+        public static readonly observedAttributes: ReadonlyArray<string> = [];
         public readonly attributes: Map<string, string> = new Map([
           ['a1', ''],
         ]);
@@ -41,6 +42,7 @@ const testAttributeDecorator = () => {
 
     it('properly gets number attributes', () => {
       class Test extends HTMLElementMock {
+        public static readonly observedAttributes: ReadonlyArray<string> = [];
         public readonly attributes: Map<string, string> = new Map([['num', '10']]);
 
         @attribute('num', Number)
@@ -55,6 +57,8 @@ const testAttributeDecorator = () => {
 
     it('sets string attribute', () => {
       class Test extends HTMLElementMock {
+        public static readonly observedAttributes: ReadonlyArray<string> = [];
+
         @attribute('attr', String)
         public attribute: string | null = null;
       }
@@ -69,6 +73,8 @@ const testAttributeDecorator = () => {
 
     it('properly sets boolean attributes', () => {
       class Test extends HTMLElementMock {
+        public static readonly observedAttributes: ReadonlyArray<string> = [];
+
         public readonly attributes: Map<string, string> = new Map([
           ['a2', ''],
         ]);
@@ -91,6 +97,8 @@ const testAttributeDecorator = () => {
 
     it('properly sets number attribute', () => {
       class Test extends HTMLElementMock {
+        public static readonly observedAttributes: ReadonlyArray<string> = [];
+
         @attribute('num', Number)
         public numAttribute: number | null = null;
       }
@@ -105,6 +113,8 @@ const testAttributeDecorator = () => {
 
     it('initializes and fills "observedAttributes"', () => {
       class Test extends HTMLElementMock {
+        public static readonly observedAttributes: ReadonlyArray<string> = [];
+
         @attribute('a1', Boolean)
         public attr1: boolean | null = null;
 
@@ -119,6 +129,8 @@ const testAttributeDecorator = () => {
       const attributeChangedCallbackSpy = jasmine.createSpy('onAttributeChange');
 
       class Test extends HTMLElementMock {
+        public static readonly observedAttributes: ReadonlyArray<string> = [];
+
         @attribute('attr', String)
         public attribute: string | null = null;
 
@@ -147,6 +159,8 @@ const testAttributeDecorator = () => {
 
     it('throws an error if value does not fit guard', () => {
       class Test extends HTMLElementMock {
+        public static readonly observedAttributes: ReadonlyArray<string> = [];
+
         @attribute('num', Number)
         public numAttribute: number | null = null;
       }
@@ -161,6 +175,8 @@ const testAttributeDecorator = () => {
 
     it('gets null if no attribute exist', () => {
       class Test extends HTMLElementMock {
+        public static readonly observedAttributes: ReadonlyArray<string> = [];
+
         @attribute('num', Number)
         public numAttribute: number | null = null;
       }
@@ -173,6 +189,8 @@ const testAttributeDecorator = () => {
 
     it('accepts both null and undefined as a value of attribute', () => {
       class Test extends HTMLElementMock {
+        public static readonly observedAttributes: ReadonlyArray<string> = [];
+
         @attribute('a1', Number)
         public a1: number | null = 10;
 
