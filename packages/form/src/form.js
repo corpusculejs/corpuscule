@@ -102,7 +102,6 @@ export const formOption = configKey => ({
 const createFormDecorator = (provider, $formApi) => {
   const filteringNames = [
     ...lifecycleKeys,
-    $formApi,
     $formState,
   ];
 
@@ -161,7 +160,7 @@ const createFormDecorator = (provider, $formApi) => {
         // Protected
         field({
           initializer() {
-            return createForm(
+            this[$formApi] = createForm(
               configInitializers.get(this.constructor)
                 .reduce((acc, [key, initializer]) => {
                   acc[key] = initializer ? initializer.call(this) : undefined;
@@ -170,8 +169,7 @@ const createFormDecorator = (provider, $formApi) => {
                 }, {}),
             );
           },
-          key: $formApi,
-        }, {isReadonly: true}),
+        }),
 
         // Private
         field({
