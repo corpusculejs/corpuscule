@@ -1,10 +1,6 @@
 /* eslint-disable no-console, sort-keys */
 const {exec} = require('child_process');
-const {
-  copyFile,
-  mkdir,
-  readdir,
-} = require('fs');
+const {copyFile, mkdir, readdir} = require('fs');
 const rimraf = require('rimraf');
 const {promisify} = require('util');
 const {packages, definitions} = require('./project');
@@ -21,38 +17,33 @@ const lib = (pack, file) => `packages/${pack}/lib/${file}`;
 
 const libDir = pack => root(pack, 'lib');
 
-const recreateLib = async (pack) => {
+const recreateLib = async pack => {
   await rimrafAsync(libDir(pack));
   await mkdirAsync(libDir(pack));
 };
 
 const dtsPattern = /\.d\.ts/;
 
-const copyDtsFiles = async (pack) => {
+const copyDtsFiles = async pack => {
   const files = await readdirAsync(root(pack, 'src'));
   await Promise.all(
     files
       .filter(file => dtsPattern.test(file))
-      .map(file => copyFileAsync(src(pack, file), lib(pack, file)))
+      .map(file => copyFileAsync(src(pack, file), lib(pack, file))),
   );
 };
 
-const buildCommon = async pack => Promise.all([
-  copyDtsFiles(pack),
-]);
+const buildCommon = async pack => Promise.all([copyDtsFiles(pack)]);
 
-const build = async (pack) => {
+const build = async pack => {
   await recreateLib(pack);
 
-  await Promise.all([
-    execAsync(`rollup -c scripts/rollup.config.js`),
-    buildCommon(pack),
-  ]);
+  await Promise.all([execAsync(`rollup -c scripts/rollup.config.js`), buildCommon(pack)]);
 
   console.info(`✓ "${pack}" is built`);
 };
 
-const buildDefinitions = async (pack) => {
+const buildDefinitions = async pack => {
   await recreateLib(pack);
   await buildCommon(pack);
 

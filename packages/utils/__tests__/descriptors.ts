@@ -1,9 +1,5 @@
 import {ExtendedPropertyDescriptor} from '@corpuscule/typings';
-import {
-  accessor, AccessorMethods,
-  field,
-  method,
-} from '../src/descriptors';
+import {accessor, AccessorMethods, field, method} from '../src/descriptors';
 
 const testDescriptors = () => {
   describe('descriptors', () => {
@@ -37,12 +33,15 @@ const testDescriptors = () => {
       });
 
       it('creates private field', () => {
-        const result = field({
-          extras,
-          finisher,
-          initializer: () => 10,
-          key: 'test',
-        }, {isPrivate: true});
+        const result = field(
+          {
+            extras,
+            finisher,
+            initializer: () => 10,
+            key: 'test',
+          },
+          {isPrivate: true},
+        );
 
         expect(result.descriptor).toEqual({
           writable: true,
@@ -50,12 +49,15 @@ const testDescriptors = () => {
       });
 
       it('creates readonly field', () => {
-        const result = field({
-          extras,
-          finisher,
-          initializer: () => 10,
-          key: 'test',
-        }, {isReadonly: true});
+        const result = field(
+          {
+            extras,
+            finisher,
+            initializer: () => 10,
+            key: 'test',
+          },
+          {isReadonly: true},
+        );
 
         expect(result.descriptor).toEqual({
           configurable: true,
@@ -64,12 +66,15 @@ const testDescriptors = () => {
       });
 
       it('creates static field', () => {
-        const result = field({
-          extras,
-          finisher,
-          initializer: () => 10,
-          key: 'test',
-        }, {isStatic: true});
+        const result = field(
+          {
+            extras,
+            finisher,
+            initializer: () => 10,
+            key: 'test',
+          },
+          {isStatic: true},
+        );
 
         expect(result.placement).toBe('static');
       });
@@ -109,14 +114,17 @@ const testDescriptors = () => {
       });
 
       it('creates bound method', () => {
-        const result = method({
-          extras,
-          finisher,
-          key: 'test',
-          value(): unknown {
-            return this.finisher; // tslint:disable-line:no-invalid-this
+        const result = method(
+          {
+            extras,
+            finisher,
+            key: 'test',
+            value(): unknown {
+              return this.finisher; // tslint:disable-line:no-invalid-this
+            },
           },
-        }, {isBound: true});
+          {isBound: true},
+        );
 
         expect(result).toEqual({
           descriptor: {
@@ -139,12 +147,15 @@ const testDescriptors = () => {
       it('creates private method', () => {
         const value = () => 10;
 
-        const result = method({
-          extras,
-          finisher,
-          key: 'test',
-          value,
-        }, {isPrivate: true});
+        const result = method(
+          {
+            extras,
+            finisher,
+            key: 'test',
+            value,
+          },
+          {isPrivate: true},
+        );
 
         expect(result.descriptor).toEqual({
           value,
@@ -152,12 +163,15 @@ const testDescriptors = () => {
       });
 
       it('creates static method', () => {
-        const result = method({
-          extras,
-          finisher,
-          key: 'test',
-          value: () => 10,
-        }, {isStatic: true});
+        const result = method(
+          {
+            extras,
+            finisher,
+            key: 'test',
+            value: () => 10,
+          },
+          {isStatic: true},
+        );
 
         expect(result.placement).toBe('static');
       });
@@ -197,13 +211,16 @@ const testDescriptors = () => {
       });
 
       it('creates private method', () => {
-        const result = accessor({
-          extras,
-          finisher,
-          get,
-          key: 'test',
-          set,
-        }, {isPrivate: true});
+        const result = accessor(
+          {
+            extras,
+            finisher,
+            get,
+            key: 'test',
+            set,
+          },
+          {isPrivate: true},
+        );
 
         expect(result.descriptor).toEqual({
           get,
@@ -212,13 +229,16 @@ const testDescriptors = () => {
       });
 
       it('creates static method', () => {
-        const result = accessor({
-          extras,
-          finisher,
-          get,
-          key: 'test',
-          set,
-        }, {isStatic: true});
+        const result = accessor(
+          {
+            extras,
+            finisher,
+            get,
+            key: 'test',
+            set,
+          },
+          {isStatic: true},
+        );
 
         expect(result.placement).toBe('static');
       });
@@ -240,17 +260,19 @@ const testDescriptors = () => {
             get: jasmine.any(Function),
             set: jasmine.any(Function),
           },
-          extras: [{
-            descriptor: {
-              writable: true,
-            },
-            extras: undefined,
-            finisher: undefined,
-            initializer,
-            key: jasmine.any(Symbol),
-            kind: 'field',
-            placement: 'own',
-          } as any],
+          extras: [
+            {
+              descriptor: {
+                writable: true,
+              },
+              extras: undefined,
+              finisher: undefined,
+              initializer,
+              key: jasmine.any(Symbol),
+              kind: 'field',
+              placement: 'own',
+            } as any,
+          ],
           finisher,
           key: 'test',
           kind: 'method',
@@ -271,10 +293,13 @@ const testDescriptors = () => {
       it('allows to create accessor with field and get them in array instead of extra', () => {
         const initializer = () => 10;
 
-        const result = accessor({
-          initializer,
-          key: 'test',
-        }, {toArray: true});
+        const result = accessor(
+          {
+            initializer,
+            key: 'test',
+          },
+          {toArray: true},
+        );
 
         expect(result).toEqual([
           {
@@ -308,25 +333,28 @@ const testDescriptors = () => {
         const adjustedGetSpy = jasmine.createSpy('adjustedGet');
         const adjustedSetSpy = jasmine.createSpy('adjustedSet');
 
-        const result = accessor({
-          get,
-          key: 'test',
-          set,
-        }, {
-          adjust({get: originalGet, set: originalSet}: AccessorMethods): AccessorMethods {
-            return {
-              get(): unknown {
-                adjustedGetSpy();
-
-                return originalGet();
-              },
-              set(v: unknown): void {
-                adjustedSetSpy(v);
-                originalSet(v);
-              },
-            };
+        const result = accessor(
+          {
+            get,
+            key: 'test',
+            set,
           },
-        });
+          {
+            adjust({get: originalGet, set: originalSet}: AccessorMethods): AccessorMethods {
+              return {
+                get(): unknown {
+                  adjustedGetSpy();
+
+                  return originalGet();
+                },
+                set(v: unknown): void {
+                  adjustedSetSpy(v);
+                  originalSet(v);
+                },
+              };
+            },
+          },
+        );
 
         result.descriptor.get!();
         expect(get).toHaveBeenCalledTimes(1);

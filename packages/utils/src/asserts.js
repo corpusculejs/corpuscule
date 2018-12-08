@@ -18,8 +18,8 @@ export const assertPlacement = (
   receivedPlacement,
   {
     correct = expectedPlacement === receivedPlacement,
-    customMessage = `@${decoratorName} can be applied only to ${expectedPlacement} class element, `
-    + `not to ${receivedPlacement}`,
+    customMessage = `@${decoratorName} can be applied only to ${expectedPlacement} class element, ` +
+      `not to ${receivedPlacement}`,
   } = {},
 ) => {
   if (!correct) {

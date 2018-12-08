@@ -5,7 +5,7 @@ import {contextMap} from './utils';
 
 export const connectedRegistry = new WeakMap();
 
-export const connected = getter => (descriptor) => {
+export const connected = getter => descriptor => {
   const {
     descriptor: {get, set},
     kind,
@@ -23,13 +23,7 @@ export const connected = getter => (descriptor) => {
   };
 };
 
-export const dispatcher = ({
-  descriptor,
-  initializer,
-  key,
-  kind,
-  placement,
-}) => {
+export const dispatcher = ({descriptor, initializer, key, kind, placement}) => {
   assertKind('dispatcher', 'field or method', kind, {
     correct: kind === 'method' || kind === 'field',
   });
@@ -44,25 +38,29 @@ export const dispatcher = ({
       throw new TypeError(`@dispatcher: "${key}" should be initialized with a function`);
     }
 
-    return method({
-      key,
-      value(...args) {
-        this[contextMap.get(this.constructor)]
-          .dispatch(initialized(...args));
+    return method(
+      {
+        key,
+        value(...args) {
+          this[contextMap.get(this.constructor)].dispatch(initialized(...args));
+        },
       },
-    }, {isBound: true});
+      {isBound: true},
+    );
   }
 
   return {
     descriptor,
     extras: [
-      method({
-        key,
-        value(...args) {
-          this[contextMap.get(this.constructor)]
-            .dispatch(descriptor.value.apply(this, args));
+      method(
+        {
+          key,
+          value(...args) {
+            this[contextMap.get(this.constructor)].dispatch(descriptor.value.apply(this, args));
+          },
         },
-      }, {isBound: true}),
+        {isBound: true},
+      ),
     ],
     key,
     kind,

@@ -22,7 +22,7 @@ const linkTest = () => {
       expect(link).toEqual(jasmine.any(Link));
     });
 
-    it('should dispatch PopStateEvent with current history state by click', (done) => {
+    it('should dispatch PopStateEvent with current history state by click', done => {
       document.body.appendChild(link);
       const listener = (e: PopStateEvent) => {
         expect(e.state).toEqual('/test');
@@ -36,9 +36,9 @@ const linkTest = () => {
       link.click();
     });
 
-    it('should prevent default action for a anchor element', (done) => {
+    it('should prevent default action for a anchor element', done => {
       document.body.appendChild(link);
-      link.addEventListener('click', (e) => {
+      link.addEventListener('click', e => {
         expect(e.defaultPrevented).toBeTruthy();
         done();
       });

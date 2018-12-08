@@ -7,10 +7,9 @@ const testSchedule = () => {
     it('uses single requestAnimationFrame for all nested tasks', () => {
       const taskSpy = jasmine.createSpy('task');
 
-      const raf = spyOn(window, 'requestAnimationFrame').and
-        .callFake((callback: () => void) => {
-          callback();
-        });
+      const raf = spyOn(window, 'requestAnimationFrame').and.callFake((callback: () => void) => {
+        callback();
+      });
 
       let nesting = 0;
 

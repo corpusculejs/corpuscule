@@ -1,23 +1,12 @@
 import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
-import {
-  accessor,
-  field as ffield,
-  method,
-  lifecycleKeys,
-} from '@corpuscule/utils/lib/descriptors';
+import {accessor, field as ffield, method, lifecycleKeys} from '@corpuscule/utils/lib/descriptors';
 import getSuperMethods from '@corpuscule/utils/lib/getSuperMethods';
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
 import shallowEqual from '@corpuscule/utils/lib/shallowEqual';
-import {
-  input as $input,
-  meta as $meta,
-} from './tokens/lifecycle';
+import {input as $input, meta as $meta} from './tokens/lifecycle';
 import {all} from './utils';
 
-const [
-  connectedCallbackKey,
-  disconnectedCallbackKey,
-] = lifecycleKeys;
+const [connectedCallbackKey, disconnectedCallbackKey] = lifecycleKeys;
 
 const noop = () => {}; // eslint-disable-line no-empty-function
 
@@ -37,8 +26,8 @@ const configPropertyNames = new Map(configOptions.map(option => [option, new Wea
 const subscribePropertyName = new WeakMap();
 const updatePropertyName = new WeakMap();
 
-const getConfigProperties =
-  (self, ...keys) => keys.map((key) => {
+const getConfigProperties = (self, ...keys) =>
+  keys.map(key => {
     const name = configPropertyNames.get(key).get(self.constructor);
 
     if (typeof name === 'string' || typeof name === 'symbol') {
@@ -48,13 +37,7 @@ const getConfigProperties =
     return undefined;
   });
 
-export const fieldOption = configKey => ({
-  descriptor,
-  initializer,
-  key,
-  kind,
-  placement,
-}) => {
+export const fieldOption = configKey => ({descriptor, initializer, key, kind, placement}) => {
   const {get, set, value} = descriptor;
 
   assertKind('fieldOption', 'not class', kind, {
@@ -68,7 +51,7 @@ export const fieldOption = configKey => ({
     throw new TypeError(`"${configKey}" is not one of the Final Form Field configuration keys`);
   }
 
-  const finisher = (target) => {
+  const finisher = target => {
     configPropertyNames.get(configKey).set(target, key);
   };
 
@@ -76,10 +59,13 @@ export const fieldOption = configKey => ({
     return {
       descriptor,
       extras: [
-        method({
-          key,
-          value,
-        }, {isBound: true}),
+        method(
+          {
+            key,
+            value,
+          },
+          {isBound: true},
+        ),
       ],
       finisher,
       key,
@@ -88,48 +74,45 @@ export const fieldOption = configKey => ({
     };
   }
 
-  return accessor({
-    finisher,
-    get,
-    initializer,
-    key,
-    set,
-  }, {
-    adjust({get: originalGet, set: originalSet}) {
-      return {
-        get: originalGet,
-        set: configKey === 'name' || configKey === 'subscription' ? function (v) {
-          const oldValue = originalGet.call(this);
-          originalSet.call(this, v);
-
-          if (
-            configKey === 'name'
-              ? v !== oldValue
-              : !shallowEqual(v, oldValue)
-          ) {
-            this[subscribePropertyName.get(this.constructor)]();
-          }
-        } : function (v) {
-          if (v !== originalGet.call(this)) {
-            this[updatePropertyName.get(this.constructor)]();
-          }
-
-          originalSet.call(this, v);
-        },
-      };
+  return accessor(
+    {
+      finisher,
+      get,
+      initializer,
+      key,
+      set,
     },
-  });
+    {
+      adjust({get: originalGet, set: originalSet}) {
+        return {
+          get: originalGet,
+          set:
+            configKey === 'name' || configKey === 'subscription'
+              ? function(v) {
+                  const oldValue = originalGet.call(this);
+                  originalSet.call(this, v);
+
+                  if (configKey === 'name' ? v !== oldValue : !shallowEqual(v, oldValue)) {
+                    this[subscribePropertyName.get(this.constructor)]();
+                  }
+                }
+              : function(v) {
+                  if (v !== originalGet.call(this)) {
+                    this[updatePropertyName.get(this.constructor)]();
+                  }
+
+                  originalSet.call(this, v);
+                },
+        };
+      },
+    },
+  );
 };
 
 const createField = (consumer, $formApi, $$form) => {
-  const filterNames = [
-    ...lifecycleKeys,
-    $formApi,
-    $input,
-    $meta,
-  ];
+  const filterNames = [...lifecycleKeys, $formApi, $input, $meta];
 
-  return ({scheduler = defaultScheduler} = {}) => (classDescriptor) => {
+  return ({scheduler = defaultScheduler} = {}) => classDescriptor => {
     assertKind('field', 'class', classDescriptor.kind);
 
     const $$formState = Symbol();
@@ -144,10 +127,10 @@ const createField = (consumer, $formApi, $$form) => {
 
     const {elements, kind} = consumer(classDescriptor);
 
-    const [
-      superConnectedCallback,
-      superDisconnectedCallback,
-    ] = getSuperMethods(elements, lifecycleKeys);
+    const [superConnectedCallback, superDisconnectedCallback] = getSuperMethods(
+      elements,
+      lifecycleKeys,
+    );
 
     return {
       elements: [
@@ -190,130 +173,120 @@ const createField = (consumer, $formApi, $$form) => {
           initializer: () => true,
           key: $$updatingValid,
         }),
-        method({
-          key: $$onBlur,
-          value() {
-            const [
-              format,
-              formatOnBlur,
-            ] = getConfigProperties(this, 'format', 'formatOnBlur');
+        method(
+          {
+            key: $$onBlur,
+            value() {
+              const [format, formatOnBlur] = getConfigProperties(this, 'format', 'formatOnBlur');
 
-            const {
-              blur,
-              change,
-              name,
-              value,
-            } = this[$$formState];
+              const {blur, change, name, value} = this[$$formState];
 
-            blur();
+              blur();
 
-            if (format && formatOnBlur) {
-              change(format(value, name));
-            }
+              if (format && formatOnBlur) {
+                change(format(value, name));
+              }
+            },
           },
-        }, {isBound: true, isPrivate: true}),
-        method({
-          key: $$onChange,
-          value(value) {
-            const [parse] = getConfigProperties(this, 'parse');
+          {isBound: true, isPrivate: true},
+        ),
+        method(
+          {
+            key: $$onChange,
+            value(value) {
+              const [parse] = getConfigProperties(this, 'parse');
 
-            const {
-              change,
-              name,
-            } = this[$$formState];
+              const {change, name} = this[$$formState];
 
-            change(
-              parse
-                ? parse(value, name)
-                : value,
-            );
+              change(parse ? parse(value, name) : value);
+            },
           },
-        }, {isBound: true, isPrivate: true}),
-        method({
-          key: $$onFocus,
-          value() {
-            this[$$formState].focus();
+          {isBound: true, isPrivate: true},
+        ),
+        method(
+          {
+            key: $$onFocus,
+            value() {
+              this[$$formState].focus();
+            },
           },
-        }, {isBound: true, isPrivate: true}),
-        method({
-          key: $$subscribe,
-          value() {
-            if (!this[$$subscribingValid]) {
-              return;
-            }
+          {isBound: true, isPrivate: true},
+        ),
+        method(
+          {
+            key: $$subscribe,
+            value() {
+              if (!this[$$subscribingValid]) {
+                return;
+              }
 
-            this[$$subscribingValid] = false;
+              this[$$subscribingValid] = false;
 
-            scheduler(() => {
-              this[$$unsubscribe]();
+              scheduler(() => {
+                this[$$unsubscribe]();
 
-              const [
-                isEqual,
-                name,
-                subscription,
-                validateFields,
-              ] = getConfigProperties(this, 'isEqual', 'name', 'subscription', 'validateFields');
+                const [isEqual, name, subscription, validateFields] = getConfigProperties(
+                  this,
+                  'isEqual',
+                  'name',
+                  'subscription',
+                  'validateFields',
+                );
 
-              const listener = (state) => {
-                this[$$formState] = state;
-                this[$$update]();
-              };
+                const listener = state => {
+                  this[$$formState] = state;
+                  this[$$update]();
+                };
 
-              this[$$unsubscribe] = this[$$form].registerField(
-                name,
-                listener,
-                subscription || all,
-                {
-                  getValidator: () => getConfigProperties(this, 'validate')[0],
-                  isEqual,
-                  validateFields,
-                },
-              );
+                this[$$unsubscribe] = this[$$form].registerField(
+                  name,
+                  listener,
+                  subscription || all,
+                  {
+                    getValidator: () => getConfigProperties(this, 'validate')[0],
+                    isEqual,
+                    validateFields,
+                  },
+                );
 
-              this[$$subscribingValid] = true;
-            });
+                this[$$subscribingValid] = true;
+              });
+            },
           },
-        }, {isPrivate: true}),
-        method({
-          key: $$update,
-          value() {
-            if (!this[$$updatingValid]) {
-              return;
-            }
+          {isPrivate: true},
+        ),
+        method(
+          {
+            key: $$update,
+            value() {
+              if (!this[$$updatingValid]) {
+                return;
+              }
 
-            this[$$updatingValid] = false;
+              this[$$updatingValid] = false;
 
-            scheduler(() => {
-              const [
-                format,
-                formatOnBlur,
-              ] = getConfigProperties(this, 'format', 'formatOnBlur');
+              scheduler(() => {
+                const [format, formatOnBlur] = getConfigProperties(this, 'format', 'formatOnBlur');
 
-              const {
-                blur: _b,
-                change: _c,
-                focus: _f,
-                name,
-                length: _l,
-                value,
-                ...meta
-              } = this[$$formState];
+                const {blur: _b, change: _c, focus: _f, name, length: _l, value, ...meta} = this[
+                  $$formState
+                ];
 
-              this[$input] = {
-                name,
-                onBlur: this[$$onBlur],
-                onChange: this[$$onChange],
-                onFocus: this[$$onFocus],
-                value: !formatOnBlur && format
-                  ? format(value, name)
-                  : value,
-              };
+                this[$input] = {
+                  name,
+                  onBlur: this[$$onBlur],
+                  onChange: this[$$onChange],
+                  onFocus: this[$$onFocus],
+                  value: !formatOnBlur && format ? format(value, name) : value,
+                };
 
-              this[$meta] = meta;
-              this[$$updatingValid] = true;
-            });
+                this[$meta] = meta;
+                this[$$updatingValid] = true;
+              });
+            },
           },
-        }, {isPrivate: true}),
+          {isPrivate: true},
+        ),
       ],
       finisher(target) {
         subscribePropertyName.set(target, $$subscribe);

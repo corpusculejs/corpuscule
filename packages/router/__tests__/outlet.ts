@@ -2,12 +2,7 @@
 import UniversalRouter from 'universal-router';
 import {createMockedContextElements} from '../../../test/mocks/context';
 import {HTMLElementMock} from '../../../test/utils';
-import {
-  layout,
-  outlet,
-  provider,
-  router, RouterOutlet,
-} from '../src';
+import {layout, outlet, provider, router, RouterOutlet} from '../src';
 
 const outletTest = () => {
   describe('outlet', () => {
@@ -49,17 +44,15 @@ const outletTest = () => {
     let appRouter: jasmine.SpyObj<UniversalRouter>;
 
     beforeEach(() => {
-      appRouter = jasmine.createSpyObj('router', [
-        'resolve',
-      ]);
+      appRouter = jasmine.createSpyObj('router', ['resolve']);
 
       appRouter.resolve.and.callFake(fakeResolve);
 
-      initialPromise = new Promise((r) => {
+      initialPromise = new Promise(r => {
         initialResolve = r;
       });
 
-      finalPromise = new Promise((r) => {
+      finalPromise = new Promise(r => {
         finalResolve = r;
       });
     });
@@ -97,16 +90,18 @@ const outletTest = () => {
 
       expect(outletElement[layout]).toBe('Test');
 
-      window.dispatchEvent(new PopStateEvent('popstate', {
-        state: '/test2',
-      }));
+      window.dispatchEvent(
+        new PopStateEvent('popstate', {
+          state: '/test2',
+        }),
+      );
 
       await finalPromise;
 
       expect(outletElement[layout]).toBe('Test2');
     });
 
-    it('ignores path that wasn\'t in the routes', async () => {
+    it("ignores path that wasn't in the routes", async () => {
       appRouter.resolve.and.callFake((path: string) => {
         finalResolve();
 
@@ -143,9 +138,11 @@ const outletTest = () => {
 
       expect(outletElement[layout]).toBe('Test');
 
-      window.dispatchEvent(new PopStateEvent('popstate', {
-        state: '/nowhere',
-      }));
+      window.dispatchEvent(
+        new PopStateEvent('popstate', {
+          state: '/nowhere',
+        }),
+      );
 
       await finalPromise;
 
@@ -189,16 +186,18 @@ const outletTest = () => {
 
       expect(outletElement[layout]).toBe('Test');
 
-      window.dispatchEvent(new PopStateEvent('popstate', {
-        state: '/other-route',
-      }));
+      window.dispatchEvent(
+        new PopStateEvent('popstate', {
+          state: '/other-route',
+        }),
+      );
 
       await finalPromise;
 
       expect(outletElement[layout]).toBe('Test');
     });
 
-    it('calls user\'s connectedCallback and disconnectedCallback methods', () => {
+    it("calls user's connectedCallback and disconnectedCallback methods", () => {
       const connectedSpy = jasmine.createSpy('connectedCallback');
       const disconnectedSpy = jasmine.createSpy('disconnectedCallback');
 

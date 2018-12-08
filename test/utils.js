@@ -23,14 +23,11 @@ export class HTMLElementMock {
     return this.shadowMock;
   }
 
-  attributeChangedCallback() {
-  }
+  attributeChangedCallback() {}
 
-  connectedCallback() {
-  }
+  connectedCallback() {}
 
-  disconnectedCallback() {
-  }
+  disconnectedCallback() {}
 
   dispatchEvent(event) {
     for (const {listeners} of this.nestingChain) {
@@ -47,9 +44,7 @@ export class HTMLElementMock {
   }
 
   getAttribute(key) {
-    return this.attributes.has(key)
-      ? this.attributes.get(key)
-      : null;
+    return this.attributes.has(key) ? this.attributes.get(key) : null;
   }
 
   hasAttribute(key) {
@@ -66,9 +61,7 @@ export class HTMLElementMock {
     const v = String(value);
     this.attributeChangedCallback(
       key,
-      this.attributes.has(key)
-        ? this.attributes.get(key)
-        : null,
+      this.attributes.has(key) ? this.attributes.get(key) : null,
       v,
     );
     this.attributes.set(key, v);

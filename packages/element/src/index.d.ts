@@ -15,7 +15,9 @@ export type AttributeGuard = BooleanConstructor | NumberConstructor | StringCons
 export type PropertyGuard = (value: unknown) => boolean;
 
 export const attribute: (attributeName: string, guard: AttributeGuard) => PropertyDecorator;
+
 export const element: (name: string, params?: ElementDecoratorParams) => ClassDecorator;
+
 export const internal: PropertyDecorator;
 export const property: (guard?: PropertyGuard) => PropertyDecorator;
 
@@ -35,8 +37,10 @@ export class UnsafeStatic {
 
 export const unsafeStatic: (value: unknown) => UnsafeStatic;
 
-export const withCorpusculeElement:
-  // tslint:disable-next-line:readonly-array
-  (processor: (strings: TemplateStringsArray, ...values: any[]) => TemplateResult) =>
-    // tslint:disable-next-line:readonly-array
-    (strings: TemplateStringsArray, ...values: any[]) => TemplateResult;
+export const withCorpusculeElement: // tslint:disable-next-line:readonly-array
+(
+  processor: (
+    strings: TemplateStringsArray,
+    ...values: any[] // tslint:disable-line:readonly-array
+  ) => TemplateResult,
+) => (strings: TemplateStringsArray, ...values: any[]) => TemplateResult; // tslint:disable-line:readonly-array

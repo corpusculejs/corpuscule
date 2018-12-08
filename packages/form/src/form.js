@@ -12,24 +12,13 @@ import {all} from './utils';
 const configInitializers = new WeakMap();
 const formApiPropertyName = new WeakMap();
 
-const [
-  connectedCallbackKey,
-  disconnectedCallbackKey,
-] = lifecycleKeys;
+const [connectedCallbackKey, disconnectedCallbackKey] = lifecycleKeys;
 
-export const formOption = configKey => ({
-  descriptor,
-  initializer,
-  key,
-  kind,
-  placement,
-}) => {
+export const formOption = configKey => ({descriptor, initializer, key, kind, placement}) => {
   const {get, set, value} = descriptor;
 
   assertKind('formOption', 'properties, methods or full accessors', kind, {
-    correct: kind === 'field' || (
-      kind === 'method' && (value || (get && set))
-    ),
+    correct: kind === 'field' || (kind === 'method' && (value || (get && set))),
   });
   assertPlacement('formOption', 'own or prototype', placement, {
     correct: placement === 'own' || placement === 'prototype',
@@ -43,14 +32,12 @@ export const formOption = configKey => ({
     return {
       descriptor,
       finisher(target) {
-        configInitializers
-          .get(target)
-          .push([
-            key,
-            function () {
-              return value.bind(this);
-            },
-          ]);
+        configInitializers.get(target).push([
+          key,
+          function() {
+            return value.bind(this);
+          },
+        ]);
       },
       key,
       kind,
@@ -58,59 +45,62 @@ export const formOption = configKey => ({
     };
   }
 
-  const updateForm = configKey === 'initialValues' ? function (initialValues) {
-    if (!(this[$compareInitialValues] || shallowEqual)(
-      this[key],
-      initialValues,
-    )) {
-      this[formApiPropertyName.get(this.constructor)].initialize(initialValues);
-    }
-  } : function (v) {
-    if (this[key] !== v) {
-      this[formApiPropertyName.get(this.constructor)].setConfig(configKey, v);
-    }
-  };
+  const updateForm =
+    configKey === 'initialValues'
+      ? function(initialValues) {
+          if (!(this[$compareInitialValues] || shallowEqual)(this[key], initialValues)) {
+            this[formApiPropertyName.get(this.constructor)].initialize(initialValues);
+          }
+        }
+      : function(v) {
+          if (this[key] !== v) {
+            this[formApiPropertyName.get(this.constructor)].setConfig(configKey, v);
+          }
+        };
 
-  return accessor({
-    finisher(target) {
-      configInitializers
-        .get(target)
-        .push([
+  return accessor(
+    {
+      finisher(target) {
+        configInitializers.get(target).push([
           key,
-          get ? function () {
-            return get.call(this);
-          } : initializer,
+          get
+            ? function() {
+                return get.call(this);
+              }
+            : initializer,
         ]);
+      },
+      get,
+      initializer,
+      key,
+      set,
     },
-    get,
-    initializer,
-    key,
-    set,
-  }, {
-    adjust({get: originGet, set: originSet}) {
-      return {
-        get: originGet,
-        set(v) {
-          updateForm.call(this, v);
-          originSet.call(this, v);
-        },
-      };
+    {
+      adjust({get: originGet, set: originSet}) {
+        return {
+          get: originGet,
+          set(v) {
+            updateForm.call(this, v);
+            originSet.call(this, v);
+          },
+        };
+      },
     },
-  });
+  );
 };
 
-const createFormDecorator = (
-  provider,
-  $formApi,
-) => ({decorators, subscription = all} = {}) => (classDescriptor) => {
+const createFormDecorator = (provider, $formApi) => ({
+  decorators,
+  subscription = all,
+} = {}) => classDescriptor => {
   assertKind('form', 'class', classDescriptor.kind);
 
   const {elements, kind} = provider(classDescriptor);
 
-  const [
-    superConnectedCallback,
-    superDisconnectedCallback,
-  ] = getSuperMethods(elements, lifecycleKeys);
+  const [superConnectedCallback, superDisconnectedCallback] = getSuperMethods(
+    elements,
+    lifecycleKeys,
+  );
 
   const $$submit = Symbol();
   const $$unsubscriptions = Symbol();
@@ -130,7 +120,7 @@ const createFormDecorator = (
           }
 
           this[$$unsubscriptions].push(
-            this[$formApi].subscribe((state) => {
+            this[$formApi].subscribe(state => {
               this[$formState] = state;
             }, subscription),
           );
@@ -158,35 +148,43 @@ const createFormDecorator = (
       field({
         initializer() {
           this[$formApi] = createForm(
-            configInitializers.get(this.constructor)
-              .reduce((acc, [key, initializer]) => {
-                acc[key] = initializer ? initializer.call(this) : undefined;
+            configInitializers.get(this.constructor).reduce((acc, [key, initializer]) => {
+              acc[key] = initializer ? initializer.call(this) : undefined;
 
-                return acc;
-              }, {}),
+              return acc;
+            }, {}),
           );
         },
       }),
 
       // Private
-      field({
-        initializer() {
-          configInitializers.set(this, []);
+      field(
+        {
+          initializer() {
+            configInitializers.set(this, []);
+          },
         },
-      }, {isPrivate: true, isStatic: true}),
-      field({
-        initializer: () => [],
-        key: $$unsubscriptions,
-      }, {isPrivate: true}),
-      method({
-        key: $$submit,
-        value(e) {
-          e.preventDefault();
-          e.stopPropagation();
+        {isPrivate: true, isStatic: true},
+      ),
+      field(
+        {
+          initializer: () => [],
+          key: $$unsubscriptions,
+        },
+        {isPrivate: true},
+      ),
+      method(
+        {
+          key: $$submit,
+          value(e) {
+            e.preventDefault();
+            e.stopPropagation();
 
-          this[$formApi].submit();
+            this[$formApi].submit();
+          },
         },
-      }, {isBound: true, isPrivate: true}),
+        {isBound: true, isPrivate: true},
+      ),
     ],
     finisher(target) {
       formApiPropertyName.set(target, $formApi);

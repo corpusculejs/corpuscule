@@ -22,9 +22,7 @@ const testAttributeDecorator = () => {
     it('properly gets boolean attribute', () => {
       class Test extends HTMLElementMock {
         public static readonly observedAttributes: ReadonlyArray<string> = [];
-        public readonly attributes: Map<string, string> = new Map([
-          ['a1', ''],
-        ]);
+        public readonly attributes: Map<string, string> = new Map([['a1', '']]);
 
         @attribute('a1', Boolean)
         public attr1: boolean | null = null;
@@ -75,9 +73,7 @@ const testAttributeDecorator = () => {
       class Test extends HTMLElementMock {
         public static readonly observedAttributes: ReadonlyArray<string> = [];
 
-        public readonly attributes: Map<string, string> = new Map([
-          ['a2', ''],
-        ]);
+        public readonly attributes: Map<string, string> = new Map([['a2', '']]);
 
         @attribute('a1', Boolean)
         public attr1: boolean | null = null;
