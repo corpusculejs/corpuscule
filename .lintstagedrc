@@ -1,4 +1,4 @@
 {
-  "packages/**/*.ts": ["tslint -c tslint.json -p tsconfig.json -t verbose", "git add"],
-  "packages/**/*.js": ["eslint --fix", "git add"]
+  "packages/**/*.ts": ["prettier --write", "tslint -c tslint.json -p tsconfig.json -t verbose", "git add"],
+  "packages/**/*.js": ["prettier --write", "eslint --fix", "git add"]
 }

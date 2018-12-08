@@ -6,7 +6,8 @@ class CorpusculeElementMock {
     _key: PropertyKey,
     _oldValue: unknown,
     _newValue: unknown,
-  ): void { // tslint:disable-line:no-empty
+  ): void {
+    // tslint:disable-line:no-empty
   }
 }
 

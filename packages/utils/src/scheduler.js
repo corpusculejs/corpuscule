@@ -7,7 +7,8 @@ const next = () => {
   const pendingResolutions = [];
   let rejectionReason;
 
-  while (true) { // eslint-disable-line no-constant-condition
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
     if (tasks.length === 0) {
       break;
     }
@@ -38,12 +39,13 @@ const next = () => {
   firstRequest = true;
 };
 
-const schedule = async callback => new Promise((resolve, reject) => {
-  tasks.push([callback, resolve, reject]);
+const schedule = async callback =>
+  new Promise((resolve, reject) => {
+    tasks.push([callback, resolve, reject]);
 
-  if (firstRequest) {
-    requestAnimationFrame(next);
-  }
-});
+    if (firstRequest) {
+      requestAnimationFrame(next);
+    }
+  });
 
 export default schedule;

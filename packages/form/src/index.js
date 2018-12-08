@@ -4,15 +4,6 @@ export {fieldOption} from './field';
 export {formOption} from './form';
 export * from './tokens/lifecycle';
 
-const {
-  field,
-  form,
-  formApi,
-} = createFormContext();
+const {field, form, formApi} = createFormContext();
 
-export {
-  createFormContext,
-  field,
-  form,
-  formApi,
-};
+export {createFormContext, field, form, formApi};

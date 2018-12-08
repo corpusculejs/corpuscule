@@ -2,12 +2,7 @@
 import {AnyAction, Store} from 'redux';
 import {createMockedContextElements} from '../../../test/mocks/context';
 import {HTMLElementMock} from '../../../test/utils';
-import {
-  connect,
-  connected, dispatcher,
-  provider,
-  store,
-} from '../src';
+import {connect, connected, dispatcher, provider, store} from '../src';
 
 describe('@corpuscule/redux', () => {
   let reduxState: {test: number};
@@ -30,8 +25,7 @@ describe('@corpuscule/redux', () => {
       }
 
       @connect
-      class Connected extends HTMLElementMock {
-      }
+      class Connected extends HTMLElementMock {}
 
       createMockedContextElements(Provider, Connected);
 
@@ -45,8 +39,7 @@ describe('@corpuscule/redux', () => {
       }
 
       @connect
-      class Connected extends HTMLElementMock {
-      }
+      class Connected extends HTMLElementMock {}
 
       const nextStore = jasmine.createSpyObj('nextStore', ['subscribe']);
 
@@ -67,8 +60,7 @@ describe('@corpuscule/redux', () => {
       }
 
       @connect
-      class Connected extends HTMLElementMock {
-      }
+      class Connected extends HTMLElementMock {}
 
       const [, connectedElement] = createMockedContextElements(Provider, Connected);
 

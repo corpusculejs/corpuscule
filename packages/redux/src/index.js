@@ -5,26 +5,15 @@ import getSuperMethods from '@corpuscule/utils/lib/getSuperMethods';
 import {connectedRegistry} from './decorators';
 import {contextMap} from './utils';
 
-const {
-  consumer,
-  contextValue,
-  provider,
-  providingValue: store,
-} = createContext();
+const {consumer, contextValue, provider, providingValue: store} = createContext();
 
-export {
-  provider,
-  store,
-};
+export {provider, store};
 
-export {
-  connected,
-  dispatcher,
-} from './decorators';
+export {connected, dispatcher} from './decorators';
 
 const disconnectedCallbackKey = 'disconnectedCallback';
 
-export const connect = (classDescriptor) => {
+export const connect = classDescriptor => {
   assertKind('connect', 'class', classDescriptor.kind);
 
   const {elements, kind} = consumer(classDescriptor);
@@ -67,34 +56,40 @@ export const connect = (classDescriptor) => {
       }),
 
       // Private
-      method({
-        key: $$subscribe,
-        value() {
-          this[$$update](this[$$context]);
-
-          this[$$unsubscribe] = this[$$context].subscribe(() => {
+      method(
+        {
+          key: $$subscribe,
+          value() {
             this[$$update](this[$$context]);
-          });
+
+            this[$$unsubscribe] = this[$$context].subscribe(() => {
+              this[$$update](this[$$context]);
+            });
+          },
         },
-      }, {isPrivate: true}),
-      method({
-        key: $$update,
-        value({getState}) {
-          const registry = connectedRegistry.get(this.constructor);
+        {isPrivate: true},
+      ),
+      method(
+        {
+          key: $$update,
+          value({getState}) {
+            const registry = connectedRegistry.get(this.constructor);
 
-          if (!registry) {
-            return;
-          }
-
-          for (const [key, getter] of registry) {
-            const nextValue = getter(getState());
-
-            if (nextValue !== this[key]) {
-              this[key] = nextValue;
+            if (!registry) {
+              return;
             }
-          }
+
+            for (const [key, getter] of registry) {
+              const nextValue = getter(getState());
+
+              if (nextValue !== this[key]) {
+                this[key] = nextValue;
+              }
+            }
+          },
         },
-      }, {isPrivate: true}),
+        {isPrivate: true},
+      ),
     ],
     finisher(target) {
       contextMap.set(target, $$context);

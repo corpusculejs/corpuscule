@@ -6,7 +6,8 @@ class CorpusculeElementMock {
     _key: PropertyKey,
     _oldValue: unknown,
     _newValue: unknown,
-  ): void { // tslint:disable-line:no-empty
+  ): void {
+    // tslint:disable-line:no-empty
   }
 }
 
@@ -63,8 +64,7 @@ const testPropertyDecorator = () => {
         public prop: any = 'string';
       }
 
-      expect(() => new Test())
-        .toThrow(new TypeError('Value applied to "prop" has wrong type'));
+      expect(() => new Test()).toThrow(new TypeError('Value applied to "prop" has wrong type'));
     });
 
     it('throws an error if value does not fit guard', () => {

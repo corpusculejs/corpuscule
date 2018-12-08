@@ -2,7 +2,14 @@
 import {FormApi, FormState} from 'final-form';
 import {createForm, formSpyObject, unsubscribe} from '../../../test/mocks/finalForm';
 import {HTMLElementMock} from '../../../test/utils';
-import {compareInitialValues, createFormContext, Form, FormDecorator, formOption, formState} from '../src';
+import {
+  compareInitialValues,
+  createFormContext,
+  Form,
+  FormDecorator,
+  formOption,
+  formState,
+} from '../src';
 import {all} from '../src/utils';
 
 const testForm = () => {
@@ -126,7 +133,7 @@ const testForm = () => {
     it('throws an error if key is not one of the config options', () => {
       expect(() => {
         @form()
-          // @ts-ignore
+        // @ts-ignore
         class Test implements Form {
           public [formApi]: FormApi;
           public [formState]: FormState;
@@ -296,10 +303,10 @@ const testForm = () => {
       test.connectedCallback();
       expect(addEventListener).toHaveBeenCalledWith('submit', jasmine.any(Function));
 
-      const submitEvent = jasmine.createSpyObj(
-        'submitEvent',
-        ['preventDefault', 'stopPropagation'],
-      );
+      const submitEvent = jasmine.createSpyObj('submitEvent', [
+        'preventDefault',
+        'stopPropagation',
+      ]);
 
       const [, fn] = addEventListener.calls.first().args;
       fn(submitEvent);

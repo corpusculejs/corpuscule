@@ -4,12 +4,7 @@ import {accessor, field} from '@corpuscule/utils/lib/descriptors';
 const createComputingPair = () => {
   const registry = new WeakMap();
 
-  const computer = ({
-    descriptor: {get, set},
-    key,
-    kind,
-    placement,
-  }) => {
+  const computer = ({descriptor: {get, set}, key, kind, placement}) => {
     assertKind('computed', 'getter', kind, {correct: get && !set});
     assertPlacement('computed', 'prototype', placement);
 
@@ -18,13 +13,19 @@ const createComputingPair = () => {
 
     return accessor({
       extras: [
-        field({
-          key: storage,
-        }, {isPrivate: true}),
-        field({
-          initializer: () => false,
-          key: correct,
-        }, {isPrivate: true}),
+        field(
+          {
+            key: storage,
+          },
+          {isPrivate: true},
+        ),
+        field(
+          {
+            initializer: () => false,
+            key: correct,
+          },
+          {isPrivate: true},
+        ),
       ],
       finisher(target) {
         if (registry.has(target)) {
@@ -45,13 +46,7 @@ const createComputingPair = () => {
     });
   };
 
-  const observer = ({
-    descriptor: {get, set},
-    initializer,
-    key,
-    kind,
-    placement,
-  }) => {
+  const observer = ({descriptor: {get, set}, initializer, key, kind, placement}) => {
     const isMethod = kind === 'method';
 
     assertKind('observer', 'field or accessor', kind, {
@@ -62,25 +57,28 @@ const createComputingPair = () => {
       correct: placement === 'own' || placement === 'prototype',
     });
 
-    return accessor({
-      get,
-      initializer,
-      key,
-      set,
-    }, {
-      adjust({get: originalGet, set: originalSet}) {
-        return {
-          get: originalGet,
-          set(value) {
-            originalSet.call(this, value);
-
-            for (const correct of registry.get(this.constructor)) {
-              this[correct] = false;
-            }
-          },
-        };
+    return accessor(
+      {
+        get,
+        initializer,
+        key,
+        set,
       },
-    });
+      {
+        adjust({get: originalGet, set: originalSet}) {
+          return {
+            get: originalGet,
+            set(value) {
+              originalSet.call(this, value);
+
+              for (const correct of registry.get(this.constructor)) {
+                this[correct] = false;
+              }
+            },
+          };
+        },
+      },
+    );
   };
 
   return {computer, observer};

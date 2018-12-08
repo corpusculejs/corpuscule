@@ -10,10 +10,7 @@ module.exports = {
       'final-form$': resolve(__dirname, './mocks/finalForm'),
       'universal-router$': resolve(__dirname, './mocks/universalRouter'),
     },
-    extensions: [
-      '.js',
-      '.ts',
-    ],
+    extensions: ['.js', '.ts'],
   },
   module: {
     rules: [
@@ -56,9 +53,7 @@ module.exports = {
                 require('@babel/plugin-proposal-class-properties'),
                 require('@babel/plugin-syntax-dynamic-import'),
               ],
-              presets: [
-                require('@babel/preset-typescript'),
-              ],
+              presets: [require('@babel/preset-typescript')],
             },
           },
         ],

@@ -66,10 +66,7 @@ const testGetSuperMethod = () => {
         },
       ];
 
-      const [superMethod1, superMethod2] = getSuperMethods(
-        elements,
-        ['method1', 'method2'],
-      );
+      const [superMethod1, superMethod2] = getSuperMethods(elements, ['method1', 'method2']);
 
       superMethod1();
       expect(method1Spy).toHaveBeenCalled();

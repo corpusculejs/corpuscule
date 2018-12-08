@@ -1,0 +1,4 @@
+*.json
+*.yml
+packages/**/node_modules/**/*
+packages/**/lib/**/*

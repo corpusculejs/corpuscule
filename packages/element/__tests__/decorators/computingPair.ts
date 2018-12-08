@@ -1,10 +1,14 @@
 // tslint:disable:max-classes-per-file
 import {ComputingPair, createComputingPair} from '../../src';
 
-const repeatGetTenTimes = <C extends object, M extends keyof C, T extends C[M]>(instance: C, method: M): T => {
+const repeatGetTenTimes = <C extends object, M extends keyof C, T extends C[M]>(
+  instance: C,
+  method: M,
+): T => {
   let res: any;
 
-  for (let i = 0; i < 10; i++) { // tslint:disable-line:no-increment-decrement
+  // tslint:disable-next-line:no-increment-decrement
+  for (let i = 0; i < 10; i++) {
     res = instance[method];
   }
 
