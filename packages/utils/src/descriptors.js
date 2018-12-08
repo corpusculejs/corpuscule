@@ -1,7 +1,4 @@
-export const lifecycleKeys = [
-  'connectedCallback',
-  'disconnectedCallback',
-];
+export const lifecycleKeys = ['connectedCallback', 'disconnectedCallback'];
 
 const publicDescriptor = {
   configurable: true,
@@ -13,8 +10,8 @@ export const field = (
   {isPrivate = false, isReadonly = false, isStatic = false} = {},
 ) => ({
   descriptor: {
-    ...isPrivate ? {} : publicDescriptor,
-    ...isReadonly ? {} : {writable: true},
+    ...(isPrivate ? {} : publicDescriptor),
+    ...(isReadonly ? {} : {writable: true}),
   },
   extras,
   finisher,
@@ -29,14 +26,17 @@ export const method = (
   {isBound = false, isPrivate = false, isStatic = false} = {},
 ) => {
   if (isBound) {
-    return field({
-      extras,
-      finisher,
-      initializer() {
-        return value.bind(this);
+    return field(
+      {
+        extras,
+        finisher,
+        initializer() {
+          return value.bind(this);
+        },
+        key,
       },
-      key,
-    }, {isPrivate, isStatic});
+      {isPrivate, isStatic},
+    );
   }
 
   return {
@@ -51,12 +51,7 @@ export const method = (
 
 export const accessor = (
   {extras, finisher, initializer, key, get, set},
-  {
-    adjust = methods => methods,
-    isPrivate = false,
-    isStatic = false,
-    toArray = false,
-  } = {},
+  {adjust = methods => methods, isPrivate = false, isStatic = false, toArray = false} = {},
 ) => {
   let accessorMethods;
   let accessorField;
@@ -73,10 +68,13 @@ export const accessor = (
       },
     });
 
-    accessorField = field({
-      initializer,
-      key: storage,
-    }, {isPrivate: true});
+    accessorField = field(
+      {
+        initializer,
+        key: storage,
+      },
+      {isPrivate: true},
+    );
   } else {
     accessorMethods = adjust({get, set});
   }
@@ -91,16 +89,12 @@ export const accessor = (
   };
 
   if (accessorField) {
-    return toArray ? [
-      result,
-      accessorField,
-    ] : {
-      ...result,
-      extras: Array.isArray(extras) ? [
-        ...extras,
-        accessorField,
-      ] : [accessorField],
-    };
+    return toArray
+      ? [result, accessorField]
+      : {
+          ...result,
+          extras: Array.isArray(extras) ? [...extras, accessorField] : [accessorField],
+        };
   }
 
   return result;

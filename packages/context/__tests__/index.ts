@@ -7,12 +7,14 @@ export const createContextElements = <T extends HTMLElementMock, U extends HTMLE
   providerConstructor: Constructor<T>,
   consumerConstructor: Constructor<U>,
   consumersNumber: number = 1,
-) => { // tslint:disable-line:readonly-array
+) => {
+  // tslint:disable-line:readonly-array
   const consumers = new Array(consumersNumber);
   const provider = new providerConstructor();
   provider.connectedCallback();
 
-  for (let i = 0; i < consumersNumber; i++) { // tslint:disable-line:no-increment-decrement
+  // tslint:disable-next-line:no-increment-decrement
+  for (let i = 0; i < consumersNumber; i++) {
     consumers[i] = new consumerConstructor();
 
     consumers[i].addParent(provider);
@@ -25,12 +27,7 @@ export const createContextElements = <T extends HTMLElementMock, U extends HTMLE
 describe('@corpuscule/context', () => {
   describe('createContext', () => {
     it('should create context', () => {
-      const {
-        consumer,
-        contextValue,
-        provider,
-        providingValue,
-      } = createContext();
+      const {consumer, contextValue, provider, providingValue} = createContext();
 
       @provider
       class Provider extends HTMLElementMock {
@@ -47,12 +44,7 @@ describe('@corpuscule/context', () => {
     });
 
     it('should provide context for all consumers', () => {
-      const {
-        consumer,
-        contextValue,
-        provider,
-        providingValue,
-      } = createContext();
+      const {consumer, contextValue, provider, providingValue} = createContext();
 
       @provider
       class Provider extends HTMLElementMock {
@@ -71,12 +63,7 @@ describe('@corpuscule/context', () => {
     });
 
     it('should allow to use default value for context', () => {
-      const {
-        consumer,
-        contextValue,
-        provider,
-        providingValue,
-      } = createContext(2);
+      const {consumer, contextValue, provider, providingValue} = createContext(2);
 
       @provider
       class Provider extends HTMLElementMock {
@@ -95,12 +82,7 @@ describe('@corpuscule/context', () => {
     });
 
     it('should allow to set value dynamically', () => {
-      const {
-        consumer,
-        contextValue,
-        provider,
-        providingValue,
-      } = createContext(2);
+      const {consumer, contextValue, provider, providingValue} = createContext(2);
 
       @provider
       class Provider extends HTMLElementMock {
@@ -119,15 +101,10 @@ describe('@corpuscule/context', () => {
       expect(consumerElement[contextValue]).toBe(10);
     });
 
-    it('should call connectedCallback() and disconnectedCallback() of user\'s class', () => {
+    it("should call connectedCallback() and disconnectedCallback() of user's class", () => {
       const connectedSpy = jasmine.createSpy('onConnect');
       const disconnectedSpy = jasmine.createSpy('onDisconnect');
-      const {
-        consumer,
-        contextValue,
-        provider,
-        providingValue,
-      } = createContext();
+      const {consumer, contextValue, provider, providingValue} = createContext();
 
       @provider
       class Provider extends HTMLElementMock {
@@ -165,12 +142,7 @@ describe('@corpuscule/context', () => {
     });
 
     it('should stop providing value to disconnected consumers', () => {
-      const {
-        consumer,
-        contextValue,
-        provider,
-        providingValue,
-      } = createContext();
+      const {consumer, contextValue, provider, providingValue} = createContext();
 
       @provider
       class Provider extends HTMLElementMock {
@@ -192,10 +164,7 @@ describe('@corpuscule/context', () => {
     });
 
     it('should throw an error if no provider exists for context', () => {
-      const {
-        consumer,
-        contextValue,
-      } = createContext();
+      const {consumer, contextValue} = createContext();
 
       @consumer
       class Consumer extends HTMLElementMock {
@@ -210,16 +179,10 @@ describe('@corpuscule/context', () => {
     });
 
     it('allows to not declare [providingValue] in the class constructor', () => {
-      const {
-        consumer,
-        contextValue,
-        provider,
-        providingValue,
-      } = createContext();
+      const {consumer, contextValue, provider, providingValue} = createContext();
 
       @provider
-      class Provider extends HTMLElementMock {
-      }
+      class Provider extends HTMLElementMock {}
 
       @consumer
       class Consumer extends HTMLElementMock {

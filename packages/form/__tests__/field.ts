@@ -13,7 +13,7 @@ import {
   fieldOption,
   FormDecorator,
   input,
-  meta
+  meta,
 } from '../src';
 import {all} from '../src/utils';
 
@@ -51,11 +51,7 @@ const testField = () => {
       formSpyObject.registerField.calls.reset();
       scheduler = jasmine.createSpy('scheduler');
       fieldValue = {};
-      state = jasmine.createSpyObj('formState', [
-        'blur',
-        'change',
-        'focus',
-      ]);
+      state = jasmine.createSpyObj('formState', ['blur', 'change', 'focus']);
 
       metaObject = {
         active: false,
@@ -79,8 +75,7 @@ const testField = () => {
 
     it('creates field that receives form', () => {
       @form()
-      class Form extends HTMLElementMock {
-      }
+      class Form extends HTMLElementMock {}
 
       @field({scheduler})
       class FormField extends HTMLElementMock implements Field<string> {
@@ -98,8 +93,7 @@ const testField = () => {
 
     it('subscribes to form with defined options', () => {
       @form()
-      class Form extends HTMLElementMock {
-      }
+      class Form extends HTMLElementMock {}
 
       @field({scheduler})
       class FormField extends HTMLElementMock implements Field<string> {
@@ -129,24 +123,18 @@ const testField = () => {
       const [, fieldElement] = createMockedContextElements(Form, FormField);
       const [listener, validate] = subscribeField(fieldElement);
 
-      expect(formSpyObject.registerField).toHaveBeenCalledWith(
-        'test',
-        listener,
-        all,
-        {
-          getValidator: jasmine.any(Function),
-          isEqual: fieldElement.isEqual,
-          validateFields: fieldElement.validateFields,
-        },
-      );
+      expect(formSpyObject.registerField).toHaveBeenCalledWith('test', listener, all, {
+        getValidator: jasmine.any(Function),
+        isEqual: fieldElement.isEqual,
+        validateFields: fieldElement.validateFields,
+      });
 
       expect(validate).toBe(fieldElement.validate);
     });
 
     it('creates new input and meta objects on each form update', () => {
       @form()
-      class Form extends HTMLElementMock {
-      }
+      class Form extends HTMLElementMock {}
 
       @field({scheduler})
       class FormField extends HTMLElementMock implements Field<object> {
@@ -173,8 +161,7 @@ const testField = () => {
 
     it('formats value for [input] if format option is set and formatOnBlur is disabled', () => {
       @form()
-      class Form extends HTMLElementMock {
-      }
+      class Form extends HTMLElementMock {}
 
       @field({scheduler})
       class FormField extends HTMLElementMock implements Field<object> {
@@ -203,8 +190,7 @@ const testField = () => {
 
     it('avoids unnecessary scheduling if update called many times', () => {
       @form()
-      class Form extends HTMLElementMock {
-      }
+      class Form extends HTMLElementMock {}
 
       @field({scheduler})
       class FormField extends HTMLElementMock implements Field<object> {
@@ -226,8 +212,7 @@ const testField = () => {
 
     it('avoids unnecessary scheduling if subscribe called many times', () => {
       @form()
-      class Form extends HTMLElementMock {
-      }
+      class Form extends HTMLElementMock {}
 
       @field({scheduler})
       class FormField extends HTMLElementMock implements Field<object> {
@@ -245,8 +230,7 @@ const testField = () => {
 
     it('unsubscribes on disconnectedCallback', () => {
       @form()
-      class Form extends HTMLElementMock {
-      }
+      class Form extends HTMLElementMock {}
 
       @field({scheduler})
       class FormField extends HTMLElementMock implements Field<object> {
@@ -265,8 +249,7 @@ const testField = () => {
 
     it('unsubscribes on new subscription', () => {
       @form()
-      class Form extends HTMLElementMock {
-      }
+      class Form extends HTMLElementMock {}
 
       @field({scheduler})
       class FormField extends HTMLElementMock implements Field<object> {
@@ -286,8 +269,7 @@ const testField = () => {
       const testResubscription = <T>(type: FieldConfigKey, oldValue: T, newValue: T) => {
         it(`resubscribes on option ${type} value change`, () => {
           @form()
-          class Form extends HTMLElementMock {
-          }
+          class Form extends HTMLElementMock {}
 
           @field({scheduler})
           class FormField extends HTMLElementMock implements Field<object> {
@@ -311,8 +293,7 @@ const testField = () => {
 
         it(`does not resubscribe on field ${type} change if option values are equal`, () => {
           @form()
-          class Form extends HTMLElementMock {
-          }
+          class Form extends HTMLElementMock {}
 
           @field({scheduler})
           class FormField extends HTMLElementMock implements Field<object> {
@@ -340,8 +321,7 @@ const testField = () => {
 
       it('updates field if option value is changed', () => {
         @form()
-        class Form extends HTMLElementMock {
-        }
+        class Form extends HTMLElementMock {}
 
         @field({scheduler})
         class FormField extends HTMLElementMock implements Field<object> {
@@ -365,8 +345,7 @@ const testField = () => {
 
       it('does not update field if it option values are equal', () => {
         @form()
-        class Form extends HTMLElementMock {
-        }
+        class Form extends HTMLElementMock {}
 
         @field({scheduler})
         class FormField extends HTMLElementMock implements Field<object> {
@@ -391,7 +370,7 @@ const testField = () => {
       it('throws an error if option name is not one of Field config keys', () => {
         expect(() => {
           @field({scheduler})
-            // @ts-ignore
+          // @ts-ignore
           class FormField extends HTMLElementMock implements Field<object> {
             public readonly [formApi]: FormApi;
             public readonly [input]: FieldInputProps<object>;
@@ -407,8 +386,7 @@ const testField = () => {
     describe('[input]', () => {
       it('calls blur() method of field state if [input].onBlur() is called', () => {
         @form()
-        class Form extends HTMLElementMock {
-        }
+        class Form extends HTMLElementMock {}
 
         @field({scheduler})
         class FormField extends HTMLElementMock implements Field<object> {
@@ -428,8 +406,7 @@ const testField = () => {
 
       it('formats and sets value on blur if appropriate options are set', () => {
         @form()
-        class Form extends HTMLElementMock {
-        }
+        class Form extends HTMLElementMock {}
 
         @field({scheduler})
         class FormField extends HTMLElementMock implements Field<object> {
@@ -461,8 +438,7 @@ const testField = () => {
 
       it('calls change() method of field state [input].onChange() is called', () => {
         @form()
-        class Form extends HTMLElementMock {
-        }
+        class Form extends HTMLElementMock {}
 
         @field({scheduler})
         class FormField extends HTMLElementMock implements Field<object> {
@@ -484,8 +460,7 @@ const testField = () => {
 
       it('parses value if parse option is defined', () => {
         @form()
-        class Form extends HTMLElementMock {
-        }
+        class Form extends HTMLElementMock {}
 
         @field({scheduler})
         class FormField extends HTMLElementMock implements Field<string> {
@@ -515,8 +490,7 @@ const testField = () => {
 
       it('calls focus() method of field stat if [input].onFocus() method is called', () => {
         @form()
-        class Form extends HTMLElementMock {
-        }
+        class Form extends HTMLElementMock {}
 
         @field({scheduler})
         class FormField extends HTMLElementMock implements Field<string> {

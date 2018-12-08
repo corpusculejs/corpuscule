@@ -5,7 +5,10 @@ import UniversalRouter, {Options, Route} from 'universal-router';
 export const layout: unique symbol;
 export const resolve: unique symbol;
 
-export const createRouter: (routes: Route | ReadonlyArray<Route>, options?: Options) => UniversalRouter;
+export const createRouter: (
+  routes: Route | ReadonlyArray<Route>,
+  options?: Options,
+) => UniversalRouter;
 
 export class Link extends HTMLAnchorElement implements CustomElement {
   public static readonly is: 'corpuscule-link';

@@ -9,9 +9,7 @@ const fromAttribute = (instance, name, guard) => {
     return value !== null;
   }
 
-  return value !== null
-    ? guard === String ? value : guard(value)
-    : null;
+  return value !== null ? (guard === String ? value : guard(value)) : null;
 };
 
 const toAttribute = (instance, name, value) => {
@@ -22,11 +20,7 @@ const toAttribute = (instance, name, value) => {
   }
 };
 
-const attribute = (name, guard) => ({
-  key,
-  kind,
-  placement,
-}) => {
+const attribute = (name, guard) => ({key, kind, placement}) => {
   assertElementDecoratorsKind('attribute', kind);
   assertPlacement('attribute', 'own', placement);
 
@@ -35,11 +29,9 @@ const attribute = (name, guard) => ({
   }
 
   const guardType = typeof guard(null);
-  const check = (value) => {
+  const check = value => {
     if (value != null && typeof value !== guardType) {
-      throw new TypeError(
-        `Value applied to "${key}" is not ${guard.name} or undefined`,
-      );
+      throw new TypeError(`Value applied to "${key}" is not ${guard.name} or undefined`);
     }
   };
 

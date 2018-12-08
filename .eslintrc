@@ -1,5 +1,5 @@
 {
-  "extends": "eslint-config-poetez",
+  "extends": ["eslint-config-poetez", "plugin:prettier/recommended"],
   "env": {
     "browser": true,
     "node": true,

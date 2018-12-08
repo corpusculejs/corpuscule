@@ -47,7 +47,10 @@ export type FieldConfigKey =
   | 'validateFields'
   | 'value';
 
-export type FieldMetaProps = Omit<FieldState, 'blur' | 'change' | 'focus' | 'length' | 'name' | 'value'>;
+export type FieldMetaProps = Omit<
+  FieldState,
+  'blur' | 'change' | 'focus' | 'length' | 'name' | 'value'
+>;
 
 export interface FieldDecoratorParams {
   readonly scheduler?: (callback: () => void) => Promise<void>;

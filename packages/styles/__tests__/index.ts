@@ -29,8 +29,9 @@ describe('@corpuscule/styles', () => {
 
     render(s, container);
 
-    expect(container.innerHTML.replace(commentPattern, ''))
-      .toBe('<link rel="stylesheet" type="text/css" href="/styles.css">');
+    expect(container.innerHTML.replace(commentPattern, '')).toBe(
+      '<link rel="stylesheet" type="text/css" href="/styles.css">',
+    );
   });
 
   it('should create a <style/> tag if styles are received', () => {
@@ -45,8 +46,7 @@ describe('@corpuscule/styles', () => {
 
     render(s, container);
 
-    expect(container.innerHTML.replace(commentPattern, ''))
-      .toBe(`<style>${rawStyles}</style>`);
+    expect(container.innerHTML.replace(commentPattern, '')).toBe(`<style>${rawStyles}</style>`);
   });
 
   it('should allow to insert different style types', () => {
@@ -61,14 +61,14 @@ describe('@corpuscule/styles', () => {
 
     render(s, container);
 
-    expect(container.innerHTML.replace(commentPattern, ''))
-      .toBe(`<link rel="stylesheet" type="text/css" href="/styles.css"><style>${rawStyles}</style>`);
+    expect(container.innerHTML.replace(commentPattern, '')).toBe(
+      `<link rel="stylesheet" type="text/css" href="/styles.css"><style>${rawStyles}</style>`,
+    );
   });
 
   describe('link()', () => {
     it('should build url', () => {
-      expect(link('./style.css', 'http://localhost/'))
-        .toBe('http://localhost/style.css');
+      expect(link('./style.css', 'http://localhost/')).toBe('http://localhost/style.css');
     });
   });
 });

@@ -5,7 +5,7 @@ const webpack = require('./webpack.config');
 
 const isCI = !!process.env.CI;
 
-module.exports = (config) => {
+module.exports = config => {
   config.set({
     // Base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '..',
@@ -22,13 +22,10 @@ module.exports = (config) => {
     frameworks: ['jasmine'],
 
     // List of files / patterns to load in the browser
-    files: [
-      'test/test.js',
-    ],
+    files: ['test/test.js'],
 
     // List of files / patterns to exclude
-    exclude: [
-    ],
+    exclude: [],
 
     // Preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor

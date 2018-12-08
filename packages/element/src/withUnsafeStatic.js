@@ -103,9 +103,8 @@ export const withUnsafeStatic = processor => (strings, ...values) => {
 
   // If there is static values remove all statics from it. Otherwise,
   // just use original values array.
-  const finalValues = finalStrings !== strings
-    ? values.filter(v => !(v instanceof UnsafeStatic))
-    : values;
+  const finalValues =
+    finalStrings !== strings ? values.filter(v => !(v instanceof UnsafeStatic)) : values;
 
   // If user try to replace static value with dynamic one we cannot filter
   // it. It produces different amount of filtered values we have so we can
@@ -113,8 +112,8 @@ export const withUnsafeStatic = processor => (strings, ...values) => {
   // update.
   if (finalValues.length >= finalStrings.length) {
     throw new Error(
-      'Amount of values provided does not fit amount of available parts. '
-      + 'It could happen if you try to change your UnsafeStatic value to a dynamic one.',
+      'Amount of values provided does not fit amount of available parts. ' +
+        'It could happen if you try to change your UnsafeStatic value to a dynamic one.',
     );
   }
 

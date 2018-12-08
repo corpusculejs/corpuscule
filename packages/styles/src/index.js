@@ -1,3 +1,4 @@
+/* eslint-disable capitalized-comments */
 import {assertKind} from '@corpuscule/utils/lib/asserts';
 import {field} from '@corpuscule/utils/lib/descriptors';
 import {html} from 'lit-html';
@@ -14,18 +15,24 @@ const styles = (...pathsOrStyles) => ({elements, kind}) => {
   return {
     elements: [
       ...elements.filter(({key}) => key !== style),
-      field({
-        initializer() {
-          return html`${
-            pathsOrStyles.map(pathOrStyle => ( // eslint-disable-line no-extra-parens
-              stylePattern.test(pathOrStyle)
-                ? html`<style>${pathOrStyle}</style>`
-                : html`<link rel="stylesheet" type="text/css" href="${pathOrStyle}"/>`
-            ))
-          }`;
+      field(
+        {
+          initializer() {
+            return html`${
+                pathsOrStyles.map(
+                  (
+                  pathOrStyle, // eslint-disable-line no-extra-parens
+                ) =>
+                  stylePattern.test(pathOrStyle)
+                    ? html`<style>${pathOrStyle}</style>` // prettier-ignore
+                    : html`<link rel="stylesheet" type="text/css" href="${pathOrStyle}" />`, // prettier-ignore
+                )
+              }`; // prettier-ignore
+          },
+          key: style,
         },
-        key: style,
-      }, {isStatic: true}),
+        {isStatic: true},
+      ),
     ],
     kind,
   };
