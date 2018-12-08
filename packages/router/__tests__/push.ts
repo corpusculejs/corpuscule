@@ -28,7 +28,7 @@ const pushTest = () => {
       expect(history.pushState).toHaveBeenCalledWith('/test', 'Test', '/test');
     });
 
-    it("should dispatch 'popstate' event", (done) => {
+    it("should dispatch 'popstate' event", done => {
       const listener = (e: PopStateEvent) => {
         expect(e.state).toEqual('/test');
 

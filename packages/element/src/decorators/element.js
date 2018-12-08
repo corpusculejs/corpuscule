@@ -28,11 +28,7 @@ const methods = [
   $updatedCallback,
 ];
 
-const filteringNames = [
-  'is',
-  isCorpusculeElementKey,
-  ...methods,
-];
+const filteringNames = ['is', isCorpusculeElementKey, ...methods];
 
 const connectedMap = new WeakMap();
 const rendererMap = new WeakMap();
@@ -40,7 +36,7 @@ const rootMap = new WeakMap();
 const schedulerMap = new WeakMap();
 const validMap = new WeakMap();
 
-const invalidate = (self) => {
+const invalidate = self => {
   if (!validMap.get(self)) {
     return;
   }
@@ -51,7 +47,9 @@ const invalidate = (self) => {
     const rendered = self[$render]();
 
     if (rendered) {
-      rendererMap.get(self.constructor)(rendered, rootMap.get(self), {eventContext: self});
+      rendererMap.get(self.constructor)(rendered, rootMap.get(self), {
+        eventContext: self,
+      });
     }
 
     const shouldRunUpdatedCallback = connectedMap.get(self);
@@ -65,10 +63,10 @@ const invalidate = (self) => {
   });
 };
 
-const element = (
-  name,
-  {renderer = defaultRenderer, scheduler = defaultScheduler} = {},
-) => ({kind, elements}) => {
+const element = (name, {renderer = defaultRenderer, scheduler = defaultScheduler} = {}) => ({
+  kind,
+  elements,
+}) => {
   assertKind('element', 'class', kind);
 
   if (!elements.find(({key}) => key === $render)) {
@@ -94,18 +92,27 @@ const element = (
       ...elements.filter(({key}) => !filteringNames.includes(key)),
 
       // Static
-      field({
-        initializer: () => name,
-        key: 'is',
-      }, {isReadonly: true, isStatic: true}),
-      field({
-        initializer: () => true,
-        key: isCorpusculeElementKey,
-      }, {isReadonly: true, isStatic: true}),
-      field({
-        initializer: () => [],
-        key: 'observedAttributes',
-      }, {isReadonly: true, isStatic: true}),
+      field(
+        {
+          initializer: () => name,
+          key: 'is',
+        },
+        {isReadonly: true, isStatic: true},
+      ),
+      field(
+        {
+          initializer: () => true,
+          key: isCorpusculeElementKey,
+        },
+        {isReadonly: true, isStatic: true},
+      ),
+      field(
+        {
+          initializer: () => [],
+          key: 'observedAttributes',
+        },
+        {isReadonly: true, isStatic: true},
+      ),
 
       // Public
       method({

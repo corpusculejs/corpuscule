@@ -16,7 +16,7 @@ const testAsserts = () => {
         }).toThrow(new TypeError('@foo can be applied only to getter, not to method'));
       });
 
-      it('doesn\'t throw an error when expected and received kinds are equal', () => {
+      it("doesn't throw an error when expected and received kinds are equal", () => {
         expect(() => {
           assertKind('foo', 'field', 'field');
         }).not.toThrow();
@@ -46,11 +46,17 @@ const testAsserts = () => {
       it('throws an error when "correct" is specified and false', () => {
         expect(() => {
           // E.g. placement can be own and static but received placement is prototype
-          assertPlacement('foo', 'own or static', 'prototype', {correct: false});
-        }).toThrow(new TypeError('@foo can be applied only to own or static class element, not to prototype'));
+          assertPlacement('foo', 'own or static', 'prototype', {
+            correct: false,
+          });
+        }).toThrow(
+          new TypeError(
+            '@foo can be applied only to own or static class element, not to prototype',
+          ),
+        );
       });
 
-      it('doesn\'t throw an error when expected and received kinds are equal', () => {
+      it("doesn't throw an error when expected and received kinds are equal", () => {
         expect(() => {
           assertPlacement('foo', 'own', 'own');
         }).not.toThrow();

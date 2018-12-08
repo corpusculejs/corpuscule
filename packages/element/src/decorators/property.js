@@ -3,18 +3,13 @@ import {propertyChangedCallback as $propertyChangedCallback} from '../tokens/lif
 import {accessor, field} from '@corpuscule/utils/lib/descriptors';
 import {assertPlacement} from '@corpuscule/utils/lib/asserts';
 
-const property = (guard = null) => ({
-  initializer,
-  key,
-  kind,
-  placement,
-}) => {
+const property = (guard = null) => ({initializer, key, kind, placement}) => {
   assertElementDecoratorsKind('property', kind);
   assertPlacement('property', 'own', placement);
 
   const storage = Symbol();
 
-  const check = (value) => {
+  const check = value => {
     if (guard && !guard(value)) {
       throw new TypeError(`Value applied to "${key}" has wrong type`);
     }
@@ -22,15 +17,18 @@ const property = (guard = null) => ({
 
   return accessor({
     extras: [
-      field({
-        initializer() {
-          const value = initializer ? initializer.call(this) : undefined;
-          check(value);
+      field(
+        {
+          initializer() {
+            const value = initializer ? initializer.call(this) : undefined;
+            check(value);
 
-          return value;
+            return value;
+          },
+          key: storage,
         },
-        key: storage,
-      }, {isPrivate: true}),
+        {isPrivate: true},
+      ),
     ],
     get() {
       return this[storage];

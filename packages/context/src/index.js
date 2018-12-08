@@ -1,10 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import {assertKind} from '@corpuscule/utils/lib/asserts';
-import {
-  accessor,
-  field,
-  method,
-} from '@corpuscule/utils/lib/descriptors';
+import {accessor, field, method} from '@corpuscule/utils/lib/descriptors';
 import getSuperMethods from '@corpuscule/utils/lib/getSuperMethods';
 
 const randomString = () => {
@@ -19,7 +15,7 @@ const disconnectedCallbackKey = 'disconnectedCallback';
 
 const methods = [connectedCallbackKey, disconnectedCallbackKey];
 
-const createContext = (defaultValue) => {
+const createContext = defaultValue => {
   const eventName = randomString();
 
   const providingValue = Symbol();
@@ -33,14 +29,10 @@ const createContext = (defaultValue) => {
     const $$unsubscribe = Symbol();
     const $$value = Symbol();
 
-    const {
-      initializer: providingValueInitializer = null,
-    } = elements.find(({key}) => key === providingValue) || {};
+    const {initializer: providingValueInitializer = null} =
+      elements.find(({key}) => key === providingValue) || {};
 
-    const [
-      superConnectedCallback,
-      superDisconnectedCallback,
-    ] = getSuperMethods(elements, methods);
+    const [superConnectedCallback, superDisconnectedCallback] = getSuperMethods(elements, methods);
 
     return {
       elements: [
@@ -78,32 +70,44 @@ const createContext = (defaultValue) => {
         }),
 
         // Private
-        field({
-          initializer: () => [],
-          key: $$consumers,
-        }, {isPrivate: true}),
-        field({
-          initializer: providingValueInitializer || (() => defaultValue),
-          key: $$value,
-        }, {isPrivate: true}),
-        method({
-          key: $$unsubscribe,
-          value(consume) {
-            this[$$consumers] = this[$$consumers].filter(p => p !== consume);
+        field(
+          {
+            initializer: () => [],
+            key: $$consumers,
           },
-        }, {isBound: true, isPrivate: true}),
-        method({
-          key: $$subscribe,
-          value(event) {
-            const {consume} = event.detail;
-
-            this[$$consumers].push(consume);
-            consume(this[$$value]);
-
-            event.detail.unsubscribe = this[$$unsubscribe];
-            event.stopPropagation();
+          {isPrivate: true},
+        ),
+        field(
+          {
+            initializer: providingValueInitializer || (() => defaultValue),
+            key: $$value,
           },
-        }, {isBound: true, isPrivate: true}),
+          {isPrivate: true},
+        ),
+        method(
+          {
+            key: $$unsubscribe,
+            value(consume) {
+              this[$$consumers] = this[$$consumers].filter(p => p !== consume);
+            },
+          },
+          {isBound: true, isPrivate: true},
+        ),
+        method(
+          {
+            key: $$subscribe,
+            value(event) {
+              const {consume} = event.detail;
+
+              this[$$consumers].push(consume);
+              consume(this[$$value]);
+
+              event.detail.unsubscribe = this[$$unsubscribe];
+              event.stopPropagation();
+            },
+          },
+          {isBound: true, isPrivate: true},
+        ),
       ],
       kind,
     };
@@ -115,10 +119,7 @@ const createContext = (defaultValue) => {
     const $$consume = Symbol();
     const $$unsubscribe = Symbol();
 
-    const [
-      superConnectedCallback,
-      superDisconnectedCallback,
-    ] = getSuperMethods(elements, methods);
+    const [superConnectedCallback, superDisconnectedCallback] = getSuperMethods(elements, methods);
 
     return {
       elements: [
@@ -158,12 +159,15 @@ const createContext = (defaultValue) => {
         }),
 
         // Private
-        method({
-          key: $$consume,
-          value(v) {
-            this[contextValue] = v;
+        method(
+          {
+            key: $$consume,
+            value(v) {
+              this[contextValue] = v;
+            },
           },
-        }, {isBound: true, isPrivate: true}),
+          {isBound: true, isPrivate: true},
+        ),
       ],
       kind,
     };

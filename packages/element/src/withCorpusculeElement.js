@@ -2,7 +2,7 @@ import {unsafeStatic, withUnsafeStatic} from './withUnsafeStatic';
 
 const cache = new WeakMap();
 
-const withCorpusculeElement = (processor) => {
+const withCorpusculeElement = processor => {
   const processorWithUnsafeStatic = withUnsafeStatic(processor);
 
   return (strings, ...values) => {
