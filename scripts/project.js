@@ -10,6 +10,8 @@ const packages = {
     'compose',
     'descriptors',
     'getSuperMethods',
+    'shallowEqual',
+    'scheduler',
   ],
 };
 

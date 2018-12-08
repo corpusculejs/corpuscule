@@ -1,0 +1,32 @@
+{
+  "name": "@corpuscule/form",
+  "version": "0.1.0",
+  "description": "🏁 High performance subscription-based form state management for Corpuscule",
+  "main": "lib/index.js",
+  "module": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "author": "Vlad Rindevich <rindevich.vs@gmail.com> (https://github.com/Lodin)",
+  "bugs": {
+    "url": "https://github.com/corpusculejs/corpuscule/issues"
+  },
+  "homepage": "https://github.com/corpusculejs/corpuscule#readme",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/corpusculejs/corpuscule.git"
+  },
+  "keywords": [
+    "final-form",
+    "form",
+    "corpuscule",
+    "subscription",
+    "validation"
+  ],
+  "dependencies": {
+    "@corpuscule/context": "^0.4.0",
+    "@corpuscule/utils": "^0.3.0"
+  },
+  "peerDependencies": {
+    "final-form": "^4.10.0"
+  }
+}

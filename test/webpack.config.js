@@ -7,7 +7,8 @@ module.exports = {
   resolve: {
     alias: {
       '@corpuscule/context': resolve(__dirname, './mocks/context'),
-      'universal-router$': resolve(__dirname, './mocks/universal-router'),
+      'final-form$': resolve(__dirname, './mocks/finalForm'),
+      'universal-router$': resolve(__dirname, './mocks/universalRouter'),
     },
     extensions: [
       '.js',

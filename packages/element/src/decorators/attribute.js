@@ -45,11 +45,7 @@ const attribute = (name, guard) => ({
 
   return accessor({
     finisher(target) {
-      if (Array.isArray(target.observedAttributes)) {
-        target.observedAttributes.push(name);
-      } else {
-        target.observedAttributes = [name];
-      }
+      target.observedAttributes.push(name);
     },
     get() {
       return fromAttribute(this, name, guard);

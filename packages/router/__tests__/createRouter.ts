@@ -1,5 +1,5 @@
 import UniversalRouter from 'universal-router';
-import {universalRouterConstructorSpy} from '../../../test/mocks/universal-router';
+import {universalRouterConstructorSpy} from '../../../test/mocks/universalRouter';
 import {createRouter} from '../src';
 
 const createRouterTest = () => {
