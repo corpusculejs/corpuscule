@@ -1,7 +1,7 @@
 {
   "name": "@corpuscule/styles",
   "version": "0.4.1",
-  "description": "Styles mixin for Corpuscule",
+  "description": "Styling utils for Corpuscule",
   "main": "lib/index.js",
   "module": "lib/index.js",
   "types": "lib/index.d.ts",

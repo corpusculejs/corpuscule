@@ -1,7 +1,7 @@
 {
   "name": "@corpuscule/element",
   "version": "0.5.0",
-  "description": "Custom element base class for Corpuscule",
+  "description": "Custom Element rendering system for Corpuscule",
   "main": "lib/index.js",
   "module": "lib/index.js",
   "types": "lib/index.d.ts",
