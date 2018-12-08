@@ -3,7 +3,18 @@ import {FieldState, FieldValidator, FormApi} from 'final-form';
 import {createMockedContextElements} from '../../../test/mocks/context';
 import {formSpyObject, unsubscribe} from '../../../test/mocks/finalForm';
 import {HTMLElementMock} from '../../../test/utils';
-import {Field, field, FieldConfigKey, FieldInputProps, FieldMetaProps, fieldOption, form, formApi, input, meta} from '../src';
+import {
+  createFormContext,
+  Field,
+  FieldConfigKey,
+  FieldDecorator,
+  FieldInputProps,
+  FieldMetaProps,
+  fieldOption,
+  FormDecorator,
+  input,
+  meta
+} from '../src';
 import {all} from '../src/utils';
 
 const testField = () => {
@@ -12,6 +23,10 @@ const testField = () => {
     let state: jasmine.SpyObj<FieldState>;
     let fieldValue: object;
     let metaObject: FieldMetaProps;
+
+    let form: FormDecorator;
+    let field: FieldDecorator;
+    let formApi: 'formApi';
 
     const subscribeField = <T>(fieldElement: T): [(state: FieldState) => void, FieldValidator] => {
       const [subscribe] = scheduler.calls.mostRecent().args;
@@ -30,6 +45,8 @@ const testField = () => {
     };
 
     beforeEach(() => {
+      ({field, form, formApi} = createFormContext());
+
       unsubscribe.calls.reset();
       formSpyObject.registerField.calls.reset();
       scheduler = jasmine.createSpy('scheduler');
@@ -374,7 +391,7 @@ const testField = () => {
       it('throws an error if option name is not one of Field config keys', () => {
         expect(() => {
           @field({scheduler})
-          // @ts-ignore
+            // @ts-ignore
           class FormField extends HTMLElementMock implements Field<object> {
             public readonly [formApi]: FormApi;
             public readonly [input]: FieldInputProps<object>;
