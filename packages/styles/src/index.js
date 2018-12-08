@@ -16,7 +16,7 @@ const styles = (...pathsOrStyles) => ({elements, kind}) => {
     .map(pathOrStyle =>
       stylePattern.test(pathOrStyle)
         ? `<style>${pathOrStyle}</style>`
-        : `<link rel="stylesheet" type="text/css" href="${pathOrStyle}" />`,
+        : `<link rel="stylesheet" type="text/css" href="${pathOrStyle}">`,
     )
     .join('');
 
@@ -25,9 +25,7 @@ const styles = (...pathsOrStyles) => ({elements, kind}) => {
       ...elements.filter(({key}) => key !== style),
       field(
         {
-          initializer() {
-            return template.content.cloneNode(true);
-          },
+          initializer: () => template.content.cloneNode(true),
           key: style,
         },
         {isStatic: true},
