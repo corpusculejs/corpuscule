@@ -1,7 +1,7 @@
 {
   "name": "@corpuscule/redux",
   "version": "0.5.0",
-  "description": "Redux mixin for Corpuscule",
+  "description": "Redux connector for Corpuscule",
   "main": "lib/index.js",
   "module": "lib/index.js",
   "types": "lib/index.d.ts",

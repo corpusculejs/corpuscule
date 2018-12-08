@@ -1,7 +1,7 @@
 {
   "name": "@corpuscule/utils",
   "version": "0.3.0",
-  "description": "Utils for Corpuscule",
+  "description": "Common utils for Corpuscule",
   "author": "Vlad Rindevich <rindevich.vs@gmail.com> (https://github.com/Lodin)",
   "bugs": {
     "url": "https://github.com/corpusculejs/corpuscule/issues"
