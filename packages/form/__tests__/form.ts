@@ -2,12 +2,17 @@
 import {FormApi, FormState} from 'final-form';
 import {createForm, formSpyObject, unsubscribe} from '../../../test/mocks/finalForm';
 import {HTMLElementMock} from '../../../test/utils';
-import {compareInitialValues, Form, form, formApi, formOption, formState} from '../src';
+import {compareInitialValues, createFormContext, Form, FormDecorator, formOption, formState} from '../src';
 import {all} from '../src/utils';
 
 const testForm = () => {
   describe('@form', () => {
+    let form: FormDecorator;
+    let formApi: 'formApi';
+
     beforeEach(() => {
+      ({form, formApi} = createFormContext());
+
       createForm.calls.reset();
       unsubscribe.calls.reset();
 

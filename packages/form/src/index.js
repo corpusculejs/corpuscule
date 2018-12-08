@@ -1,4 +1,18 @@
-export {providingValue as formApi} from './context';
-export {default as field, fieldOption} from './field';
-export {default as form, formOption} from './form';
+import createFormContext from './createFormContext';
+
+export {fieldOption} from './field';
+export {formOption} from './form';
 export * from './tokens/lifecycle';
+
+const {
+  field,
+  form,
+  formApi,
+} = createFormContext();
+
+export {
+  createFormContext,
+  field,
+  form,
+  formApi,
+};
