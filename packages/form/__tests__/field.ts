@@ -1,13 +1,13 @@
 // tslint:disable:no-unbound-method
 import {FieldState, FieldValidator, FormApi} from 'final-form';
 import {createMockedContextElements} from '../../../test/mocks/context';
-import {formSpyObject} from '../../../test/mocks/finalForm';
+import {formSpyObject, unsubscribe} from '../../../test/mocks/finalForm';
 import {HTMLElementMock} from '../../../test/utils';
 import {Field, field, FieldConfigKey, FieldInputProps, FieldMetaProps, fieldOption, form, formApi, input, meta} from '../src';
 import {all} from '../src/utils';
 
 const testField = () => {
-  fdescribe('@field', () => {
+  describe('@field', () => {
     let scheduler: jasmine.Spy;
     let state: jasmine.SpyObj<FieldState>;
     let fieldValue: object;
@@ -30,6 +30,7 @@ const testField = () => {
     };
 
     beforeEach(() => {
+      unsubscribe.calls.reset();
       formSpyObject.registerField.calls.reset();
       scheduler = jasmine.createSpy('scheduler');
       fieldValue = {};
@@ -225,8 +226,102 @@ const testField = () => {
       expect(scheduler).toHaveBeenCalledTimes(1);
     });
 
-    const testResubscription = <T>(type: FieldConfigKey, oldValue: T, newValue: T) => {
-      it(`resubscribes on field ${type} change`, () => {
+    it('unsubscribes on disconnectedCallback', () => {
+      @form()
+      class Form extends HTMLElementMock {
+      }
+
+      @field({scheduler})
+      class FormField extends HTMLElementMock implements Field<object> {
+        public readonly [formApi]: FormApi;
+        public readonly [input]: FieldInputProps<object>;
+        public readonly [meta]: FieldMetaProps;
+      }
+
+      const [, fieldElement] = createMockedContextElements(Form, FormField);
+      subscribeField(fieldElement);
+
+      fieldElement.disconnectedCallback();
+
+      expect(unsubscribe).toHaveBeenCalled();
+    });
+
+    it('unsubscribes on new subscription', () => {
+      @form()
+      class Form extends HTMLElementMock {
+      }
+
+      @field({scheduler})
+      class FormField extends HTMLElementMock implements Field<object> {
+        public readonly [formApi]: FormApi;
+        public readonly [input]: FieldInputProps<object>;
+        public readonly [meta]: FieldMetaProps;
+      }
+
+      const [, fieldElement] = createMockedContextElements(Form, FormField);
+      subscribeField(fieldElement);
+      subscribeField(fieldElement);
+
+      expect(unsubscribe).toHaveBeenCalled();
+    });
+
+    describe('@fieldOption', () => {
+      const testResubscription = <T>(type: FieldConfigKey, oldValue: T, newValue: T) => {
+        it(`resubscribes on option ${type} value change`, () => {
+          @form()
+          class Form extends HTMLElementMock {
+          }
+
+          @field({scheduler})
+          class FormField extends HTMLElementMock implements Field<object> {
+            public readonly [formApi]: FormApi;
+            public readonly [input]: FieldInputProps<object>;
+            public readonly [meta]: FieldMetaProps;
+
+            @fieldOption(type)
+            // @ts-ignore
+            public [type]: T = oldValue;
+          }
+
+          const [, fieldElement] = createMockedContextElements(Form, FormField);
+          subscribeField(fieldElement);
+
+          // @ts-ignore
+          fieldElement[type] = newValue;
+
+          expect(scheduler).toHaveBeenCalledTimes(2);
+        });
+
+        it(`does not resubscribe on field ${type} change if option values are equal`, () => {
+          @form()
+          class Form extends HTMLElementMock {
+          }
+
+          @field({scheduler})
+          class FormField extends HTMLElementMock implements Field<object> {
+            public readonly [formApi]: FormApi;
+            public readonly [input]: FieldInputProps<object>;
+            public readonly [meta]: FieldMetaProps;
+
+            @fieldOption(type)
+            // @ts-ignore
+            public [type]: T = oldValue;
+          }
+
+          const [, fieldElement] = createMockedContextElements(Form, FormField);
+          subscribeField(fieldElement);
+
+          // @ts-ignore
+          fieldElement[type] = oldValue;
+
+          expect(scheduler).toHaveBeenCalledTimes(1);
+        });
+      };
+
+      testResubscription('name', 'test1', 'test2');
+      testResubscription('subscription', all, {active: true});
+
+      it('updates field if option value is changed', () => {
         @form()
         class Form extends HTMLElementMock {
         }
@@ -237,21 +332,21 @@ const testField = () => {
           public readonly [input]: FieldInputProps<object>;
           public readonly [meta]: FieldMetaProps;
 
-          @fieldOption(type)
-          // @ts-ignore
-          public [type]: T = oldValue;
+          @fieldOption('value')
+          public value: string = 'test';
         }
 
         const [, fieldElement] = createMockedContextElements(Form, FormField);
         subscribeField(fieldElement);
 
-        // @ts-ignore
-        fieldElement[type] = newValue;
+        scheduler.calls.reset();
 
-        expect(scheduler).toHaveBeenCalledTimes(2);
+        fieldElement.value = 'newTest';
+
+        expect(scheduler).toHaveBeenCalled();
       });
 
-      it(`does not resubscribe on field ${type} change if values are equal`, () => {
+      it('does not update field if it option values are equal', () => {
         @form()
         class Form extends HTMLElementMock {
         }
@@ -262,23 +357,35 @@ const testField = () => {
           public readonly [input]: FieldInputProps<object>;
           public readonly [meta]: FieldMetaProps;
 
-          @fieldOption(type)
-          // @ts-ignore
-          public [type]: T = oldValue;
+          @fieldOption('value')
+          public value: string = 'test';
         }
 
         const [, fieldElement] = createMockedContextElements(Form, FormField);
         subscribeField(fieldElement);
 
-        // @ts-ignore
-        fieldElement[type] = oldValue;
+        scheduler.calls.reset();
 
-        expect(scheduler).toHaveBeenCalledTimes(1);
+        fieldElement.value = 'test';
+
+        expect(scheduler).not.toHaveBeenCalled();
       });
-    };
 
-    testResubscription('name', 'test1', 'test2');
-    testResubscription('subscription', all, {active: true});
+      it('throws an error if option name is not one of Field config keys', () => {
+        expect(() => {
+          @field({scheduler})
+          // @ts-ignore
+          class FormField extends HTMLElementMock implements Field<object> {
+            public readonly [formApi]: FormApi;
+            public readonly [input]: FieldInputProps<object>;
+            public readonly [meta]: FieldMetaProps;
+
+            @fieldOption('test' as any)
+            public value: string = 'test';
+          }
+        }).toThrow(new TypeError('"test" is not one of the Final Form Field configuration keys'));
+      });
+    });
 
     describe('[input]', () => {
       it('calls blur() method of field state if [input].onBlur() is called', () => {

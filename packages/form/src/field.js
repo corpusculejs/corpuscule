@@ -77,7 +77,7 @@ export const fieldOption = configKey => ({
   });
 
   if (!configOptions.includes(configKey)) {
-    throw new TypeError(`${configKey} is not one of the Final Form Field configuration keys`);
+    throw new TypeError(`"${configKey}" is not one of the Final Form Field configuration keys`);
   }
 
   const finisher = (target) => {

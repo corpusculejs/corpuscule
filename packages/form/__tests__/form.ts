@@ -1,25 +1,21 @@
 // tslint:disable:no-unused-expression
 import {FormApi, FormState} from 'final-form';
-import {createForm, formSpyObject} from '../../../test/mocks/finalForm';
+import {createForm, formSpyObject, unsubscribe} from '../../../test/mocks/finalForm';
 import {HTMLElementMock} from '../../../test/utils';
 import {compareInitialValues, Form, form, formApi, formOption, formState} from '../src';
 import {all} from '../src/utils';
 
 const testForm = () => {
   describe('@form', () => {
-    let unsubscribe: jasmine.Spy;
-
     beforeEach(() => {
-      unsubscribe = jasmine.createSpy('unsubscribe');
-
       createForm.calls.reset();
+      unsubscribe.calls.reset();
+
       formSpyObject.get.calls.reset();
       formSpyObject.initialize.calls.reset();
       formSpyObject.setConfig.calls.reset();
       formSpyObject.submit.calls.reset();
       formSpyObject.subscribe.calls.reset();
-
-      formSpyObject.subscribe.and.returnValue(unsubscribe);
     });
 
     it('allows to declare form configuration with decorator', () => {
