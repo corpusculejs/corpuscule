@@ -1,6 +1,6 @@
 {
   "name": "@corpuscule/redux",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Redux connector for Corpuscule",
   "main": "lib/index.js",
   "module": "lib/index.js",
