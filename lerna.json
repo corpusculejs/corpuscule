@@ -1,4 +1,9 @@
 {
+  "command": {
+    "publish": {
+      "message": "build: %s"
+    }
+  },
   "packages": [
     "packages/*"
   ],
