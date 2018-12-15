@@ -1,16 +1,15 @@
 // tslint:disable:no-unnecessary-class
-
 import {html, render} from 'lit-html';
-import {unsafeStatic, withCorpusculeElement} from '../src';
+import withCustomElement, {unsafeStatic} from '../src/withCustomElement';
 
-const testWithCorpusculeElement = () => {
-  describe('withCorpusculeElement', () => {
+const testWithCustomElement = () => {
+  describe('withCustomElement', () => {
     let container: HTMLElement;
     let chtml: typeof html;
 
     beforeEach(() => {
       container = document.createElement('div');
-      chtml = withCorpusculeElement(html);
+      chtml = withCustomElement(html);
     });
 
     describe('withUnsafeStatic', () => {
@@ -55,11 +54,12 @@ const testWithCorpusculeElement = () => {
       });
     });
 
-    it('accepts Corpuscule element class as a tag name', () => {
-      class Test {
+    it('accepts HTMLElement class as a tag name', () => {
+      class Test extends HTMLElement {
         public static readonly is: string = 'x-test';
-        public static readonly isCorpusculeElement: boolean = true;
       }
+
+      customElements.define(Test.is, Test);
 
       const template = chtml`<${Test}>Test</${Test}>`;
       render(template, container);
@@ -69,4 +69,4 @@ const testWithCorpusculeElement = () => {
   });
 };
 
-export default testWithCorpusculeElement;
+export default testWithCustomElement;

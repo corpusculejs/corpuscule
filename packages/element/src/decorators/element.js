@@ -3,7 +3,6 @@ import {assertKind} from '@corpuscule/utils/lib/asserts';
 import getSuperMethods from '@corpuscule/utils/lib/getSuperMethods';
 import {field, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
-import {render as defaultRenderer} from 'lit-html';
 import {
   createRoot as $createRoot,
   updatedCallback as $updatedCallback,
@@ -14,7 +13,6 @@ import {
 
 const attributeChangedCallbackKey = 'attributeChangedCallback';
 const [connectedCallbackKey] = lifecycleKeys;
-const isCorpusculeElementKey = 'isCorpusculeElement';
 
 // eslint-disable-next-line no-empty-function
 const noop = () => {};
@@ -28,7 +26,7 @@ const methods = [
   $updatedCallback,
 ];
 
-const filteringNames = ['is', isCorpusculeElementKey, ...methods];
+const filteringNames = ['is', ...methods];
 
 const connectedMap = new WeakMap();
 const rendererMap = new WeakMap();
@@ -47,9 +45,7 @@ const invalidate = self => {
     const rendered = self[$render]();
 
     if (rendered) {
-      rendererMap.get(self.constructor)(rendered, rootMap.get(self), {
-        eventContext: self,
-      });
+      rendererMap.get(self.constructor)(rendered, rootMap.get(self), self);
     }
 
     const shouldRunUpdatedCallback = connectedMap.get(self);
@@ -63,10 +59,7 @@ const invalidate = self => {
   });
 };
 
-const element = (name, {renderer = defaultRenderer, scheduler = defaultScheduler} = {}) => ({
-  kind,
-  elements,
-}) => {
+const element = (name, {renderer, scheduler = defaultScheduler}) => ({kind, elements}) => {
   assertKind('element', 'class', kind);
 
   if (!elements.find(({key}) => key === $render)) {
@@ -96,13 +89,6 @@ const element = (name, {renderer = defaultRenderer, scheduler = defaultScheduler
         {
           initializer: () => name,
           key: 'is',
-        },
-        {isReadonly: true, isStatic: true},
-      ),
-      field(
-        {
-          initializer: () => true,
-          key: isCorpusculeElementKey,
         },
         {isReadonly: true, isStatic: true},
       ),
