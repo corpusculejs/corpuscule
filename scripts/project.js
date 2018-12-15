@@ -1,6 +1,7 @@
 const packages = {
   context: ['index'],
   element: ['index'],
+  form: ['index'],
   redux: ['index'],
   router: ['index'],
   styles: ['index'],
