@@ -1,3 +1,4 @@
+import {Omit} from '@corpuscule/typings';
 import {
   ConfigKey as FormConfigKey,
   Decorator,
@@ -6,8 +7,6 @@ import {
   FormState,
   FormSubscription,
 } from 'final-form';
-
-export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
 export {FormApi};
 
