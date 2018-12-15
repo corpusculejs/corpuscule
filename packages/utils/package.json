@@ -14,8 +14,5 @@
   },
   "dependencies": {
     "@corpuscule/typings": "^0.6.0"
-  },
-  "devDependencies": {
-    "lit-html": "^0.14.0"
   }
 }
