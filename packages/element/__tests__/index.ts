@@ -3,7 +3,6 @@ import testComputingPair from './decorators/computingPair';
 import testElementDecorator from './decorators/element';
 import testInternalDecorator from './decorators/internal';
 import testPropertyDecorator from './decorators/property';
-import testWithCorpusculeElement from './withCorpusculeElement';
 
 describe('@corpuscule/element', () => {
   testAttributeDecorator();
@@ -11,5 +10,4 @@ describe('@corpuscule/element', () => {
   testElementDecorator();
   testPropertyDecorator();
   testInternalDecorator();
-  testWithCorpusculeElement();
 });

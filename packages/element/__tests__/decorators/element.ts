@@ -1,9 +1,8 @@
-import {HTMLElementMock} from '../../../../test/utils';
-
 // tslint:disable:no-unnecessary-class max-classes-per-file no-unbound-method no-empty
+import {HTMLElementMock} from '../../../../test/utils';
 import {
   createRoot,
-  element,
+  element as basicElement,
   internalChangedCallback,
   propertyChangedCallback,
   render,
@@ -12,6 +11,7 @@ import {
 
 const testElementDecorator = () => {
   describe('@element', () => {
+    let element: (name: string) => ClassDecorator;
     let rendererSpy: jasmine.Spy;
     let schedulerSpy: jasmine.Spy;
 
@@ -19,6 +19,8 @@ const testElementDecorator = () => {
       rendererSpy = jasmine.createSpy('onTemplateRender');
       schedulerSpy = jasmine.createSpy('onSchedule');
       spyOn(customElements, 'define');
+
+      element = name => basicElement(name, {renderer: rendererSpy, scheduler: schedulerSpy});
     });
 
     it('adds element to a custom elements registry', () => {
@@ -56,7 +58,7 @@ const testElementDecorator = () => {
     it('renders on element connection', () => {
       const connectedCallbackSpy = jasmine.createSpy('onConnect');
 
-      @element('x-test', {scheduler: schedulerSpy})
+      @element('x-test')
       class Test extends HTMLElementMock {
         public connectedCallback(): void {
           connectedCallbackSpy();
@@ -77,7 +79,7 @@ const testElementDecorator = () => {
     it('re-renders on each attribute change', () => {
       const attributeChangedCallbackSpy = jasmine.createSpy('onAttributeChange');
 
-      @element('x-test', {scheduler: schedulerSpy})
+      @element('x-test')
       class Test extends HTMLElementMock {
         public attributeChangedCallback(...args: Array<unknown>): void {
           attributeChangedCallbackSpy(...args);
@@ -102,7 +104,7 @@ const testElementDecorator = () => {
     it('re-renders on each [propertyChangedCallback]', () => {
       const propertyChangedCallbackSpy = jasmine.createSpy('onPropertyChange');
 
-      @element('x-test', {scheduler: schedulerSpy})
+      @element('x-test')
       class Test extends HTMLElementMock {
         public [propertyChangedCallback](...args: Array<unknown>): void {
           propertyChangedCallbackSpy(...args);
@@ -127,7 +129,7 @@ const testElementDecorator = () => {
     it('re-renders on each [internalChangedCallback]', () => {
       const internalChangedCallbackSpy = jasmine.createSpy('onInternalChange');
 
-      @element('x-test', {renderer: rendererSpy, scheduler: schedulerSpy})
+      @element('x-test')
       class Test extends HTMLElementMock {
         public [internalChangedCallback](...args: Array<unknown>): void {
           internalChangedCallbackSpy(...args);
@@ -152,7 +154,7 @@ const testElementDecorator = () => {
     it('calls [updatedCallback] on each re-render', () => {
       const updatedCallbackSpy = jasmine.createSpy('onUpdate');
 
-      @element('x-test', {scheduler: schedulerSpy})
+      @element('x-test')
       class Test extends HTMLElementMock {
         public [updatedCallback](): void {
           updatedCallbackSpy();
@@ -177,7 +179,7 @@ const testElementDecorator = () => {
     });
 
     it('sends to the [renderer] function result of [render]', () => {
-      @element('x-test', {renderer: rendererSpy, scheduler: schedulerSpy})
+      @element('x-test')
       class Test extends HTMLElementMock {
         public [render](): string {
           return 'rendered string';
@@ -202,7 +204,7 @@ const testElementDecorator = () => {
       const propertyChangedCallbackSpy = jasmine.createSpy('onPropertyChange');
       const internalChangedCallbackSpy = jasmine.createSpy('onInternalChange');
 
-      @element('x-test', {scheduler: schedulerSpy})
+      @element('x-test')
       class Test extends HTMLElementMock {
         public attributeChangedCallback(...args: Array<unknown>): void {
           attributeChangedCallbackSpy(...args);
@@ -244,7 +246,7 @@ const testElementDecorator = () => {
       const propertyChangedCallbackSpy = jasmine.createSpy('onPropertyChange');
       const internalChangedCallbackSpy = jasmine.createSpy('onInternalChange');
 
-      @element('x-test', {scheduler: schedulerSpy})
+      @element('x-test')
       class Test extends HTMLElementMock {
         public attributeChangedCallback(...args: Array<unknown>): void {
           attributeChangedCallbackSpy(...args);
@@ -283,7 +285,7 @@ const testElementDecorator = () => {
     it('makes only one render on multiple property change', () => {
       const attributeChangedCallbackSpy = jasmine.createSpy('onAttributeChange');
 
-      @element('x-test', {scheduler: schedulerSpy})
+      @element('x-test')
       class Test extends HTMLElementMock {
         public attributeChangedCallback(...args: Array<unknown>): void {
           attributeChangedCallbackSpy(...args);
@@ -311,7 +313,7 @@ const testElementDecorator = () => {
     it('allows to change root element', () => {
       const root = document.createElement('div');
 
-      @element('x-test', {renderer: rendererSpy, scheduler: schedulerSpy})
+      @element('x-test')
       class Test extends HTMLElementMock {
         public static readonly shadowMock: HTMLDivElement = root;
 
@@ -352,24 +354,11 @@ const testElementDecorator = () => {
       expect(customElements.define).toHaveBeenCalledTimes(2);
     });
 
-    it('contains property "isCorpusculeElement"', () => {
-      @element('x-test')
-      class Test {
-        public static readonly isCorpusculeElement: boolean;
-
-        public [render](): null {
-          return null;
-        }
-      }
-
-      expect(Test.isCorpusculeElement).toBeTruthy();
-    });
-
     it('calls only child render function if child inherits parent class', () => {
       const connectedSpyParent = jasmine.createSpy('connectedCallbackParent');
       const connectedSpyChild = jasmine.createSpy('connectedCallbackChild');
 
-      @element('x-parent', {scheduler: schedulerSpy})
+      @element('x-parent')
       class Parent extends HTMLElementMock {
         public connectedCallback(): void {
           connectedSpyParent();
@@ -380,7 +369,7 @@ const testElementDecorator = () => {
         }
       }
 
-      @element('x-child', {scheduler: schedulerSpy})
+      @element('x-child')
       class Child extends Parent {
         public connectedCallback(): void {
           super.connectedCallback();

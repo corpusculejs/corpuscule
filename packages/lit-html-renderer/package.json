@@ -1,7 +1,10 @@
 {
-  "name": "@corpuscule/utils",
-  "version": "0.6.1",
-  "description": "Common utils for Corpuscule",
+  "name": "@corpuscule/lit-html-renderer",
+  "version": "0.6.0",
+  "description": "Lit-html renderer for Corpuscule",
+  "main": "lib/index.js",
+  "module": "lib/index.js",
+  "types": "lib/index.d.ts",
   "author": "Vlad Rindevich <rindevich.vs@gmail.com> (https://github.com/Lodin)",
   "bugs": {
     "url": "https://github.com/corpusculejs/corpuscule/issues"
@@ -12,10 +15,7 @@
     "type": "git",
     "url": "git+https://github.com/corpusculejs/corpuscule.git"
   },
-  "dependencies": {
-    "@corpuscule/typings": "^0.6.0"
-  },
-  "devDependencies": {
-    "lit-html": "^0.14.0"
+  "peerDependencies": {
+    "lit-html": "^1.0.0-rc.1"
   }
 }
