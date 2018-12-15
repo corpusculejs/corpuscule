@@ -1,7 +1,7 @@
 {
-  "name": "@corpuscule/element",
+  "name": "@corpuscule/lit-html-renderer",
   "version": "0.6.0",
-  "description": "Custom Element rendering system for Corpuscule",
+  "description": "Lit-html renderer for Corpuscule",
   "main": "lib/index.js",
   "module": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -15,7 +15,7 @@
     "type": "git",
     "url": "git+https://github.com/corpusculejs/corpuscule.git"
   },
-  "dependencies": {
-    "@corpuscule/utils": "^0.6.0"
+  "peerDependencies": {
+    "lit-html": "^1.0.0-rc.1"
   }
 }

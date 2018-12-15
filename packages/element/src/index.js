@@ -3,6 +3,4 @@ export {default as createComputingPair} from './decorators/computingPair';
 export {default as element} from './decorators/element';
 export {default as internal} from './decorators/internal';
 export {default as property} from './decorators/property';
-export {default as withCorpusculeElement} from './withCorpusculeElement';
-export {unsafeStatic, UnsafeStatic} from './withUnsafeStatic';
 export * from './tokens/lifecycle';
