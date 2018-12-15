@@ -5,19 +5,11 @@ const babelPlugin = babel({
   babelrc: false,
   plugins: [
     [
-      require('@babel/plugin-proposal-object-rest-spread'),
-      {
-        loose: true,
-        useBuiltIns: true,
-      },
-    ],
-    [
       require('@babel/plugin-proposal-class-properties'),
       {
         loose: true,
       },
     ],
-    require('@babel/plugin-syntax-dynamic-import'),
   ],
 });
 
