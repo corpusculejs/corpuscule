@@ -67,3 +67,12 @@ export class HTMLElementMock {
     this.attributes.set(key, v);
   }
 }
+
+export const createTestingPromise = () => {
+  let resolve;
+  const promise = new Promise(r => {
+    resolve = r;
+  });
+
+  return [promise, resolve];
+};
