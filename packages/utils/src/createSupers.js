@@ -4,7 +4,7 @@ import {field} from './descriptors';
 const noop = () => {};
 
 const createSupers = (elements, options) =>
-  Object.entries(options).map(([name, keyOrOptions]) => {
+  Array.from(options, ([name, keyOrOptions]) => {
     let fallback;
     let key;
 

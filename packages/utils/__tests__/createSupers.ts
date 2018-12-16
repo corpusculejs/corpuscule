@@ -1,7 +1,9 @@
 // tslint:disable:max-classes-per-file no-invalid-this no-unnecessary-class
 import createSupers, {CreateSupersOption} from '../src/createSupers';
 
-const createDecorator = (options: {readonly [key: string]: CreateSupersOption}): ClassDecorator =>
+const createDecorator = (
+  options: Map<PropertyKey, PropertyKey | CreateSupersOption>,
+): ClassDecorator =>
   (({elements, kind}: any) => {
     const supers = createSupers(elements, options);
 
@@ -32,13 +34,11 @@ const testBind = (spy: jasmine.Spy): PropertyDecorator => (descriptor: any) => (
 });
 
 const testCreateSupers = () => {
-  fdescribe('createSupers', () => {
+  describe('createSupers', () => {
     it('calls method if its descriptor exists', () => {
       const fooSpy = jasmine.createSpy('foo');
 
-      const decorator = createDecorator({
-        foo: {key: 'superFoo'},
-      });
+      const decorator = createDecorator(new Map([['foo', 'superFoo']]));
 
       @decorator
       class Test {
@@ -57,9 +57,7 @@ const testCreateSupers = () => {
       const fooSpy = jasmine.createSpy('foo');
       const boundFooSpy = jasmine.createSpy('bound foo');
 
-      const decorator = createDecorator({
-        foo: {key: 'superFoo'},
-      });
+      const decorator = createDecorator(new Map([['foo', 'superFoo']]));
 
       @decorator
       class Test {
@@ -79,9 +77,7 @@ const testCreateSupers = () => {
     it('calls super method if exist and there is no descriptors', () => {
       const fooSpy = jasmine.createSpy('foo');
 
-      const decorator = createDecorator({
-        foo: {key: 'superFoo'},
-      });
+      const decorator = createDecorator(new Map([['foo', 'superFoo']]));
 
       class Parent {
         public foo(): void {
@@ -99,9 +95,7 @@ const testCreateSupers = () => {
     });
 
     it('calls nothing if no super method available', () => {
-      const decorator = createDecorator({
-        foo: {key: 'superFoo'},
-      });
+      const decorator = createDecorator(new Map([['foo', 'superFoo']]));
 
       @decorator
       class Test {}
@@ -115,10 +109,7 @@ const testCreateSupers = () => {
       const fooSpy = jasmine.createSpy('foo');
       const barSpy = jasmine.createSpy('bar');
 
-      const decorator = createDecorator({
-        bar: {key: 'superBar'},
-        foo: {key: 'superFoo'},
-      });
+      const decorator = createDecorator(new Map([['foo', 'superFoo'], ['bar', 'superBar']]));
 
       @decorator
       class Test {
@@ -143,14 +134,19 @@ const testCreateSupers = () => {
     it('allows to set defaults that will be executed if no super method exists', () => {
       const fallbackSpy = jasmine.createSpy('foo');
 
-      const decorator = createDecorator({
-        foo: {
-          fallback(): void {
-            fallbackSpy();
-          },
-          key: 'superFoo',
-        },
-      });
+      const decorator = createDecorator(
+        new Map([
+          [
+            'foo',
+            {
+              fallback(): void {
+                fallbackSpy();
+              },
+              key: 'superFoo',
+            },
+          ],
+        ]),
+      );
 
       @decorator
       class Test {}
@@ -165,9 +161,7 @@ const testCreateSupers = () => {
     it('works correctly if super method created for several classes in inheritance chain', () => {
       const fooSpy = jasmine.createSpy('foo');
 
-      const decorator = createDecorator({
-        foo: {key: 'superFoo'},
-      });
+      const decorator = createDecorator(new Map([['foo', 'superFoo']]));
 
       class GrandParent {
         public foo(): void {
