@@ -81,7 +81,7 @@ const outlet = routes => classDescriptor => {
             }
           },
         },
-        {isBound: true, isPrivate: true},
+        {isBound: true},
       ),
     ],
     kind,

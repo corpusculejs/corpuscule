@@ -11,13 +11,10 @@ const internal = ({initializer, key, kind, placement}) => {
 
   return accessor({
     extras: [
-      field(
-        {
-          initializer,
-          key: storage,
-        },
-        {isPrivate: true},
-      ),
+      field({
+        initializer,
+        key: storage,
+      }),
     ],
     get() {
       return this[storage];
