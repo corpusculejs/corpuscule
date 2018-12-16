@@ -102,7 +102,6 @@ const testDescriptors = () => {
         expect(result).toEqual({
           descriptor: {
             configurable: true,
-            enumerable: true,
             value,
           },
           extras,
@@ -198,7 +197,6 @@ const testDescriptors = () => {
         expect(result).toEqual({
           descriptor: {
             configurable: true,
-            enumerable: true,
             get,
             set,
           },
@@ -256,7 +254,6 @@ const testDescriptors = () => {
         expect(result).toEqual({
           descriptor: {
             configurable: true,
-            enumerable: true,
             get: jasmine.any(Function),
             set: jasmine.any(Function),
           },
@@ -305,7 +302,6 @@ const testDescriptors = () => {
           {
             descriptor: {
               configurable: true,
-              enumerable: true,
               get: jasmine.any(Function),
               set: jasmine.any(Function),
             },
