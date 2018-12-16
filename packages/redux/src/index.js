@@ -36,16 +36,19 @@ export const connect = classDescriptor => {
       ...supers,
 
       // Public
-      method({
-        key: disconnectedCallbackKey,
-        value() {
-          this[$$superDisconnectedCallback]();
+      method(
+        {
+          key: disconnectedCallbackKey,
+          value() {
+            this[$$superDisconnectedCallback]();
 
-          if (this[$$unsubscribe]) {
-            this[$$unsubscribe]();
-          }
+            if (this[$$unsubscribe]) {
+              this[$$unsubscribe]();
+            }
+          },
         },
-      }),
+        {isBound: true},
+      ),
 
       // Protected
       accessor({

@@ -46,20 +46,26 @@ const createContext = defaultValue => {
         ...supers,
 
         // Public
-        method({
-          key: connectedCallbackKey,
-          value() {
-            this.addEventListener(eventName, this[$$subscribe]);
-            this[$$superConnectedCallback]();
+        method(
+          {
+            key: connectedCallbackKey,
+            value() {
+              this.addEventListener(eventName, this[$$subscribe]);
+              this[$$superConnectedCallback]();
+            },
           },
-        }),
-        method({
-          key: disconnectedCallbackKey,
-          value() {
-            this.removeEventListener(eventName, this[$$subscribe]);
-            this[$$superDisconnectedCallback]();
+          {isBound: true},
+        ),
+        method(
+          {
+            key: disconnectedCallbackKey,
+            value() {
+              this.removeEventListener(eventName, this[$$subscribe]);
+              this[$$superDisconnectedCallback]();
+            },
           },
-        }),
+          {isBound: true},
+        ),
 
         // Protected
         accessor({
