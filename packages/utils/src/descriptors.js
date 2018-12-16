@@ -1,16 +1,11 @@
 export const lifecycleKeys = ['connectedCallback', 'disconnectedCallback'];
 
-const publicDescriptor = {
-  configurable: true,
-  enumerable: true,
-};
-
 export const field = (
   {extras, finisher, initializer, key},
   {isPrivate = false, isReadonly = false, isStatic = false} = {},
 ) => ({
   descriptor: {
-    ...(isPrivate ? {} : publicDescriptor),
+    ...(isPrivate ? {} : {configurable: true, enumerable: true}),
     ...(isReadonly ? {} : {writable: true}),
   },
   extras,
@@ -40,7 +35,7 @@ export const method = (
   }
 
   return {
-    descriptor: isPrivate ? {value} : {...publicDescriptor, value},
+    descriptor: isPrivate ? {value} : {configurable: true, value},
     extras,
     finisher,
     key,
@@ -80,7 +75,7 @@ export const accessor = (
   }
 
   const result = {
-    descriptor: isPrivate ? accessorMethods : {...publicDescriptor, ...accessorMethods},
+    descriptor: isPrivate ? accessorMethods : {configurable: true, ...accessorMethods},
     extras,
     finisher,
     key,
