@@ -26,38 +26,7 @@ const methods = [
   $updatedCallback,
 ];
 
-const filteringNames = ['is', ...methods];
-
-const connectedMap = new WeakMap();
-const rendererMap = new WeakMap();
-const rootMap = new WeakMap();
-const schedulerMap = new WeakMap();
-const validMap = new WeakMap();
-
-const invalidate = self => {
-  if (!validMap.get(self)) {
-    return;
-  }
-
-  validMap.set(self, false);
-
-  schedulerMap.get(self.constructor)(() => {
-    const rendered = self[$render]();
-
-    if (rendered) {
-      rendererMap.get(self.constructor)(rendered, rootMap.get(self), self);
-    }
-
-    const shouldRunUpdatedCallback = connectedMap.get(self);
-
-    connectedMap.set(self, true);
-    validMap.set(self, true);
-
-    if (shouldRunUpdatedCallback) {
-      self[$updatedCallback]();
-    }
-  });
-};
+const filteringNames = ['is', 'observedAttributes'];
 
 const element = (name, {renderer, scheduler = defaultScheduler}) => ({kind, elements}) => {
   assertKind('element', 'class', kind);
@@ -65,6 +34,11 @@ const element = (name, {renderer, scheduler = defaultScheduler}) => ({kind, elem
   if (!elements.find(({key}) => key === $render)) {
     throw new Error('[render]() is not implemented');
   }
+
+  const $$connected = Symbol();
+  const $$invalidate = Symbol();
+  const $$root = Symbol();
+  const $$valid = Symbol();
 
   const [
     superAttributeChangedCallback,
@@ -101,70 +75,117 @@ const element = (name, {renderer, scheduler = defaultScheduler}) => ({kind, elem
       ),
 
       // Public
-      method({
-        key: connectedCallbackKey,
-        value() {
-          superConnectedCallback.call(this);
-          invalidate(this);
+      method(
+        {
+          key: connectedCallbackKey,
+          async value() {
+            await this[$$invalidate]();
+            superConnectedCallback.call(this);
+          },
         },
-      }),
-      method({
-        key: attributeChangedCallbackKey,
-        value(attributeName, oldValue, newValue) {
-          if (oldValue === newValue || !connectedMap.get(this)) {
-            return;
-          }
+        {isBound: true},
+      ),
+      method(
+        {
+          key: attributeChangedCallbackKey,
+          async value(attributeName, oldValue, newValue) {
+            if (oldValue === newValue || !this[$$connected]) {
+              return;
+            }
 
-          superAttributeChangedCallback.call(this, attributeName, oldValue, newValue);
-          invalidate(this);
+            superAttributeChangedCallback.call(this, attributeName, oldValue, newValue);
+
+            await this[$$invalidate]();
+          },
         },
-      }),
+        {isBound: true},
+      ),
 
       // Protected
-      method({
-        key: $createRoot,
-        value: superCreateRoot,
-      }),
-      method({
-        key: $internalChangedCallback,
-        value(internalName, oldValue, newValue) {
-          if (!connectedMap.get(this)) {
-            return;
-          }
-
-          superInternalChangedCallback.call(this, internalName, oldValue, newValue);
-          invalidate(this);
+      method(
+        {
+          key: $createRoot,
+          value: superCreateRoot,
         },
-      }),
-      method({
-        key: $propertyChangedCallback,
-        value(propertyName, oldValue, newValue) {
-          if (oldValue === newValue || !connectedMap.get(this)) {
-            return;
-          }
+        {isBound: true},
+      ),
+      method(
+        {
+          key: $internalChangedCallback,
+          async value(internalName, oldValue, newValue) {
+            if (!this[$$connected]) {
+              return;
+            }
 
-          superPropertyChangedCallback.call(this, propertyName, oldValue, newValue);
-          invalidate(this);
+            superInternalChangedCallback.call(this, internalName, oldValue, newValue);
+
+            await this[$$invalidate]();
+          },
         },
-      }),
-      method({
-        key: $updatedCallback,
-        value: superUpdatedCallback,
-      }),
+        {isBound: true},
+      ),
+      method(
+        {
+          key: $propertyChangedCallback,
+          async value(propertyName, oldValue, newValue) {
+            if (oldValue === newValue || !this[$$connected]) {
+              return;
+            }
 
-      // Initializer
+            superPropertyChangedCallback.call(this, propertyName, oldValue, newValue);
+            await this[$$invalidate]();
+          },
+        },
+        {isBound: true},
+      ),
+      method(
+        {
+          key: $updatedCallback,
+          value: superUpdatedCallback,
+        },
+        {isBound: true},
+      ),
+
+      // Private
+      field({
+        initializer: () => false,
+        key: $$connected,
+      }),
       field({
         initializer() {
-          connectedMap.set(this, false);
-          rootMap.set(this, this[$createRoot]());
-          validMap.set(this, true);
+          return this[$createRoot]();
+        },
+        key: $$root,
+      }),
+      field({
+        initializer: () => true,
+        key: $$valid,
+      }),
+      method({
+        key: $$invalidate,
+        async value() {
+          if (!this[$$valid]) {
+            return;
+          }
+
+          this[$$valid] = false;
+
+          const isConnecting = !this[$$connected];
+
+          await scheduler(() => {
+            renderer(this[$render](), this[$$root], this);
+            this[$$connected] = true;
+            this[$$valid] = true;
+          });
+
+          if (!isConnecting) {
+            this[$updatedCallback]();
+          }
         },
       }),
     ],
     finisher(target) {
       customElements.define(name, target);
-      rendererMap.set(target, renderer);
-      schedulerMap.set(target, scheduler);
     },
     kind,
   };
