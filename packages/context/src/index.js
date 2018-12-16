@@ -1,7 +1,9 @@
 /* eslint-disable max-classes-per-file */
 import {assertKind} from '@corpuscule/utils/lib/asserts';
-import {accessor, field, method} from '@corpuscule/utils/lib/descriptors';
-import getSuperMethods from '@corpuscule/utils/lib/getSuperMethods';
+import createSupers from '@corpuscule/utils/lib/createSupers';
+import {accessor, field, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
+
+const [connectedCallbackKey, disconnectedCallbackKey] = lifecycleKeys;
 
 const randomString = () => {
   const arr = new Uint32Array(2);
@@ -9,11 +11,6 @@ const randomString = () => {
 
   return `${rnd1}${rnd2}`;
 };
-
-const connectedCallbackKey = 'connectedCallback';
-const disconnectedCallbackKey = 'disconnectedCallback';
-
-const methods = [connectedCallbackKey, disconnectedCallbackKey];
 
 const createContext = defaultValue => {
   const eventName = randomString();
@@ -29,28 +26,38 @@ const createContext = defaultValue => {
     const $$unsubscribe = Symbol();
     const $$value = Symbol();
 
+    const $$superConnectedCallback = Symbol();
+    const $$superDisconnectedCallback = Symbol();
+
     const {initializer: providingValueInitializer = null} =
       elements.find(({key}) => key === providingValue) || {};
 
-    const [superConnectedCallback, superDisconnectedCallback] = getSuperMethods(elements, methods);
+    const supers = createSupers(
+      elements,
+      new Map([
+        [connectedCallbackKey, $$superConnectedCallback],
+        [disconnectedCallbackKey, $$superDisconnectedCallback],
+      ]),
+    );
 
     return {
       elements: [
-        ...elements.filter(({key}) => !methods.includes(key) && key !== providingValue),
+        ...elements.filter(({key}) => !lifecycleKeys.includes(key) && key !== providingValue),
+        ...supers,
 
         // Public
         method({
           key: connectedCallbackKey,
           value() {
             this.addEventListener(eventName, this[$$subscribe]);
-            superConnectedCallback.call(this);
+            this[$$superConnectedCallback]();
           },
         }),
         method({
           key: disconnectedCallbackKey,
           value() {
             this.removeEventListener(eventName, this[$$subscribe]);
-            superDisconnectedCallback.call(this);
+            this[$$superDisconnectedCallback]();
           },
         }),
 
@@ -113,11 +120,21 @@ const createContext = defaultValue => {
     const $$consume = Symbol();
     const $$unsubscribe = Symbol();
 
-    const [superConnectedCallback, superDisconnectedCallback] = getSuperMethods(elements, methods);
+    const $$superConnectedCallback = Symbol();
+    const $$superDisconnectedCallback = Symbol();
+
+    const supers = createSupers(
+      elements,
+      new Map([
+        [connectedCallbackKey, $$superConnectedCallback],
+        [disconnectedCallbackKey, $$superDisconnectedCallback],
+      ]),
+    );
 
     return {
       elements: [
-        ...elements.filter(({key}) => !methods.includes(key) && key !== contextValue),
+        ...elements.filter(({key}) => !lifecycleKeys.includes(key) && key !== contextValue),
+        ...supers,
 
         // Public
         method({
@@ -138,7 +155,7 @@ const createContext = defaultValue => {
               throw new Error(`No provider found for ${this.constructor.name}`);
             }
 
-            superConnectedCallback.call(this);
+            this[$$superConnectedCallback]();
           },
         }),
         method({
@@ -148,7 +165,7 @@ const createContext = defaultValue => {
               this[$$unsubscribe](this[$$consume]);
             }
 
-            superDisconnectedCallback.call(this);
+            this[$$superDisconnectedCallback]();
           },
         }),
 

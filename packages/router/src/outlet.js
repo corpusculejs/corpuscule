@@ -1,7 +1,7 @@
 import createContext from '@corpuscule/context';
 import {assertKind} from '@corpuscule/utils/lib/asserts';
+import createSupers from '@corpuscule/utils/lib/createSupers';
 import {lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
-import getSuperMethods from '@corpuscule/utils/lib/getSuperMethods';
 import {layout, resolve} from './tokens/lifecycle';
 
 const {consumer, contextValue, provider, providingValue: router} = createContext();
@@ -21,26 +21,37 @@ const outlet = routes => classDescriptor => {
 
   const $$updateRoute = Symbol();
 
-  const [superConnectedCallback, superDisconnectedCallback, superResolve] = getSuperMethods(
+  const $$superConnectedCallback = Symbol();
+  const $$superDisconnectedCallback = Symbol();
+
+  const supers = createSupers(
     elements,
-    methods,
-    {
-      *[resolve](path) {
-        return yield path;
-      },
-    },
+    new Map([
+      [connectedCallbackKey, $$superConnectedCallback],
+      [disconnectedCallbackKey, $$superDisconnectedCallback],
+      [
+        resolve,
+        {
+          *fallback(path) {
+            return yield path;
+          },
+          key: resolve,
+        },
+      ],
+    ]),
   );
 
   return {
     elements: [
       ...elements.filter(({key}) => !filteringNames.includes(key)),
+      ...supers,
 
       // Public
       method({
         key: connectedCallbackKey,
         value() {
           window.addEventListener('popstate', this[$$updateRoute]);
-          superConnectedCallback.call(this);
+          this[$$superConnectedCallback]();
 
           this[$$updateRoute](location.pathname);
         },
@@ -49,14 +60,8 @@ const outlet = routes => classDescriptor => {
         key: disconnectedCallbackKey,
         value() {
           window.removeEventListener('popstate', this[$$updateRoute]);
-          superDisconnectedCallback.call(this);
+          this[$$superDisconnectedCallback]();
         },
-      }),
-
-      // Protected
-      method({
-        key: resolve,
-        value: superResolve,
       }),
 
       // Private

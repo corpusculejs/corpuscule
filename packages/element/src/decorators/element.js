@@ -1,6 +1,6 @@
 /* eslint-disable no-invalid-this, prefer-arrow-callback */
 import {assertKind} from '@corpuscule/utils/lib/asserts';
-import getSuperMethods from '@corpuscule/utils/lib/getSuperMethods';
+import createSupers from '@corpuscule/utils/lib/createSupers';
 import {field, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
 import {
@@ -17,15 +17,6 @@ const [connectedCallbackKey] = lifecycleKeys;
 // eslint-disable-next-line no-empty-function
 const noop = () => {};
 
-const methods = [
-  attributeChangedCallbackKey,
-  connectedCallbackKey,
-  $createRoot,
-  $internalChangedCallback,
-  $propertyChangedCallback,
-  $updatedCallback,
-];
-
 const filteringNames = ['is', 'observedAttributes'];
 
 const element = (name, {renderer, scheduler = defaultScheduler}) => ({kind, elements}) => {
@@ -40,23 +31,41 @@ const element = (name, {renderer, scheduler = defaultScheduler}) => ({kind, elem
   const $$root = Symbol();
   const $$valid = Symbol();
 
-  const [
-    superAttributeChangedCallback,
-    superConnectedCallback,
-    superCreateRoot,
-    superInternalChangedCallback,
-    superPropertyChangedCallback,
-    superUpdatedCallback,
-  ] = getSuperMethods(elements, methods, {
-    [$createRoot]() {
-      return this.attachShadow({mode: 'open'});
-    },
-    [$updatedCallback]: noop,
-  });
+  const $$superAttributeChangedCallback = Symbol();
+  const $$superConnectedCallback = Symbol();
+  const $$superInternalChangedCallback = Symbol();
+  const $$superPropertyChangedCallback = Symbol();
+
+  const supers = createSupers(
+    elements,
+    new Map([
+      [attributeChangedCallbackKey, $$superAttributeChangedCallback],
+      [connectedCallbackKey, $$superConnectedCallback],
+      [
+        $createRoot,
+        {
+          fallback() {
+            return this.attachShadow({mode: 'open'});
+          },
+          key: $createRoot,
+        },
+      ],
+      [$internalChangedCallback, $$superInternalChangedCallback],
+      [$propertyChangedCallback, $$superPropertyChangedCallback],
+      [
+        $updatedCallback,
+        {
+          fallback: noop,
+          key: $updatedCallback,
+        },
+      ],
+    ]),
+  );
 
   return {
     elements: [
       ...elements.filter(({key}) => !filteringNames.includes(key)),
+      ...supers,
 
       // Static
       field(
@@ -80,7 +89,7 @@ const element = (name, {renderer, scheduler = defaultScheduler}) => ({kind, elem
           key: connectedCallbackKey,
           async value() {
             await this[$$invalidate]();
-            superConnectedCallback.call(this);
+            this[$$superConnectedCallback]();
           },
         },
         {isBound: true},
@@ -93,7 +102,7 @@ const element = (name, {renderer, scheduler = defaultScheduler}) => ({kind, elem
               return;
             }
 
-            superAttributeChangedCallback.call(this, attributeName, oldValue, newValue);
+            this[$$superAttributeChangedCallback](attributeName, oldValue, newValue);
 
             await this[$$invalidate]();
           },
@@ -104,20 +113,13 @@ const element = (name, {renderer, scheduler = defaultScheduler}) => ({kind, elem
       // Protected
       method(
         {
-          key: $createRoot,
-          value: superCreateRoot,
-        },
-        {isBound: true},
-      ),
-      method(
-        {
           key: $internalChangedCallback,
           async value(internalName, oldValue, newValue) {
             if (!this[$$connected]) {
               return;
             }
 
-            superInternalChangedCallback.call(this, internalName, oldValue, newValue);
+            this[$$superInternalChangedCallback](internalName, oldValue, newValue);
 
             await this[$$invalidate]();
           },
@@ -132,16 +134,9 @@ const element = (name, {renderer, scheduler = defaultScheduler}) => ({kind, elem
               return;
             }
 
-            superPropertyChangedCallback.call(this, propertyName, oldValue, newValue);
+            this[$$superPropertyChangedCallback](propertyName, oldValue, newValue);
             await this[$$invalidate]();
           },
-        },
-        {isBound: true},
-      ),
-      method(
-        {
-          key: $updatedCallback,
-          value: superUpdatedCallback,
         },
         {isBound: true},
       ),

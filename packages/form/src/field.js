@@ -1,6 +1,6 @@
 import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
+import createSupers from '@corpuscule/utils/lib/createSupers';
 import {accessor, field as ffield, method, lifecycleKeys} from '@corpuscule/utils/lib/descriptors';
-import getSuperMethods from '@corpuscule/utils/lib/getSuperMethods';
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
 import shallowEqual from '@corpuscule/utils/lib/shallowEqual';
 import {input as $input, meta as $meta} from './tokens/lifecycle';
@@ -125,22 +125,29 @@ const createField = (consumer, $formApi, $$form) => {
     const $$update = Symbol();
     const $$updatingValid = Symbol();
 
+    const $$superConnectedCallback = Symbol();
+    const $$superDisconnectedCallback = Symbol();
+
     const {elements, kind} = consumer(classDescriptor);
 
-    const [superConnectedCallback, superDisconnectedCallback] = getSuperMethods(
+    const supers = createSupers(
       elements,
-      lifecycleKeys,
+      new Map([
+        [connectedCallbackKey, $$superConnectedCallback],
+        [disconnectedCallbackKey, $$superDisconnectedCallback],
+      ]),
     );
 
     return {
       elements: [
         ...elements.filter(({key}) => !filterNames.includes(key)),
+        ...supers,
 
         // Public
         method({
           key: connectedCallbackKey,
           value() {
-            superConnectedCallback.call(this);
+            this[$$superConnectedCallback]();
             this[$$subscribe]();
           },
         }),
@@ -148,7 +155,7 @@ const createField = (consumer, $formApi, $$form) => {
           key: disconnectedCallbackKey,
           value() {
             this[$$unsubscribe]();
-            superDisconnectedCallback.call(this);
+            this[$$superDisconnectedCallback]();
           },
         }),
 

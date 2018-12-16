@@ -1,6 +1,6 @@
 import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
+import createSupers from '@corpuscule/utils/lib/createSupers';
 import {accessor, field, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
-import getSuperMethods from '@corpuscule/utils/lib/getSuperMethods';
 import shallowEqual from '@corpuscule/utils/lib/shallowEqual';
 import {configOptions, createForm} from 'final-form';
 import {
@@ -95,19 +95,26 @@ const createFormDecorator = (provider, $formApi) => ({
 } = {}) => classDescriptor => {
   assertKind('form', 'class', classDescriptor.kind);
 
-  const {elements, kind} = provider(classDescriptor);
-
-  const [superConnectedCallback, superDisconnectedCallback] = getSuperMethods(
-    elements,
-    lifecycleKeys,
-  );
-
   const $$submit = Symbol();
   const $$unsubscriptions = Symbol();
+
+  const $$superConnectedCallback = Symbol();
+  const $$superDisconnectedCallback = Symbol();
+
+  const {elements, kind} = provider(classDescriptor);
+
+  const supers = createSupers(
+    elements,
+    new Map([
+      [connectedCallbackKey, $$superConnectedCallback],
+      [disconnectedCallbackKey, $$superDisconnectedCallback],
+    ]),
+  );
 
   return {
     elements: [
       ...elements.filter(({key}) => !lifecycleKeys.includes(key) && key !== $formState),
+      ...supers,
 
       // Public
       method({
@@ -127,7 +134,7 @@ const createFormDecorator = (provider, $formApi) => ({
 
           this.addEventListener('submit', this[$$submit]);
 
-          superConnectedCallback.call(this);
+          this[$$superConnectedCallback]();
         },
       }),
       method({
@@ -140,7 +147,7 @@ const createFormDecorator = (provider, $formApi) => ({
           this[$$unsubscriptions] = [];
 
           this.removeEventListener('submit', this[$$submit]);
-          superDisconnectedCallback.call(this);
+          this[$$superDisconnectedCallback]();
         },
       }),
 
