@@ -1,3 +1,4 @@
+*.md
 *.json
 *.yml
 packages/**/node_modules/**/*
