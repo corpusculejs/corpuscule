@@ -117,39 +117,45 @@ const createFormDecorator = (provider, $formApi) => ({
       ...supers,
 
       // Public
-      method({
-        key: connectedCallbackKey,
-        value() {
-          if (decorators) {
-            for (const decorate of decorators) {
-              this[$$unsubscriptions].push(decorate(this[$formApi]));
+      method(
+        {
+          key: connectedCallbackKey,
+          value() {
+            if (decorators) {
+              for (const decorate of decorators) {
+                this[$$unsubscriptions].push(decorate(this[$formApi]));
+              }
             }
-          }
 
-          this[$$unsubscriptions].push(
-            this[$formApi].subscribe(state => {
-              this[$formState] = state;
-            }, subscription),
-          );
+            this[$$unsubscriptions].push(
+              this[$formApi].subscribe(state => {
+                this[$formState] = state;
+              }, subscription),
+            );
 
-          this.addEventListener('submit', this[$$submit]);
+            this.addEventListener('submit', this[$$submit]);
 
-          this[$$superConnectedCallback]();
+            this[$$superConnectedCallback]();
+          },
         },
-      }),
-      method({
-        key: disconnectedCallbackKey,
-        value() {
-          for (const unsubscribe of this[$$unsubscriptions]) {
-            unsubscribe();
-          }
+        {isBound: true},
+      ),
+      method(
+        {
+          key: disconnectedCallbackKey,
+          value() {
+            for (const unsubscribe of this[$$unsubscriptions]) {
+              unsubscribe();
+            }
 
-          this[$$unsubscriptions] = [];
+            this[$$unsubscriptions] = [];
 
-          this.removeEventListener('submit', this[$$submit]);
-          this[$$superDisconnectedCallback]();
+            this.removeEventListener('submit', this[$$submit]);
+            this[$$superDisconnectedCallback]();
+          },
         },
-      }),
+        {isBound: true},
+      ),
 
       // Protected
       field({

@@ -47,22 +47,28 @@ const outlet = routes => classDescriptor => {
       ...supers,
 
       // Public
-      method({
-        key: connectedCallbackKey,
-        value() {
-          window.addEventListener('popstate', this[$$updateRoute]);
-          this[$$superConnectedCallback]();
+      method(
+        {
+          key: connectedCallbackKey,
+          value() {
+            window.addEventListener('popstate', this[$$updateRoute]);
+            this[$$superConnectedCallback]();
 
-          this[$$updateRoute](location.pathname);
+            this[$$updateRoute](location.pathname);
+          },
         },
-      }),
-      method({
-        key: disconnectedCallbackKey,
-        value() {
-          window.removeEventListener('popstate', this[$$updateRoute]);
-          this[$$superDisconnectedCallback]();
+        {isBound: true},
+      ),
+      method(
+        {
+          key: disconnectedCallbackKey,
+          value() {
+            window.removeEventListener('popstate', this[$$updateRoute]);
+            this[$$superDisconnectedCallback]();
+          },
         },
-      }),
+        {isBound: true},
+      ),
 
       // Private
       method(

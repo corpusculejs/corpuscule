@@ -144,20 +144,26 @@ const createField = (consumer, $formApi, $$form) => {
         ...supers,
 
         // Public
-        method({
-          key: connectedCallbackKey,
-          value() {
-            this[$$superConnectedCallback]();
-            this[$$subscribe]();
+        method(
+          {
+            key: connectedCallbackKey,
+            value() {
+              this[$$superConnectedCallback]();
+              this[$$subscribe]();
+            },
           },
-        }),
-        method({
-          key: disconnectedCallbackKey,
-          value() {
-            this[$$unsubscribe]();
-            this[$$superDisconnectedCallback]();
+          {isBound: true},
+        ),
+        method(
+          {
+            key: disconnectedCallbackKey,
+            value() {
+              this[$$unsubscribe]();
+              this[$$superDisconnectedCallback]();
+            },
           },
-        }),
+          {isBound: true},
+        ),
 
         // Protected
         accessor({
