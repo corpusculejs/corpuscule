@@ -56,40 +56,34 @@ export const connect = classDescriptor => {
       }),
 
       // Private
-      method(
-        {
-          key: $$subscribe,
-          value() {
+      method({
+        key: $$subscribe,
+        value() {
+          this[$$update](this[$$context]);
+
+          this[$$unsubscribe] = this[$$context].subscribe(() => {
             this[$$update](this[$$context]);
-
-            this[$$unsubscribe] = this[$$context].subscribe(() => {
-              this[$$update](this[$$context]);
-            });
-          },
+          });
         },
-        {isPrivate: true},
-      ),
-      method(
-        {
-          key: $$update,
-          value({getState}) {
-            const registry = connectedRegistry.get(this.constructor);
+      }),
+      method({
+        key: $$update,
+        value({getState}) {
+          const registry = connectedRegistry.get(this.constructor);
 
-            if (!registry) {
-              return;
+          if (!registry) {
+            return;
+          }
+
+          for (const [key, getter] of registry) {
+            const nextValue = getter(getState());
+
+            if (nextValue !== this[key]) {
+              this[key] = nextValue;
             }
-
-            for (const [key, getter] of registry) {
-              const nextValue = getter(getState());
-
-              if (nextValue !== this[key]) {
-                this[key] = nextValue;
-              }
-            }
-          },
+          }
         },
-        {isPrivate: true},
-      ),
+      }),
     ],
     finisher(target) {
       contextMap.set(target, $$context);

@@ -32,22 +32,6 @@ const testDescriptors = () => {
         });
       });
 
-      it('creates private field', () => {
-        const result = field(
-          {
-            extras,
-            finisher,
-            initializer: () => 10,
-            key: 'test',
-          },
-          {isPrivate: true},
-        );
-
-        expect(result.descriptor).toEqual({
-          writable: true,
-        });
-      });
-
       it('creates readonly field', () => {
         const result = field(
           {
@@ -62,6 +46,7 @@ const testDescriptors = () => {
         expect(result.descriptor).toEqual({
           configurable: true,
           enumerable: true,
+          writable: false,
         });
       });
 
@@ -143,24 +128,6 @@ const testDescriptors = () => {
         expect(fn()).toBe(finisher);
       });
 
-      it('creates private method', () => {
-        const value = () => 10;
-
-        const result = method(
-          {
-            extras,
-            finisher,
-            key: 'test',
-            value,
-          },
-          {isPrivate: true},
-        );
-
-        expect(result.descriptor).toEqual({
-          value,
-        });
-      });
-
       it('creates static method', () => {
         const result = method(
           {
@@ -208,24 +175,6 @@ const testDescriptors = () => {
         });
       });
 
-      it('creates private method', () => {
-        const result = accessor(
-          {
-            extras,
-            finisher,
-            get,
-            key: 'test',
-            set,
-          },
-          {isPrivate: true},
-        );
-
-        expect(result.descriptor).toEqual({
-          get,
-          set,
-        });
-      });
-
       it('creates static method', () => {
         const result = accessor(
           {
@@ -260,6 +209,8 @@ const testDescriptors = () => {
           extras: [
             {
               descriptor: {
+                configurable: true,
+                enumerable: true,
                 writable: true,
               },
               extras: undefined,
@@ -313,6 +264,8 @@ const testDescriptors = () => {
           },
           {
             descriptor: {
+              configurable: true,
+              enumerable: true,
               writable: true,
             },
             extras: undefined,

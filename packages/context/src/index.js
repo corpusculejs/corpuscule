@@ -70,20 +70,14 @@ const createContext = defaultValue => {
         }),
 
         // Private
-        field(
-          {
-            initializer: () => [],
-            key: $$consumers,
-          },
-          {isPrivate: true},
-        ),
-        field(
-          {
-            initializer: providingValueInitializer || (() => defaultValue),
-            key: $$value,
-          },
-          {isPrivate: true},
-        ),
+        field({
+          initializer: () => [],
+          key: $$consumers,
+        }),
+        field({
+          initializer: providingValueInitializer || (() => defaultValue),
+          key: $$value,
+        }),
         method(
           {
             key: $$unsubscribe,
@@ -91,7 +85,7 @@ const createContext = defaultValue => {
               this[$$consumers] = this[$$consumers].filter(p => p !== consume);
             },
           },
-          {isBound: true, isPrivate: true},
+          {isBound: true},
         ),
         method(
           {
@@ -106,7 +100,7 @@ const createContext = defaultValue => {
               event.stopPropagation();
             },
           },
-          {isBound: true, isPrivate: true},
+          {isBound: true},
         ),
       ],
       kind,
@@ -166,7 +160,7 @@ const createContext = defaultValue => {
               this[contextValue] = v;
             },
           },
-          {isBound: true, isPrivate: true},
+          {isBound: true},
         ),
       ],
       kind,

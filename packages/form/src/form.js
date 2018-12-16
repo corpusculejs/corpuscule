@@ -164,15 +164,12 @@ const createFormDecorator = (provider, $formApi) => ({
             configInitializers.set(this, []);
           },
         },
-        {isPrivate: true, isStatic: true},
+        {isStatic: true},
       ),
-      field(
-        {
-          initializer: () => [],
-          key: $$unsubscriptions,
-        },
-        {isPrivate: true},
-      ),
+      field({
+        initializer: () => [],
+        key: $$unsubscriptions,
+      }),
       method(
         {
           key: $$submit,
@@ -183,7 +180,7 @@ const createFormDecorator = (provider, $formApi) => ({
             this[$formApi].submit();
           },
         },
-        {isBound: true, isPrivate: true},
+        {isBound: true},
       ),
     ],
     finisher(target) {

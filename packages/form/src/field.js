@@ -188,7 +188,7 @@ const createField = (consumer, $formApi, $$form) => {
               }
             },
           },
-          {isBound: true, isPrivate: true},
+          {isBound: true},
         ),
         method(
           {
@@ -201,7 +201,7 @@ const createField = (consumer, $formApi, $$form) => {
               change(parse ? parse(value, name) : value);
             },
           },
-          {isBound: true, isPrivate: true},
+          {isBound: true},
         ),
         method(
           {
@@ -210,83 +210,77 @@ const createField = (consumer, $formApi, $$form) => {
               this[$$formState].focus();
             },
           },
-          {isBound: true, isPrivate: true},
+          {isBound: true},
         ),
-        method(
-          {
-            key: $$subscribe,
-            value() {
-              if (!this[$$subscribingValid]) {
-                return;
-              }
+        method({
+          key: $$subscribe,
+          value() {
+            if (!this[$$subscribingValid]) {
+              return;
+            }
 
-              this[$$subscribingValid] = false;
+            this[$$subscribingValid] = false;
 
-              scheduler(() => {
-                this[$$unsubscribe]();
+            scheduler(() => {
+              this[$$unsubscribe]();
 
-                const [isEqual, name, subscription, validateFields] = getConfigProperties(
-                  this,
-                  'isEqual',
-                  'name',
-                  'subscription',
-                  'validateFields',
-                );
+              const [isEqual, name, subscription, validateFields] = getConfigProperties(
+                this,
+                'isEqual',
+                'name',
+                'subscription',
+                'validateFields',
+              );
 
-                const listener = state => {
-                  this[$$formState] = state;
-                  this[$$update]();
-                };
+              const listener = state => {
+                this[$$formState] = state;
+                this[$$update]();
+              };
 
-                this[$$unsubscribe] = this[$$form].registerField(
-                  name,
-                  listener,
-                  subscription || all,
-                  {
-                    getValidator: () => getConfigProperties(this, 'validate')[0],
-                    isEqual,
-                    validateFields,
-                  },
-                );
+              this[$$unsubscribe] = this[$$form].registerField(
+                name,
+                listener,
+                subscription || all,
+                {
+                  getValidator: () => getConfigProperties(this, 'validate')[0],
+                  isEqual,
+                  validateFields,
+                },
+              );
 
-                this[$$subscribingValid] = true;
-              });
-            },
+              this[$$subscribingValid] = true;
+            });
           },
-          {isPrivate: true},
-        ),
-        method(
-          {
-            key: $$update,
-            value() {
-              if (!this[$$updatingValid]) {
-                return;
-              }
+        }),
+        method({
+          key: $$update,
+          value() {
+            if (!this[$$updatingValid]) {
+              return;
+            }
 
-              this[$$updatingValid] = false;
+            this[$$updatingValid] = false;
 
-              scheduler(() => {
-                const [format, formatOnBlur] = getConfigProperties(this, 'format', 'formatOnBlur');
+            scheduler(() => {
+              const [format, formatOnBlur] = getConfigProperties(this, 'format', 'formatOnBlur');
 
-                const {blur: _b, change: _c, focus: _f, name, length: _l, value, ...meta} = this[
-                  $$formState
-                ];
+              const {blur: _b, change: _c, focus: _f, name, length: _l, value, ...meta} = this[
+                $$formState
+              ];
 
-                this[$input] = {
-                  name,
-                  onBlur: this[$$onBlur],
-                  onChange: this[$$onChange],
-                  onFocus: this[$$onFocus],
-                  value: !formatOnBlur && format ? format(value, name) : value,
-                };
+              this[$input] = {
+                name,
+                onBlur: this[$$onBlur],
+                onChange: this[$$onChange],
+                onFocus: this[$$onFocus],
+                value: !formatOnBlur && format ? format(value, name) : value,
+              };
 
-                this[$meta] = meta;
-                this[$$updatingValid] = true;
-              });
-            },
+              this[$meta] = meta;
+              this[$$updatingValid] = true;
+            });
           },
-          {isPrivate: true},
-        ),
+        }),
       ],
       finisher(target) {
         subscribePropertyName.set(target, $$subscribe);
