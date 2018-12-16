@@ -8,9 +8,7 @@ export interface CreateSupersOption {
 
 declare const getSuperInitializer: (
   elements: ReadonlyArray<ExtendedPropertyDescriptor>,
-  options: {
-    readonly [key: string]: string | symbol | CreateSupersOption;
-  },
+  options: Map<PropertyKey, PropertyKey | CreateSupersOption>,
 ) => ExtendedPropertyDescriptor[];
 
 export default getSuperInitializer;
