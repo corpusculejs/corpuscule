@@ -17,6 +17,19 @@ it as a decorator option.
 $ npm install @corpuscule/element
 ``` 
 
+## How to read this documentation
+This documentation uses square brackets with name inside: `[render]` to define a symbol value that
+can be imported from the main package. E.g., for `[render]` it could be following import:
+```javascript
+import {render} from '@corpuscule/element';
+
+class Foo {
+  [render]() { // this is a symbolic field name
+    return null;
+  }
+}
+```
+
 ## Getting started
 ```html
 <script type="module">
