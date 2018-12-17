@@ -29,7 +29,7 @@ const createSupers = (elements, options) =>
         const prototype = Object.getPrototypeOf(this.constructor.prototype);
 
         if (prototype && typeof prototype[name] === 'function') {
-          return prototype[name].bind(prototype);
+          return prototype[name].bind(this);
         }
 
         if (fallback) {
