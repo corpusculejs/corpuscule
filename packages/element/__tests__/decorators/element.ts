@@ -1,5 +1,5 @@
 // tslint:disable:no-unnecessary-class max-classes-per-file no-unbound-method no-empty
-import {HTMLElementMock} from '../../../../test/utils';
+import {createTestingPromise, HTMLElementMock} from '../../../../test/utils';
 import {
   createRoot,
   element as basicElement,
@@ -55,13 +55,16 @@ const testElementDecorator = () => {
       }).toThrowError('[render]() is not implemented');
     });
 
-    it('renders on element connection', () => {
+    it('renders on element connection', async () => {
       const connectedCallbackSpy = jasmine.createSpy('onConnect');
+
+      const [promise, resolve] = createTestingPromise();
 
       @element('x-test')
       class Test extends HTMLElementMock {
         public connectedCallback(): void {
           connectedCallbackSpy();
+          resolve();
         }
 
         protected [render](): null {
@@ -71,6 +74,8 @@ const testElementDecorator = () => {
 
       const test = new Test();
       test.connectedCallback();
+
+      await promise;
 
       expect(connectedCallbackSpy).toHaveBeenCalled();
       expect(schedulerSpy).toHaveBeenCalled();
@@ -151,13 +156,21 @@ const testElementDecorator = () => {
       expect(schedulerSpy).toHaveBeenCalledTimes(2);
     });
 
-    it('calls [updatedCallback] on each re-render', () => {
+    it('calls [updatedCallback] on each re-render', async () => {
       const updatedCallbackSpy = jasmine.createSpy('onUpdate');
+
+      const [connectedPromise, connectedResolve] = createTestingPromise();
+      const [promise, resolve] = createTestingPromise();
 
       @element('x-test')
       class Test extends HTMLElementMock {
+        public connectedCallback(): void {
+          connectedResolve();
+        }
+
         public [updatedCallback](): void {
           updatedCallbackSpy();
+          resolve();
         }
 
         public [render](): null {
@@ -166,14 +179,20 @@ const testElementDecorator = () => {
       }
 
       const test = new Test();
+
+      // This commands proceed connecting stage
       test.connectedCallback();
-
       const [renderCallback] = schedulerSpy.calls.mostRecent().args;
-      // this render ends mounting stage
       renderCallback();
 
-      // this render should call [updatedCallback]
-      renderCallback();
+      await connectedPromise;
+
+      // This commands causes update
+      test.attributeChangedCallback('test', '1', '2');
+      const [renderCallbackForUpdate] = schedulerSpy.calls.mostRecent().args;
+      renderCallbackForUpdate();
+
+      await promise;
 
       expect(updatedCallbackSpy).toHaveBeenCalledTimes(1);
     });
@@ -354,9 +373,11 @@ const testElementDecorator = () => {
       expect(customElements.define).toHaveBeenCalledTimes(2);
     });
 
-    it('calls only child render function if child inherits parent class', () => {
+    it('calls only child render function if child inherits parent class', async () => {
       const connectedSpyParent = jasmine.createSpy('connectedCallbackParent');
       const connectedSpyChild = jasmine.createSpy('connectedCallbackChild');
+
+      const [promise, resolve] = createTestingPromise();
 
       @element('x-parent')
       class Parent extends HTMLElementMock {
@@ -374,6 +395,7 @@ const testElementDecorator = () => {
         public connectedCallback(): void {
           super.connectedCallback();
           connectedSpyChild();
+          resolve();
         }
 
         public [render](): null {
@@ -383,6 +405,8 @@ const testElementDecorator = () => {
 
       const child = new Child();
       child.connectedCallback();
+
+      await promise;
 
       expect(schedulerSpy).toHaveBeenCalledTimes(1);
       expect(connectedSpyChild).toHaveBeenCalled();

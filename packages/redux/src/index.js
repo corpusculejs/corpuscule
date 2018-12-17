@@ -1,7 +1,7 @@
 import createContext from '@corpuscule/context';
 import {assertKind} from '@corpuscule/utils/lib/asserts';
+import createSupers from '@corpuscule/utils/lib/createSupers';
 import {accessor, method} from '@corpuscule/utils/lib/descriptors';
-import getSuperMethods from '@corpuscule/utils/lib/getSuperMethods';
 import {connectedRegistry} from './decorators';
 import {contextMap} from './utils';
 
@@ -23,23 +23,32 @@ export const connect = classDescriptor => {
   const $$unsubscribe = Symbol();
   const $$update = Symbol();
 
-  const [superDisconnectedCallback] = getSuperMethods(elements, [disconnectedCallbackKey]);
+  const $$superDisconnectedCallback = Symbol();
+
+  const supers = createSupers(
+    elements,
+    new Map([[disconnectedCallbackKey, $$superDisconnectedCallback]]),
+  );
 
   return {
     elements: [
       ...elements.filter(({key}) => key !== disconnectedCallbackKey),
+      ...supers,
 
       // Public
-      method({
-        key: disconnectedCallbackKey,
-        value() {
-          superDisconnectedCallback.call(this);
+      method(
+        {
+          key: disconnectedCallbackKey,
+          value() {
+            this[$$superDisconnectedCallback]();
 
-          if (this[$$unsubscribe]) {
-            this[$$unsubscribe]();
-          }
+            if (this[$$unsubscribe]) {
+              this[$$unsubscribe]();
+            }
+          },
         },
-      }),
+        {isBound: true},
+      ),
 
       // Protected
       accessor({
@@ -56,40 +65,34 @@ export const connect = classDescriptor => {
       }),
 
       // Private
-      method(
-        {
-          key: $$subscribe,
-          value() {
+      method({
+        key: $$subscribe,
+        value() {
+          this[$$update](this[$$context]);
+
+          this[$$unsubscribe] = this[$$context].subscribe(() => {
             this[$$update](this[$$context]);
-
-            this[$$unsubscribe] = this[$$context].subscribe(() => {
-              this[$$update](this[$$context]);
-            });
-          },
+          });
         },
-        {isPrivate: true},
-      ),
-      method(
-        {
-          key: $$update,
-          value({getState}) {
-            const registry = connectedRegistry.get(this.constructor);
+      }),
+      method({
+        key: $$update,
+        value({getState}) {
+          const registry = connectedRegistry.get(this.constructor);
 
-            if (!registry) {
-              return;
+          if (!registry) {
+            return;
+          }
+
+          for (const [key, getter] of registry) {
+            const nextValue = getter(getState());
+
+            if (nextValue !== this[key]) {
+              this[key] = nextValue;
             }
-
-            for (const [key, getter] of registry) {
-              const nextValue = getter(getState());
-
-              if (nextValue !== this[key]) {
-                this[key] = nextValue;
-              }
-            }
-          },
+          }
         },
-        {isPrivate: true},
-      ),
+      }),
     ],
     finisher(target) {
       contextMap.set(target, $$context);

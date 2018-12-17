@@ -17,18 +17,15 @@ const property = (guard = null) => ({initializer, key, kind, placement}) => {
 
   return accessor({
     extras: [
-      field(
-        {
-          initializer() {
-            const value = initializer ? initializer.call(this) : undefined;
-            check(value);
+      field({
+        initializer() {
+          const value = initializer ? initializer.call(this) : undefined;
+          check(value);
 
-            return value;
-          },
-          key: storage,
+          return value;
         },
-        {isPrivate: true},
-      ),
+        key: storage,
+      }),
     ],
     get() {
       return this[storage];

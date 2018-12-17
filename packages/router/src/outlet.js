@@ -1,7 +1,7 @@
 import createContext from '@corpuscule/context';
 import {assertKind} from '@corpuscule/utils/lib/asserts';
+import createSupers from '@corpuscule/utils/lib/createSupers';
 import {lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
-import getSuperMethods from '@corpuscule/utils/lib/getSuperMethods';
 import {layout, resolve} from './tokens/lifecycle';
 
 const {consumer, contextValue, provider, providingValue: router} = createContext();
@@ -21,43 +21,54 @@ const outlet = routes => classDescriptor => {
 
   const $$updateRoute = Symbol();
 
-  const [superConnectedCallback, superDisconnectedCallback, superResolve] = getSuperMethods(
+  const $$superConnectedCallback = Symbol();
+  const $$superDisconnectedCallback = Symbol();
+
+  const supers = createSupers(
     elements,
-    methods,
-    {
-      *[resolve](path) {
-        return yield path;
-      },
-    },
+    new Map([
+      [connectedCallbackKey, $$superConnectedCallback],
+      [disconnectedCallbackKey, $$superDisconnectedCallback],
+      [
+        resolve,
+        {
+          *fallback(path) {
+            return yield path;
+          },
+          key: resolve,
+        },
+      ],
+    ]),
   );
 
   return {
     elements: [
       ...elements.filter(({key}) => !filteringNames.includes(key)),
+      ...supers,
 
       // Public
-      method({
-        key: connectedCallbackKey,
-        value() {
-          window.addEventListener('popstate', this[$$updateRoute]);
-          superConnectedCallback.call(this);
+      method(
+        {
+          key: connectedCallbackKey,
+          value() {
+            window.addEventListener('popstate', this[$$updateRoute]);
+            this[$$superConnectedCallback]();
 
-          this[$$updateRoute](location.pathname);
+            this[$$updateRoute](location.pathname);
+          },
         },
-      }),
-      method({
-        key: disconnectedCallbackKey,
-        value() {
-          window.removeEventListener('popstate', this[$$updateRoute]);
-          superDisconnectedCallback.call(this);
+        {isBound: true},
+      ),
+      method(
+        {
+          key: disconnectedCallbackKey,
+          value() {
+            window.removeEventListener('popstate', this[$$updateRoute]);
+            this[$$superDisconnectedCallback]();
+          },
         },
-      }),
-
-      // Protected
-      method({
-        key: resolve,
-        value: superResolve,
-      }),
+        {isBound: true},
+      ),
 
       // Private
       method(
@@ -81,7 +92,7 @@ const outlet = routes => classDescriptor => {
             }
           },
         },
-        {isBound: true, isPrivate: true},
+        {isBound: true},
       ),
     ],
     kind,
