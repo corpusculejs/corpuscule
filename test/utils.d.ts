@@ -30,3 +30,5 @@ export class HTMLElementMock {
 
   public disconnectedCallback(): void;
 }
+
+export const createTestingPromise: () => [Promise<void>, () => void];

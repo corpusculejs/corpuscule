@@ -1,17 +1,13 @@
 export const lifecycleKeys = ['connectedCallback', 'disconnectedCallback'];
 
-const publicDescriptor = {
-  configurable: true,
-  enumerable: true,
-};
-
 export const field = (
   {extras, finisher, initializer, key},
-  {isPrivate = false, isReadonly = false, isStatic = false} = {},
+  {isReadonly = false, isStatic = false} = {},
 ) => ({
   descriptor: {
-    ...(isPrivate ? {} : publicDescriptor),
-    ...(isReadonly ? {} : {writable: true}),
+    configurable: true,
+    enumerable: true,
+    writable: !isReadonly,
   },
   extras,
   finisher,
@@ -23,7 +19,7 @@ export const field = (
 
 export const method = (
   {extras, finisher, key, value},
-  {isBound = false, isPrivate = false, isStatic = false} = {},
+  {isBound = false, isStatic = false} = {},
 ) => {
   if (isBound) {
     return field(
@@ -35,12 +31,12 @@ export const method = (
         },
         key,
       },
-      {isPrivate, isStatic},
+      {isStatic},
     );
   }
 
   return {
-    descriptor: isPrivate ? {value} : {...publicDescriptor, value},
+    descriptor: {configurable: true, value},
     extras,
     finisher,
     key,
@@ -51,7 +47,7 @@ export const method = (
 
 export const accessor = (
   {extras, finisher, initializer, key, get, set},
-  {adjust = methods => methods, isPrivate = false, isStatic = false, toArray = false} = {},
+  {adjust = methods => methods, isStatic = false, toArray = false} = {},
 ) => {
   let accessorMethods;
   let accessorField;
@@ -68,19 +64,16 @@ export const accessor = (
       },
     });
 
-    accessorField = field(
-      {
-        initializer,
-        key: storage,
-      },
-      {isPrivate: true},
-    );
+    accessorField = field({
+      initializer,
+      key: storage,
+    });
   } else {
     accessorMethods = adjust({get, set});
   }
 
   const result = {
-    descriptor: isPrivate ? accessorMethods : {...publicDescriptor, ...accessorMethods},
+    descriptor: {configurable: true, ...accessorMethods},
     extras,
     finisher,
     key,

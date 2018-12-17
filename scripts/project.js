@@ -11,7 +11,7 @@ const packages = {
     'asserts',
     'compose',
     'descriptors',
-    'getSuperMethods',
+    'createSupers',
     'shallowEqual',
     'scheduler',
   ],

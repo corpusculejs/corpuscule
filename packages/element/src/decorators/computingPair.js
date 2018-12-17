@@ -13,19 +13,13 @@ const createComputingPair = () => {
 
     return accessor({
       extras: [
-        field(
-          {
-            key: storage,
-          },
-          {isPrivate: true},
-        ),
-        field(
-          {
-            initializer: () => false,
-            key: correct,
-          },
-          {isPrivate: true},
-        ),
+        field({
+          key: storage,
+        }),
+        field({
+          initializer: () => false,
+          key: correct,
+        }),
       ],
       finisher(target) {
         if (registry.has(target)) {

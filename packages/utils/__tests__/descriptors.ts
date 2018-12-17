@@ -32,22 +32,6 @@ const testDescriptors = () => {
         });
       });
 
-      it('creates private field', () => {
-        const result = field(
-          {
-            extras,
-            finisher,
-            initializer: () => 10,
-            key: 'test',
-          },
-          {isPrivate: true},
-        );
-
-        expect(result.descriptor).toEqual({
-          writable: true,
-        });
-      });
-
       it('creates readonly field', () => {
         const result = field(
           {
@@ -62,6 +46,7 @@ const testDescriptors = () => {
         expect(result.descriptor).toEqual({
           configurable: true,
           enumerable: true,
+          writable: false,
         });
       });
 
@@ -102,7 +87,6 @@ const testDescriptors = () => {
         expect(result).toEqual({
           descriptor: {
             configurable: true,
-            enumerable: true,
             value,
           },
           extras,
@@ -144,24 +128,6 @@ const testDescriptors = () => {
         expect(fn()).toBe(finisher);
       });
 
-      it('creates private method', () => {
-        const value = () => 10;
-
-        const result = method(
-          {
-            extras,
-            finisher,
-            key: 'test',
-            value,
-          },
-          {isPrivate: true},
-        );
-
-        expect(result.descriptor).toEqual({
-          value,
-        });
-      });
-
       it('creates static method', () => {
         const result = method(
           {
@@ -198,7 +164,6 @@ const testDescriptors = () => {
         expect(result).toEqual({
           descriptor: {
             configurable: true,
-            enumerable: true,
             get,
             set,
           },
@@ -207,24 +172,6 @@ const testDescriptors = () => {
           key: 'test',
           kind: 'method',
           placement: 'prototype',
-        });
-      });
-
-      it('creates private method', () => {
-        const result = accessor(
-          {
-            extras,
-            finisher,
-            get,
-            key: 'test',
-            set,
-          },
-          {isPrivate: true},
-        );
-
-        expect(result.descriptor).toEqual({
-          get,
-          set,
         });
       });
 
@@ -256,13 +203,14 @@ const testDescriptors = () => {
         expect(result).toEqual({
           descriptor: {
             configurable: true,
-            enumerable: true,
             get: jasmine.any(Function),
             set: jasmine.any(Function),
           },
           extras: [
             {
               descriptor: {
+                configurable: true,
+                enumerable: true,
                 writable: true,
               },
               extras: undefined,
@@ -305,7 +253,6 @@ const testDescriptors = () => {
           {
             descriptor: {
               configurable: true,
-              enumerable: true,
               get: jasmine.any(Function),
               set: jasmine.any(Function),
             },
@@ -317,6 +264,8 @@ const testDescriptors = () => {
           },
           {
             descriptor: {
+              configurable: true,
+              enumerable: true,
               writable: true,
             },
             extras: undefined,

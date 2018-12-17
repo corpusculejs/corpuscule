@@ -1,6 +1,6 @@
 import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
+import createSupers from '@corpuscule/utils/lib/createSupers';
 import {accessor, field, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
-import getSuperMethods from '@corpuscule/utils/lib/getSuperMethods';
 import shallowEqual from '@corpuscule/utils/lib/shallowEqual';
 import {configOptions, createForm} from 'final-form';
 import {
@@ -95,54 +95,67 @@ const createFormDecorator = (provider, $formApi) => ({
 } = {}) => classDescriptor => {
   assertKind('form', 'class', classDescriptor.kind);
 
-  const {elements, kind} = provider(classDescriptor);
-
-  const [superConnectedCallback, superDisconnectedCallback] = getSuperMethods(
-    elements,
-    lifecycleKeys,
-  );
-
   const $$submit = Symbol();
   const $$unsubscriptions = Symbol();
+
+  const $$superConnectedCallback = Symbol();
+  const $$superDisconnectedCallback = Symbol();
+
+  const {elements, kind} = provider(classDescriptor);
+
+  const supers = createSupers(
+    elements,
+    new Map([
+      [connectedCallbackKey, $$superConnectedCallback],
+      [disconnectedCallbackKey, $$superDisconnectedCallback],
+    ]),
+  );
 
   return {
     elements: [
       ...elements.filter(({key}) => !lifecycleKeys.includes(key) && key !== $formState),
+      ...supers,
 
       // Public
-      method({
-        key: connectedCallbackKey,
-        value() {
-          if (decorators) {
-            for (const decorate of decorators) {
-              this[$$unsubscriptions].push(decorate(this[$formApi]));
+      method(
+        {
+          key: connectedCallbackKey,
+          value() {
+            if (decorators) {
+              for (const decorate of decorators) {
+                this[$$unsubscriptions].push(decorate(this[$formApi]));
+              }
             }
-          }
 
-          this[$$unsubscriptions].push(
-            this[$formApi].subscribe(state => {
-              this[$formState] = state;
-            }, subscription),
-          );
+            this[$$unsubscriptions].push(
+              this[$formApi].subscribe(state => {
+                this[$formState] = state;
+              }, subscription),
+            );
 
-          this.addEventListener('submit', this[$$submit]);
+            this.addEventListener('submit', this[$$submit]);
 
-          superConnectedCallback.call(this);
+            this[$$superConnectedCallback]();
+          },
         },
-      }),
-      method({
-        key: disconnectedCallbackKey,
-        value() {
-          for (const unsubscribe of this[$$unsubscriptions]) {
-            unsubscribe();
-          }
+        {isBound: true},
+      ),
+      method(
+        {
+          key: disconnectedCallbackKey,
+          value() {
+            for (const unsubscribe of this[$$unsubscriptions]) {
+              unsubscribe();
+            }
 
-          this[$$unsubscriptions] = [];
+            this[$$unsubscriptions] = [];
 
-          this.removeEventListener('submit', this[$$submit]);
-          superDisconnectedCallback.call(this);
+            this.removeEventListener('submit', this[$$submit]);
+            this[$$superDisconnectedCallback]();
+          },
         },
-      }),
+        {isBound: true},
+      ),
 
       // Protected
       field({
@@ -164,15 +177,12 @@ const createFormDecorator = (provider, $formApi) => ({
             configInitializers.set(this, []);
           },
         },
-        {isPrivate: true, isStatic: true},
+        {isStatic: true},
       ),
-      field(
-        {
-          initializer: () => [],
-          key: $$unsubscriptions,
-        },
-        {isPrivate: true},
-      ),
+      field({
+        initializer: () => [],
+        key: $$unsubscriptions,
+      }),
       method(
         {
           key: $$submit,
@@ -183,7 +193,7 @@ const createFormDecorator = (provider, $formApi) => ({
             this[$formApi].submit();
           },
         },
-        {isBound: true, isPrivate: true},
+        {isBound: true},
       ),
     ],
     finisher(target) {
