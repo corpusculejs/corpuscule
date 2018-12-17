@@ -164,21 +164,27 @@ const testCreateSupers = () => {
       const decorator = createDecorator(new Map([['foo', 'superFoo']]));
 
       class GrandParent {
+        public state: number = 1;
+
         public foo(): void {
-          fooSpy();
+          fooSpy(this.state);
         }
       }
 
       @decorator
-      class Parent extends GrandParent {}
+      class Parent extends GrandParent {
+        public state: number = 2;
+      }
 
       @decorator
-      class Child extends Parent {}
+      class Child extends Parent {
+        public state: number = 3;
+      }
 
       const child: any = new Child();
       child.superFoo();
 
-      expect(fooSpy).toHaveBeenCalled();
+      expect(fooSpy).toHaveBeenCalledWith(3);
     });
   });
 };
