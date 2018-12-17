@@ -190,7 +190,7 @@ Here:
 * `result: R` is a value returned by [`[render]`](#render-unknown) method. It is send to render
 method directly, without any changes.
 * `container: Element | DocumentFragment` is a html element where renderer should render `result`.
-It is a value returned by [`[createRoot]`](#create-root-element-shadowroot) function, the root of
+It is a value returned by [`[createRoot]`](#createroot-element--shadowroot) function, the root of
 the element.
 * `context: C` is an element instance. It could be used for different options, e.g. bining event
 context in `lit-html`, or just omitted.
