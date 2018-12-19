@@ -205,7 +205,13 @@ Render function returns desired result in the format component renderer could wo
 receives nothing and could return anything which then will be send directly to the renderer
 function.
 
-## Renderer Agnostic
+## Features
+### Inheritable
+Basically, `@element` doesn't restrict working with JS OOP in any way. You can create any hierarchy
+you want, extending both classes marked with `@element` and regular ones. Decorated elements in
+that case will act as regular classes.
+
+### Renderer Agnostic
 As mentioned above, `@corpuscule/element` is renderer-agnostic, so you can to use any renderer
 system you can put into a renderer function with the following signature.
 ```typescript
