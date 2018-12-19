@@ -261,6 +261,16 @@ class Class extends HTMLElement {
 }
 ``` 
 
+#### Example
+```javascript
+@element('my-component', {renderer})
+class MyComponent extends HTMLElement {
+  [render]() {
+    return html`<div>Hello, World!</div>`
+  }
+}
+```
+
 ### `@attribute(name: string, guard: BooleanConstructor | StringConstructor | NumberConstructor): PropertyDecorator`
 Attribute decorator binds class property to an attribute with the `name` and provides transformation
 mechanism that allows to convert value with type described by `guard` to and from attribute string.
@@ -268,15 +278,73 @@ mechanism that allows to convert value with type described by `guard` to and fro
 * `guard`. Constructor of one of three primitive types: `String`, `Boolean` or `Number`. It
 describes transformation process for the attribute.
 
+#### Example
+```javascript
+@element('my-button', {renderer})
+class MyButton extends HTMLElement {
+  @attribute('disabled', Boolean)
+  isDisabled;
+  
+  [render]() {
+    return html`
+      <button disabled=${this.isDisabled}><slot></slot></button>
+      ${this.isDisabled ? html`<span>Button disabled</span>` : nothing}
+    `;
+  }
+}
+```
+```html
+<my-button disabled>Don't click me</my-button>
+```
+
 ### `@property(guard: (value: unknown) => boolean): PropertyDecorator`
 Property decorator converts class property to an element property.
 * `guard`. Function that checks received value to be proper type. Guards are inspired by [React
 PropTypes](https://reactjs.org/docs/typechecking-with-proptypes.html) and should be used in a
 similar way.
 
+#### Example
+```javascript
+@element('my-square-info', {renderer})
+class MySquareInfo extends HTMLElement {
+  @property(v => typeof v === 'object' && v.width && v.height)
+  square = {width: 10, height: 10};
+  
+  [render]() {
+    return html`
+      <div>Square width: ${this.square.width}</div>
+      <div>Square height: ${this.square.height}</div>
+    `;
+  }
+}
+```
+```javascript
+render(html`<my-square-info .square={{width: 40, height: 40}}></my-square-info>`, document.body);
+```
+
 ### `@internal: PropertyDecorator`
 Internal property decorator converts property to an element internal property. It receive no 
 params and can be applied as is.
+
+#### Example
+```javascript
+@element('my-square-info', {renderer})
+class MySquareInfo extends HTMLElement {
+  @internal
+  isOpen = false;
+  
+  handleOpen() {
+    this.isOpen = !this.isOpen;
+  }
+  
+  [render]() {
+    return html`
+      <button @click=${this.handleOpen}>Open modal</button>
+      <some-modal ?open=${this.isOpen}></some-modal>
+    `;
+  }
+}
+```
 
 ### `createComputingPair(): {computer: PropertyDecorator, observer: PropertyDecorator}`
 Function allows to create a pair of bound decorators, `@observer` and `@computer` that could be used
@@ -294,6 +362,34 @@ any change.
 
 Be accurate with [internal properties](#internal), they will change even if they have the same
 value.
+
+#### Example
+```javascript
+const calc = createComputingPair();
+
+class Foo {
+  @calc.observer
+  bar = 1;
+  
+  @calc.observer
+  baz = 2;
+
+  @calc.computer
+  get calculated() {
+    return this.bar + this.baz
+  }
+}
+
+const foo = new Foo();
+
+const first = foo.calculated; // `calculated` is called
+const second = foo.calculated; // `calculated` is not called
+
+foo.bar = 2;
+
+const third = foo.calculated; // `calculated` is called again because `foo.bar`
+                              // is changed, and `calculated` depends on it
+``` 
 
 ## Future
 There is some plans for the future to improve this package.
