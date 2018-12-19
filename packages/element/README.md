@@ -40,7 +40,7 @@ class Foo {
   @element('my-element', {renderer})
   class MyElement extends HTMLElement {
     @attribute('mood')
-    mood = 'happy';
+    mood;
     
     [render]() {
       return html`
@@ -53,6 +53,7 @@ class Foo {
 
 <my-element mood="great"></my-element>
 ```
+
 ## Property Types
 Corpuscule element contains three types of properties that differs in displaying, settings and
 affecting the rendering process. 
@@ -74,10 +75,11 @@ that it should only be string type, but Corpuscule allows it to have three primi
   * It's not required for the attribute name to be equal to the property it is bound with. There is
   no restrictions for it.
   * Attributes are pure (in React meaning). It means that the old attribute value is compared with 
-  the new one on set and if they are equal, rendering won't happen.
+  the new one on set and if they are equal rendering won't happen.
   * Each attribute update calls `attributeChangedCallback` method with attribute name, old and new
   value. 
   * Each attribute update initiates rendering. 
+
 ### Property
 Property is a simple element class property that has two main differences:
   * Property can be guarded by a function that checks its type. Since property can have any type,
@@ -88,6 +90,7 @@ Property is a simple element class property that has two main differences:
   * Each property update calls `[propertyChangedCallback]` method with property name, old and new 
   value.
   * Each property update initiates rendering.
+
 ### Internal
 Internal property is a property that works under the hood. They were planned as element internal
 properties, so avoid sharing them and reusing outside of the class.
@@ -114,10 +117,12 @@ separate from others.
 
 #### `constructor()`
 **Hook Type**: JS Class
+
 Everything starts with the creation of the custom element class.
 
 #### `[createRoot](): Element | ShadowRoot`
 **Hook Type**: Corpuscule
+
 This method creates a root container that will be used in rendering method. By default it has
 following implementation and just creates Shadow Root.
 ```typescript
@@ -129,11 +134,12 @@ You can override it to, e.g., use element itself as a container (aka Light DOM) 
 container specific element inside Shadow Root.
 
 ### Connecting
-Element is considered connected when it appears in the current page DOM. **Note**: don't forget,
-single element could be connected multiple times.
+Element is considered connected when it appears in the current page DOM. **Note**: single element
+could be connected multiple times.
 
 #### `connectedCallback(): void`
 **Hook Type**: Custom Element
+
 This callback is called whenever element is connected to DOM. During the connection Corpuscule 
 performs the initial rendering, and then user-defined `connectedCallback` is fired. React users 
 may consider it as a [`componentDidMount`](https://reactjs.org/docs/react-component.html#componentdidmount)
@@ -141,6 +147,7 @@ lifecycle hook.
 
 #### `disconnectedCallback(): void`
 **Hook Type**: Custom Element
+
 This callback is called whenever element is disconnected from DOM. Since there is nothing for 
 Corpuscule to do at this time, user-defined `disconnectedCallback` will be called directly. React 
 users may consider it as a [`componentWillUnmount`](https://reactjs.org/docs/react-component.html#componentwill)
@@ -158,26 +165,30 @@ asynchronous process, it will cause additional render.
 
 #### `attributeChangedCallback(attributeName: string, oldValue: string, newValue: string): void`
 **Hook Type**: Custom Element
+
 This callback is called each time [attribute](#attribute) is changed. It receives name of the
 changed attribute, its old and new value. Do not check old and new values equality, Corpuscule
 already does it and doesn't start user-defined `attributeChangedCallback` if values are equal. After
-the user-defined callback is over, the rendering starts.
+the user-defined callback is over the rendering starts.
 
 #### `[propertyChangedCallback](propertyName: PropertyKey, oldValue: unknown, newValue: unknown): void`
 **Hook Type**: Corpuscule
+
 This callback is called each time [property](#property) is changed. It received name of the changed
-property, its old and new value. The behavior is totally identical to `attributesChangedCallback`
-except for receiving values type: old and new value have the type of current property, and the
-property name could be `string` or `symbol`.
+property, its old and new value. The behavior is identical to `attributesChangedCallback` except for
+receiving values type: old and new value have the type of current property and the property name
+could be `string` or `symbol`.
 
 #### `[internalChangedCallback](propertyName: PropertyKey, oldValue: unknown, newValue: unknown): void`
 **Hook Type**: Corpuscule
+
 This callback is called each time [internal property](#internal) is changed. It receives name of the
-changed internal property, its old and new value. The behavior is the same with
-`[propertyChangedCallback]`.
+changed internal property, its old and new value. In contrast with other property callbacks, 
+`internalChangedCallback` does not perform equality check.
 
 #### `[updatedCallback](): void`
 **Hook Type**: Corpuscule
+
 This callback is called each time after the rendering is over except for the first time when 
 `connectedCallback` is called instead. React users may consider it [`componentDidUpdate`](https://reactjs.org/docs/react-component.html#componentdidupdate)
 lifecycle hook.
@@ -189,6 +200,7 @@ is used.
 
 #### `[render](): unknown`
 **Hook Type**: Corpuscule
+
 Render function returns desired result in the format component renderer could work with. Renderer
 receives nothing and could return anything which then will be send directly to the renderer
 function.
