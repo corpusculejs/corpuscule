@@ -325,7 +325,7 @@ class MySquareInfo extends HTMLElement {
 }
 ```
 ```javascript
-render(html`<my-square-info .square={{width: 40, height: 40}}></my-square-info>`, document.body);
+render(html`<my-square-info .square=${{width: 40, height: 40}}></my-square-info>`, document.body);
 ```
 
 ### `@internal: PropertyDecorator`
