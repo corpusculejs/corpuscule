@@ -95,6 +95,8 @@ Property is a simple element class property that has two main differences:
 Internal property is a property that works under the hood. They were planned as element internal
 properties, so avoid sharing them and reusing outside of the class.
 
+For React users this concept may be familiar as a [Component State](https://reactjs.org/docs/state-and-lifecycle.html).
+
 Features: 
   * Internal properties are impure. Any change causes rendering.
   * Internal property doesn't have any guard on it.
@@ -141,16 +143,18 @@ could be connected multiple times.
 **Hook Type**: Custom Element
 
 This callback is called whenever element is connected to DOM. During the connection Corpuscule 
-performs the initial rendering, and then user-defined `connectedCallback` is fired. React users 
-may consider it as a [`componentDidMount`](https://reactjs.org/docs/react-component.html#componentdidmount)
+performs the initial rendering, and then user-defined `connectedCallback` is fired.
+
+React users may consider it as a [`componentDidMount`](https://reactjs.org/docs/react-component.html#componentdidmount)
 lifecycle hook.
 
 #### `disconnectedCallback(): void`
 **Hook Type**: Custom Element
 
 This callback is called whenever element is disconnected from DOM. Since there is nothing for 
-Corpuscule to do at this time, user-defined `disconnectedCallback` will be called directly. React 
-users may consider it as a [`componentWillUnmount`](https://reactjs.org/docs/react-component.html#componentwill)
+Corpuscule to do at this time, user-defined `disconnectedCallback` will be called directly.
+
+React users may consider it as a [`componentWillUnmount`](https://reactjs.org/docs/react-component.html#componentwill)
 lifecycle hook, but note that it is called **after** component is removed from DOM tree when
 `componentWillUnmount` is called **before** it.
 
@@ -190,7 +194,9 @@ changed internal property, its old and new value. In contrast with other propert
 **Hook Type**: Corpuscule
 
 This callback is called each time after the rendering is over except for the first time when 
-`connectedCallback` is called instead. React users may consider it [`componentDidUpdate`](https://reactjs.org/docs/react-component.html#componentdidupdate)
+`connectedCallback` is called instead.
+
+React users may consider it [`componentDidUpdate`](https://reactjs.org/docs/react-component.html#componentdidupdate)
 lifecycle hook.
 
 ### Rendering
