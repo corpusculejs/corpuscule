@@ -98,19 +98,14 @@ Schema for this idea is following:
 ```
 
 ## API
-### `createContext<T>(defaultValue?: T): ContextTools`
-Main function that creates provider-consumer decorators pair along with
-symbol properties they use.
+#### `createContext<T>(defaultValue?: T): ContextTools`
+Main function that creates provider-consumer decorators pair along with symbol properties they use. 
+Returns object that has following signature:
+* `consumer: ClassDecorator` - decorator that allows custom class to receive context.
+* `contextValue: unique symbol` - name of class property where context will be placed.
+* `provider: ClassDecorator` - decorator that allows custom class to send context.
+* `providingValue: unique symbol` - name of class property from which context will be send.
 
-`ContextTools` has following signature:
-```typescript
-interface ContextTools {
-  consumer: ClassDecorator;
-  contextValue: unique symbol;
-  provider: ClassDecorator;
-  providingValue: unique symbol;
-}
-```
 `@provider` changes class signature in following way:
 ```typescript
 interface Provider {
