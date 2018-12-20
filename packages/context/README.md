@@ -1,5 +1,5 @@
 # `@corpuscule/context`
-Lightweight set of decorators to create DOM-dependent context for web components.
+Lightweight set of decorators for creating DOM-dependent context for web components.
 
 Context is an approach to share some data for all components in a some DOM tree branch. It creates
 a local state that is accessible from any component on any nesting level without direct forwarding
