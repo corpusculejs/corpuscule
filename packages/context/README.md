@@ -10,6 +10,13 @@ It was invented and popularized by [React](https://reactjs.org/docs/context.html
 This package also uses approach to implement context for web components suggested by Justin Fagnani
 in [his talk](https://youtu.be/6o5zaKHedTE).
 
+## Features
+* **Zero third-party dependencies**. Package still contains Corpuscule dependencies, but no
+third-party library is used.
+* **Framework agnostic**. You can use package with any Web Components compatible framework/library.
+* **Small**. Only [1.3Kb gzipped](https://bundlephobia.com/result?p=@corpuscule/context@0.6.0)
+* **Typed**. [Typescript](http://www.typescriptlang.org/) typings are included.
+
 ## Installation
 ```bash
 $ npm install --save @corupuscule/context
@@ -21,10 +28,38 @@ $ yarn add @corupuscule/context
 
 ## How it works
 `@corpuscule/context` provides a single function that creates provider-consumer decorators pair.
-When you apply `@provider` decorator to a component, it gets the ability to send the value of its
+When you apply `@provider` decorator to a component, it gets an ability to send the value of its
 `[providingValue]` property down to the DOM tree. Component marked with `@consumer` decorator is
-able to receive this value in `[contextValue]` property during connection stage if it is descendant
-of a provider component.
+able to receive this value in `[contextValue]` property during connection stage if it is a
+descendant of a provider component.
+
+You also can:
+* Use multiple contexts for a single DOM tree branch.
+* Use single context for multiple DOM tree branches.
+
+What does it mean? Let's imagine that we have two contexts, **A** and **B** and two components that
+provides contexts down to the DOM tree, e.g., `a-provider` and `b-provider`. Then you make
+`b-provider` a child of an `a-provider` and add a couple of components as children of
+`b-provider`. These components now can receive both **A** and **B** contexts if you make them
+consumers for these contexts.
+
+Schema for this idea is following:
+```
+<!-- first branch -->
+<a-provider>                               | A     
+  <b-provider>                             |    | B
+    <my-component-1>                       |    |  
+       <my-component-2></my-component-2>   V    V  
+    </my-component-1>                  
+  </b-provider>                    
+</a-provider>                      
+<!-- second branch -->
+<a-provider-2>                             | A     
+  <my-component-1>                         |
+    <my-component-2></my-component-2>      V
+  </my-component-1>
+</a-provider>
+```
 
 ### Example
 ```html
@@ -60,35 +95,6 @@ of a provider component.
 <my-provider>
   <my-consumer></my-consumer>
 </my-provider>
-```
-
-## Features
-You can:
-* Use multiple contexts for a single DOM tree branch.
-* Use single context for multiple DOM tree branches.
-
-What does it mean? Let's imagine that we have two contexts, **A** and **B** and two components that
-provides contexts down to the DOM tree, e.g., `a-provider` and `b-provider`. Then you make
-`b-provider` a child of an `a-provider` and add a couple of components as children of
-`b-provider`. These components now can receive both **A** and **B** contexts if you make them
-consumers for these contexts.
-
-Schema for this idea is following:
-```
-<!-- first branch -->
-<a-provider>                               | A     
-  <b-provider>                             |    | B
-    <my-component-1>                       |    |  
-       <my-component-2></my-component-2>   V    V  
-    </my-component-1>                  
-  </b-provider>                    
-</a-provider>                      
-<!-- second branch -->
-<a-provider-2>                             | A     
-  <my-component-1>                         |
-    <my-component-2></my-component-2>      V
-  </my-component-1>
-</a-provider>
 ```
 
 ## API
