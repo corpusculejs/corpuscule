@@ -4,20 +4,22 @@
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![Test Coverage](https://img.shields.io/codecov/c/github/corpusculejs/corpuscule/master.svg)](https://codecov.io/gh/corpusculejs/corpuscule)
 
-Corpuscule is a library set built on top of WebComponents standard. It provides all necessary tools
+Corpuscule is a library set built on top of Web Components standard. It provides all necessary tools
 to built whole application from scratch including redux connector, router and form utils.
 
 ## Principles
 
 ### Be universal
-You can use almost all Corpuscule tools with any WebComponent-based system, like `Polymer`,
-`lit-element` or `SkateJS`. They are not bound to `@corpuscule/element` and implemented with only
-web component lifecycle hooks. Also, `@corpuscule/element` can use any renderer you want: 
-`lit-html`, `hyperHTML`, `preact` or even `React`.
+You can use almost all Corpuscule tools with any Web Component based system, like [Polymer](https://www.polymer-project.org/),
+[LitElement](https://lit-element.polymer-project.org/) or [SkateJS](https://skatejs.netlify.com/).
+They are not bound to `@corpuscule/element` and implemented with only web components lifecycle
+hooks. Also, `@corpuscule/element` can use any renderer you want: [lit-html](https://lit-html.polymer-project.org/),
+[hyperHTML](https://github.com/WebReflection/hyperHTML), [preact](https://preactjs.com/) or even
+[React](https://reactjs.org/).
 
 ### Be small yet powerful
 Bundle size matters. It becomes critical for people with slow internet connection. Corpuscule
-already uses WebComponents standard that takes care of component system, so everything it needs is
+already uses Web Components standard that takes care of component system, so everything it needs is
 to have as many useful features as possible in smallest size as possible. 
 
 ### Be at the bleeding edge of JavaScript
