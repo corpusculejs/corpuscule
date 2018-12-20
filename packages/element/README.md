@@ -14,7 +14,11 @@ it as a decorator option.
 
 ## Installation
 ```bash
-$ npm install @corpuscule/element
+$ npm install --save @corpuscule/element
+``` 
+or
+```bash
+$ yarn add @corpuscule/element
 ``` 
 
 ## How to read this documentation
