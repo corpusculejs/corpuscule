@@ -10,6 +10,15 @@ It was invented and popularized by [React](https://reactjs.org/docs/context.html
 This package also uses approach to implement context for web components suggested by Justin Fagnani
 in [his talk](https://youtu.be/6o5zaKHedTE).
 
+## Installation
+```bash
+$ npm install --save @corupuscule/context
+```
+or
+```bash
+$ yarn add @corupuscule/context
+```
+
 ## How it works
 `@corpuscule/context` provides a single function that creates provider-consumer decorators pair.
 When you apply `@provider` decorator to a component, it gets the ability to send the value of its
