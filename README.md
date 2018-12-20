@@ -7,20 +7,43 @@
 Corpuscule is a library set built on top of WebComponents standard. It provides all necessary tools
 to built whole application from scratch including redux connector, router and form utils.
 
-Corpuscule is based on following concepts:
+## Principles
 
-* **Be universal**. You can use almost all Corpuscule tools with any WebComponent-based system, like
-`Polymer`, `lit-element` or `SkateJS`. They are not bound to `@corpuscule/element` and implemented
-with only web component lifecycle hooks. Also, `@corpuscule/element` can use any renderer you want:
+### Be universal
+You can use almost all Corpuscule tools with any WebComponent-based system, like `Polymer`,
+`lit-element` or `SkateJS`. They are not bound to `@corpuscule/element` and implemented with only
+web component lifecycle hooks. Also, `@corpuscule/element` can use any renderer you want: 
 `lit-html`, `hyperHTML`, `preact` or even `React`.
 
-* **Be small yet powerful**. Bundle size matters. It becomes critical for people with slow internet
-connection. Corpuscule already uses WebComponents standard that takes care of component system, so
-everything it needs is to have as many useful features as possible in smallest size as possible. 
+### Be small yet powerful
+Bundle size matters. It becomes critical for people with slow internet connection. Corpuscule
+already uses WebComponents standard that takes care of component system, so everything it needs is
+to have as many useful features as possible in smallest size as possible. 
 
-* **Be at the bleeding edge of JavaScript**. Features adding to the JavaScript language simplify
-developer's life, give new opportunities and solve problems like security holes. That's why 
-Corpuscule is trying to be on the bleeding edge of language development and use the newest features.
+### Be at the bleeding edge of JavaScript
+Features adding to the JavaScript language simplify developer's life, give new opportunities and
+solve problems like security holes. That's why Corpuscule is trying to be on the bleeding edge of
+language development and use the newest features.
+
+### Separate semantics from logic
+Semantics is a keystone of the web for a long time now. We used to make our markup as meaningful as
+possible. We use `<article>` instead of `<div>` to wrap our articles because `<article>` makes way
+more sense than a simple `<div>`. We have `<header>`, `<section>` and `<footer>` tags to properly
+split our layout to parts.
+
+However, with the React popularity growing we have got not only great solutions but also a handful
+of doubtful patterns. One of them is an approach to put logic into the markup. This approach brings
+such components as `<Provider>`, `<Suspense>`, `<Connect(MyComponent)>` etc. that can have no own
+markup at all! 
+ 
+And while it is acceptable for React components since they exist only on the JS level it could be
+bad for web components which have their representation in the DOM. Existence of only logic
+components in DOM breaks the idea of semantics.
+
+That's why Corpuscule suggests slightly different approach. Since it is just a logic, we can apply
+it to semantic web components using decorators and class properties. It means that single web
+component could be a component connected to Redux, custom context provider and router outlet at the
+same time.
 
 ## Technologies
 Some technological solutions of Corpuscule could be surprising and confusing. This section provides
