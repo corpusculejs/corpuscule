@@ -239,13 +239,13 @@ context in `lit-html`, or just omitted.
 ## API
 This section describes decorators API and how to use them.
 
-### `@element(name: string, options: ElementDecoratorOptions)`
+#### `@element(name: string, options: ElementDecoratorOptions)`
 Element decorator is the main detail of the `@corpuscule/element`, it brings other decorators
 together and unites them. 
 
-Element decorator has following parameters:
+Element decorator receives following parameters:
 * `name: string`. The name of your Custom element.
-* `options: ElementDecoratorsOptions`. This object consists of two elements:
+* `options: ElementDecoratorsOptions`. Object consists of two elements:
   * `renderer: <C, R>(result: R, container: Element | DocumentFragment, context: C) => void`.
   Function that performs renderer operation for your element. More details at the [Renderer Agnostic](#renderer-agnostic)
   section. Specifying this function is required.
@@ -271,7 +271,7 @@ class Class extends HTMLElement {
 }
 ``` 
 
-#### Example
+##### Example
 ```javascript
 @element('my-component', {renderer})
 class MyComponent extends HTMLElement {
@@ -281,14 +281,14 @@ class MyComponent extends HTMLElement {
 }
 ```
 
-### `@attribute(name: string, guard: BooleanConstructor | StringConstructor | NumberConstructor): PropertyDecorator`
+#### `@attribute(name: string, guard: AttributeGuard): PropertyDecorator`
 Attribute decorator binds class property to an attribute with the `name` and provides transformation
 mechanism that allows to convert value with type described by `guard` to and from attribute string.
 * `name`. Attribute name by which it can be set via `setAttribute` and get by `getAttribute`.
 * `guard`. Constructor of one of three primitive types: `String`, `Boolean` or `Number`. It
 describes transformation process for the attribute.
 
-#### Example
+##### Example
 ```javascript
 @element('my-button', {renderer})
 class MyButton extends HTMLElement {
@@ -307,13 +307,13 @@ class MyButton extends HTMLElement {
 <my-button disabled>Don't click me</my-button>
 ```
 
-### `@property(guard: (value: unknown) => boolean): PropertyDecorator`
+#### `@property(guard: (value: unknown) => boolean): PropertyDecorator`
 Property decorator converts class property to an element property.
 * `guard`. Function that checks received value to be proper type. Guards are inspired by [React
 PropTypes](https://reactjs.org/docs/typechecking-with-proptypes.html) and should be used in a
 similar way.
 
-#### Example
+##### Example
 ```javascript
 @element('my-square-info', {renderer})
 class MySquareInfo extends HTMLElement {
@@ -332,11 +332,11 @@ class MySquareInfo extends HTMLElement {
 render(html`<my-square-info .square=${{width: 40, height: 40}}></my-square-info>`, document.body);
 ```
 
-### `@internal: PropertyDecorator`
+#### `@internal: PropertyDecorator`
 Internal property decorator converts property to an element internal property. It receive no 
 params and can be applied as is.
 
-#### Example
+##### Example
 ```javascript
 @element('my-square-info', {renderer})
 class MySquareInfo extends HTMLElement {
@@ -356,14 +356,14 @@ class MySquareInfo extends HTMLElement {
 }
 ```
 
-### `createComputingPair(): {computer: PropertyDecorator, observer: PropertyDecorator}`
-Function allows to create a pair of bound decorators, `@observer` and `@computer` that could be used
-to create computed properties.
-* `@computer`. This decorator is the main one. It applies to a single getter that computes something requiring
-other class properties and depends on their values. Once applied, `@computer` calculates result on
-the first getter call, memoizes it and then returns memoized result on next calls.
-* `@observer`. This decorator should be used to mark all dependencies required for the `@computed`. When they are
-changed, `@observer` marks current computation state as "dirty", and then `@computer` has to
+#### `createComputingPair(): ComputingPair`
+Function creates an object that contains a pair of bound decorators, `@observer` and `@computer`
+that could be used to create computed properties.
+* `@computer`. Applies to a single getter that computes something requiring other class properties
+and depends on their values. Once applied, `@computer` calculates result on the first getter call,
+memoizes it and then returns memoized result on next calls.
+* `@observer`. Should be used to mark all dependencies required for the `@computed`. When they are
+changed, `@observer` sets current computation state to "dirty", and then `@computer` has to
 recalculate result on the next getter call and memoize it again.
 
 One computing pair could be applied to any number of properties. They just should depend on the same
@@ -373,7 +373,7 @@ any change.
 Be accurate with [internal properties](#internal), they will change even if they have the same
 value.
 
-#### Example
+##### Example
 ```javascript
 const calc = createComputingPair();
 
