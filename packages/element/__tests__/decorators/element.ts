@@ -1,5 +1,5 @@
 // tslint:disable:no-unnecessary-class max-classes-per-file no-unbound-method no-empty
-import {createTestingPromise, HTMLElementMock} from '../../../../test/utils';
+import {createTestingPromise, genName, HTMLElementMock} from '../../../../test/utils';
 import {
   createRoot,
   element as basicElement,
@@ -11,7 +11,7 @@ import {
 
 const testElementDecorator = () => {
   describe('@element', () => {
-    let element: (name: string) => ClassDecorator;
+    let element: (name: string, params?: {extends: keyof HTMLElementTagNameMap}) => ClassDecorator;
     let rendererSpy: jasmine.Spy;
     let schedulerSpy: jasmine.Spy;
 
@@ -20,7 +20,8 @@ const testElementDecorator = () => {
       schedulerSpy = jasmine.createSpy('onSchedule');
       spyOn(customElements, 'define');
 
-      element = name => basicElement(name, {renderer: rendererSpy, scheduler: schedulerSpy});
+      element = (name, params = {} as any) =>
+        basicElement(name, {...params, renderer: rendererSpy, scheduler: schedulerSpy});
     });
 
     it('adds element to a custom elements registry', () => {
@@ -31,7 +32,7 @@ const testElementDecorator = () => {
         }
       }
 
-      expect(customElements.define).toHaveBeenCalledWith('x-test', Test);
+      expect(customElements.define).toHaveBeenCalledWith('x-test', Test, undefined);
     });
 
     it('adds "is" readonly field with name to element', () => {
@@ -411,6 +412,42 @@ const testElementDecorator = () => {
       expect(schedulerSpy).toHaveBeenCalledTimes(1);
       expect(connectedSpyChild).toHaveBeenCalled();
       expect(connectedSpyParent).toHaveBeenCalled();
+    });
+
+    describe('customized built-in elements', () => {
+      it('allows to create', () => {
+        const name = genName();
+
+        @element(name, {extends: 'a'})
+        class Test extends HTMLAnchorElement {}
+
+        expect(customElements.define).toHaveBeenCalledWith(name, Test, {extends: 'a'});
+      });
+
+      it('does not re-render', () => {
+        (customElements.define as jasmine.Spy).and.callThrough();
+
+        @element(genName(), {extends: 'a'})
+        class Test extends HTMLAnchorElement {}
+
+        const test = new Test();
+
+        (test as any).connectedCallback();
+
+        expect(schedulerSpy).not.toHaveBeenCalled();
+      });
+
+      it('throws error if [render] is defined', () => {
+        expect(() => {
+          @element(genName(), {extends: 'a'})
+          // @ts-ignore
+          class Test extends HTMLAnchorElement {
+            public [render](): null {
+              return null;
+            }
+          }
+        }).toThrowError('[render]() cannot be used for built-in elements');
+      });
     });
   });
 };
