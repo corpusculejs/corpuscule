@@ -5,6 +5,7 @@ export interface ComputingPair {
 }
 
 export interface ElementDecoratorParams {
+  readonly extends?: keyof HTMLElementTagNameMap;
   readonly renderer: (
     result: unknown,
     container: Element | DocumentFragment,

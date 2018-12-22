@@ -68,6 +68,13 @@ export class HTMLElementMock {
   }
 }
 
+export const genName = () => {
+  const arr = new Uint32Array(2);
+  const [rnd1, rnd2] = crypto.getRandomValues(arr);
+
+  return `x-${rnd1}${rnd2}`;
+};
+
 export const createTestingPromise = () => {
   let resolve;
   const promise = new Promise(r => {
