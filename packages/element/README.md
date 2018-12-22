@@ -239,7 +239,7 @@ context in `lit-html`, or just omitted.
 ## API
 This section describes decorators API and how to use them.
 
-#### `@element(name: string, options: ElementDecoratorOptions)`
+#### `@element(name: string, options: ElementDecoratorOptions): ClassDecorator`
 Element decorator is the main detail of the `@corpuscule/element`, it brings other decorators
 together and unites them. 
 
