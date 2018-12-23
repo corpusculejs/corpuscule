@@ -19,6 +19,8 @@ const noop = () => {};
 
 const filteringNames = ['is', 'observedAttributes'];
 
+const rootProperty = new WeakMap();
+
 const element = (name, {extends: builtin, renderer, scheduler = defaultScheduler}) => ({
   kind,
   elements,
@@ -37,7 +39,6 @@ const element = (name, {extends: builtin, renderer, scheduler = defaultScheduler
 
   const $$connected = Symbol();
   const $$invalidate = Symbol();
-  const $$root = Symbol();
   const $$valid = Symbol();
 
   const $$superAttributeChangedCallback = Symbol();
@@ -157,9 +158,10 @@ const element = (name, {extends: builtin, renderer, scheduler = defaultScheduler
       }),
       field({
         initializer() {
-          return this[$createRoot]();
+          if (!rootProperty.has(this)) {
+            rootProperty.set(this, this[$createRoot]());
+          }
         },
-        key: $$root,
       }),
       field({
         initializer: () => true,
@@ -179,7 +181,7 @@ const element = (name, {extends: builtin, renderer, scheduler = defaultScheduler
               const isConnecting = !this[$$connected];
 
               await scheduler(() => {
-                renderer(this[$render](), this[$$root], this);
+                renderer(this[$render](), rootProperty.get(this), this);
                 this[$$connected] = true;
                 this[$$valid] = true;
               });

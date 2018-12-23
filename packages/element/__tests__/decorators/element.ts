@@ -230,11 +230,7 @@ const testElementDecorator = () => {
       const [renderCallback] = schedulerSpy.calls.mostRecent().args;
       renderCallback();
 
-      expect(rendererSpy).toHaveBeenCalledWith(
-        'rendered string',
-        jasmine.any(Node),
-        test,
-      );
+      expect(rendererSpy).toHaveBeenCalledWith('rendered string', jasmine.any(Node), test);
     });
 
     it('does not allow to run re-render if old and new values are identical (except for internal)', () => {
@@ -430,6 +426,43 @@ const testElementDecorator = () => {
         expect(connectedSpyChild).toHaveBeenCalled();
         expect(connectedSpyParent).toHaveBeenCalled();
       });
+
+      it('allows to override [createRoot] method', () => {
+        const parentContainer = document.createElement('div');
+        const childContainer = document.createElement('div');
+
+        @element(genName())
+        class Parent extends CustomElement {
+          public [createRoot](): HTMLElement {
+            return parentContainer;
+          }
+
+          public [render](): null {
+            return null;
+          }
+        }
+
+        @element(genName())
+        // @ts-ignore
+        class Child extends Parent {
+          public [createRoot](): HTMLElement {
+            return childContainer;
+          }
+
+          public [render](): null {
+            return null;
+          }
+        }
+
+        const child = new Child();
+        child.connectedCallback();
+
+        const [renderCallback] = schedulerSpy.calls.mostRecent().args;
+        renderCallback();
+
+        expect(rendererSpy).toHaveBeenCalledWith(null, childContainer, child);
+      });
+    });
 
     describe('customized built-in elements', () => {
       it('allows to create', () => {
