@@ -1,4 +1,4 @@
-/* eslint-disable class-methods-use-this, no-empty-function */
+/* eslint-disable class-methods-use-this, max-classes-per-file, no-empty-function */
 export class HTMLElementMock {
   constructor() {
     this.attributes = new Map();
@@ -67,6 +67,21 @@ export class HTMLElementMock {
     this.attributes.set(key, v);
   }
 }
+
+export class CustomElement extends HTMLElement {
+  attributeChangedCallback() {}
+
+  connectedCallback() {}
+
+  disconnectedCallback() {}
+}
+
+export const genName = () => {
+  const arr = new Uint32Array(2);
+  const [rnd1, rnd2] = crypto.getRandomValues(arr);
+
+  return `x-${rnd1}${rnd2}`;
+};
 
 export const createTestingPromise = () => {
   let resolve;

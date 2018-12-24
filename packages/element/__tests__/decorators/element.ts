@@ -1,5 +1,5 @@
 // tslint:disable:no-unnecessary-class max-classes-per-file no-unbound-method no-empty
-import {createTestingPromise, HTMLElementMock} from '../../../../test/utils';
+import {createTestingPromise, CustomElement, genName} from '../../../../test/utils';
 import {
   createRoot,
   element as basicElement,
@@ -11,32 +11,39 @@ import {
 
 const testElementDecorator = () => {
   describe('@element', () => {
-    let element: (name: string) => ClassDecorator;
+    let define: jasmine.Spy;
+    let element: (name: string, params?: {extends?: keyof HTMLElementTagNameMap}) => ClassDecorator;
     let rendererSpy: jasmine.Spy;
     let schedulerSpy: jasmine.Spy;
 
     beforeEach(() => {
       rendererSpy = jasmine.createSpy('onTemplateRender');
       schedulerSpy = jasmine.createSpy('onSchedule');
-      spyOn(customElements, 'define');
+      define = spyOn(customElements, 'define');
+      define.and.callThrough();
 
-      element = name => basicElement(name, {renderer: rendererSpy, scheduler: schedulerSpy});
+      element = (name, params = {}) =>
+        basicElement(name, {...params, renderer: rendererSpy, scheduler: schedulerSpy});
     });
 
     it('adds element to a custom elements registry', () => {
-      @element('x-test')
-      class Test extends HTMLElementMock {
+      const name = genName();
+
+      @element(name)
+      class Test extends CustomElement {
         protected [render](): null {
           return null;
         }
       }
 
-      expect(customElements.define).toHaveBeenCalledWith('x-test', Test);
+      expect(define).toHaveBeenCalledWith(name, Test, undefined);
     });
 
     it('adds "is" readonly field with name to element', () => {
-      @element('x-test')
-      class Test extends HTMLElementMock {
+      const name = genName();
+
+      @element(name)
+      class Test extends CustomElement {
         public static readonly is: string;
 
         protected [render](): null {
@@ -44,14 +51,14 @@ const testElementDecorator = () => {
         }
       }
 
-      expect(Test.is).toBe('x-test');
+      expect(Test.is).toBe(name);
     });
 
     it('throws an error if [render] method is not implemented', () => {
       expect(() => {
-        @element('x-test')
+        @element(genName())
         // @ts-ignore
-        class Test extends HTMLElementMock {}
+        class Test extends CustomElement {}
       }).toThrowError('[render]() is not implemented');
     });
 
@@ -60,8 +67,8 @@ const testElementDecorator = () => {
 
       const [promise, resolve] = createTestingPromise();
 
-      @element('x-test')
-      class Test extends HTMLElementMock {
+      @element(genName())
+      class Test extends CustomElement {
         public connectedCallback(): void {
           connectedCallbackSpy();
           resolve();
@@ -84,8 +91,8 @@ const testElementDecorator = () => {
     it('re-renders on each attribute change', () => {
       const attributeChangedCallbackSpy = jasmine.createSpy('onAttributeChange');
 
-      @element('x-test')
-      class Test extends HTMLElementMock {
+      @element(genName())
+      class Test extends CustomElement {
         public attributeChangedCallback(...args: Array<unknown>): void {
           attributeChangedCallbackSpy(...args);
         }
@@ -109,8 +116,8 @@ const testElementDecorator = () => {
     it('re-renders on each [propertyChangedCallback]', () => {
       const propertyChangedCallbackSpy = jasmine.createSpy('onPropertyChange');
 
-      @element('x-test')
-      class Test extends HTMLElementMock {
+      @element(genName())
+      class Test extends CustomElement {
         public [propertyChangedCallback](...args: Array<unknown>): void {
           propertyChangedCallbackSpy(...args);
         }
@@ -134,8 +141,8 @@ const testElementDecorator = () => {
     it('re-renders on each [internalChangedCallback]', () => {
       const internalChangedCallbackSpy = jasmine.createSpy('onInternalChange');
 
-      @element('x-test')
-      class Test extends HTMLElementMock {
+      @element(genName())
+      class Test extends CustomElement {
         public [internalChangedCallback](...args: Array<unknown>): void {
           internalChangedCallbackSpy(...args);
         }
@@ -162,8 +169,8 @@ const testElementDecorator = () => {
       const [connectedPromise, connectedResolve] = createTestingPromise();
       const [promise, resolve] = createTestingPromise();
 
-      @element('x-test')
-      class Test extends HTMLElementMock {
+      @element(genName())
+      class Test extends CustomElement {
         public connectedCallback(): void {
           connectedResolve();
         }
@@ -197,9 +204,9 @@ const testElementDecorator = () => {
       expect(updatedCallbackSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('sends to the [renderer] function result of [render]', () => {
-      @element('x-test')
-      class Test extends HTMLElementMock {
+    it('sends to the renderer function result of [render]', () => {
+      @element(genName())
+      class Test extends CustomElement {
         public [render](): string {
           return 'rendered string';
         }
@@ -211,11 +218,7 @@ const testElementDecorator = () => {
       const [renderCallback] = schedulerSpy.calls.mostRecent().args;
       renderCallback();
 
-      expect(rendererSpy).toHaveBeenCalledWith(
-        'rendered string',
-        jasmine.any(HTMLElement),
-        jasmine.any(Object),
-      );
+      expect(rendererSpy).toHaveBeenCalledWith('rendered string', jasmine.any(Node), test);
     });
 
     it('does not allow to run re-render if old and new values are identical (except for internal)', () => {
@@ -223,8 +226,8 @@ const testElementDecorator = () => {
       const propertyChangedCallbackSpy = jasmine.createSpy('onPropertyChange');
       const internalChangedCallbackSpy = jasmine.createSpy('onInternalChange');
 
-      @element('x-test')
-      class Test extends HTMLElementMock {
+      @element(genName())
+      class Test extends CustomElement {
         public attributeChangedCallback(...args: Array<unknown>): void {
           attributeChangedCallbackSpy(...args);
         }
@@ -265,8 +268,8 @@ const testElementDecorator = () => {
       const propertyChangedCallbackSpy = jasmine.createSpy('onPropertyChange');
       const internalChangedCallbackSpy = jasmine.createSpy('onInternalChange');
 
-      @element('x-test')
-      class Test extends HTMLElementMock {
+      @element(genName())
+      class Test extends CustomElement {
         public attributeChangedCallback(...args: Array<unknown>): void {
           attributeChangedCallbackSpy(...args);
         }
@@ -304,8 +307,8 @@ const testElementDecorator = () => {
     it('makes only one render on multiple property change', () => {
       const attributeChangedCallbackSpy = jasmine.createSpy('onAttributeChange');
 
-      @element('x-test')
-      class Test extends HTMLElementMock {
+      @element(genName())
+      class Test extends CustomElement {
         public attributeChangedCallback(...args: Array<unknown>): void {
           attributeChangedCallbackSpy(...args);
         }
@@ -332,10 +335,8 @@ const testElementDecorator = () => {
     it('allows to change root element', () => {
       const root = document.createElement('div');
 
-      @element('x-test')
-      class Test extends HTMLElementMock {
-        public static readonly shadowMock: HTMLDivElement = root;
-
+      @element(genName())
+      class Test extends CustomElement {
         public [createRoot](): Element | DocumentFragment {
           return root;
         }
@@ -354,63 +355,137 @@ const testElementDecorator = () => {
       expect(rendererSpy).toHaveBeenCalledWith('render', root, jasmine.any(Object));
     });
 
-    it('allows extending existing element', () => {
-      @element('x-test1')
-      class Test1 extends HTMLElementMock {
-        public [render](): null {
-          return null;
+    describe('elements extending', () => {
+      it('allows extending existing element', () => {
+        @element(genName())
+        class Parent extends CustomElement {
+          public [render](): null {
+            return null;
+          }
         }
-      }
 
-      @element('x-test2')
-      // @ts-ignore
-      class Test2 extends Test1 {
-        public [render](): null {
-          return null;
+        @element(genName())
+        // @ts-ignore
+        class Child extends Parent {
+          public [render](): null {
+            return null;
+          }
         }
-      }
 
-      expect(customElements.define).toHaveBeenCalledTimes(2);
+        expect(customElements.define).toHaveBeenCalledTimes(2);
+      });
+
+      it('calls only child render function if child inherits parent class', async () => {
+        const connectedSpyParent = jasmine.createSpy('connectedCallbackParent');
+        const connectedSpyChild = jasmine.createSpy('connectedCallbackChild');
+
+        const [promise, resolve] = createTestingPromise();
+
+        @element(genName())
+        class Parent extends CustomElement {
+          public connectedCallback(): void {
+            connectedSpyParent();
+          }
+
+          public [render](): null {
+            return null;
+          }
+        }
+
+        @element(genName())
+        class Child extends Parent {
+          public connectedCallback(): void {
+            super.connectedCallback();
+            connectedSpyChild();
+            resolve();
+          }
+
+          public [render](): null {
+            return null;
+          }
+        }
+
+        const child = new Child();
+        child.connectedCallback();
+
+        await promise;
+
+        expect(schedulerSpy).toHaveBeenCalledTimes(1);
+        expect(connectedSpyChild).toHaveBeenCalled();
+        expect(connectedSpyParent).toHaveBeenCalled();
+      });
+
+      it('allows to override [createRoot] method', () => {
+        const parentContainer = document.createElement('div');
+        const childContainer = document.createElement('div');
+
+        @element(genName())
+        class Parent extends CustomElement {
+          public [createRoot](): HTMLElement {
+            return parentContainer;
+          }
+
+          public [render](): null {
+            return null;
+          }
+        }
+
+        @element(genName())
+        // @ts-ignore
+        class Child extends Parent {
+          public [createRoot](): HTMLElement {
+            return childContainer;
+          }
+
+          public [render](): null {
+            return null;
+          }
+        }
+
+        const child = new Child();
+        child.connectedCallback();
+
+        const [renderCallback] = schedulerSpy.calls.mostRecent().args;
+        renderCallback();
+
+        expect(rendererSpy).toHaveBeenCalledWith(null, childContainer, child);
+      });
     });
 
-    it('calls only child render function if child inherits parent class', async () => {
-      const connectedSpyParent = jasmine.createSpy('connectedCallbackParent');
-      const connectedSpyChild = jasmine.createSpy('connectedCallbackChild');
+    describe('customized built-in elements', () => {
+      it('allows to create', () => {
+        const name = genName();
 
-      const [promise, resolve] = createTestingPromise();
+        @element(name, {extends: 'a'})
+        class Test extends HTMLAnchorElement {}
 
-      @element('x-parent')
-      class Parent extends HTMLElementMock {
-        public connectedCallback(): void {
-          connectedSpyParent();
-        }
+        expect(customElements.define).toHaveBeenCalledWith(name, Test, {extends: 'a'});
+      });
 
-        public [render](): null {
-          return null;
-        }
-      }
+      it('does not re-render', () => {
+        (customElements.define as jasmine.Spy).and.callThrough();
 
-      @element('x-child')
-      class Child extends Parent {
-        public connectedCallback(): void {
-          super.connectedCallback();
-          connectedSpyChild();
-          resolve();
-        }
+        @element(genName(), {extends: 'a'})
+        class Test extends HTMLAnchorElement {}
 
-        public [render](): null {
-          return null;
-        }
-      }
+        const test = new Test();
 
-      const child = new Child();
-      child.connectedCallback();
+        (test as any).connectedCallback();
 
-      await promise;
+        expect(schedulerSpy).not.toHaveBeenCalled();
+      });
 
-      expect(schedulerSpy).toHaveBeenCalledTimes(1);
-      expect(connectedSpyChild).toHaveBeenCalled();
-      expect(connectedSpyParent).toHaveBeenCalled();
+      it('throws error if [render] is defined', () => {
+        expect(() => {
+          @element(genName(), {extends: 'a'})
+          // @ts-ignore
+          class Test extends HTMLAnchorElement {
+            public [render](): null {
+              return null;
+            }
+          }
+        }).toThrowError('[render]() cannot be used for built-in elements');
+      });
     });
   });
 };
