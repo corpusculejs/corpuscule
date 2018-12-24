@@ -1,5 +1,5 @@
 // tslint:disable:no-unnecessary-class max-classes-per-file no-unbound-method no-empty
-import {createTestingPromise, genName} from '../../../../test/utils';
+import {createTestingPromise, CustomElement, genName} from '../../../../test/utils';
 import {
   createRoot,
   element as basicElement,
@@ -8,18 +8,6 @@ import {
   render,
   updatedCallback,
 } from '../../src';
-
-class CustomElement extends HTMLElement {
-  public attributeChangedCallback(
-    _attributeName: string,
-    _oldValue: string,
-    _newValue: string,
-  ): void {}
-
-  public connectedCallback(): void {}
-
-  public disconnectedCallback(): void {}
-}
 
 const testElementDecorator = () => {
   describe('@element', () => {

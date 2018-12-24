@@ -1,4 +1,4 @@
-/* eslint-disable class-methods-use-this, no-empty-function */
+/* eslint-disable class-methods-use-this, max-classes-per-file, no-empty-function */
 export class HTMLElementMock {
   constructor() {
     this.attributes = new Map();
@@ -66,6 +66,14 @@ export class HTMLElementMock {
     );
     this.attributes.set(key, v);
   }
+}
+
+export class CustomElement extends HTMLElement {
+  attributeChangedCallback() {}
+
+  connectedCallback() {}
+
+  disconnectedCallback() {}
 }
 
 export const genName = () => {
