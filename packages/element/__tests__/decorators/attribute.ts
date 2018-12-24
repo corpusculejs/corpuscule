@@ -1,28 +1,29 @@
 // tslint:disable:max-classes-per-file
-import {HTMLElementMock} from '../../../../test/utils';
+import {CustomElement, genName} from '../../../../test/utils';
 import {attribute} from '../../src';
 
 const testAttributeDecorator = () => {
   describe('@attribute', () => {
     it('gets string attribute', () => {
-      class Test extends HTMLElementMock {
+      class Test extends CustomElement {
         public static readonly observedAttributes: ReadonlyArray<string> = [];
-        public readonly attributes: Map<string, string> = new Map([['attr', 'str']]);
 
         @attribute('attr', String)
         public attribute: string | null = null;
       }
 
+      customElements.define(genName(), Test);
+
       const test = new Test();
+      test.setAttribute('attr', 'str');
       test.connectedCallback();
 
       expect(test.attribute).toBe('str');
     });
 
     it('properly gets boolean attribute', () => {
-      class Test extends HTMLElementMock {
+      class Test extends CustomElement {
         public static readonly observedAttributes: ReadonlyArray<string> = [];
-        public readonly attributes: Map<string, string> = new Map([['a1', '']]);
 
         @attribute('a1', Boolean)
         public attr1: boolean | null = null;
@@ -31,7 +32,10 @@ const testAttributeDecorator = () => {
         public attr2: boolean | null = null;
       }
 
+      customElements.define(genName(), Test);
+
       const test = new Test();
+      test.setAttribute('a1', '');
       test.connectedCallback();
 
       expect(test.attr1).toBeTruthy();
@@ -39,41 +43,43 @@ const testAttributeDecorator = () => {
     });
 
     it('properly gets number attributes', () => {
-      class Test extends HTMLElementMock {
+      class Test extends CustomElement {
         public static readonly observedAttributes: ReadonlyArray<string> = [];
-        public readonly attributes: Map<string, string> = new Map([['num', '10']]);
 
         @attribute('num', Number)
         public numAttribute: number | null = null;
       }
 
+      customElements.define(genName(), Test);
+
       const test = new Test();
+      test.setAttribute('num', '10');
       test.connectedCallback();
 
       expect(test.numAttribute).toBe(10);
     });
 
     it('sets string attribute', () => {
-      class Test extends HTMLElementMock {
+      class Test extends CustomElement {
         public static readonly observedAttributes: ReadonlyArray<string> = [];
 
         @attribute('attr', String)
         public attribute: string | null = null;
       }
 
+      customElements.define(genName(), Test);
+
       const test = new Test();
       test.connectedCallback();
 
       test.attribute = 'str';
 
-      expect(test.attributes).toEqual(new Map([['attr', 'str']]));
+      expect(test.getAttribute('attr')).toBe('str');
     });
 
     it('properly sets boolean attributes', () => {
-      class Test extends HTMLElementMock {
+      class Test extends CustomElement {
         public static readonly observedAttributes: ReadonlyArray<string> = [];
-
-        public readonly attributes: Map<string, string> = new Map([['a2', '']]);
 
         @attribute('a1', Boolean)
         public attr1: boolean | null = null;
@@ -82,33 +88,39 @@ const testAttributeDecorator = () => {
         public attr2: boolean | null = null;
       }
 
+      customElements.define(genName(), Test);
+
       const test = new Test();
+      test.setAttribute('a2', '');
       test.connectedCallback();
 
       test.attr1 = true;
       test.attr2 = false;
 
-      expect(test.attributes).toEqual(new Map([['a1', '']]));
+      expect(test.getAttribute('a1')).toBe('');
+      expect(test.hasAttribute('a2')).toBeFalsy();
     });
 
     it('properly sets number attribute', () => {
-      class Test extends HTMLElementMock {
+      class Test extends CustomElement {
         public static readonly observedAttributes: ReadonlyArray<string> = [];
 
         @attribute('num', Number)
         public numAttribute: number | null = null;
       }
 
+      customElements.define(genName(), Test);
+
       const test = new Test();
       test.connectedCallback();
 
       test.numAttribute = 10;
 
-      expect(test.attributes).toEqual(new Map([['num', '10']]));
+      expect(test.getAttribute('num')).toBe('10');
     });
 
     it('initializes and fills "observedAttributes"', () => {
-      class Test extends HTMLElementMock {
+      class Test extends CustomElement {
         public static readonly observedAttributes: ReadonlyArray<string> = [];
 
         @attribute('a1', Boolean)
@@ -118,22 +130,30 @@ const testAttributeDecorator = () => {
         public attr2: string | null = null;
       }
 
+      customElements.define(genName(), Test);
+
       expect(Test.observedAttributes).toEqual(['a1', 'a2']);
     });
 
     it('runs "attributeChangedCallback" on change', () => {
       const attributeChangedCallbackSpy = jasmine.createSpy('onAttributeChange');
 
-      class Test extends HTMLElementMock {
+      class Test extends CustomElement {
         public static readonly observedAttributes: ReadonlyArray<string> = [];
 
         @attribute('attr', String)
         public attribute: string | null = null;
 
-        public attributeChangedCallback(...args: Array<unknown>): void {
-          attributeChangedCallbackSpy(...args);
+        public attributeChangedCallback(
+          attributeName: string,
+          oldValue: string,
+          newValue: string,
+        ): void {
+          attributeChangedCallbackSpy(attributeName, oldValue, newValue);
         }
       }
+
+      customElements.define(genName(), Test);
 
       const test = new Test();
 
@@ -154,12 +174,14 @@ const testAttributeDecorator = () => {
     });
 
     it('throws an error if value does not fit guard', () => {
-      class Test extends HTMLElementMock {
+      class Test extends CustomElement {
         public static readonly observedAttributes: ReadonlyArray<string> = [];
 
         @attribute('num', Number)
         public numAttribute: number | null = null;
       }
+
+      customElements.define(genName(), Test);
 
       const test = new Test();
       test.connectedCallback();
@@ -170,12 +192,14 @@ const testAttributeDecorator = () => {
     });
 
     it('gets null if no attribute exist', () => {
-      class Test extends HTMLElementMock {
+      class Test extends CustomElement {
         public static readonly observedAttributes: ReadonlyArray<string> = [];
 
         @attribute('num', Number)
         public numAttribute: number | null = null;
       }
+
+      customElements.define(genName(), Test);
 
       const test = new Test();
       test.connectedCallback();
@@ -184,7 +208,7 @@ const testAttributeDecorator = () => {
     });
 
     it('accepts both null and undefined as a value of attribute', () => {
-      class Test extends HTMLElementMock {
+      class Test extends CustomElement {
         public static readonly observedAttributes: ReadonlyArray<string> = [];
 
         @attribute('a1', Number)
@@ -193,6 +217,8 @@ const testAttributeDecorator = () => {
         @attribute('a2', Number)
         public a2?: number | null = 20;
       }
+
+      customElements.define(genName(), Test);
 
       const test = new Test();
 
