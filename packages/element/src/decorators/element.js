@@ -19,16 +19,26 @@ const noop = () => {};
 
 const filteringNames = ['is', 'observedAttributes'];
 
-const element = (name, {renderer, scheduler = defaultScheduler}) => ({kind, elements}) => {
+const rootProperty = new WeakMap();
+
+const element = (name, {extends: builtin, renderer, scheduler = defaultScheduler}) => ({
+  kind,
+  elements,
+}) => {
   assertKind('element', 'class', kind);
 
-  if (!elements.find(({key}) => key === $render)) {
+  const hasRender = elements.some(({key}) => key === $render);
+
+  if (!builtin && !hasRender) {
     throw new Error('[render]() is not implemented');
+  }
+
+  if (builtin && hasRender) {
+    throw new Error('[render]() cannot be used for built-in elements');
   }
 
   const $$connected = Symbol();
   const $$invalidate = Symbol();
-  const $$root = Symbol();
   const $$valid = Symbol();
 
   const $$superAttributeChangedCallback = Symbol();
@@ -44,9 +54,11 @@ const element = (name, {renderer, scheduler = defaultScheduler}) => ({kind, elem
       [
         $createRoot,
         {
-          fallback() {
-            return this.attachShadow({mode: 'open'});
-          },
+          fallback: builtin
+            ? noop
+            : function() {
+                return this.attachShadow({mode: 'open'});
+              },
           key: $createRoot,
         },
       ],
@@ -103,7 +115,6 @@ const element = (name, {renderer, scheduler = defaultScheduler}) => ({kind, elem
             }
 
             this[$$superAttributeChangedCallback](attributeName, oldValue, newValue);
-
             await this[$$invalidate]();
           },
         },
@@ -120,7 +131,6 @@ const element = (name, {renderer, scheduler = defaultScheduler}) => ({kind, elem
             }
 
             this[$$superInternalChangedCallback](internalName, oldValue, newValue);
-
             await this[$$invalidate]();
           },
         },
@@ -148,9 +158,10 @@ const element = (name, {renderer, scheduler = defaultScheduler}) => ({kind, elem
       }),
       field({
         initializer() {
-          return this[$createRoot]();
+          if (!rootProperty.has(this)) {
+            rootProperty.set(this, this[$createRoot]());
+          }
         },
-        key: $$root,
       }),
       field({
         initializer: () => true,
@@ -158,29 +169,31 @@ const element = (name, {renderer, scheduler = defaultScheduler}) => ({kind, elem
       }),
       method({
         key: $$invalidate,
-        async value() {
-          if (!this[$$valid]) {
-            return;
-          }
+        value: builtin
+          ? noop
+          : async function() {
+              if (!this[$$valid]) {
+                return;
+              }
 
-          this[$$valid] = false;
+              this[$$valid] = false;
 
-          const isConnecting = !this[$$connected];
+              const isConnecting = !this[$$connected];
 
-          await scheduler(() => {
-            renderer(this[$render](), this[$$root], this);
-            this[$$connected] = true;
-            this[$$valid] = true;
-          });
+              await scheduler(() => {
+                renderer(this[$render](), rootProperty.get(this), this);
+                this[$$connected] = true;
+                this[$$valid] = true;
+              });
 
-          if (!isConnecting) {
-            this[$updatedCallback]();
-          }
-        },
+              if (!isConnecting) {
+                this[$updatedCallback]();
+              }
+            },
       }),
     ],
     finisher(target) {
-      customElements.define(name, target);
+      customElements.define(name, target, builtin && {extends: builtin});
     },
     kind,
   };

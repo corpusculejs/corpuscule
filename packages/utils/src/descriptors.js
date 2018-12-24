@@ -36,7 +36,7 @@ export const method = (
   }
 
   return {
-    descriptor: {configurable: true, value},
+    descriptor: {configurable: true, value, writable: true},
     extras,
     finisher,
     key,
