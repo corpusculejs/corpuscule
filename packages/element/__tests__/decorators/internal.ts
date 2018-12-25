@@ -17,15 +17,29 @@ const testInternalDecorator = () => {
       class Test extends CorpusculeElementMock {
         @internal
         public prop: number = 10;
+
+        @internal
+        public get accessor(): string {
+          return this.storage;
+        }
+
+        public set accessor(v: string) {
+          this.storage = v;
+        }
+
+        private storage: string = 'str';
       }
 
       const test = new Test();
 
       expect(test.prop).toBe(10);
+      expect(test.accessor).toBe('str');
 
       test.prop = 20;
+      test.accessor = 'test';
 
       expect(test.prop).toBe(20);
+      expect(test.accessor).toBe('test');
     });
 
     it('runs [internalChangedCallback] on internal property change', () => {
@@ -34,6 +48,17 @@ const testInternalDecorator = () => {
       class Test extends CorpusculeElementMock {
         @internal
         public prop: number = 10;
+
+        @internal
+        public get accessor(): string {
+          return this.storage;
+        }
+
+        public set accessor(v: string) {
+          this.storage = v;
+        }
+
+        private storage: string = 'str';
 
         public [internalChangedCallback](...args: Array<unknown>): void {
           internalChangedCallbackSpy(...args);
@@ -44,6 +69,12 @@ const testInternalDecorator = () => {
       test.prop = 20;
 
       expect(internalChangedCallbackSpy).toHaveBeenCalledWith('prop', 10, 20);
+      expect(internalChangedCallbackSpy).toHaveBeenCalledTimes(1);
+
+      internalChangedCallbackSpy.calls.reset();
+
+      test.accessor = 'test';
+      expect(internalChangedCallbackSpy).toHaveBeenCalledWith('accessor', 'str', 'test');
       expect(internalChangedCallbackSpy).toHaveBeenCalledTimes(1);
     });
   });

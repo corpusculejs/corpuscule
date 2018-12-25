@@ -1,6 +1,5 @@
-import {assertElementDecoratorsKind} from '../utils';
 import {accessor} from '@corpuscule/utils/lib/descriptors';
-import {assertPlacement} from '@corpuscule/utils/lib/asserts';
+import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
 
 const fromAttribute = (instance, name, guard) => {
   const value = instance.getAttribute(name);
@@ -21,7 +20,7 @@ const toAttribute = (instance, name, value) => {
 };
 
 const attribute = (name, guard) => ({key, kind, placement}) => {
-  assertElementDecoratorsKind('attribute', kind);
+  assertKind('attribute', 'field', kind);
   assertPlacement('attribute', 'own', placement);
 
   if (guard !== Boolean && guard !== Number && guard !== String) {
@@ -29,11 +28,6 @@ const attribute = (name, guard) => ({key, kind, placement}) => {
   }
 
   const guardType = typeof guard(null);
-  const check = value => {
-    if (value != null && typeof value !== guardType) {
-      throw new TypeError(`Value applied to "${key}" is not ${guard.name} or undefined`);
-    }
-  };
 
   return accessor({
     finisher(target) {
@@ -44,7 +38,10 @@ const attribute = (name, guard) => ({key, kind, placement}) => {
     },
     key,
     set(value) {
-      check(value);
+      if (value != null && typeof value !== guardType) {
+        throw new TypeError(`Value applied to "${key}" is not ${guard.name} or undefined`);
+      }
+
       toAttribute(this, name, value);
     },
   });
