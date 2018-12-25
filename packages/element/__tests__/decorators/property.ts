@@ -17,15 +17,29 @@ const testPropertyDecorator = () => {
       class Test extends CorpusculeElementMock {
         @property()
         public prop: number = 10;
+
+        @property()
+        public get accessor(): string {
+          return this.storage;
+        }
+
+        public set accessor(v: string) {
+          this.storage = v;
+        }
+
+        private storage: string = 'str';
       }
 
       const test = new Test();
 
       expect(test.prop).toBe(10);
+      expect(test.accessor).toBe('str');
 
       test.prop = 20;
+      test.accessor = 'test';
 
       expect(test.prop).toBe(20);
+      expect(test.accessor).toBe('test');
     });
 
     it('initializes property to an undefined if no data is set', () => {
@@ -46,6 +60,17 @@ const testPropertyDecorator = () => {
         @property()
         public prop: number = 10;
 
+        @property()
+        public get accessor(): string {
+          return this.storage;
+        }
+
+        public set accessor(v: string) {
+          this.storage = v;
+        }
+
+        private storage: string = 'str';
+
         public [propertyChangedCallback](...args: Array<unknown>): void {
           propertyChangedCallbackSpy(...args);
         }
@@ -56,15 +81,13 @@ const testPropertyDecorator = () => {
 
       expect(propertyChangedCallbackSpy).toHaveBeenCalledWith('prop', 10, 20);
       expect(propertyChangedCallbackSpy).toHaveBeenCalledTimes(1);
-    });
 
-    it('throws an error if value does not fit guard during initialization', () => {
-      class Test extends CorpusculeElementMock {
-        @property((v: any) => typeof v === 'number')
-        public prop: any = 'string';
-      }
+      propertyChangedCallbackSpy.calls.reset();
 
-      expect(() => new Test()).toThrow(new TypeError('Value applied to "prop" has wrong type'));
+      test.accessor = 'test';
+
+      expect(propertyChangedCallbackSpy).toHaveBeenCalledWith('accessor', 'str', 'test');
+      expect(propertyChangedCallbackSpy).toHaveBeenCalledTimes(1);
     });
 
     it('throws an error if value does not fit guard', () => {
