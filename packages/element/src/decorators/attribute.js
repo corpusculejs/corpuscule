@@ -28,11 +28,6 @@ const attribute = (name, guard) => ({key, kind, placement}) => {
   }
 
   const guardType = typeof guard(null);
-  const check = value => {
-    if (value != null && typeof value !== guardType) {
-      throw new TypeError(`Value applied to "${key}" is not ${guard.name} or undefined`);
-    }
-  };
 
   return accessor({
     finisher(target) {
@@ -43,7 +38,10 @@ const attribute = (name, guard) => ({key, kind, placement}) => {
     },
     key,
     set(value) {
-      check(value);
+      if (value != null && typeof value !== guardType) {
+        throw new TypeError(`Value applied to "${key}" is not ${guard.name} or undefined`);
+      }
+
       toAttribute(this, name, value);
     },
   });
