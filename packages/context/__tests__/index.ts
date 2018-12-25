@@ -1,13 +1,15 @@
 // tslint:disable:max-classes-per-file
-// tslint:disable-next-line:no-implicit-dependencies
-import {Constructor, HTMLElementMock} from '../../../test/utils';
+import {Constructor, CustomElement, genName} from '../../../test/utils';
 import createContext from '../src';
 
-export const createContextElements = <T extends HTMLElementMock, U extends HTMLElementMock>(
+const createContextElements = <T extends CustomElement, U extends CustomElement>(
   providerConstructor: Constructor<T>,
   consumerConstructor: Constructor<U>,
   consumersNumber: number = 1,
 ) => {
+  customElements.define(genName(), providerConstructor);
+  customElements.define(genName(), consumerConstructor);
+
   // tslint:disable-line:readonly-array
   const consumers = new Array(consumersNumber);
   const provider = new providerConstructor();
@@ -17,7 +19,7 @@ export const createContextElements = <T extends HTMLElementMock, U extends HTMLE
   for (let i = 0; i < consumersNumber; i++) {
     consumers[i] = new consumerConstructor();
 
-    consumers[i].addParent(provider);
+    provider.appendChild(consumers[i]);
     consumers[i].connectedCallback();
   }
 
@@ -30,12 +32,12 @@ describe('@corpuscule/context', () => {
       const {consumer, contextValue, provider, providingValue} = createContext();
 
       @provider
-      class Provider extends HTMLElementMock {
+      class Provider extends CustomElement {
         public [providingValue]: number = 2;
       }
 
       @consumer
-      class Consumer extends HTMLElementMock {
+      class Consumer extends CustomElement {
         public [contextValue]: number;
       }
 
@@ -47,12 +49,12 @@ describe('@corpuscule/context', () => {
       const {consumer, contextValue, provider, providingValue} = createContext();
 
       @provider
-      class Provider extends HTMLElementMock {
+      class Provider extends CustomElement {
         public [providingValue]: number = 2;
       }
 
       @consumer
-      class Consumer extends HTMLElementMock {
+      class Consumer extends CustomElement {
         public [contextValue]: number;
       }
 
@@ -66,12 +68,12 @@ describe('@corpuscule/context', () => {
       const {consumer, contextValue, provider, providingValue} = createContext(2);
 
       @provider
-      class Provider extends HTMLElementMock {
+      class Provider extends CustomElement {
         public [providingValue]: number;
       }
 
       @consumer
-      class Consumer extends HTMLElementMock {
+      class Consumer extends CustomElement {
         public [contextValue]: number;
       }
 
@@ -85,12 +87,12 @@ describe('@corpuscule/context', () => {
       const {consumer, contextValue, provider, providingValue} = createContext(2);
 
       @provider
-      class Provider extends HTMLElementMock {
+      class Provider extends CustomElement {
         public [providingValue]: number;
       }
 
       @consumer
-      class Consumer extends HTMLElementMock {
+      class Consumer extends CustomElement {
         public [contextValue]: number;
       }
 
@@ -107,7 +109,7 @@ describe('@corpuscule/context', () => {
       const {consumer, contextValue, provider, providingValue} = createContext();
 
       @provider
-      class Provider extends HTMLElementMock {
+      class Provider extends CustomElement {
         public [providingValue]: number;
 
         public connectedCallback(): void {
@@ -120,7 +122,7 @@ describe('@corpuscule/context', () => {
       }
 
       @consumer
-      class Consumer extends HTMLElementMock {
+      class Consumer extends CustomElement {
         public [contextValue]: number;
 
         public connectedCallback(): void {
@@ -145,12 +147,12 @@ describe('@corpuscule/context', () => {
       const {consumer, contextValue, provider, providingValue} = createContext();
 
       @provider
-      class Provider extends HTMLElementMock {
+      class Provider extends CustomElement {
         public [providingValue]: number = 2;
       }
 
       @consumer
-      class Consumer extends HTMLElementMock {
+      class Consumer extends CustomElement {
         public [contextValue]: number;
       }
 
@@ -167,9 +169,11 @@ describe('@corpuscule/context', () => {
       const {consumer, contextValue} = createContext();
 
       @consumer
-      class Consumer extends HTMLElementMock {
+      class Consumer extends CustomElement {
         public [contextValue]: number;
       }
+
+      customElements.define(genName(), Consumer);
 
       const consumerElement = new Consumer();
 
@@ -182,10 +186,10 @@ describe('@corpuscule/context', () => {
       const {consumer, contextValue, provider, providingValue} = createContext();
 
       @provider
-      class Provider extends HTMLElementMock {}
+      class Provider extends CustomElement {}
 
       @consumer
-      class Consumer extends HTMLElementMock {
+      class Consumer extends CustomElement {
         public [contextValue]: number;
       }
 
