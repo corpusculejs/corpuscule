@@ -29,9 +29,6 @@ export const formOption: (configKey: FormConfigKey) => PropertyDecorator;
 
 export interface FieldInputProps<T> {
   readonly name: string;
-  readonly onBlur: () => void;
-  readonly onChange: (value: T) => void;
-  readonly onFocus: () => void;
   readonly value: T;
 }
 

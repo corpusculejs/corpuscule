@@ -150,9 +150,6 @@ const testField = () => {
       expect(scheduler).toHaveBeenCalledTimes(2);
       expect(fieldElement[input]).toEqual({
         name: 'test',
-        onBlur: jasmine.any(Function),
-        onChange: jasmine.any(Function),
-        onFocus: jasmine.any(Function),
         value: fieldValue,
       });
 
@@ -399,7 +396,7 @@ const testField = () => {
         const [listener] = subscribeField(fieldElement);
         updateField(fieldElement, listener);
 
-        fieldElement[input].onBlur();
+        fieldElement.dispatchEvent(new Event('blur'));
 
         expect(state.blur).toHaveBeenCalled();
       });
@@ -430,13 +427,13 @@ const testField = () => {
         const [listener] = subscribeField(fieldElement);
         updateField(fieldElement, listener);
 
-        fieldElement[input].onBlur();
+        fieldElement.dispatchEvent(new Event('blur'));
 
         expect(fieldElement.format).toHaveBeenCalledWith(fieldValue, 'test');
         expect(state.change).toHaveBeenCalledWith(fieldValue);
       });
 
-      it('calls change() method of field state [input].onChange() is called', () => {
+      it('calls change() method of field state when new "change" event is fired', () => {
         @form()
         class Form extends CustomElement {}
 
@@ -451,9 +448,9 @@ const testField = () => {
         const [listener] = subscribeField(fieldElement);
         updateField(fieldElement, listener);
 
-        const newFieldValue = {};
+        const newFieldValue: object = {};
 
-        fieldElement[input].onChange(newFieldValue);
+        fieldElement.dispatchEvent(new CustomEvent('change', {detail: newFieldValue}));
 
         expect(state.change).toHaveBeenCalledWith(newFieldValue);
       });
@@ -482,7 +479,7 @@ const testField = () => {
 
         const newFieldValue = JSON.stringify({});
 
-        fieldElement[input].onChange(newFieldValue);
+        fieldElement.dispatchEvent(new CustomEvent('change', {detail: newFieldValue}));
 
         expect(fieldElement.parse).toHaveBeenCalledWith(newFieldValue, 'test');
         expect(state.change).toHaveBeenCalledWith({});
@@ -503,7 +500,7 @@ const testField = () => {
         const [listener] = subscribeField(fieldElement);
         updateField(fieldElement, listener);
 
-        fieldElement[input].onFocus();
+        fieldElement.dispatchEvent(new Event('focus'));
 
         expect(state.focus).toHaveBeenCalled();
       });
