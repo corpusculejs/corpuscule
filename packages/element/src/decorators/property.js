@@ -1,6 +1,6 @@
-import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
 import {accessor} from '@corpuscule/utils/lib/descriptors';
 import {propertyChangedCallback as $propertyChangedCallback} from '../tokens/lifecycle';
+import {assertElementProperty} from '../utils';
 
 const property = (guard = null) => ({
   descriptor: {get, set},
@@ -9,13 +9,7 @@ const property = (guard = null) => ({
   kind,
   placement,
 }) => {
-  assertKind('property', 'field or accessor', kind, {
-    correct: kind === 'field' || (kind === 'method' && get && set),
-  });
-
-  assertPlacement('property', 'own or prototype', placement, {
-    correct: placement === 'own' || placement === 'prototype',
-  });
+  assertElementProperty('property', get, set, kind, placement);
 
   return accessor(
     {
