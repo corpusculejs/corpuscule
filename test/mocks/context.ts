@@ -1,5 +1,5 @@
 // tslint:disable:no-invalid-this
-import {Constructor, HTMLElementMock} from '../utils';
+import {Constructor, CustomElement, genName} from '../utils';
 
 export const context = jasmine.createSpyObj('context', ['consumer', 'provider']);
 
@@ -16,15 +16,18 @@ createContext.and.returnValue(context);
 
 export default createContext;
 
-export const createMockedContextElements = <T extends HTMLElementMock[]>(
+export const createMockedContextElements = <T extends CustomElement[]>(
   ...constructors: {[K in keyof T]: Constructor<T[K]>}
 ): T => {
   const [providerConstructor, ...consumerConstructors] = constructors;
+
+  customElements.define(genName(), providerConstructor);
   const consumers = new Array(consumerConstructors.length);
   const provider = new providerConstructor();
 
+  // tslint:disable-next-line:no-increment-decrement
   for (let i = 0; i < consumerConstructors.length; i++) {
-    // tslint:disable-line:no-increment-decrement
+    customElements.define(genName(), consumerConstructors[i]);
     consumers[i] = new consumerConstructors[i]();
     consumers[i][context.contextValue] = (provider as any)[context.providingValue];
   }
