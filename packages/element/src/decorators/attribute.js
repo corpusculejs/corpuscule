@@ -1,6 +1,5 @@
-import {assertElementDecoratorsKind} from '../utils';
 import {accessor} from '@corpuscule/utils/lib/descriptors';
-import {assertPlacement} from '@corpuscule/utils/lib/asserts';
+import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
 
 const fromAttribute = (instance, name, guard) => {
   const value = instance.getAttribute(name);
@@ -21,7 +20,7 @@ const toAttribute = (instance, name, value) => {
 };
 
 const attribute = (name, guard) => ({key, kind, placement}) => {
-  assertElementDecoratorsKind('attribute', kind);
+  assertKind('attribute', 'field', kind);
   assertPlacement('attribute', 'own', placement);
 
   if (guard !== Boolean && guard !== Number && guard !== String) {

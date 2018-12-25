@@ -1,30 +1,33 @@
-import {assertElementDecoratorsKind} from '../utils';
 import {internalChangedCallback as $internalChangedCallback} from '../tokens/lifecycle';
-import {accessor, field} from '@corpuscule/utils/lib/descriptors';
-import {assertPlacement} from '@corpuscule/utils/lib/asserts';
+import {accessor} from '@corpuscule/utils/lib/descriptors';
+import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
 
-const internal = ({initializer, key, kind, placement}) => {
-  assertElementDecoratorsKind('internal', kind);
-  assertPlacement('internal', 'own', placement);
-
-  const storage = Symbol();
-
-  return accessor({
-    extras: [
-      field({
-        initializer,
-        key: storage,
-      }),
-    ],
-    get() {
-      return this[storage];
-    },
-    key,
-    set(value) {
-      this[$internalChangedCallback](key, this[storage], value);
-      this[storage] = value;
-    },
+const internal = ({descriptor: {get, set}, initializer, key, kind, placement}) => {
+  assertKind('internal', 'field or accessor', kind, {
+    correct: kind === 'field' || (kind === 'method' && get && set),
   });
+
+  assertPlacement('internal', 'own or prototype', placement, {
+    correct: placement === 'own' || placement === 'prototype',
+  });
+
+  return accessor(
+    {
+      get,
+      initializer,
+      key,
+      set,
+    },
+    {
+      adjust: ({get: originalGet, set: originalSet}) => ({
+        get: originalGet,
+        set(value) {
+          this[$internalChangedCallback](key, originalGet.call(this), value);
+          originalSet.call(this, value);
+        },
+      }),
+    },
+  );
 };
 
 export default internal;
