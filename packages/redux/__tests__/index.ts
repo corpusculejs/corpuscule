@@ -1,7 +1,7 @@
 // tslint:disable:max-classes-per-file
 import {AnyAction, Store} from 'redux';
 import {createMockedContextElements} from '../../../test/mocks/context';
-import {HTMLElementMock} from '../../../test/utils';
+import {CustomElement} from '../../../test/utils';
 import {connect, connected, dispatcher, provider, store} from '../src';
 
 describe('@corpuscule/redux', () => {
@@ -20,12 +20,12 @@ describe('@corpuscule/redux', () => {
   describe('@connect', () => {
     it('subscribes to store', () => {
       @provider
-      class Provider extends HTMLElementMock {
+      class Provider extends CustomElement {
         public [store]: Store = reduxStore;
       }
 
       @connect
-      class Connected extends HTMLElementMock {}
+      class Connected extends CustomElement {}
 
       createMockedContextElements(Provider, Connected);
 
@@ -34,12 +34,12 @@ describe('@corpuscule/redux', () => {
 
     it('unsubscribes from store before subscribing to a new one', () => {
       @provider
-      class Provider extends HTMLElementMock {
+      class Provider extends CustomElement {
         public [store]: Store = reduxStore;
       }
 
       @connect
-      class Connected extends HTMLElementMock {}
+      class Connected extends CustomElement {}
 
       const nextStore = jasmine.createSpyObj('nextStore', ['subscribe']);
 
@@ -55,12 +55,12 @@ describe('@corpuscule/redux', () => {
 
     it('unsubscribes on disconnect', () => {
       @provider
-      class Provider extends HTMLElementMock {
+      class Provider extends CustomElement {
         public [store]: Store = reduxStore;
       }
 
       @connect
-      class Connected extends HTMLElementMock {}
+      class Connected extends CustomElement {}
 
       const [, connectedElement] = createMockedContextElements(Provider, Connected);
 
@@ -72,12 +72,12 @@ describe('@corpuscule/redux', () => {
     describe('@connected', () => {
       it('allows to declare properties connected with store', () => {
         @provider
-        class Provider extends HTMLElementMock {
+        class Provider extends CustomElement {
           public [store]: Store = reduxStore;
         }
 
         @connect
-        class Connected extends HTMLElementMock {
+        class Connected extends CustomElement {
           @connected((state: typeof reduxState) => state.test)
           public test?: number;
         }
@@ -90,12 +90,12 @@ describe('@corpuscule/redux', () => {
 
       it('updates properties when store is updated', () => {
         @provider
-        class Provider extends HTMLElementMock {
+        class Provider extends CustomElement {
           public [store]: Store = reduxStore;
         }
 
         @connect
-        class Connected extends HTMLElementMock {
+        class Connected extends CustomElement {
           @connected((state: typeof reduxState) => state.test)
           public test?: number;
         }
@@ -113,12 +113,12 @@ describe('@corpuscule/redux', () => {
         const setterSpy = jasmine.createSpy('setter');
 
         @provider
-        class Provider extends HTMLElementMock {
+        class Provider extends CustomElement {
           public [store]: Store = reduxStore;
         }
 
         @connect
-        class Connected extends HTMLElementMock {
+        class Connected extends CustomElement {
           public testValue: number = 10;
 
           @connected((state: typeof reduxState) => state.test)
@@ -151,12 +151,12 @@ describe('@corpuscule/redux', () => {
       });
 
       @provider
-      class Provider extends HTMLElementMock {
+      class Provider extends CustomElement {
         public [store]: Store = reduxStore;
       }
 
       @connect
-      class Connected extends HTMLElementMock {
+      class Connected extends CustomElement {
         @dispatcher
         public external: typeof externalActionCreator = externalActionCreator;
 
@@ -192,7 +192,7 @@ describe('@corpuscule/redux', () => {
     it('throws an error if dispatcher property is not a method or assigned function', () => {
       expect(() => {
         // @ts-ignore
-        class Connected extends HTMLElementMock {
+        class Connected extends CustomElement {
           @dispatcher
           public external: number = 1;
         }
@@ -200,7 +200,7 @@ describe('@corpuscule/redux', () => {
 
       expect(() => {
         // @ts-ignore
-        class Connected extends HTMLElementMock {
+        class Connected extends CustomElement {
           @dispatcher
           public nothing?: unknown;
         }

@@ -1,7 +1,7 @@
 // tslint:disable:max-classes-per-file
 import UniversalRouter from 'universal-router';
 import {createMockedContextElements} from '../../../test/mocks/context';
-import {HTMLElementMock} from '../../../test/utils';
+import {CustomElement} from '../../../test/utils';
 import {layout, outlet, provider, router, RouterOutlet} from '../src';
 
 const outletTest = () => {
@@ -59,12 +59,12 @@ const outletTest = () => {
 
     it('creates router outlet that fills layout on popstate event', async () => {
       @provider
-      class Provider extends HTMLElementMock {
+      class Provider extends CustomElement {
         public readonly [router]: UniversalRouter = appRouter;
       }
 
       @outlet(routes)
-      class Outlet extends HTMLElementMock implements RouterOutlet<string> {
+      class Outlet extends CustomElement implements RouterOutlet<string> {
         public initial: boolean = true;
         public storage: string = '';
 
@@ -109,12 +109,12 @@ const outletTest = () => {
       });
 
       @provider
-      class Provider extends HTMLElementMock {
+      class Provider extends CustomElement {
         public readonly [router]: UniversalRouter = appRouter;
       }
 
       @outlet(routes)
-      class Outlet extends HTMLElementMock implements RouterOutlet<string> {
+      class Outlet extends CustomElement implements RouterOutlet<string> {
         public initial: boolean = true;
         public storage: string = '';
 
@@ -157,12 +157,12 @@ const outletTest = () => {
       });
 
       @provider
-      class Provider extends HTMLElementMock {
+      class Provider extends CustomElement {
         public readonly [router]: UniversalRouter = appRouter;
       }
 
       @outlet(routes)
-      class Outlet extends HTMLElementMock implements RouterOutlet<string> {
+      class Outlet extends CustomElement implements RouterOutlet<string> {
         public initial: boolean = true;
         public storage: string = '';
 
@@ -202,12 +202,12 @@ const outletTest = () => {
       const disconnectedSpy = jasmine.createSpy('disconnectedCallback');
 
       @provider
-      class Provider extends HTMLElementMock {
+      class Provider extends CustomElement {
         public readonly [router]: UniversalRouter = appRouter;
       }
 
       @outlet(routes)
-      class Outlet extends HTMLElementMock {
+      class Outlet extends CustomElement {
         public connectedCallback(): void {
           connectedSpy();
         }
