@@ -15,4 +15,6 @@ const createFormContext = () => {
   };
 };
 
+export const {field, form, formApi} = createFormContext();
+
 export default createFormContext;
