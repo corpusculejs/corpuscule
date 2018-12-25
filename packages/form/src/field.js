@@ -4,7 +4,7 @@ import {accessor, field as ffield, method, lifecycleKeys} from '@corpuscule/util
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
 import shallowEqual from '@corpuscule/utils/lib/shallowEqual';
 import {input as $input, meta as $meta} from './tokens/lifecycle';
-import {all} from './utils';
+import {all, getTargetValue} from './utils';
 
 const [connectedCallbackKey, disconnectedCallbackKey] = lifecycleKeys;
 
@@ -215,11 +215,10 @@ const createField = (consumer, $formApi, $$form) => {
           {
             key: $$onChange,
             value({detail, target}) {
-              const changeValue = target ? target.value : detail;
-
               const [parse] = getConfigProperties(this, 'parse');
+              const {change, name, value} = this[$$formState];
 
-              const {change, name} = this[$$formState];
+              const changeValue = detail || getTargetValue(target, value);
 
               change(parse ? parse(changeValue, name) : changeValue);
             },

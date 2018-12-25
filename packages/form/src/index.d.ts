@@ -25,6 +25,7 @@ export interface Form {
 
 export type FormDecorator = (params?: FormDecoratorParams) => ClassDecorator;
 
+export const form: FormDecorator;
 export const formOption: (configKey: FormConfigKey) => PropertyDecorator;
 
 export interface FieldInputProps<T> {
@@ -62,6 +63,7 @@ export interface Field<T> {
 
 export type FieldDecorator = (params?: FieldDecoratorParams) => ClassDecorator;
 
+export const field: FieldDecorator;
 export const fieldOption: (configKey: FieldConfigKey) => PropertyDecorator;
 
 export interface FormContext {
@@ -71,3 +73,9 @@ export interface FormContext {
 }
 
 export const createFormContext: () => FormContext;
+
+export class Input extends HTMLInputElement {}
+export class Select extends HTMLSelectElement {}
+
+export const createInputField: (field: FieldDecorator) => Input;
+export const createSelectField: (field: FieldDecorator) => Select;
