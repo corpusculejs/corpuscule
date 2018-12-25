@@ -1,42 +1,37 @@
-import {assertElementDecoratorsKind} from '../utils';
+import {accessor} from '@corpuscule/utils/lib/descriptors';
 import {propertyChangedCallback as $propertyChangedCallback} from '../tokens/lifecycle';
-import {accessor, field} from '@corpuscule/utils/lib/descriptors';
-import {assertPlacement} from '@corpuscule/utils/lib/asserts';
+import {assertElementProperty} from '../utils';
 
-const property = (guard = null) => ({initializer, key, kind, placement}) => {
-  assertElementDecoratorsKind('property', kind);
-  assertPlacement('property', 'own', placement);
+const property = (guard = null) => ({
+  descriptor: {get, set},
+  initializer,
+  key,
+  kind,
+  placement,
+}) => {
+  assertElementProperty('property', get, set, kind, placement);
 
-  const storage = Symbol();
+  return accessor(
+    {
+      get,
+      initializer,
+      key,
+      set,
+    },
+    {
+      adjust: ({get: originalGet, set: originalSet}) => ({
+        get: originalGet,
+        set(value) {
+          if (guard && !guard(value)) {
+            throw new TypeError(`Value applied to "${key}" has wrong type`);
+          }
 
-  const check = value => {
-    if (guard && !guard(value)) {
-      throw new TypeError(`Value applied to "${key}" has wrong type`);
-    }
-  };
-
-  return accessor({
-    extras: [
-      field({
-        initializer() {
-          const value = initializer ? initializer.call(this) : undefined;
-          check(value);
-
-          return value;
+          this[$propertyChangedCallback](key, originalGet.call(this), value);
+          originalSet.call(this, value);
         },
-        key: storage,
       }),
-    ],
-    get() {
-      return this[storage];
     },
-    key,
-    set(value) {
-      check(value);
-      this[$propertyChangedCallback](key, this[storage], value);
-      this[storage] = value;
-    },
-  });
+  );
 };
 
 export default property;
