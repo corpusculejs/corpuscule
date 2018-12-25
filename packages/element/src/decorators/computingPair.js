@@ -1,5 +1,6 @@
 import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
 import {accessor, field} from '@corpuscule/utils/lib/descriptors';
+import {assertElementProperty} from '../utils';
 
 const createComputingPair = () => {
   const registry = new WeakMap();
@@ -41,15 +42,7 @@ const createComputingPair = () => {
   };
 
   const observer = ({descriptor: {get, set}, initializer, key, kind, placement}) => {
-    const isMethod = kind === 'method';
-
-    assertKind('observer', 'field or accessor', kind, {
-      // eslint-disable-next-line no-extra-parens
-      correct: kind === 'field' || (isMethod && get && set),
-    });
-    assertPlacement('observer', 'own or prototype', placement, {
-      correct: placement === 'own' || placement === 'prototype',
-    });
+    assertElementProperty('observer', get, set, kind, placement);
 
     return accessor(
       {

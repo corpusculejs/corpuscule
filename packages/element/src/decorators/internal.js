@@ -1,15 +1,9 @@
 import {internalChangedCallback as $internalChangedCallback} from '../tokens/lifecycle';
 import {accessor} from '@corpuscule/utils/lib/descriptors';
-import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
+import {assertElementProperty} from '../utils';
 
 const internal = ({descriptor: {get, set}, initializer, key, kind, placement}) => {
-  assertKind('internal', 'field or accessor', kind, {
-    correct: kind === 'field' || (kind === 'method' && get && set),
-  });
-
-  assertPlacement('internal', 'own or prototype', placement, {
-    correct: placement === 'own' || placement === 'prototype',
-  });
+  assertElementProperty('internal', get, set, kind, placement);
 
   return accessor(
     {
