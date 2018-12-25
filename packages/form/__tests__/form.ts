@@ -1,7 +1,7 @@
 // tslint:disable:no-unused-expression
 import {FormApi, FormState} from 'final-form';
 import {createForm, formSpyObject, unsubscribe} from '../../../test/mocks/finalForm';
-import {HTMLElementMock} from '../../../test/utils';
+import {CustomElement, genName} from '../../../test/utils';
 import {
   compareInitialValues,
   createFormContext,
@@ -252,10 +252,12 @@ const testForm = () => {
       @form({
         decorators: [decorate],
       })
-      class Test extends HTMLElementMock implements Form {
+      class Test extends CustomElement implements Form {
         public [formApi]: FormApi;
         public [formState]: FormState;
       }
+
+      customElements.define(genName(), Test);
 
       const test = new Test();
 
@@ -268,10 +270,12 @@ const testForm = () => {
 
     it('subscribes to the form on connection, unsubscribes on disconnection and sets form state', () => {
       @form()
-      class Test extends HTMLElementMock implements Form {
+      class Test extends CustomElement implements Form {
         public [formApi]: FormApi;
         public [formState]: FormState;
       }
+
+      customElements.define(genName(), Test);
 
       const test = new Test();
 
@@ -291,10 +295,12 @@ const testForm = () => {
 
     it('sets submit callback on form submit listener on connection and removes it on disconnection', () => {
       @form()
-      class Test extends HTMLElementMock implements Form {
+      class Test extends CustomElement implements Form {
         public [formApi]: FormApi;
         public [formState]: FormState;
       }
+
+      customElements.define(genName(), Test);
 
       const test = new Test();
       const addEventListener = spyOn(test, 'addEventListener');
