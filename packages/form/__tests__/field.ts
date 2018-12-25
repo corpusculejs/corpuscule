@@ -2,7 +2,7 @@
 import {FieldState, FieldValidator, FormApi} from 'final-form';
 import {createMockedContextElements} from '../../../test/mocks/context';
 import {formSpyObject, unsubscribe} from '../../../test/mocks/finalForm';
-import {HTMLElementMock} from '../../../test/utils';
+import {CustomElement} from '../../../test/utils';
 import {
   createFormContext,
   Field,
@@ -75,10 +75,10 @@ const testField = () => {
 
     it('creates field that receives form', () => {
       @form()
-      class Form extends HTMLElementMock {}
+      class Form extends CustomElement {}
 
       @field({scheduler})
-      class FormField extends HTMLElementMock implements Field<string> {
+      class FormField extends CustomElement implements Field<string> {
         public readonly [formApi]: FormApi;
         public readonly [input]: FieldInputProps<string>;
         public readonly [meta]: FieldMetaProps;
@@ -93,10 +93,10 @@ const testField = () => {
 
     it('subscribes to form with defined options', () => {
       @form()
-      class Form extends HTMLElementMock {}
+      class Form extends CustomElement {}
 
       @field({scheduler})
-      class FormField extends HTMLElementMock implements Field<string> {
+      class FormField extends CustomElement implements Field<string> {
         public readonly [formApi]: FormApi;
         public readonly [input]: FieldInputProps<string>;
         public readonly [meta]: FieldMetaProps;
@@ -134,10 +134,10 @@ const testField = () => {
 
     it('creates new input and meta objects on each form update', () => {
       @form()
-      class Form extends HTMLElementMock {}
+      class Form extends CustomElement {}
 
       @field({scheduler})
-      class FormField extends HTMLElementMock implements Field<object> {
+      class FormField extends CustomElement implements Field<object> {
         public readonly [formApi]: FormApi;
         public readonly [input]: FieldInputProps<object>;
         public readonly [meta]: FieldMetaProps;
@@ -161,10 +161,10 @@ const testField = () => {
 
     it('formats value for [input] if format option is set and formatOnBlur is disabled', () => {
       @form()
-      class Form extends HTMLElementMock {}
+      class Form extends CustomElement {}
 
       @field({scheduler})
-      class FormField extends HTMLElementMock implements Field<object> {
+      class FormField extends CustomElement implements Field<object> {
         public readonly [formApi]: FormApi;
         public readonly [input]: FieldInputProps<object>;
         public readonly [meta]: FieldMetaProps;
@@ -190,10 +190,10 @@ const testField = () => {
 
     it('avoids unnecessary scheduling if update called many times', () => {
       @form()
-      class Form extends HTMLElementMock {}
+      class Form extends CustomElement {}
 
       @field({scheduler})
-      class FormField extends HTMLElementMock implements Field<object> {
+      class FormField extends CustomElement implements Field<object> {
         public readonly [formApi]: FormApi;
         public readonly [input]: FieldInputProps<object>;
         public readonly [meta]: FieldMetaProps;
@@ -212,10 +212,10 @@ const testField = () => {
 
     it('avoids unnecessary scheduling if subscribe called many times', () => {
       @form()
-      class Form extends HTMLElementMock {}
+      class Form extends CustomElement {}
 
       @field({scheduler})
-      class FormField extends HTMLElementMock implements Field<object> {
+      class FormField extends CustomElement implements Field<object> {
         public readonly [formApi]: FormApi;
         public readonly [input]: FieldInputProps<object>;
         public readonly [meta]: FieldMetaProps;
@@ -230,10 +230,10 @@ const testField = () => {
 
     it('unsubscribes on disconnectedCallback', () => {
       @form()
-      class Form extends HTMLElementMock {}
+      class Form extends CustomElement {}
 
       @field({scheduler})
-      class FormField extends HTMLElementMock implements Field<object> {
+      class FormField extends CustomElement implements Field<object> {
         public readonly [formApi]: FormApi;
         public readonly [input]: FieldInputProps<object>;
         public readonly [meta]: FieldMetaProps;
@@ -249,10 +249,10 @@ const testField = () => {
 
     it('unsubscribes on new subscription', () => {
       @form()
-      class Form extends HTMLElementMock {}
+      class Form extends CustomElement {}
 
       @field({scheduler})
-      class FormField extends HTMLElementMock implements Field<object> {
+      class FormField extends CustomElement implements Field<object> {
         public readonly [formApi]: FormApi;
         public readonly [input]: FieldInputProps<object>;
         public readonly [meta]: FieldMetaProps;
@@ -269,10 +269,10 @@ const testField = () => {
       const testResubscription = <T>(type: FieldConfigKey, oldValue: T, newValue: T) => {
         it(`resubscribes on option ${type} value change`, () => {
           @form()
-          class Form extends HTMLElementMock {}
+          class Form extends CustomElement {}
 
           @field({scheduler})
-          class FormField extends HTMLElementMock implements Field<object> {
+          class FormField extends CustomElement implements Field<object> {
             public readonly [formApi]: FormApi;
             public readonly [input]: FieldInputProps<object>;
             public readonly [meta]: FieldMetaProps;
@@ -293,10 +293,10 @@ const testField = () => {
 
         it(`does not resubscribe on field ${type} change if option values are equal`, () => {
           @form()
-          class Form extends HTMLElementMock {}
+          class Form extends CustomElement {}
 
           @field({scheduler})
-          class FormField extends HTMLElementMock implements Field<object> {
+          class FormField extends CustomElement implements Field<object> {
             public readonly [formApi]: FormApi;
             public readonly [input]: FieldInputProps<object>;
             public readonly [meta]: FieldMetaProps;
@@ -321,10 +321,10 @@ const testField = () => {
 
       it('updates field if option value is changed', () => {
         @form()
-        class Form extends HTMLElementMock {}
+        class Form extends CustomElement {}
 
         @field({scheduler})
-        class FormField extends HTMLElementMock implements Field<object> {
+        class FormField extends CustomElement implements Field<object> {
           public readonly [formApi]: FormApi;
           public readonly [input]: FieldInputProps<object>;
           public readonly [meta]: FieldMetaProps;
@@ -345,10 +345,10 @@ const testField = () => {
 
       it('does not update field if it option values are equal', () => {
         @form()
-        class Form extends HTMLElementMock {}
+        class Form extends CustomElement {}
 
         @field({scheduler})
-        class FormField extends HTMLElementMock implements Field<object> {
+        class FormField extends CustomElement implements Field<object> {
           public readonly [formApi]: FormApi;
           public readonly [input]: FieldInputProps<object>;
           public readonly [meta]: FieldMetaProps;
@@ -371,7 +371,7 @@ const testField = () => {
         expect(() => {
           @field({scheduler})
           // @ts-ignore
-          class FormField extends HTMLElementMock implements Field<object> {
+          class FormField extends CustomElement implements Field<object> {
             public readonly [formApi]: FormApi;
             public readonly [input]: FieldInputProps<object>;
             public readonly [meta]: FieldMetaProps;
@@ -386,10 +386,10 @@ const testField = () => {
     describe('[input]', () => {
       it('calls blur() method of field state if [input].onBlur() is called', () => {
         @form()
-        class Form extends HTMLElementMock {}
+        class Form extends CustomElement {}
 
         @field({scheduler})
-        class FormField extends HTMLElementMock implements Field<object> {
+        class FormField extends CustomElement implements Field<object> {
           public readonly [formApi]: FormApi;
           public readonly [input]: FieldInputProps<object>;
           public readonly [meta]: FieldMetaProps;
@@ -406,10 +406,10 @@ const testField = () => {
 
       it('formats and sets value on blur if appropriate options are set', () => {
         @form()
-        class Form extends HTMLElementMock {}
+        class Form extends CustomElement {}
 
         @field({scheduler})
-        class FormField extends HTMLElementMock implements Field<object> {
+        class FormField extends CustomElement implements Field<object> {
           public readonly [formApi]: FormApi;
           public readonly [input]: FieldInputProps<object>;
           public readonly [meta]: FieldMetaProps;
@@ -438,10 +438,10 @@ const testField = () => {
 
       it('calls change() method of field state [input].onChange() is called', () => {
         @form()
-        class Form extends HTMLElementMock {}
+        class Form extends CustomElement {}
 
         @field({scheduler})
-        class FormField extends HTMLElementMock implements Field<object> {
+        class FormField extends CustomElement implements Field<object> {
           public readonly [formApi]: FormApi;
           public readonly [input]: FieldInputProps<object>;
           public readonly [meta]: FieldMetaProps;
@@ -460,10 +460,10 @@ const testField = () => {
 
       it('parses value if parse option is defined', () => {
         @form()
-        class Form extends HTMLElementMock {}
+        class Form extends CustomElement {}
 
         @field({scheduler})
-        class FormField extends HTMLElementMock implements Field<string> {
+        class FormField extends CustomElement implements Field<string> {
           public readonly [formApi]: FormApi;
           public readonly [input]: FieldInputProps<string>;
           public readonly [meta]: FieldMetaProps;
@@ -490,10 +490,10 @@ const testField = () => {
 
       it('calls focus() method of field stat if [input].onFocus() method is called', () => {
         @form()
-        class Form extends HTMLElementMock {}
+        class Form extends CustomElement {}
 
         @field({scheduler})
-        class FormField extends HTMLElementMock implements Field<string> {
+        class FormField extends CustomElement implements Field<string> {
           public readonly [formApi]: FormApi;
           public readonly [input]: FieldInputProps<string>;
           public readonly [meta]: FieldMetaProps;
