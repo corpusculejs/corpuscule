@@ -47,7 +47,7 @@ module.exports = {
               cacheDirectory: true,
               cacheCompression: false,
               plugins: [
-                [require('@babel/plugin-proposal-decorators'), {decoratorsBeforeExport: true}],
+                [require('@babel/plugin-proposal-decorators'), {decoratorsBeforeExport: false}],
                 require('@babel/plugin-proposal-class-properties'),
               ],
               presets: [require('@babel/preset-typescript')],
