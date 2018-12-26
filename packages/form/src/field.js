@@ -4,7 +4,7 @@ import {accessor, field as ffield, method, lifecycleKeys} from '@corpuscule/util
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
 import shallowEqual from '@corpuscule/utils/lib/shallowEqual';
 import {input as $input, meta as $meta} from './tokens/lifecycle';
-import {all} from './utils';
+import {all, getTargetValue} from './utils';
 
 const [connectedCallbackKey, disconnectedCallbackKey] = lifecycleKeys;
 
@@ -148,6 +148,10 @@ const createField = (consumer, $formApi, $$form) => {
           {
             key: connectedCallbackKey,
             value() {
+              this.addEventListener('blur', this[$$onBlur]);
+              this.addEventListener('change', this[$$onChange]);
+              this.addEventListener('focus', this[$$onFocus]);
+
               this[$$superConnectedCallback]();
               this[$$subscribe]();
             },
@@ -158,6 +162,10 @@ const createField = (consumer, $formApi, $$form) => {
           {
             key: disconnectedCallbackKey,
             value() {
+              this.removeEventListener('blur', this[$$onBlur]);
+              this.removeEventListener('change', this[$$onChange]);
+              this.removeEventListener('focus', this[$$onFocus]);
+
               this[$$unsubscribe]();
               this[$$superDisconnectedCallback]();
             },
@@ -206,12 +214,13 @@ const createField = (consumer, $formApi, $$form) => {
         method(
           {
             key: $$onChange,
-            value(value) {
+            value({detail, target}) {
               const [parse] = getConfigProperties(this, 'parse');
+              const {change, name, value} = this[$$formState];
 
-              const {change, name} = this[$$formState];
+              const changeValue = detail || getTargetValue(target, value);
 
-              change(parse ? parse(value, name) : value);
+              change(parse ? parse(changeValue, name) : changeValue);
             },
           },
           {isBound: true},
@@ -283,9 +292,6 @@ const createField = (consumer, $formApi, $$form) => {
 
               this[$input] = {
                 name,
-                onBlur: this[$$onBlur],
-                onChange: this[$$onChange],
-                onFocus: this[$$onFocus],
                 value: !formatOnBlur && format ? format(value, name) : value,
               };
 

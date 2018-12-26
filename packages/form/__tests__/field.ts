@@ -150,9 +150,6 @@ const testField = () => {
       expect(scheduler).toHaveBeenCalledTimes(2);
       expect(fieldElement[input]).toEqual({
         name: 'test',
-        onBlur: jasmine.any(Function),
-        onChange: jasmine.any(Function),
-        onFocus: jasmine.any(Function),
         value: fieldValue,
       });
 
@@ -399,7 +396,7 @@ const testField = () => {
         const [listener] = subscribeField(fieldElement);
         updateField(fieldElement, listener);
 
-        fieldElement[input].onBlur();
+        fieldElement.dispatchEvent(new Event('blur'));
 
         expect(state.blur).toHaveBeenCalled();
       });
@@ -430,13 +427,13 @@ const testField = () => {
         const [listener] = subscribeField(fieldElement);
         updateField(fieldElement, listener);
 
-        fieldElement[input].onBlur();
+        fieldElement.dispatchEvent(new Event('blur'));
 
         expect(fieldElement.format).toHaveBeenCalledWith(fieldValue, 'test');
         expect(state.change).toHaveBeenCalledWith(fieldValue);
       });
 
-      it('calls change() method of field state [input].onChange() is called', () => {
+      it('calls change() method of field state when new "change" event is fired', () => {
         @form()
         class Form extends CustomElement {}
 
@@ -451,9 +448,9 @@ const testField = () => {
         const [listener] = subscribeField(fieldElement);
         updateField(fieldElement, listener);
 
-        const newFieldValue = {};
+        const newFieldValue: object = {};
 
-        fieldElement[input].onChange(newFieldValue);
+        fieldElement.dispatchEvent(new CustomEvent('change', {detail: newFieldValue}));
 
         expect(state.change).toHaveBeenCalledWith(newFieldValue);
       });
@@ -482,7 +479,7 @@ const testField = () => {
 
         const newFieldValue = JSON.stringify({});
 
-        fieldElement[input].onChange(newFieldValue);
+        fieldElement.dispatchEvent(new CustomEvent('change', {detail: newFieldValue}));
 
         expect(fieldElement.parse).toHaveBeenCalledWith(newFieldValue, 'test');
         expect(state.change).toHaveBeenCalledWith({});
@@ -503,9 +500,174 @@ const testField = () => {
         const [listener] = subscribeField(fieldElement);
         updateField(fieldElement, listener);
 
-        fieldElement[input].onFocus();
+        fieldElement.dispatchEvent(new Event('focus'));
 
         expect(state.focus).toHaveBeenCalled();
+      });
+    });
+
+    describe('default fields', () => {
+      let fieldElement: HTMLElement;
+
+      beforeEach(() => {
+        @form()
+        class Form extends CustomElement {}
+
+        @field({scheduler})
+        class FormField extends CustomElement implements Field<object> {
+          public readonly [formApi]: FormApi;
+          public readonly [input]: FieldInputProps<object>;
+          public readonly [meta]: FieldMetaProps;
+        }
+
+        [, fieldElement] = createMockedContextElements(Form, FormField);
+      });
+
+      it('property updates form on input change event', () => {
+        const inputElement = document.createElement('input');
+        inputElement.type = 'text';
+        fieldElement.appendChild(inputElement);
+
+        const [listener] = subscribeField(fieldElement);
+        updateField(fieldElement, listener);
+
+        inputElement.value = 'test';
+        inputElement.dispatchEvent(new Event('change', {bubbles: true}));
+
+        expect(state.change).toHaveBeenCalledWith('test');
+      });
+
+      describe('checkbox', () => {
+        it('sets boolean value if no value exists', () => {
+          const inputElement = document.createElement('input');
+          inputElement.type = 'checkbox';
+          fieldElement.appendChild(inputElement);
+
+          const [listener] = subscribeField(fieldElement);
+          updateField(fieldElement, listener);
+
+          inputElement.checked = true;
+          inputElement.dispatchEvent(new Event('change', {bubbles: true}));
+
+          expect(state.change).toHaveBeenCalledWith(true);
+        });
+
+        it('sets array value if value exists', () => {
+          const inputElement = document.createElement('input');
+          inputElement.type = 'checkbox';
+          inputElement.value = 'foo';
+          fieldElement.appendChild(inputElement);
+
+          const [listener] = subscribeField(fieldElement);
+          updateField(fieldElement, listener);
+
+          inputElement.checked = true;
+          inputElement.dispatchEvent(new Event('change', {bubbles: true}));
+
+          expect(state.change).toHaveBeenCalledWith(['foo']);
+        });
+
+        it('updates array value if checked', () => {
+          const inputElement = document.createElement('input');
+          inputElement.type = 'checkbox';
+          inputElement.value = 'foo';
+
+          fieldElement.appendChild(inputElement);
+
+          state.value = ['bar'];
+
+          const [listener] = subscribeField(fieldElement);
+          updateField(fieldElement, listener);
+
+          inputElement.checked = true;
+          inputElement.dispatchEvent(new Event('change', {bubbles: true}));
+
+          expect(state.change).toHaveBeenCalledWith(['bar', 'foo']);
+        });
+
+        it('removes value if unchecked', () => {
+          const inputElement = document.createElement('input');
+          inputElement.type = 'checkbox';
+          inputElement.value = 'foo';
+          inputElement.checked = true;
+
+          fieldElement.appendChild(inputElement);
+
+          state.value = ['foo'];
+
+          const [listener] = subscribeField(fieldElement);
+          updateField(fieldElement, listener);
+
+          inputElement.checked = false;
+          inputElement.dispatchEvent(new Event('change', {bubbles: true}));
+
+          expect(state.change).toHaveBeenCalledWith([]);
+        });
+
+        it('does nothing if form value is not an array', () => {
+          const inputElement = document.createElement('input');
+          inputElement.type = 'checkbox';
+          inputElement.value = 'foo';
+
+          fieldElement.appendChild(inputElement);
+
+          state.value = undefined;
+
+          const [listener] = subscribeField(fieldElement);
+          updateField(fieldElement, listener);
+
+          inputElement.checked = false;
+          inputElement.dispatchEvent(new Event('change', {bubbles: true}));
+
+          expect(state.change).toHaveBeenCalledWith(undefined);
+        });
+      });
+
+      describe('select', () => {
+        let selectElement: HTMLSelectElement;
+        let option1: HTMLOptionElement;
+        let option2: HTMLOptionElement;
+
+        beforeEach(() => {
+          selectElement = document.createElement('select');
+          option1 = document.createElement('option');
+          option1.value = '1';
+          option1.textContent = 'one';
+
+          option2 = document.createElement('option');
+          option2.value = '2';
+          option2.textContent = 'two';
+
+          selectElement.appendChild(option1);
+          selectElement.appendChild(option2);
+        });
+
+        it('sets the form value to the selected option if selection is single', () => {
+          fieldElement.appendChild(selectElement);
+
+          const [listener] = subscribeField(fieldElement);
+          updateField(fieldElement, listener);
+
+          option2.selected = true;
+          selectElement.dispatchEvent(new Event('change', {bubbles: true}));
+
+          expect(state.change).toHaveBeenCalledWith('2');
+        });
+
+        it('sets the form value to the array of selected option if selection is multiple', () => {
+          selectElement.multiple = true;
+          fieldElement.appendChild(selectElement);
+
+          const [listener] = subscribeField(fieldElement);
+          updateField(fieldElement, listener);
+
+          option1.selected = true;
+          option2.selected = true;
+
+          selectElement.dispatchEvent(new Event('change', {bubbles: true}));
+
+          expect(state.change).toHaveBeenCalledWith(['1', '2']);
+        });
       });
     });
   });
