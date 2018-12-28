@@ -1,34 +1,76 @@
-/* eslint-disable capitalized-comments */
+/* eslint-disable capitalized-comments, no-sync */
 import {assertKind} from '@corpuscule/utils/lib/asserts';
-import {field} from '@corpuscule/utils/lib/descriptors';
-import {style} from './tokens';
+import {method} from '@corpuscule/utils/lib/descriptors';
 
-export {link} from './utils';
-export {style};
+const supportsShadyCSS = window.ShadyCSS !== undefined && !window.ShadyCSS.nativeShadow;
+const supportsAdoptedStyleSheets = 'adoptedStyleSheets' in Document.prototype;
+const observerConfig = {childList: true};
 
-const stylePattern = /[{}]/;
+const attachShadowKey = 'attachShadow';
+const {attachShadow} = HTMLElement.prototype;
 
 const styles = (...pathsOrStyles) => ({elements, kind}) => {
   assertKind('styles', 'class', kind);
 
   const template = document.createElement('template');
-  template.innerHTML = pathsOrStyles
-    .map(pathOrStyle =>
-      stylePattern.test(pathOrStyle)
-        ? `<style>${pathOrStyle}</style>`
-        : `<link rel="stylesheet" type="text/css" href="${pathOrStyle}">`,
-    )
-    .join('');
+  const constructableStyles = [];
+
+  for (const pathOrStyle of pathsOrStyles) {
+    if (pathOrStyle instanceof URL) {
+      // If link to CSS file received
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = pathOrStyle;
+      template.content.appendChild(link);
+    } else if (supportsShadyCSS) {
+      // If ShadyCSS
+      constructableStyles.push(pathOrStyle);
+    } else if (supportsAdoptedStyleSheets) {
+      // If there is support for Constructable Style Sheets proposal
+      const sheet = new CSSStyleSheet();
+      sheet.replaceSync(pathOrStyle);
+      constructableStyles.push(sheet);
+    } else {
+      // Otherwise, just create a style tag
+      const style = document.createElement('style');
+      style.textContent = pathOrStyle;
+      template.content.appendChild(style);
+    }
+  }
 
   return {
     elements: [
-      ...elements.filter(({key}) => key !== style),
-      field(
+      ...elements,
+      method(
         {
-          initializer: () => template.content.cloneNode(true),
-          key: style,
+          key: attachShadowKey,
+          value(options) {
+            const root = attachShadow.call(this, options);
+
+            if (template.content.hasChildNodes()) {
+              const styleElements = template.content.cloneNode(true);
+
+              const observer = new MutationObserver(() => {
+                root.insertAdjacentElement('afterbegin', styleElements);
+                observer.disconnect();
+              });
+
+              observer.observe(root, observerConfig);
+            }
+
+            if (constructableStyles.length > 0) {
+              if (supportsShadyCSS) {
+                window.ShadyCSS.prepareAdoptedCssText(constructableStyles, this.localName);
+              } else {
+                root.adoptedStyleSheets = constructableStyles;
+              }
+            }
+
+            return root;
+          },
         },
-        {isStatic: true},
+        {isBound: true},
       ),
     ],
     kind,
