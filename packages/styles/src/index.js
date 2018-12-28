@@ -1,5 +1,6 @@
 /* eslint-disable capitalized-comments, no-sync */
 import {assertKind} from '@corpuscule/utils/lib/asserts';
+import createSupers from '@corpuscule/utils/lib/createSupers';
 import {method} from '@corpuscule/utils/lib/descriptors';
 
 const supportsShadyCSS = window.ShadyCSS !== undefined && !window.ShadyCSS.nativeShadow;
@@ -8,6 +9,8 @@ const observerConfig = {childList: true};
 
 const attachShadowKey = 'attachShadow';
 const {attachShadow} = HTMLElement.prototype;
+
+export const stylesAttachedCallback = Symbol();
 
 const styles = (...pathsOrStyles) => ({elements, kind}) => {
   assertKind('styles', 'class', kind);
@@ -39,25 +42,22 @@ const styles = (...pathsOrStyles) => ({elements, kind}) => {
     }
   }
 
+  const $$stylesAttachedCallback = Symbol();
+
+  const supers = createSupers(
+    elements,
+    new Map([[stylesAttachedCallback, $$stylesAttachedCallback]]),
+  );
+
   return {
     elements: [
-      ...elements,
+      ...elements.filter(({key}) => key !== stylesAttachedCallback),
+      ...supers,
       method(
         {
           key: attachShadowKey,
           value(options) {
             const root = attachShadow.call(this, options);
-
-            if (template.content.hasChildNodes()) {
-              const styleElements = template.content.cloneNode(true);
-
-              const observer = new MutationObserver(() => {
-                root.insertAdjacentElement('afterbegin', styleElements);
-                observer.disconnect();
-              });
-
-              observer.observe(root, observerConfig);
-            }
 
             if (constructableStyles.length > 0) {
               if (supportsShadyCSS) {
@@ -65,6 +65,20 @@ const styles = (...pathsOrStyles) => ({elements, kind}) => {
               } else {
                 root.adoptedStyleSheets = constructableStyles;
               }
+            }
+
+            if (template.content.hasChildNodes()) {
+              const styleElements = template.content.cloneNode(true);
+
+              const observer = new MutationObserver(() => {
+                root.prepend(styleElements);
+                observer.disconnect();
+                this[$$stylesAttachedCallback]();
+              });
+
+              observer.observe(root, observerConfig);
+            } else {
+              this[$$stylesAttachedCallback]();
             }
 
             return root;
