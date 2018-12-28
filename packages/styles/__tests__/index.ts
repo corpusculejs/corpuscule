@@ -1,11 +1,13 @@
 // tslint:disable:max-classes-per-file no-inner-html await-promise
-import {genName} from '../../../test/utils';
-import styles from '../src';
+import {createTestingPromise, genName} from '../../../test/utils';
+import styles, {stylesAttachedCallback} from '../src';
 
 describe('@corpuscule/styles', () => {
   const rawStyles = '.foo{color: red;}';
 
   it('appends styles to the shadow root', async () => {
+    const [promise, resolve] = createTestingPromise();
+
     @styles(rawStyles)
     class Test extends HTMLElement {
       public constructor() {
@@ -16,6 +18,10 @@ describe('@corpuscule/styles', () => {
       public connectedCallback(): void {
         this.shadowRoot!.innerHTML = '<div class="foo">Bar</div>';
       }
+
+      public [stylesAttachedCallback](): void {
+        resolve();
+      }
     }
 
     customElements.define(genName(), Test);
@@ -23,10 +29,10 @@ describe('@corpuscule/styles', () => {
     const test = new Test();
     test.connectedCallback();
 
-    await null;
+    await promise;
 
     expect(test.shadowRoot!.innerHTML).toBe(
-      `<div class="foo">Bar</div><style>${rawStyles}</style>`,
+      `<style>${rawStyles}</style><div class="foo">Bar</div>`,
     );
   });
 });
