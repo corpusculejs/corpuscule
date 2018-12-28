@@ -1,55 +1,32 @@
-// tslint:disable:max-classes-per-file
-import styles, {link, style} from '../src';
+// tslint:disable:max-classes-per-file no-inner-html await-promise
+import {genName} from '../../../test/utils';
+import styles from '../src';
 
 describe('@corpuscule/styles', () => {
-  const rawStyles = '.test{padding:10px}';
-  let container: HTMLElement;
+  const rawStyles = '.foo{color: red;}';
 
-  beforeEach(() => {
-    container = document.createElement('div');
-  });
-
-  it('should create a <link> tag if path is received', () => {
-    @styles('/styles.css')
-    class Test extends HTMLElement {
-      public static [style]: HTMLElement;
-    }
-
-    const {[style]: styleElement} = Test;
-    container.appendChild(styleElement);
-
-    expect(container.innerHTML).toBe('<link rel="stylesheet" type="text/css" href="/styles.css">');
-  });
-
-  it('should create a <style/> tag if styles are received', () => {
+  it('appends styles to the shadow root', async () => {
     @styles(rawStyles)
     class Test extends HTMLElement {
-      public static [style]: HTMLElement;
+      public constructor() {
+        super();
+        this.attachShadow({mode: 'open'});
+      }
+
+      public connectedCallback(): void {
+        this.shadowRoot!.innerHTML = '<div class="foo">Bar</div>';
+      }
     }
 
-    const {[style]: styleElement} = Test;
-    container.appendChild(styleElement);
+    customElements.define(genName(), Test);
 
-    expect(container.innerHTML).toBe(`<style>${rawStyles}</style>`);
-  });
+    const test = new Test();
+    test.connectedCallback();
 
-  it('should allow to insert different style types', () => {
-    @styles('/styles.css', rawStyles)
-    class Test extends HTMLElement {
-      public static [style]: HTMLElement;
-    }
+    await null;
 
-    const {[style]: styleElement} = Test;
-    container.appendChild(styleElement);
-
-    expect(container.innerHTML).toBe(
-      `<link rel="stylesheet" type="text/css" href="/styles.css"><style>${rawStyles}</style>`,
+    expect(test.shadowRoot!.innerHTML).toBe(
+      `<div class="foo">Bar</div><style>${rawStyles}</style>`,
     );
-  });
-
-  describe('link()', () => {
-    it('should build url', () => {
-      expect(link('./style.css', 'http://localhost/')).toBe('http://localhost/style.css');
-    });
   });
 });
