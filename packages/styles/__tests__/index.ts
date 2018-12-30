@@ -1,11 +1,16 @@
 // tslint:disable:max-classes-per-file no-inner-html await-promise
 import {createTestingPromise, genName} from '../../../test/utils';
-import styles, {stylesAttachedCallback} from '../src';
+import {createStylesDecorator, stylesAttachedCallback, StylesDecorator} from '../src';
 
 describe('@corpuscule/styles', () => {
   const rawStyles = '.foo{color: red;}';
+  let styles: StylesDecorator;
 
   describe('file links', () => {
+    beforeEach(() => {
+      styles = createStylesDecorator({adoptedStyleSheets: false, shadyCSS: false});
+    });
+
     it('appends "link" tags for urls with same origin', async () => {
       const [promise, resolve] = createTestingPromise();
 
@@ -69,7 +74,103 @@ describe('@corpuscule/styles', () => {
     });
   });
 
+  describe('Constructable Style Sheets', () => {
+    let sheetSpyObj: jasmine.SpyObj<{replaceSync: (styles: string) => void}>;
+    let sheetSpy: jasmine.Spy;
+    let adoptedStyleSheets: jasmine.Spy;
+
+    beforeEach(() => {
+      styles = createStylesDecorator({adoptedStyleSheets: true, shadyCSS: false});
+      sheetSpyObj = jasmine.createSpyObj('CSSStyleSheet', ['replaceSync']);
+      sheetSpy = spyOn(window as any, 'CSSStyleSheet').and.returnValue(sheetSpyObj);
+
+      adoptedStyleSheets = jasmine.createSpy('adoptedStyleSheets');
+
+      Object.defineProperty((window as any).ShadowRoot.prototype, 'adoptedStyleSheets', {
+        configurable: true,
+        enumerable: true,
+        set: adoptedStyleSheets,
+      });
+    });
+
+    afterEach(() => {
+      sheetSpy.and.callThrough();
+    });
+
+    it('properly appends constructed style sheet', async () => {
+      const [promise, resolve] = createTestingPromise();
+
+      @styles(rawStyles)
+      class Test extends HTMLElement {
+        public constructor() {
+          super();
+          this.attachShadow({mode: 'open'});
+        }
+
+        public connectedCallback(): void {
+          this.shadowRoot!.innerHTML = '<div>Bar</div>';
+        }
+
+        public [stylesAttachedCallback](): void {
+          resolve();
+        }
+      }
+
+      customElements.define(genName(), Test);
+
+      const test = new Test();
+      test.connectedCallback();
+
+      await promise;
+
+      expect(sheetSpy).toHaveBeenCalled();
+      expect(sheetSpyObj.replaceSync).toHaveBeenCalledWith(rawStyles);
+      expect(adoptedStyleSheets).toHaveBeenCalledWith([sheetSpyObj]);
+    });
+  });
+
+  describe('ShadyCSS', () => {
+    beforeEach(() => {
+      styles = createStylesDecorator({adoptedStyleSheets: false, shadyCSS: true});
+      (window as any).ShadyCSS = jasmine.createSpyObj('ShadyCSS', ['prepareAdoptedCssText']);
+    });
+
+    it('properly appends constructed style sheet', async () => {
+      const [promise, resolve] = createTestingPromise();
+
+      @styles(rawStyles)
+      class Test extends HTMLElement {
+        public constructor() {
+          super();
+          this.attachShadow({mode: 'open'});
+        }
+
+        public connectedCallback(): void {
+          this.shadowRoot!.innerHTML = '<div>Bar</div>';
+        }
+
+        public [stylesAttachedCallback](): void {
+          resolve();
+        }
+      }
+
+      customElements.define(genName(), Test);
+
+      const test = new Test();
+      test.connectedCallback();
+
+      await promise;
+
+      expect((window as any).ShadyCSS.prepareAdoptedCssText).toHaveBeenCalledWith(
+        [rawStyles],
+        test.localName,
+      );
+    });
+  });
+
   it('appends raw styles to the shadow root', async () => {
+    styles = createStylesDecorator({adoptedStyleSheets: false, shadyCSS: false});
+
     const [promise, resolve] = createTestingPromise();
 
     @styles(rawStyles)
@@ -80,7 +181,7 @@ describe('@corpuscule/styles', () => {
       }
 
       public connectedCallback(): void {
-        this.shadowRoot!.innerHTML = '<div class="foo">Bar</div>';
+        this.shadowRoot!.innerHTML = '<div>Bar</div>';
       }
 
       public [stylesAttachedCallback](): void {
@@ -95,8 +196,6 @@ describe('@corpuscule/styles', () => {
 
     await promise;
 
-    expect(test.shadowRoot!.innerHTML).toBe(
-      `<style>${rawStyles}</style><div class="foo">Bar</div>`,
-    );
+    expect(test.shadowRoot!.innerHTML).toBe(`<style>${rawStyles}</style><div>Bar</div>`);
   });
 });

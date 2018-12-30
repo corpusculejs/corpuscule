@@ -3,8 +3,6 @@ import {assertKind} from '@corpuscule/utils/lib/asserts';
 import createSupers from '@corpuscule/utils/lib/createSupers';
 import {method} from '@corpuscule/utils/lib/descriptors';
 
-const supportsShadyCSS = window.ShadyCSS !== undefined && !window.ShadyCSS.nativeShadow;
-const supportsAdoptedStyleSheets = 'adoptedStyleSheets' in Document.prototype;
 const observerConfig = {childList: true};
 
 const attachShadowKey = 'attachShadow';
@@ -12,7 +10,10 @@ const {attachShadow} = HTMLElement.prototype;
 
 export const stylesAttachedCallback = Symbol();
 
-const styles = (...pathsOrStyles) => ({elements, kind}) => {
+export const createStylesDecorator = ({shadyCSS, adoptedStyleSheets}) => (...pathsOrStyles) => ({
+  elements,
+  kind,
+}) => {
   assertKind('styles', 'class', kind);
 
   const template = document.createElement('template');
@@ -29,10 +30,10 @@ const styles = (...pathsOrStyles) => ({elements, kind}) => {
           ? pathOrStyle.pathname + pathOrStyle.search
           : pathOrStyle;
       template.content.appendChild(link);
-    } else if (supportsShadyCSS) {
+    } else if (shadyCSS) {
       // If ShadyCSS
       constructableStyles.push(pathOrStyle);
-    } else if (supportsAdoptedStyleSheets) {
+    } else if (adoptedStyleSheets) {
       // If there is support for Constructable Style Sheets proposal
       const sheet = new CSSStyleSheet();
       sheet.replaceSync(pathOrStyle);
@@ -63,7 +64,7 @@ const styles = (...pathsOrStyles) => ({elements, kind}) => {
             const root = attachShadow.call(this, options);
 
             if (constructableStyles.length > 0) {
-              if (supportsShadyCSS) {
+              if (shadyCSS) {
                 window.ShadyCSS.prepareAdoptedCssText(constructableStyles, this.localName);
               } else {
                 root.adoptedStyleSheets = constructableStyles;
@@ -93,5 +94,10 @@ const styles = (...pathsOrStyles) => ({elements, kind}) => {
     kind,
   };
 };
+
+const styles = createStylesDecorator({
+  adoptedStyleSheets: 'adoptedStyleSheets' in Document.prototype,
+  shadyCSS: window.ShadyCSS !== undefined && !window.ShadyCSS.nativeShadow,
+});
 
 export default styles;
