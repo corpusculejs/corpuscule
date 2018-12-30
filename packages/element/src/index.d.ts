@@ -4,8 +4,7 @@ export interface ComputingPair {
   readonly observer: PropertyDecorator;
 }
 
-export interface ElementDecoratorParams {
-  readonly extends?: keyof HTMLElementTagNameMap;
+export interface ElementDecoratorOptions {
   readonly renderer: (
     result: unknown,
     container: Element | DocumentFragment,
@@ -14,12 +13,18 @@ export interface ElementDecoratorParams {
   readonly scheduler?: (callback: () => void) => Promise<void>;
 }
 
+export interface ElementDecoratorParams {
+  readonly extends?: keyof HTMLElementTagNameMap;
+}
+
+export type ElementDecorator = (name: string, params: ElementDecoratorParams) => ClassDecorator;
+
 export type AttributeGuard = BooleanConstructor | NumberConstructor | StringConstructor;
 export type PropertyGuard = (value: unknown) => boolean;
 
 export const attribute: (attributeName: string, guard: AttributeGuard) => PropertyDecorator;
 
-export const element: (name: string, params: ElementDecoratorParams) => ClassDecorator;
+export const createElementDecorator: (options: ElementDecoratorOptions) => ElementDecorator;
 
 export const internal: PropertyDecorator;
 export const property: (guard?: PropertyGuard) => PropertyDecorator;

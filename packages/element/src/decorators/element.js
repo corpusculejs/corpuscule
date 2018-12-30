@@ -21,11 +21,11 @@ const filteringNames = ['is', 'observedAttributes'];
 
 const rootProperty = new WeakMap();
 
-const element = (name, {extends: builtin, renderer, scheduler = defaultScheduler}) => ({
-  kind,
-  elements,
-}) => {
-  assertKind('element', 'class', kind);
+const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
+  name,
+  {extends: builtin} = {},
+) => ({kind, elements}) => {
+  assertKind('createElementDecorator', 'class', kind);
 
   const hasRender = elements.some(({key}) => key === $render);
 
@@ -199,4 +199,4 @@ const element = (name, {extends: builtin, renderer, scheduler = defaultScheduler
   };
 };
 
-export default element;
+export default createElementDecorator;
