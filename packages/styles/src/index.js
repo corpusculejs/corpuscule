@@ -24,7 +24,10 @@ const styles = (...pathsOrStyles) => ({elements, kind}) => {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
       link.type = 'text/css';
-      link.href = pathOrStyle;
+      link.href =
+        pathOrStyle.origin === location.origin
+          ? pathOrStyle.pathname + pathOrStyle.search
+          : pathOrStyle;
       template.content.appendChild(link);
     } else if (supportsShadyCSS) {
       // If ShadyCSS
