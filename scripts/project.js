@@ -2,7 +2,7 @@ const packages = {
   context: ['index'],
   element: ['index'],
   form: ['index'],
-  'lit-html-renderer': ['index', 'withCustomElement'],
+  'lit-html-renderer': ['index', 'shady', 'withCustomElement'],
   redux: ['index'],
   router: ['index'],
   styles: ['index'],
