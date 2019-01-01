@@ -1,10 +1,10 @@
 import {render} from 'lit-html/lib/shady-render';
 
-const renderLitHtml = (result, container, context) => {
+const renderShady = (result, container, context) => {
   render(result, container, {
     eventContext: context,
     scopeName: context.localName,
   });
 };
 
-export default renderLitHtml;
+export default renderShady;
