@@ -236,22 +236,51 @@ the element.
 * `context: C` is an element instance. It could be used for different options, e.g. bining event
 context in `lit-html`, or just omitted.
 
+### Customized Built-In Element
+Using the `@corpuscule/element` you are allowed to create not only regular Custom Element, but the
+[Customized Built-In Element](https://developers.google.com/web/fundamentals/web-components/customelements#extendhtml)
+as well. 
+
+Customized Built-In Elements differs from the regular Custom Elements in many ways, and
+`@corpuscule/element` reflects these differences:
+* Customized Built-In Element cannot have Shadow DOM. It means rendering is impossible. So while
+`[render]` method is required for regular Custom Elements, it is forbidden for Customized Built-In.
+Also, lifecycle methods don't schedule rendering.
+* `[createRoot]` is forbidden as well.
+* You still can create custom attributes, properties and internals. Each change of them still calls
+lifecycle hooks, and you still can specify basic built-in element reaction for changes. 
+
+To create Customized Built-In Element you have to:
+* Specify `extends` option in the decorator
+* Extend the proper class, e.g. `HTMLAnchorElement` for `<a>`.
+
+##### Example
+```javascript
+@element('my-anchor', {extends: 'a'}
+class MyAnchor extends HTMLAnchorElement {}
+```
+
 ## API
 This section describes decorators API and how to use them.
 
-#### `@element(name: string, options: ElementDecoratorOptions): ClassDecorator`
-Element decorator is the main detail of the `@corpuscule/element`, it brings other decorators
-together and unites them. 
+#### createElementDecorator(options: ElementDecoratorOptions): ElementDecorator
+This function creates an element decorator. It is the main piece of the `@corpuscule/element`: it
+brings other decorators together and unites them.
 
-Element decorator receives following parameters:
-* `name: string`. The name of your Custom element.
-* `options: ElementDecoratorsOptions`. Object consists of two elements:
-  * `renderer: <C, R>(result: R, container: Element | DocumentFragment, context: C) => void`.
-  Function that performs renderer operation for your element. More details at the [Renderer Agnostic](#renderer-agnostic)
+Creator function receives single `options` param which is an object that consists of following:
+* `renderer: <C, R>(result: R, container: Element | DocumentFragment, context: C) => void`.
+  Function that performs renderer operation for the element. More details at the [Renderer Agnostic](#renderer-agnostic)
   section. Specifying this function is required.
-  * `scheduler: (callback: () => void) => Promise<void>`. Function that performs rendering
-  scheduling for your element. Specifying scheduler is not required, [`@corpuscule/utils` scheduler](../utils/README.md#scheduler)
+* `scheduler?: (callback: () => void) => Promise<void>`. Function that performs scheduling for your
+  element. Specifying scheduler is not required, [`@corpuscule/utils` scheduler](../utils/README.md#scheduler)
   is used by default.
+  
+Creator function returns an `@element` decorator function that receives following params:
+
+* `name: string`. The name of your Custom Element.
+* `params: ElementDecoratorParams`. Object consists of following elements:
+  * `extends?: keyof HTMLElementTagNameMap`. This parameter allows to create a
+  [Customized Built-In Element](#customized-builtin-element) instead of a regular Custom Element.
   
 Element decorator returns updated class definition which has following API:
 ```typescript
