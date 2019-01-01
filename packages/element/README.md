@@ -263,7 +263,7 @@ class MyAnchor extends HTMLAnchorElement {}
 ## API
 This section describes decorators API and how to use them.
 
-#### createElementDecorator(options: ElementDecoratorOptions): ElementDecorator
+#### `createElementDecorator(options: ElementDecoratorOptions): ElementDecorator`
 This function creates an element decorator. It is the main piece of the `@corpuscule/element`: it
 brings other decorators together and unites them.
 
