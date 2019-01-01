@@ -3,7 +3,7 @@ import {html} from 'lit-html';
 import {render} from '../../../test/mocks/litHtml';
 import renderLitHtml from '../src';
 
-const testRenderLitHtml = () => {
+const testRegularRender = () => {
   describe('renderLitHtml', () => {
     beforeEach(() => {
       render.calls.reset();
@@ -25,4 +25,4 @@ const testRenderLitHtml = () => {
   });
 };
 
-export default testRenderLitHtml;
+export default testRegularRender;
