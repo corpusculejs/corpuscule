@@ -1,8 +1,8 @@
 // tslint:disable:no-unnecessary-class max-classes-per-file no-unbound-method no-empty
 import {createTestingPromise, CustomElement, genName} from '../../../../test/utils';
 import {
+  createElementDecorator,
   createRoot,
-  element as basicElement,
   internalChangedCallback,
   propertyChangedCallback,
   render,
@@ -22,8 +22,7 @@ const testElementDecorator = () => {
       define = spyOn(customElements, 'define');
       define.and.callThrough();
 
-      element = (name, params = {}) =>
-        basicElement(name, {...params, renderer: rendererSpy, scheduler: schedulerSpy});
+      element = createElementDecorator({renderer: rendererSpy, scheduler: schedulerSpy});
     });
 
     it('adds element to a custom elements registry', () => {
