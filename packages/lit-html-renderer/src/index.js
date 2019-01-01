@@ -1,9 +1,9 @@
 import {render} from 'lit-html';
 
-const renderLitHtml = (result, container, context) => {
+const renderRegular = (result, container, context) => {
   render(result, container, {
     eventContext: context,
   });
 };
 
-export default renderLitHtml;
+export default renderRegular;
