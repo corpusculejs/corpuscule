@@ -9,6 +9,7 @@ module.exports = {
       '@corpuscule/context': resolve(__dirname, './mocks/context'),
       'final-form$': resolve(__dirname, './mocks/finalForm'),
       'lit-html$': resolve(__dirname, './mocks/litHtml'),
+      'lit-html/lib/shady-render$': resolve(__dirname, './mocks/litHtmlShady'),
       'universal-router$': resolve(__dirname, './mocks/universalRouter'),
     },
     extensions: ['.js', '.ts'],
