@@ -29,9 +29,9 @@ $ yarn add @corupuscule/context
 ## How it works
 `@corpuscule/context` provides a single function that creates provider-consumer decorators pair.
 When you apply `@provider` decorator to a component, it gets an ability to send the value of its
-`[providingValue]` property down to the DOM tree. Component marked with `@consumer` decorator is
-able to receive this value in `[contextValue]` property during connection stage if it is a
-descendant of a provider component.
+field marked with `@value` decorator down to the DOM tree. Component marked with `@consumer`
+decorator is able to receive this value in its field marked with `@value` during connection stage
+if it is a descendant of a provider component.
 
 You also can:
 * Use multiple contexts for a single DOM tree branch.
@@ -68,19 +68,20 @@ Schema for this idea is following:
   
   const {
     consumer,
-    contextValue,
     provider,
-    providingValue,
+    value,
   } = createContext();
   
   @provider
   class Provider extends HTMLElement {
-    [providingValue] = 10;
+    @value
+    providingValue = 10;
   }
   
   @consumer
   class Consumer extends HTMLElement {
-    [contextValue];
+    @value
+    contextValue;
   }
   
   customElement.define('my-provider', Provider);
@@ -88,8 +89,8 @@ Schema for this idea is following:
   
   customElement.whenDefined('my-consumer').then(() => {
     const consumer = document.querySelector('my-consumer');
-    assert(consumer[contextValue] === 10);  
-  })
+    assert(consumer.contextValue === 10);  
+  });
 </script>
 
 <my-provider>
@@ -102,19 +103,13 @@ Schema for this idea is following:
 Main function that creates provider-consumer decorators pair along with symbol properties they use. 
 Returns object that has following signature:
 * `consumer: ClassDecorator` - decorator that allows custom class to receive context.
-* `contextValue: unique symbol` - name of class property where context will be placed.
 * `provider: ClassDecorator` - decorator that allows custom class to send context.
-* `providingValue: unique symbol` - name of class property from which context will be send.
+* `value: PropertyDecorator` - decorator that converts class property to a providing or context
+value.
 
-`@provider` changes class signature in following way:
-```typescript
-interface Provider {
-  [providingValue]: T; // default value T
-}
-```
-`@consumer` changes class signature in following way:
-```typescript
-interface Consumer {
-  [contextValue]: T; // default value T
-}
-```
+#### `@value: PropertyDecorator`
+This decorator converts class property to a providing or context value (depending on a decorator
+applied to a whole class). Using this decorator for provider and consumer is required. Only one 
+class field is allowed.
+
+You can mark as a value any type of property: string, symbolic or private.
