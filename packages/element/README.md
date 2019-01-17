@@ -21,32 +21,22 @@ or
 $ yarn add @corpuscule/element
 ``` 
 
-## How to read this documentation
-This documentation uses square brackets with name inside: `[render]` to define a symbol value that
-can be imported from the main package. E.g., for `[render]` it could be following import:
-```javascript
-import {render} from '@corpuscule/element';
-
-class Foo {
-  [render]() { // this is a symbolic field name
-    return null;
-  }
-}
-```
-
 ## Getting started
 ```html
 <script type="module">
-  import {attribute, element, render} from '@corpuscule/element';
+  import {attribute, createElementDecorator, lifecycle, render} from '@corpuscule/element';
   import renderer from '@corpuscule/lit-html-renderer';
   import {html} from 'lit-html';
   
-  @element('my-element', {renderer})
+  const element = createElementDecorator({renderer});
+  
+  @element('my-element')
   class MyElement extends HTMLElement {
     @attribute('mood')
     mood;
     
-    [render]() {
+    @lifecycle
+    render() {
       return html`
         <style>.mood { color: green; }</style>
         Web Components are <span class="mood">${this.mood}</span>!
@@ -91,7 +81,7 @@ Property is a simple element class property that has two main differences:
   can omit guard.
   * Properties are pure (in React meaning). It means that the old property value is compared with 
   the new one on set and if they are equal, rendering won't happen.
-  * Each property update calls `[propertyChangedCallback]` method with property name, old and new 
+  * Each property update calls `propertyChangedCallback` method with property name, old and new 
   value.
   * Each property update initiates rendering.
 
@@ -104,7 +94,7 @@ For React users this concept may be familiar as a [Component State](https://reac
 Features: 
   * Internal properties are impure. Any change causes rendering.
   * Internal property doesn't have any guard on it.
-  * Each internal property update calls `[internalChangedCallback]` with internal property name, old
+  * Each internal property update calls `internalChangedCallback` with internal property name, old
   and new value.
   * Each internal property update initiates rendering.
 
@@ -117,6 +107,8 @@ only way. No request method is provided.
 Each custom element marked with an `@element` decorator has following lifecycle. To be more
 consistent, this description includes standard JS class and custom element lifecycle.
 
+**Note**: all lifecycle hooks except `constructor` should be marked with [`@lifecycle` decorator](#lifecycle-methoddecorator).
+
 ### Creation
 It is possible to create custom element with `document.createElement` method, so this stage is
 separate from others.
@@ -126,13 +118,13 @@ separate from others.
 
 Everything starts with the creation of the custom element class.
 
-#### `[createRoot](): Element | ShadowRoot`
+#### `createRoot(): Element | ShadowRoot`
 **Hook Type**: Corpuscule
 
 This method creates a root container that will be used in rendering method. By default it has
 following implementation and just creates Shadow Root.
 ```typescript
-[createRoot](): Element | ShadowRoot {
+createRoot(): Element | ShadowRoot {
   return this.attachShadow({mode: 'open'});
 }  
 ```
@@ -179,7 +171,7 @@ changed attribute, its old and new value. Do not check old and new values equali
 already does it and doesn't start user-defined `attributeChangedCallback` if values are equal. After
 the user-defined callback is over the rendering starts.
 
-#### `[propertyChangedCallback](propertyName: PropertyKey, oldValue: unknown, newValue: unknown): void`
+#### `propertyChangedCallback(propertyName: PropertyKey, oldValue: unknown, newValue: unknown): void`
 **Hook Type**: Corpuscule
 
 This callback is called each time [property](#property) is changed. It received name of the changed
@@ -187,14 +179,14 @@ property, its old and new value. The behavior is identical to `attributesChanged
 receiving values type: old and new value have the type of current property and the property name
 could be `string` or `symbol`.
 
-#### `[internalChangedCallback](propertyName: PropertyKey, oldValue: unknown, newValue: unknown): void`
+#### `internalChangedCallback(propertyName: PropertyKey, oldValue: unknown, newValue: unknown): void`
 **Hook Type**: Corpuscule
 
 This callback is called each time [internal property](#internal) is changed. It receives name of the
 changed internal property, its old and new value. In contrast with other property callbacks, 
 `internalChangedCallback` does not perform equality check.
 
-#### `[updatedCallback](): void`
+#### `updatedCallback(): void`
 **Hook Type**: Corpuscule
 
 This callback is called each time after the rendering is over except for the first time when 
@@ -208,7 +200,7 @@ This stage is performed almost without user control. Each component has it's own
 that schedules when it should be rendered. By default the [`@corpuscule/utils` scheduler](../utils/README.md#scheduler)
 is used.
 
-#### `[render](): unknown`
+#### `render(): unknown`
 **Hook Type**: Corpuscule
 
 Render function returns desired result in the format component renderer could work with. Renderer
@@ -228,10 +220,10 @@ system you can put into a renderer function with the following signature.
 const renderer: <C, R>(result: R, container: Element | DocumentFragment, context: C) => void;
 ```
 Here:
-* `result: R` is a value returned by [`[render]`](#render-unknown) method. It is send to render
+* `result: R` is a value returned by [`render`](#render-unknown) method. It is send to render
 method directly, without any changes.
 * `container: Element | DocumentFragment` is a html element where renderer should render `result`.
-It is a value returned by [`[createRoot]`](#createroot-element--shadowroot) function, the root of
+It is a value returned by [`createRoot`](#createroot-element--shadowroot) function, the root of
 the element.
 * `context: C` is an element instance. It could be used for different options, e.g. bining event
 context in `lit-html`, or just omitted.
@@ -241,14 +233,9 @@ Using the `@corpuscule/element` you are allowed to create not only regular Custo
 [Customized Built-In Element](https://developers.google.com/web/fundamentals/web-components/customelements#extendhtml)
 as well. 
 
-Customized Built-In Elements differs from the regular Custom Elements in many ways, and
-`@corpuscule/element` reflects these differences:
-* Customized Built-In Element cannot have Shadow DOM. It means rendering is impossible. So while
-`[render]` method is required for regular Custom Elements, it is forbidden for Customized Built-In.
-Also, lifecycle methods don't schedule rendering.
-* `[createRoot]` is forbidden as well.
-* You still can create custom attributes, properties and internals. Each change of them still calls
-lifecycle hooks, and you still can specify basic built-in element reaction for changes. 
+Customized Built-In Elements differs from regular Custom Elements in many ways. E.g., many native
+elements cannot be extended by creating Shadow Root on them. It also means that for Customized
+Built-In Elements it is not necessary to specify `render` hook in class.
 
 To create Customized Built-In Element you have to:
 * Specify `extends` option in the decorator
@@ -256,7 +243,7 @@ To create Customized Built-In Element you have to:
 
 ##### Example
 ```javascript
-@element('my-anchor', {extends: 'a'}
+@element('my-anchor', {extends: 'a'})
 class MyAnchor extends HTMLAnchorElement {}
 ```
 
@@ -281,30 +268,21 @@ Creator function returns an `@element` decorator function that receives followin
 * `params: ElementDecoratorParams`. Object consists of following elements:
   * `extends?: keyof HTMLElementTagNameMap`. This parameter allows to create a
   [Customized Built-In Element](#customized-builtin-element) instead of a regular Custom Element.
-  
-Element decorator returns updated class definition which has following API:
-```typescript
-class Class extends HTMLElement {
-  public static readonly is: string;
-  public static readonly observedAttributes: string[];
-  
-  public constructor();
-  
-  public attributeChangedCallback(attributeName: strnig, oldValue: string, newValue: string): void;
-  public connectedCallback(): void;
-  public disconnectedCallback()?: void; // if user has specified it
-  
-  protected [propertyChangedCallback](propertyName: PropertyKey, oldValue: unknown, newValue: unknown): void;
-  protected [internalChangedCallback](propertyName: PropertyKey, oldValue: unknown, newValue: unknown): void;
-  protected [updatedCallback](): void;
-}
-``` 
+
+Element decorator uses all methods marked with `@lifecycle` decorator. If any hook is not marked
+with decorator it is considered missing and won't be called. 
 
 ##### Example
 ```javascript
-@element('my-component', {renderer})
+import {createElementDecorator, lifecycle} from '@corpuscule/element';
+import renderer from '@coruscule/lit-html-renderer';
+
+const element = createElementDecorator({renderer}); 
+
+@element('my-component')
 class MyComponent extends HTMLElement {
-  [render]() {
+  @lifecycle
+  render() {
     return html`<div>Hello, World!</div>`
   }
 }
@@ -319,12 +297,13 @@ describes transformation process for the attribute.
 
 ##### Example
 ```javascript
-@element('my-button', {renderer})
+@element('my-button')
 class MyButton extends HTMLElement {
   @attribute('disabled', Boolean)
   isDisabled;
   
-  [render]() {
+  @lifecycle
+  render() {
     return html`
       <button disabled=${this.isDisabled}><slot></slot></button>
       ${this.isDisabled ? html`<span>Button disabled</span>` : nothing}
@@ -344,12 +323,13 @@ similar way.
 
 ##### Example
 ```javascript
-@element('my-square-info', {renderer})
+@element('my-square-info')
 class MySquareInfo extends HTMLElement {
   @property(v => typeof v === 'object' && v.width && v.height)
   square = {width: 10, height: 10};
   
-  [render]() {
+  @lifecycle
+  render() {
     return html`
       <div>Square width: ${this.square.width}</div>
       <div>Square height: ${this.square.height}</div>
@@ -367,7 +347,7 @@ params and can be applied as is.
 
 ##### Example
 ```javascript
-@element('my-square-info', {renderer})
+@element('my-square-info')
 class MySquareInfo extends HTMLElement {
   @internal
   isOpen = false;
@@ -376,7 +356,8 @@ class MySquareInfo extends HTMLElement {
     this.isOpen = !this.isOpen;
   }
   
-  [render]() {
+  @lifecycle
+  render() {
     return html`
       <button @click=${this.handleOpen}>Open modal</button>
       <some-modal ?open=${this.isOpen}></some-modal>
@@ -384,6 +365,24 @@ class MySquareInfo extends HTMLElement {
   }
 }
 ```
+
+#### `@lifecycle: PropertyDecorator`
+Lifecycle decorator converts method to a lifecycle hook. It works with following rules:
+* You can mark as a lifecycle hook any type of method: string, symbolic or private. 
+* Method should have the same name as the hook it implements.
+  * String method should just have the hook name, e.g. `render`.
+  * Symbolic method should have description identical to a hook name, e.g. `const render =
+  Symbol('render')`.
+  * Private method should have description identical to a hook name, e.g. `#render` or `new
+  PrivateName('render')`.
+* Any lifecycle hooks, including Custom Element standard hooks, should be marked with this
+decorator. It also mean that you can make all standard lifecycle methods private or symbolic.
+
+You can extend only string or symbolic methods, not private, so it is highly recommended for library
+developers to avoid using private lifecycle hooks for extendable elements.
+
+Private lifecycle hooks still will be called within standard methods implemented by Corpuscule, so
+consider that it still could lead to a privacy leak. 
 
 #### `createComputingPair(): ComputingPair`
 Function creates an object that contains a pair of bound decorators, `@observer` and `@computer`
