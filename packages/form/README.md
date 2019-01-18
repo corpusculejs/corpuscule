@@ -149,6 +149,11 @@ The current value of the field.
 #### Field `@option` decorator
 Field `@option` decorator has following properties it can be applied to.
 
+##### `control?: HTMLInputElement | HTMLSelectElement`
+Element that should be used to set the value on form change. It should be the same element that
+fires blur/change/focus events. If it is specified, value will be set each time form is updated.
+If not, you can set it manually from `FieldInputProps` object.  
+
 ##### `format?: ((value: any, name: string) => any)`
 A function that takes the value from the form values and the name of the field and formats the
 value to give to the input. Common use cases include converting javascript `Date` values into a
@@ -233,15 +238,12 @@ structures like a form inside a form.
     #input;
     #meta;
     
-    @api 
-    get input() {
-      return this.#input;
-    };
-    
-    set input(input) {
-      this.#input = input;
-      this.inputElement.value = this.#input.value;
+    @option
+    get control() {
+      return this.shadowRoot.querySelector('slot').assignedNodes()[0];
     }
+    
+    @api input;
     
     @api 
     get meta() {
@@ -251,9 +253,11 @@ structures like a form inside a form.
     set meta(meta) {
       this.#meta = meta;
       
-      if (this.#meta.touched && this.#meta.error) {
-        this.errorElement.hidden = false;
-        this.errorElement.textContent = meta.error;
+      if (meta.touched && meta.error) {
+        Object.assign(
+          this.errorElement,
+          {hidden: false, textContent: meta.error},
+        );
       }
     }
     
@@ -261,10 +265,6 @@ structures like a form inside a form.
       return this.shadowRoot.querySelector('.error');
     }
     
-    get inputElement() {
-      return this.shadowRoot.querySelector('slot').assignedNodes()[0];
-    }
-   
     constructor() {
       super();
       this.attachShadow({mode: 'open'});
