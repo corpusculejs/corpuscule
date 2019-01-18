@@ -107,7 +107,7 @@ only way. No request method is provided.
 Each custom element marked with an `@element` decorator has following lifecycle. To be more
 consistent, this description includes standard JS class and custom element lifecycle.
 
-**Note**: all lifecycle hooks except `constructor` should be marked with [`@lifecycle` decorator](#lifecycle-methoddecorator).
+**Note**: all Corpuscule lifecycle hooks should be marked with [`@lifecycle` decorator](#lifecycle-propertydecorator).
 
 ### Creation
 It is possible to create custom element with `document.createElement` method, so this stage is
@@ -368,21 +368,18 @@ class MySquareInfo extends HTMLElement {
 
 #### `@lifecycle: PropertyDecorator`
 Lifecycle decorator converts method to a lifecycle hook. It works with following rules:
-* You can mark as a lifecycle hook any type of method: string, symbolic or private. 
+* Any kind of method can be marked with `@lifecycle` decorator: string, symbolic or private. 
 * Method should have the same name as the hook it implements.
   * String method should just have the hook name, e.g. `render`.
-  * Symbolic method should have description identical to a hook name, e.g. `const render =
+  * Symbolic method should have description identical to the hook name, e.g. `const render =
   Symbol('render')`.
-  * Private method should have description identical to a hook name, e.g. `#render` or `new
+  * Private method should have description identical to the hook name, e.g. `#render` or `new
   PrivateName('render')`.
-* Any lifecycle hooks, including Custom Element standard hooks, should be marked with this
-decorator. It also mean that you can make all standard lifecycle methods private or symbolic.
+* Any Corpuscule lifecycle hooks should be marked with this decorator.
+* Only one method is allowed for each lifecycle hook.
 
 You can extend only string or symbolic methods, not private, so it is highly recommended for library
 developers to avoid using private lifecycle hooks for extendable elements.
-
-Private lifecycle hooks still will be called within standard methods implemented by Corpuscule, so
-consider that it still could lead to a privacy leak. 
 
 #### `createComputingPair(): ComputingPair`
 Function creates an object that contains a pair of bound decorators, `@observer` and `@computer`
