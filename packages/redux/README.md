@@ -56,17 +56,57 @@ You can mark any type of property: string, symbolic or private.
       this.shadowRoot.innerHTML = '<slot></slot>';
     }
   }
+  customElements.define('x-provider', Provider);
   
   @redux
   class Consumer extends HTMLElement {
-    @unit(state => state.foo) foo;
+    #foo;
+    
+    @unit(state => state.foo) 
+    get foo() {
+      return this.#foo; 
+    }
+    
+    set foo(value) {
+      this.#foo = value;
+      this.fooElement.textContent = value;
+    }
     
     @dispatcher
-    bar(data) {
-      return data.toString();
+    bar() {
+      return this.#foo.toString();
     }
     
     @dispatcher baz = bazActionCreator;
+   
+    get fooElement() {
+      return this.shadowRoot.querySelector('.foo');
+    }
+    
+    get runElement() {
+      return this.shadowRoot.querySelector('.run');
+    }
+    
+    constructor() {
+      super();
+      this.attachShadow({mode: 'open'});
+    }
+    
+    connectedCallback() {
+      this.shadowRoot.innerHTML = `
+        <div class="foo"></div>
+        <button class="run">Run</button>
+      `;
+      
+      this.runElement.addEventListener('click', () => {
+        this.bar();
+        this.baz();
+      });
+    }
   }
+  customElements.define('x-consumer', Consumer);
 </script>
+<x-provider>
+  <x-consumer></x-consumer>
+</x-provider>
 ```
