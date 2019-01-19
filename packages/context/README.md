@@ -29,7 +29,7 @@ $ yarn add @corupuscule/context
 ## How it works
 `@corpuscule/context` provides a single function that creates provider-consumer decorators pair.
 When you apply `@provider` decorator to a component, it gets an ability to send the value of its
-field marked with `@value` decorator down to the DOM tree. Component marked with `@consumer`
+field marked with `@value` decorator down the DOM tree. Component marked with `@consumer`
 decorator is able to receive this value in its field marked with `@value` during connection stage
 if it is a descendant of a provider component.
 
