@@ -8,11 +8,11 @@ connector to [🏁 Final Form](https://github.com/final-form/final-form).
 
 ## Installation
 ```bash
-$ npm install --save @corpuscule/form
+$ npm install --save final-form @corpuscule/form
 ``` 
 or
 ```bash
-$ yarn add @corpuscule/form
+$ yarn add final-form @corpuscule/form
 ```
 
 ## API
