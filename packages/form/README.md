@@ -207,7 +207,7 @@ structures like a form inside a form.
   import {api, form, field, option} from '@corpuscule/form';
   
   @form
-  class MyForm extends HTMLElement {
+  class Form extends HTMLElement {
     @api form;
     @api state;
     
@@ -227,11 +227,11 @@ structures like a form inside a form.
       console.log(values);
     }
   }
-  customElements.define('my-form', MyForm);
+  customElements.define('x-form', Form);
   
   
   @field
-  class MyField extends HTMLElement {
+  class Field extends HTMLElement {
     @api form;
     @option name;
     
@@ -275,11 +275,12 @@ structures like a form inside a form.
       this.name = this.getAttribute('name');
     }
   }
-  customElements.define('my-field', MyField);
+  customElements.define('x-field', Field);
 </script>
-<my-form>
-  <my-field name="some-text">
+<x-form>
+  <x-field name="some-text">
     <input type="text"/>
-  </my-field>
-</my-form>
+  </x-field>
+  <button type="submit">Submit</button>
+</x-form>
 ```
