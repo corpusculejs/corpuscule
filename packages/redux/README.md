@@ -17,12 +17,18 @@ $ yarn add redux @corpuscule/redux
 
 ## API
 #### `@provider: ClassDecorator`
-This decorator converts class to a Redux provider and sends redux store of the property marked with
-`@value` decorator down the DOM tree.
+[See the `@corpuscule/context` docs on `@provider` decorator](../context/README.md#provider-classdecorator).
+Redux store should be sent.
+
+#### `@value: PropertyDecorator`
+[See the `@corpuscule/context` docs on `@value` decorator](../context/README.md#value-propertydecorator).
 
 #### `@redux: ClassDecorator`
-This decorator converts class to a Redux consumer. It receives store from the provider and binds it
-to several properties and methods in class marked with `@connect` and `@dispatcher` decorators.
+Basically it is [`@consumer` decorator](../context/README.md#consumer-classdecorator) of
+`@corpuscule/context` that receives store sent by `@provider`. Decorator provides API to access the
+store instance with `@unit` and `@dispatcher` property decorators.
+
+**Note**: applying `@value` in this class unnecessary and will cause an error.
 
 #### `@unit<S extends ReduxState>(getter: (state: S) => unknown): PropertyDecorator`
 This decorator extracts value from the store on each store update using getter and saves it in
@@ -39,7 +45,7 @@ You can mark any type of property: string, symbolic or private.
 ## Example
 ```html
 <script type="module">
-  import {connected, dispatcher, provider, redux, value} from '@corpuscule/redux';
+  import {dispatcher, provider, redux, unit, value} from '@corpuscule/redux';
   import {configureStore} from './store';
   import {bazActionCreator} from './reducer';
   
