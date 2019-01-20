@@ -101,11 +101,16 @@ Schema for this idea is following:
 ## API
 #### `createContext<T>(defaultValue?: T): ContextTools`
 Main function that creates provider-consumer decorators pair along with symbol properties they use. 
-Returns object that has following signature:
-* `consumer: ClassDecorator` - decorator that allows custom class to receive context.
-* `provider: ClassDecorator` - decorator that allows custom class to send context.
-* `value: PropertyDecorator` - decorator that converts class property to a providing or context
-value.
+Returns `ContextTools` object.
+
+#### `ContextTools`
+##### `@consumer: ClassDecorator`
+This decorator allows custom class to receive context. Decorating class should be a descendant of 
+`@provider` class and have field marked with `@value` decorator.
+
+##### `@provider: ClassDecorator`
+This decorator allows custom class to send context down the DOM three. Decorating class should have
+field marked with `@value` decorator.
 
 #### `@value: PropertyDecorator`
 This decorator converts class property to a providing or context value (depending on a decorator
