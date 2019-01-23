@@ -9,7 +9,7 @@
   "bugs": {
     "url": "https://github.com/corpusculejs/corpuscule/issues"
   },
-  "homepage": "https://github.com/corpusculejs/corpuscule#readme",
+  "homepage": "https://github.com/corpusculejs/corpuscule/packages/redux#readme",
   "license": "MIT",
   "repository": {
     "type": "git",
