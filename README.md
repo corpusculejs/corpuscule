@@ -1,3 +1,7 @@
+> ## 🛠 Status: In Development
+> Corpuscule is currently under heavy development. Feedback is always welcome, but be careful with
+using it in production. API is not ready yet and can receive large changes.
+
 # Corpuscule
 
 [![Build Status](https://img.shields.io/travis/corpusculejs/corpuscule/master.svg)](https://travis-ci.org/corpusculejs/corpuscule)

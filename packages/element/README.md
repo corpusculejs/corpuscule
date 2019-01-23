@@ -1,3 +1,7 @@
+> ## 🛠 Status: In Development
+> This package is currently under heavy development. Feedback is always welcome, but be careful with
+using it in production. API is not ready yet and can receive large changes.
+
 # `@corpuscule/element`
 Lightweight set of decorators for creating web components. It is a decorator-based analogue for
 Polymer's [LitElement](https://github.com/Polymer/lit-element) or a web components based view

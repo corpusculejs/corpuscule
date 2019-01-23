@@ -1,3 +1,7 @@
+> ## 🛠 Status: In Development
+> This package is currently under heavy development. Feedback is always welcome, but be careful with
+using it in production. API is not ready yet and can receive large changes.
+
 # @corpuscule/router
 Lightweight set of decorators and components for providing routing for web components. Built on top
 of [Universal Router](https://github.com/kriasoft/universal-router).
