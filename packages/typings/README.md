@@ -3,3 +3,6 @@
 using it in production. API is not ready yet and can receive large changes.
 
 # @corpuscule/typings
+Typings for all Corpuscule projects.
+
+> Documentation in development
