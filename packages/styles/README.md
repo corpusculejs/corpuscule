@@ -6,6 +6,20 @@ using it in production. API is not ready yet and can receive large changes.
 Lightweight decorator to add styles to web components. It also supports upcoming [Constructable
 Stylesheets proposal](https://wicg.github.io/construct-stylesheets/).
 
+## Symbolic names
+During reading this documentation you can face many methods which signature contains square brackets
+around the name. It means that they use symbolic values imported from the main package. E.g., for
+`[foo]` it could be following import:
+```javascript
+import {foo} from 'some-package';
+
+class Bar {
+  [foo]() { // this is a symbolic field name
+    return null;
+  }
+}
+```
+
 ## How it works
 This packages provides 4 approaches to work with styles. Let's range them in order they are
 applying in code.
