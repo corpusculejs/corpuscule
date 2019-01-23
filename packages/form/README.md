@@ -1,3 +1,7 @@
+> ## 🛠 Status: In Development
+> This package is currently under heavy development. Feedback is always welcome, but be careful with
+using it in production. API is not ready yet and can receive large changes.
+
 # `@corpuscule/form`
 Lightweight set of decorators for providing solid form experience for web components. Works as a
 connector to [🏁 Final Form](https://github.com/final-form/final-form).
