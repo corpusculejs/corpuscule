@@ -1,6 +1,5 @@
 /* eslint-disable no-invalid-this, prefer-arrow-callback */
 import {assertKind} from '@corpuscule/utils/lib/asserts';
-import createSupers from '@corpuscule/utils/lib/createSupers';
 import {field, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
 import {
@@ -10,6 +9,7 @@ import {
   render as $render,
   internalChangedCallback as $internalChangedCallback,
 } from '../tokens/lifecycle';
+import getSupers from '@corpuscule/utils/lib/getSupers';
 
 const attributeChangedCallbackKey = 'attributeChangedCallback';
 const [connectedCallbackKey] = lifecycleKeys;
@@ -41,43 +41,18 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
   const $$invalidate = Symbol();
   const $$valid = Symbol();
 
-  const $$superAttributeChangedCallback = Symbol();
-  const $$superConnectedCallback = Symbol();
-  const $$superInternalChangedCallback = Symbol();
-  const $$superPropertyChangedCallback = Symbol();
-
-  const supers = createSupers(
-    elements,
-    new Map([
-      [attributeChangedCallbackKey, $$superAttributeChangedCallback],
-      [connectedCallbackKey, $$superConnectedCallback],
-      [
-        $createRoot,
-        {
-          fallback: builtin
-            ? noop
-            : function() {
-                return this.attachShadow({mode: 'open'});
-              },
-          key: $createRoot,
-        },
-      ],
-      [$internalChangedCallback, $$superInternalChangedCallback],
-      [$propertyChangedCallback, $$superPropertyChangedCallback],
-      [
-        $updatedCallback,
-        {
-          fallback: noop,
-          key: $updatedCallback,
-        },
-      ],
-    ]),
-  );
+  const [supers, finish] = getSupers(elements, [
+    attributeChangedCallbackKey,
+    connectedCallbackKey,
+    $createRoot,
+    $internalChangedCallback,
+    $propertyChangedCallback,
+    $updatedCallback,
+  ]);
 
   return {
     elements: [
       ...elements.filter(({key}) => !filteringNames.includes(key)),
-      ...supers,
 
       // Static
       field(
@@ -101,7 +76,7 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
           key: connectedCallbackKey,
           async value() {
             await this[$$invalidate]();
-            this[$$superConnectedCallback]();
+            supers[connectedCallbackKey].call(this);
           },
         },
         {isBound: true},
@@ -114,7 +89,7 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
               return;
             }
 
-            this[$$superAttributeChangedCallback](attributeName, oldValue, newValue);
+            supers[attributeChangedCallbackKey].call(this, attributeName, oldValue, newValue);
             await this[$$invalidate]();
           },
         },
@@ -124,13 +99,22 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
       // Protected
       method(
         {
+          key: $createRoot,
+          value() {
+            return supers[$createRoot].call(this);
+          },
+        },
+        {isBound: true},
+      ),
+      method(
+        {
           key: $internalChangedCallback,
           async value(internalName, oldValue, newValue) {
             if (!this[$$connected]) {
               return;
             }
 
-            this[$$superInternalChangedCallback](internalName, oldValue, newValue);
+            supers[$internalChangedCallback].call(this, internalName, oldValue, newValue);
             await this[$$invalidate]();
           },
         },
@@ -144,7 +128,7 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
               return;
             }
 
-            this[$$superPropertyChangedCallback](propertyName, oldValue, newValue);
+            supers[$propertyChangedCallback].call(this, propertyName, oldValue, newValue);
             await this[$$invalidate]();
           },
         },
@@ -194,6 +178,14 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
     ],
     finisher(target) {
       customElements.define(name, target, builtin && {extends: builtin});
+
+      finish(target, {
+        [$createRoot]: builtin
+          ? noop
+          : function() {
+              return this.attachShadow({mode: 'open'});
+            },
+      });
     },
     kind,
   };

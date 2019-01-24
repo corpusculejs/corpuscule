@@ -1,7 +1,7 @@
 /* eslint-disable capitalized-comments, no-sync */
 import {assertKind} from '@corpuscule/utils/lib/asserts';
-import createSupers from '@corpuscule/utils/lib/createSupers';
 import {method} from '@corpuscule/utils/lib/descriptors';
+import getSupers from '@corpuscule/utils/lib/getSupers';
 
 const observerConfig = {childList: true};
 
@@ -46,17 +46,12 @@ export const createStylesDecorator = ({shadyCSS, adoptedStyleSheets}) => (...pat
     }
   }
 
-  const $$stylesAttachedCallback = Symbol();
-
-  const supers = createSupers(
-    elements,
-    new Map([[stylesAttachedCallback, $$stylesAttachedCallback]]),
-  );
+  const [supers, finisher] = getSupers(elements, [stylesAttachedCallback]);
 
   return {
     elements: [
-      ...elements.filter(({key}) => key !== stylesAttachedCallback),
-      ...supers,
+      ...elements,
+
       method(
         {
           key: attachShadowKey,
@@ -77,12 +72,12 @@ export const createStylesDecorator = ({shadyCSS, adoptedStyleSheets}) => (...pat
               const observer = new MutationObserver(() => {
                 root.prepend(styleElements);
                 observer.disconnect();
-                this[$$stylesAttachedCallback]();
+                supers[stylesAttachedCallback].call(this);
               });
 
               observer.observe(root, observerConfig);
             } else {
-              this[$$stylesAttachedCallback]();
+              supers[stylesAttachedCallback].call(this);
             }
 
             return root;
@@ -91,6 +86,7 @@ export const createStylesDecorator = ({shadyCSS, adoptedStyleSheets}) => (...pat
         {isBound: true},
       ),
     ],
+    finisher,
     kind,
   };
 };

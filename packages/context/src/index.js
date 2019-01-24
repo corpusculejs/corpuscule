@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
 import {assertKind} from '@corpuscule/utils/lib/asserts';
-import createSupers from '@corpuscule/utils/lib/createSupers';
 import {accessor, field, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
+import getSupers from '@corpuscule/utils/lib/getSupers';
 
 const [connectedCallbackKey, disconnectedCallbackKey] = lifecycleKeys;
 
@@ -26,24 +26,14 @@ const createContext = defaultValue => {
     const $$unsubscribe = Symbol();
     const $$value = Symbol();
 
-    const $$superConnectedCallback = Symbol();
-    const $$superDisconnectedCallback = Symbol();
-
     const {initializer: providingValueInitializer = null} =
       elements.find(({key}) => key === providingValue) || {};
 
-    const supers = createSupers(
-      elements,
-      new Map([
-        [connectedCallbackKey, $$superConnectedCallback],
-        [disconnectedCallbackKey, $$superDisconnectedCallback],
-      ]),
-    );
+    const [supers, finisher] = getSupers(elements, lifecycleKeys);
 
     return {
       elements: [
         ...elements.filter(({key}) => !lifecycleKeys.includes(key) && key !== providingValue),
-        ...supers,
 
         // Public
         method(
@@ -51,7 +41,7 @@ const createContext = defaultValue => {
             key: connectedCallbackKey,
             value() {
               this.addEventListener(eventName, this[$$subscribe]);
-              this[$$superConnectedCallback]();
+              supers[connectedCallbackKey].call(this);
             },
           },
           {isBound: true},
@@ -61,7 +51,7 @@ const createContext = defaultValue => {
             key: disconnectedCallbackKey,
             value() {
               this.removeEventListener(eventName, this[$$subscribe]);
-              this[$$superDisconnectedCallback]();
+              supers[disconnectedCallbackKey].call(this);
             },
           },
           {isBound: true},
@@ -116,6 +106,7 @@ const createContext = defaultValue => {
           {isBound: true},
         ),
       ],
+      finisher,
       kind,
     };
   };
@@ -126,21 +117,11 @@ const createContext = defaultValue => {
     const $$consume = Symbol();
     const $$unsubscribe = Symbol();
 
-    const $$superConnectedCallback = Symbol();
-    const $$superDisconnectedCallback = Symbol();
-
-    const supers = createSupers(
-      elements,
-      new Map([
-        [connectedCallbackKey, $$superConnectedCallback],
-        [disconnectedCallbackKey, $$superDisconnectedCallback],
-      ]),
-    );
+    const [supers, finisher] = getSupers(elements, lifecycleKeys);
 
     return {
       elements: [
         ...elements.filter(({key}) => !lifecycleKeys.includes(key) && key !== contextValue),
-        ...supers,
 
         // Public
         method({
@@ -161,7 +142,7 @@ const createContext = defaultValue => {
               throw new Error(`No provider found for ${this.constructor.name}`);
             }
 
-            this[$$superConnectedCallback]();
+            supers[connectedCallbackKey].call(this);
           },
         }),
         method({
@@ -171,7 +152,7 @@ const createContext = defaultValue => {
               this[$$unsubscribe](this[$$consume]);
             }
 
-            this[$$superDisconnectedCallback]();
+            supers[disconnectedCallbackKey].call(this);
           },
         }),
 
@@ -186,6 +167,7 @@ const createContext = defaultValue => {
           {isBound: true},
         ),
       ],
+      finisher,
       kind,
     };
   };
