@@ -1,24 +1,6 @@
 import {accessor} from '@corpuscule/utils/lib/descriptors';
 import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
 
-const fromAttribute = (instance, name, guard) => {
-  const value = instance.getAttribute(name);
-
-  if (guard === Boolean) {
-    return value !== null;
-  }
-
-  return value !== null ? (guard === String ? value : guard(value)) : null;
-};
-
-const toAttribute = (instance, name, value) => {
-  if (value == null || value === false) {
-    instance.removeAttribute(name);
-  } else {
-    instance.setAttribute(name, value === true ? '' : value);
-  }
-};
-
 const attribute = (name, guard) => ({key, kind, placement}) => {
   assertKind('attribute', 'field', kind);
   assertPlacement('attribute', 'own', placement);
@@ -34,7 +16,13 @@ const attribute = (name, guard) => ({key, kind, placement}) => {
       target.observedAttributes.push(name);
     },
     get() {
-      return fromAttribute(this, name, guard);
+      const value = this.getAttribute(name);
+
+      if (guard === Boolean) {
+        return value !== null;
+      }
+
+      return value !== null ? (guard === String ? value : guard(value)) : null;
     },
     key,
     set(value) {
@@ -42,7 +30,11 @@ const attribute = (name, guard) => ({key, kind, placement}) => {
         throw new TypeError(`Value applied to "${key}" is not ${guard.name} or undefined`);
       }
 
-      toAttribute(this, name, value);
+      if (value == null || value === false) {
+        this.removeAttribute(name);
+      } else {
+        this.setAttribute(name, value === true ? '' : value);
+      }
     },
   });
 };
