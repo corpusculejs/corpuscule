@@ -1,6 +1,6 @@
 import createContext from '@corpuscule/context';
 import {assertKind} from '@corpuscule/utils/lib/asserts';
-import createSupers from '@corpuscule/utils/lib/createSupers';
+import getSupers from '@corpuscule/utils/lib/getSupers';
 import {accessor, method} from '@corpuscule/utils/lib/descriptors';
 import {connectedRegistry} from './decorators';
 import {contextMap} from './utils';
@@ -8,7 +8,6 @@ import {contextMap} from './utils';
 const {consumer, contextValue, provider, providingValue: store} = createContext();
 
 export {provider, store};
-
 export {connected, dispatcher} from './decorators';
 
 const disconnectedCallbackKey = 'disconnectedCallback';
@@ -23,24 +22,18 @@ export const connect = classDescriptor => {
   const $$unsubscribe = Symbol();
   const $$update = Symbol();
 
-  const $$superDisconnectedCallback = Symbol();
-
-  const supers = createSupers(
-    elements,
-    new Map([[disconnectedCallbackKey, $$superDisconnectedCallback]]),
-  );
+  const [supers, finish] = getSupers(elements, [disconnectedCallbackKey]);
 
   return {
     elements: [
       ...elements.filter(({key}) => key !== disconnectedCallbackKey),
-      ...supers,
 
       // Public
       method(
         {
           key: disconnectedCallbackKey,
           value() {
-            this[$$superDisconnectedCallback]();
+            supers[disconnectedCallbackKey].call(this);
 
             if (this[$$unsubscribe]) {
               this[$$unsubscribe]();
@@ -96,6 +89,7 @@ export const connect = classDescriptor => {
     ],
     finisher(target) {
       contextMap.set(target, $$context);
+      finish(target);
     },
     kind,
   };

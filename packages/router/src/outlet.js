@@ -1,8 +1,8 @@
 import createContext from '@corpuscule/context';
 import {assertKind} from '@corpuscule/utils/lib/asserts';
-import createSupers from '@corpuscule/utils/lib/createSupers';
 import {lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
 import {layout, resolve} from './tokens/lifecycle';
+import getSupers from '@corpuscule/utils/lib/getSupers';
 
 const {consumer, contextValue, provider, providingValue: router} = createContext();
 
@@ -21,30 +21,11 @@ const outlet = routes => classDescriptor => {
 
   const $$updateRoute = Symbol();
 
-  const $$superConnectedCallback = Symbol();
-  const $$superDisconnectedCallback = Symbol();
-
-  const supers = createSupers(
-    elements,
-    new Map([
-      [connectedCallbackKey, $$superConnectedCallback],
-      [disconnectedCallbackKey, $$superDisconnectedCallback],
-      [
-        resolve,
-        {
-          *fallback(path) {
-            return yield path;
-          },
-          key: resolve,
-        },
-      ],
-    ]),
-  );
+  const [supers, finish] = getSupers(elements, methods);
 
   return {
     elements: [
       ...elements.filter(({key}) => !filteringNames.includes(key)),
-      ...supers,
 
       // Public
       method(
@@ -52,7 +33,7 @@ const outlet = routes => classDescriptor => {
           key: connectedCallbackKey,
           value() {
             window.addEventListener('popstate', this[$$updateRoute]);
-            this[$$superConnectedCallback]();
+            supers[connectedCallbackKey].call(this);
 
             this[$$updateRoute](location.pathname);
           },
@@ -64,11 +45,19 @@ const outlet = routes => classDescriptor => {
           key: disconnectedCallbackKey,
           value() {
             window.removeEventListener('popstate', this[$$updateRoute]);
-            this[$$superDisconnectedCallback]();
+            supers[disconnectedCallbackKey].call(this);
           },
         },
         {isBound: true},
       ),
+
+      // Protected
+      method({
+        key: resolve,
+        value(...args) {
+          return supers[resolve].apply(this, args);
+        },
+      }),
 
       // Private
       method(
@@ -95,6 +84,13 @@ const outlet = routes => classDescriptor => {
         {isBound: true},
       ),
     ],
+    finisher(target) {
+      finish(target, {
+        *[resolve](path) {
+          return yield path;
+        },
+      });
+    },
     kind,
   };
 };

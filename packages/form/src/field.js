@@ -1,10 +1,10 @@
 import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
-import createSupers from '@corpuscule/utils/lib/createSupers';
 import {accessor, field as ffield, method, lifecycleKeys} from '@corpuscule/utils/lib/descriptors';
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
 import shallowEqual from '@corpuscule/utils/lib/shallowEqual';
 import {input as $input, meta as $meta} from './tokens/lifecycle';
 import {all, getTargetValue} from './utils';
+import getSupers from '@corpuscule/utils/lib/getSupers';
 
 const [connectedCallbackKey, disconnectedCallbackKey] = lifecycleKeys;
 
@@ -125,23 +125,12 @@ const createField = (consumer, $formApi, $$form) => {
     const $$update = Symbol();
     const $$updatingValid = Symbol();
 
-    const $$superConnectedCallback = Symbol();
-    const $$superDisconnectedCallback = Symbol();
-
     const {elements, kind} = consumer(classDescriptor);
-
-    const supers = createSupers(
-      elements,
-      new Map([
-        [connectedCallbackKey, $$superConnectedCallback],
-        [disconnectedCallbackKey, $$superDisconnectedCallback],
-      ]),
-    );
+    const [supers, finish] = getSupers(elements, [connectedCallbackKey, disconnectedCallbackKey]);
 
     return {
       elements: [
         ...elements.filter(({key}) => !filterNames.includes(key)),
-        ...supers,
 
         // Public
         method(
@@ -152,7 +141,7 @@ const createField = (consumer, $formApi, $$form) => {
               this.addEventListener('change', this[$$onChange]);
               this.addEventListener('focus', this[$$onFocus]);
 
-              this[$$superConnectedCallback]();
+              supers[connectedCallbackKey].call(this);
               this[$$subscribe]();
             },
           },
@@ -167,7 +156,7 @@ const createField = (consumer, $formApi, $$form) => {
               this.removeEventListener('focus', this[$$onFocus]);
 
               this[$$unsubscribe]();
-              this[$$superDisconnectedCallback]();
+              supers[disconnectedCallbackKey].call(this);
             },
           },
           {isBound: true},
@@ -304,6 +293,7 @@ const createField = (consumer, $formApi, $$form) => {
       finisher(target) {
         subscribePropertyName.set(target, $$subscribe);
         updatePropertyName.set(target, $$update);
+        finish(target);
       },
       kind,
     };

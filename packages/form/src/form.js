@@ -1,5 +1,4 @@
 import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
-import createSupers from '@corpuscule/utils/lib/createSupers';
 import {accessor, field, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
 import shallowEqual from '@corpuscule/utils/lib/shallowEqual';
 import {configOptions, createForm} from 'final-form';
@@ -8,6 +7,7 @@ import {
   compareInitialValues as $compareInitialValues,
 } from './tokens/lifecycle';
 import {all} from './utils';
+import getSupers from '@corpuscule/utils/lib/getSupers';
 
 const configInitializers = new WeakMap();
 const formApiPropertyName = new WeakMap();
@@ -98,23 +98,13 @@ const createFormDecorator = (provider, $formApi) => ({
   const $$submit = Symbol();
   const $$unsubscriptions = Symbol();
 
-  const $$superConnectedCallback = Symbol();
-  const $$superDisconnectedCallback = Symbol();
-
   const {elements, kind} = provider(classDescriptor);
 
-  const supers = createSupers(
-    elements,
-    new Map([
-      [connectedCallbackKey, $$superConnectedCallback],
-      [disconnectedCallbackKey, $$superDisconnectedCallback],
-    ]),
-  );
+  const [supers, finish] = getSupers(elements, [connectedCallbackKey, disconnectedCallbackKey]);
 
   return {
     elements: [
       ...elements.filter(({key}) => !lifecycleKeys.includes(key) && key !== $formState),
-      ...supers,
 
       // Public
       method(
@@ -135,7 +125,7 @@ const createFormDecorator = (provider, $formApi) => ({
 
             this.addEventListener('submit', this[$$submit]);
 
-            this[$$superConnectedCallback]();
+            supers[connectedCallbackKey].call(this);
           },
         },
         {isBound: true},
@@ -151,7 +141,8 @@ const createFormDecorator = (provider, $formApi) => ({
             this[$$unsubscriptions] = [];
 
             this.removeEventListener('submit', this[$$submit]);
-            this[$$superDisconnectedCallback]();
+
+            supers[disconnectedCallbackKey].call(this);
           },
         },
         {isBound: true},
@@ -198,6 +189,7 @@ const createFormDecorator = (provider, $formApi) => ({
     ],
     finisher(target) {
       formApiPropertyName.set(target, $formApi);
+      finish(target);
     },
     kind,
   };
