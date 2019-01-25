@@ -11,9 +11,10 @@ const packages = {
     'asserts',
     'compose',
     'descriptors',
-    'createSupers',
-    'shallowEqual',
+    'getSupers',
+    'propertyUtils',
     'scheduler',
+    'shallowEqual',
   ],
 };
 
