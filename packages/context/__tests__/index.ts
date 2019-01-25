@@ -29,88 +29,97 @@ const createContextElements = <T extends CustomElement, U extends CustomElement>
 describe('@corpuscule/context', () => {
   describe('createContext', () => {
     it('should create context', () => {
-      const {consumer, contextValue, provider, providingValue} = createContext();
+      const {consumer, provider, value} = createContext();
 
       @provider
       class Provider extends CustomElement {
-        public [providingValue]: number = 2;
+        @value
+        public providingValue: number = 2;
       }
 
       @consumer
       class Consumer extends CustomElement {
-        public [contextValue]: number;
+        @value
+        public contextValue!: number;
       }
 
       const [, consumerElement] = createContextElements(Provider, Consumer);
-      expect(consumerElement[contextValue]).toBe(2);
+      expect(consumerElement.contextValue).toBe(2);
     });
 
     it('should provide context for all consumers', () => {
-      const {consumer, contextValue, provider, providingValue} = createContext();
+      const {consumer, provider, value} = createContext();
 
       @provider
       class Provider extends CustomElement {
-        public [providingValue]: number = 2;
+        @value
+        public providingValue: number = 2;
       }
 
       @consumer
       class Consumer extends CustomElement {
-        public [contextValue]: number;
+        @value
+        public contextValue!: number;
       }
 
       const [, consumerElement1, consumerElement2] = createContextElements(Provider, Consumer, 2);
 
-      expect(consumerElement1[contextValue]).toBe(2);
-      expect(consumerElement2[contextValue]).toBe(2);
+      expect(consumerElement1.contextValue).toBe(2);
+      expect(consumerElement2.contextValue).toBe(2);
     });
 
     it('should allow to use default value for context', () => {
-      const {consumer, contextValue, provider, providingValue} = createContext(2);
+      const {consumer, provider, value} = createContext(2);
 
       @provider
       class Provider extends CustomElement {
-        public [providingValue]: number;
+        @value
+        public providingValue!: number;
       }
 
       @consumer
       class Consumer extends CustomElement {
-        public [contextValue]: number;
+        @value
+        public contextValue!: number;
       }
 
       const [providerElement, consumerElement] = createContextElements(Provider, Consumer);
 
-      expect(providerElement[providingValue]).toBe(2);
-      expect(consumerElement[contextValue]).toBe(2);
+      expect(providerElement.providingValue).toBe(2);
+      expect(consumerElement.contextValue).toBe(2);
     });
 
     it('should allow to set value dynamically', () => {
-      const {consumer, contextValue, provider, providingValue} = createContext(2);
+      const {consumer, provider, value} = createContext(2);
 
       @provider
       class Provider extends CustomElement {
-        public [providingValue]: number;
+        @value
+        public providingValue!: number;
       }
 
       @consumer
       class Consumer extends CustomElement {
-        public [contextValue]: number;
+        @value
+        public contextValue!: number;
       }
 
       const [providerElement, consumerElement] = createContextElements(Provider, Consumer);
 
-      providerElement[providingValue] = 10;
+      providerElement.providingValue = 10;
 
-      expect(consumerElement[contextValue]).toBe(10);
+      expect(consumerElement.contextValue).toBe(10);
     });
 
     it("should call connectedCallback() and disconnectedCallback() of user's class", () => {
       const connectedSpy = jasmine.createSpy('onConnect');
       const disconnectedSpy = jasmine.createSpy('onDisconnect');
-      const {consumer, contextValue, provider, providingValue} = createContext();
+      const {consumer, provider, value} = createContext();
 
       @provider
       class Provider extends CustomElement {
-        public [providingValue]: number;
+        @value
+        public providingValue!: number;
 
         public connectedCallback(): void {
           connectedSpy();
@@ -123,7 +132,8 @@ describe('@corpuscule/context', () => {
 
       @consumer
       class Consumer extends CustomElement {
-        public [contextValue]: number;
+        @value
+        public contextValue!: number;
 
         public connectedCallback(): void {
           connectedSpy();
@@ -144,33 +154,36 @@ describe('@corpuscule/context', () => {
     });
 
     it('should stop providing value to disconnected consumers', () => {
-      const {consumer, contextValue, provider, providingValue} = createContext();
+      const {consumer, provider, value} = createContext();
 
       @provider
       class Provider extends CustomElement {
-        public [providingValue]: number = 2;
+        @value
+        public providingValue: number = 2;
       }
 
       @consumer
       class Consumer extends CustomElement {
-        public [contextValue]: number;
+        @value
+        public contextValue!: number;
       }
 
       const [providerElement, consumerElement] = createContextElements(Provider, Consumer);
 
       consumerElement.disconnectedCallback();
 
-      providerElement[providingValue] = 10;
+      providerElement.providingValue = 10;
 
-      expect(consumerElement[contextValue]).toBe(2);
+      expect(consumerElement.contextValue).toBe(2);
     });
 
     it('should throw an error if no provider exists for context', () => {
-      const {consumer, contextValue} = createContext();
+      const {consumer, value} = createContext();
 
       @consumer
       class Consumer extends CustomElement {
-        public [contextValue]: number;
+        @value
+        public contextValue!: number;
       }
 
       customElements.define(genName(), Consumer);
@@ -182,22 +195,20 @@ describe('@corpuscule/context', () => {
       }).toThrowError('No provider found for Consumer');
     });
 
-    it('allows to not declare [providingValue] in the class constructor', () => {
-      const {consumer, contextValue, provider, providingValue} = createContext();
+    it('throws an error if no value is marked with @value', () => {
+      const {consumer, provider} = createContext();
 
-      @provider
-      class Provider extends CustomElement {}
+      expect(() => {
+        @provider
+        // @ts-ignore
+        class Provider extends CustomElement {}
+      }).toThrowError('No Provider field is marked with @value');
 
-      @consumer
-      class Consumer extends CustomElement {
-        public [contextValue]: number;
-      }
-
-      const [providerElement, consumerElement] = createContextElements(Provider, Consumer);
-
-      providerElement[providingValue] = 10;
-
-      expect(consumerElement[contextValue]).toBe(10);
+      expect(() => {
+        @consumer
+        // @ts-ignore
+        class Consumer extends CustomElement {}
+      }).toThrowError('No Consumer field is marked with @value');
     });
   });
 });
