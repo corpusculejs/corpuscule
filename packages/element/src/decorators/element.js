@@ -10,6 +10,7 @@ import {
   internalChangedCallback as $internalChangedCallback,
 } from '../tokens/lifecycle';
 import getSupers from '@corpuscule/utils/lib/getSupers';
+import {shadowElements} from '../utils';
 
 const attributeChangedCallbackKey = 'attributeChangedCallback';
 const [connectedCallbackKey] = $.lifecycleKeys;
@@ -29,12 +30,14 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
 
   const hasRender = elements.some(({key}) => key === $render);
 
-  if (!builtin && !hasRender) {
+  const isShadow = !builtin || shadowElements.includes(builtin);
+
+  if (isShadow && !hasRender) {
     throw new Error('[render]() is not implemented');
   }
 
-  if (builtin && hasRender) {
-    throw new Error('[render]() cannot be used for built-in elements');
+  if (!isShadow && hasRender) {
+    throw new Error(`[render]() is not allowed for <${builtin}> element`);
   }
 
   const $$connected = Symbol();
@@ -141,9 +144,8 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
       }),
       $.method({
         key: $$invalidate,
-        method: builtin
-          ? noop
-          : async function() {
+        method: isShadow
+          ? async function() {
               if (!this[$$valid]) {
                 return;
               }
@@ -161,18 +163,19 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
               if (!isConnecting) {
                 this[$updatedCallback]();
               }
-            },
+            }
+          : noop,
       }),
     ],
     finisher(target) {
       customElements.define(name, target, builtin && {extends: builtin});
 
       finish(target, {
-        [$createRoot]: builtin
-          ? noop
-          : function() {
+        [$createRoot]: isShadow
+          ? function() {
               return this.attachShadow({mode: 'open'});
-            },
+            }
+          : noop,
       });
     },
     kind,
