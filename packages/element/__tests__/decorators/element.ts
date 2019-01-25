@@ -474,7 +474,7 @@ const testElementDecorator = () => {
         expect(schedulerSpy).not.toHaveBeenCalled();
       });
 
-      it('throws error if [render] is defined', () => {
+      it('throws error if [render] is defined for non-shadow elements', () => {
         expect(() => {
           @element(genName(), {extends: 'a'})
           // @ts-ignore
@@ -483,7 +483,15 @@ const testElementDecorator = () => {
               return null;
             }
           }
-        }).toThrowError('[render]() cannot be used for built-in elements');
+        }).toThrowError('[render]() is not allowed for <a> element');
+      });
+
+      it('throws if [render] is not defined for shadow elements', () => {
+        expect(() => {
+          @element(genName(), {extends: 'div'})
+          // @ts-ignore
+          class Test extends HTMLDivElement {}
+        }).toThrowError('[render]() is not implemented');
       });
     });
   });
