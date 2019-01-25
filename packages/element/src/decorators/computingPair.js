@@ -44,28 +44,24 @@ const createComputingPair = () => {
   const observer = ({descriptor: {get, set}, initializer, key, kind, placement}) => {
     assertElementProperty('observer', get, set, kind, placement);
 
-    return accessor(
-      {
-        get,
-        initializer,
-        key,
-        set,
-      },
-      {
-        adjust({get: originalGet, set: originalSet}) {
-          return {
-            get: originalGet,
-            set(value) {
-              originalSet.call(this, value);
+    return accessor({
+      adjust({get: originalGet, set: originalSet}) {
+        return {
+          get: originalGet,
+          set(value) {
+            originalSet.call(this, value);
 
-              for (const correct of registry.get(this.constructor)) {
-                this[correct] = false;
-              }
-            },
-          };
-        },
+            for (const correct of registry.get(this.constructor)) {
+              this[correct] = false;
+            }
+          },
+        };
       },
-    );
+      get,
+      initializer,
+      key,
+      set,
+    });
   };
 
   return {computer, observer};

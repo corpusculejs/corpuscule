@@ -1,5 +1,5 @@
 import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
-import {accessor, field, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
+import * as $ from '@corpuscule/utils/lib/descriptors';
 import shallowEqual from '@corpuscule/utils/lib/shallowEqual';
 import {configOptions, createForm} from 'final-form';
 import {
@@ -12,7 +12,7 @@ import getSupers from '@corpuscule/utils/lib/getSupers';
 const configInitializers = new WeakMap();
 const formApiPropertyName = new WeakMap();
 
-const [connectedCallbackKey, disconnectedCallbackKey] = lifecycleKeys;
+const [connectedCallbackKey, disconnectedCallbackKey] = $.lifecycleKeys;
 
 export const formOption = configKey => ({descriptor, initializer, key, kind, placement}) => {
   const {get, set, value} = descriptor;
@@ -58,35 +58,31 @@ export const formOption = configKey => ({descriptor, initializer, key, kind, pla
           }
         };
 
-  return accessor(
-    {
-      finisher(target) {
-        configInitializers.get(target).push([
-          key,
-          get
-            ? function() {
-                return get.call(this);
-              }
-            : initializer,
-        ]);
-      },
-      get,
-      initializer,
-      key,
-      set,
+  return $.accessor({
+    adjust({get: originGet, set: originSet}) {
+      return {
+        get: originGet,
+        set(v) {
+          updateForm.call(this, v);
+          originSet.call(this, v);
+        },
+      };
     },
-    {
-      adjust({get: originGet, set: originSet}) {
-        return {
-          get: originGet,
-          set(v) {
-            updateForm.call(this, v);
-            originSet.call(this, v);
-          },
-        };
-      },
+    finisher(target) {
+      configInitializers.get(target).push([
+        key,
+        get
+          ? function() {
+              return get.call(this);
+            }
+          : initializer,
+      ]);
     },
-  );
+    get,
+    initializer,
+    key,
+    set,
+  });
 };
 
 const createFormDecorator = (provider, $formApi) => ({
@@ -100,56 +96,53 @@ const createFormDecorator = (provider, $formApi) => ({
 
   const {elements, kind} = provider(classDescriptor);
 
-  const [supers, finish] = getSupers(elements, [connectedCallbackKey, disconnectedCallbackKey]);
+  const [supers, finish] = getSupers(elements, $.lifecycleKeys);
 
   return {
     elements: [
-      ...elements.filter(({key}) => !lifecycleKeys.includes(key) && key !== $formState),
+      ...elements.filter(({key}) => key !== $formState),
 
       // Public
-      method(
-        {
-          key: connectedCallbackKey,
-          value() {
-            if (decorators) {
-              for (const decorate of decorators) {
-                this[$$unsubscriptions].push(decorate(this[$formApi]));
-              }
+      $.method({
+        bound: true,
+        key: connectedCallbackKey,
+        method() {
+          if (decorators) {
+            for (const decorate of decorators) {
+              this[$$unsubscriptions].push(decorate(this[$formApi]));
             }
+          }
 
-            this[$$unsubscriptions].push(
-              this[$formApi].subscribe(state => {
-                this[$formState] = state;
-              }, subscription),
-            );
+          this[$$unsubscriptions].push(
+            this[$formApi].subscribe(state => {
+              this[$formState] = state;
+            }, subscription),
+          );
 
-            this.addEventListener('submit', this[$$submit]);
+          this.addEventListener('submit', this[$$submit]);
 
-            supers[connectedCallbackKey].call(this);
-          },
+          supers[connectedCallbackKey].call(this);
         },
-        {isBound: true},
-      ),
-      method(
-        {
-          key: disconnectedCallbackKey,
-          value() {
-            for (const unsubscribe of this[$$unsubscriptions]) {
-              unsubscribe();
-            }
+        placement: 'own',
+      }),
+      $.method({
+        key: disconnectedCallbackKey,
+        method() {
+          for (const unsubscribe of this[$$unsubscriptions]) {
+            unsubscribe();
+          }
 
-            this[$$unsubscriptions] = [];
+          this[$$unsubscriptions] = [];
 
-            this.removeEventListener('submit', this[$$submit]);
+          this.removeEventListener('submit', this[$$submit]);
 
-            supers[disconnectedCallbackKey].call(this);
-          },
+          supers[disconnectedCallbackKey].call(this);
         },
-        {isBound: true},
-      ),
+        placement: 'own',
+      }),
 
       // Protected
-      field({
+      $.field({
         initializer() {
           this[$formApi] = createForm(
             configInitializers.get(this.constructor).reduce((acc, [key, initializer]) => {
@@ -162,30 +155,26 @@ const createFormDecorator = (provider, $formApi) => ({
       }),
 
       // Private
-      field(
-        {
-          initializer() {
-            configInitializers.set(this, []);
-          },
+      $.field({
+        initializer() {
+          configInitializers.set(this, []);
         },
-        {isStatic: true},
-      ),
-      field({
+        placement: 'static',
+      }),
+      $.field({
         initializer: () => [],
         key: $$unsubscriptions,
       }),
-      method(
-        {
-          key: $$submit,
-          value(e) {
-            e.preventDefault();
-            e.stopPropagation();
+      $.method({
+        bound: true,
+        key: $$submit,
+        method(e) {
+          e.preventDefault();
+          e.stopPropagation();
 
-            this[$formApi].submit();
-          },
+          this[$formApi].submit();
         },
-        {isBound: true},
-      ),
+      }),
     ],
     finisher(target) {
       formApiPropertyName.set(target, $formApi);

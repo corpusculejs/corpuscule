@@ -28,61 +28,55 @@ const outlet = routes => classDescriptor => {
       ...elements.filter(({key}) => !filteringNames.includes(key)),
 
       // Public
-      method(
-        {
-          key: connectedCallbackKey,
-          value() {
-            window.addEventListener('popstate', this[$$updateRoute]);
-            supers[connectedCallbackKey].call(this);
+      method({
+        key: connectedCallbackKey,
+        method() {
+          window.addEventListener('popstate', this[$$updateRoute]);
+          supers[connectedCallbackKey].call(this);
 
-            this[$$updateRoute](location.pathname);
-          },
+          this[$$updateRoute](location.pathname);
         },
-        {isBound: true},
-      ),
-      method(
-        {
-          key: disconnectedCallbackKey,
-          value() {
-            window.removeEventListener('popstate', this[$$updateRoute]);
-            supers[disconnectedCallbackKey].call(this);
-          },
+        placement: 'own',
+      }),
+      method({
+        key: disconnectedCallbackKey,
+        method() {
+          window.removeEventListener('popstate', this[$$updateRoute]);
+          supers[disconnectedCallbackKey].call(this);
         },
-        {isBound: true},
-      ),
+        placement: 'own',
+      }),
 
       // Protected
       method({
         key: resolve,
-        value(...args) {
+        method(...args) {
           return supers[resolve].apply(this, args);
         },
       }),
 
       // Private
-      method(
-        {
-          key: $$updateRoute,
-          async value(pathOrEvent) {
-            const path = typeof pathOrEvent === 'string' ? pathOrEvent : pathOrEvent.state || '';
+      method({
+        bound: true,
+        key: $$updateRoute,
+        async method(pathOrEvent) {
+          const path = typeof pathOrEvent === 'string' ? pathOrEvent : pathOrEvent.state || '';
 
-            const iter = this[resolve](path);
+          const iter = this[resolve](path);
 
-            const resolved = await this[contextValue].resolve(iter.next().value);
+          const resolved = await this[contextValue].resolve(iter.next().value);
 
-            if (resolved === undefined) {
-              return;
-            }
+          if (resolved === undefined) {
+            return;
+          }
 
-            const [result, {route}] = resolved;
+          const [result, {route}] = resolved;
 
-            if (routes.includes(route)) {
-              this[layout] = iter.next(result).value;
-            }
-          },
+          if (routes.includes(route)) {
+            this[layout] = iter.next(result).value;
+          }
         },
-        {isBound: true},
-      ),
+      }),
     ],
     finisher(target) {
       finish(target, {

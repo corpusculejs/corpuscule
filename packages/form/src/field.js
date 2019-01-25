@@ -1,12 +1,12 @@
 import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
-import {accessor, field as ffield, method, lifecycleKeys} from '@corpuscule/utils/lib/descriptors';
+import * as $ from '@corpuscule/utils/lib/descriptors';
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
 import shallowEqual from '@corpuscule/utils/lib/shallowEqual';
 import {input as $input, meta as $meta} from './tokens/lifecycle';
 import {all, getTargetValue} from './utils';
 import getSupers from '@corpuscule/utils/lib/getSupers';
 
-const [connectedCallbackKey, disconnectedCallbackKey] = lifecycleKeys;
+const [connectedCallbackKey, disconnectedCallbackKey] = $.lifecycleKeys;
 
 const noop = () => {}; // eslint-disable-line no-empty-function
 
@@ -59,13 +59,11 @@ export const fieldOption = configKey => ({descriptor, initializer, key, kind, pl
     return {
       descriptor,
       extras: [
-        method(
-          {
-            key,
-            value,
-          },
-          {isBound: true},
-        ),
+        $.method({
+          bound: true,
+          key,
+          method: value,
+        }),
       ],
       finisher,
       key,
@@ -74,43 +72,39 @@ export const fieldOption = configKey => ({descriptor, initializer, key, kind, pl
     };
   }
 
-  return accessor(
-    {
-      finisher,
-      get,
-      initializer,
-      key,
-      set,
-    },
-    {
-      adjust({get: originalGet, set: originalSet}) {
-        return {
-          get: originalGet,
-          set:
-            configKey === 'name' || configKey === 'subscription'
-              ? function(v) {
-                  const oldValue = originalGet.call(this);
-                  originalSet.call(this, v);
+  return $.accessor({
+    adjust({get: originalGet, set: originalSet}) {
+      return {
+        get: originalGet,
+        set:
+          configKey === 'name' || configKey === 'subscription'
+            ? function(v) {
+                const oldValue = originalGet.call(this);
+                originalSet.call(this, v);
 
-                  if (configKey === 'name' ? v !== oldValue : !shallowEqual(v, oldValue)) {
-                    this[subscribePropertyName.get(this.constructor)]();
-                  }
+                if (configKey === 'name' ? v !== oldValue : !shallowEqual(v, oldValue)) {
+                  this[subscribePropertyName.get(this.constructor)]();
                 }
-              : function(v) {
-                  if (v !== originalGet.call(this)) {
-                    this[updatePropertyName.get(this.constructor)]();
-                  }
+              }
+            : function(v) {
+                if (v !== originalGet.call(this)) {
+                  this[updatePropertyName.get(this.constructor)]();
+                }
 
-                  originalSet.call(this, v);
-                },
-        };
-      },
+                originalSet.call(this, v);
+              },
+      };
     },
-  );
+    finisher,
+    get,
+    initializer,
+    key,
+    set,
+  });
 };
 
 const createField = (consumer, $formApi, $$form) => {
-  const filterNames = [...lifecycleKeys, $formApi, $input, $meta];
+  const filterNames = [$formApi, $input, $meta];
 
   return ({scheduler = defaultScheduler} = {}) => classDescriptor => {
     assertKind('field', 'class', classDescriptor.kind);
@@ -126,44 +120,40 @@ const createField = (consumer, $formApi, $$form) => {
     const $$updatingValid = Symbol();
 
     const {elements, kind} = consumer(classDescriptor);
-    const [supers, finish] = getSupers(elements, [connectedCallbackKey, disconnectedCallbackKey]);
+    const [supers, finish] = getSupers(elements, $.lifecycleKeys);
 
     return {
       elements: [
         ...elements.filter(({key}) => !filterNames.includes(key)),
 
         // Public
-        method(
-          {
-            key: connectedCallbackKey,
-            value() {
-              this.addEventListener('blur', this[$$onBlur]);
-              this.addEventListener('change', this[$$onChange]);
-              this.addEventListener('focus', this[$$onFocus]);
+        $.method({
+          key: connectedCallbackKey,
+          method() {
+            this.addEventListener('blur', this[$$onBlur]);
+            this.addEventListener('change', this[$$onChange]);
+            this.addEventListener('focus', this[$$onFocus]);
 
-              supers[connectedCallbackKey].call(this);
-              this[$$subscribe]();
-            },
+            supers[connectedCallbackKey].call(this);
+            this[$$subscribe]();
           },
-          {isBound: true},
-        ),
-        method(
-          {
-            key: disconnectedCallbackKey,
-            value() {
-              this.removeEventListener('blur', this[$$onBlur]);
-              this.removeEventListener('change', this[$$onChange]);
-              this.removeEventListener('focus', this[$$onFocus]);
+          placement: 'own',
+        }),
+        $.method({
+          key: disconnectedCallbackKey,
+          method() {
+            this.removeEventListener('blur', this[$$onBlur]);
+            this.removeEventListener('change', this[$$onChange]);
+            this.removeEventListener('focus', this[$$onFocus]);
 
-              this[$$unsubscribe]();
-              supers[disconnectedCallbackKey].call(this);
-            },
+            this[$$unsubscribe]();
+            supers[disconnectedCallbackKey].call(this);
           },
-          {isBound: true},
-        ),
+          placement: 'own',
+        }),
 
         // Protected
-        accessor({
+        $.accessor({
           get() {
             return this[$$form];
           },
@@ -171,61 +161,55 @@ const createField = (consumer, $formApi, $$form) => {
         }),
 
         // Private
-        ffield({
+        $.field({
           initializer: () => true,
           key: $$subscribingValid,
         }),
-        ffield({
+        $.field({
           initializer: () => noop,
           key: $$unsubscribe,
         }),
-        ffield({
+        $.field({
           initializer: () => true,
           key: $$updatingValid,
         }),
-        method(
-          {
-            key: $$onBlur,
-            value() {
-              const [format, formatOnBlur] = getConfigProperties(this, 'format', 'formatOnBlur');
+        $.method({
+          bound: true,
+          key: $$onBlur,
+          method() {
+            const [format, formatOnBlur] = getConfigProperties(this, 'format', 'formatOnBlur');
 
-              const {blur, change, name, value} = this[$$formState];
+            const {blur, change, name, value} = this[$$formState];
 
-              blur();
+            blur();
 
-              if (format && formatOnBlur) {
-                change(format(value, name));
-              }
-            },
+            if (format && formatOnBlur) {
+              change(format(value, name));
+            }
           },
-          {isBound: true},
-        ),
-        method(
-          {
-            key: $$onChange,
-            value({detail, target}) {
-              const [parse] = getConfigProperties(this, 'parse');
-              const {change, name, value} = this[$$formState];
+        }),
+        $.method({
+          bound: true,
+          key: $$onChange,
+          method({detail, target}) {
+            const [parse] = getConfigProperties(this, 'parse');
+            const {change, name, value} = this[$$formState];
 
-              const changeValue = detail || getTargetValue(target, value);
+            const changeValue = detail || getTargetValue(target, value);
 
-              change(parse ? parse(changeValue, name) : changeValue);
-            },
+            change(parse ? parse(changeValue, name) : changeValue);
           },
-          {isBound: true},
-        ),
-        method(
-          {
-            key: $$onFocus,
-            value() {
-              this[$$formState].focus();
-            },
+        }),
+        $.method({
+          bound: true,
+          key: $$onFocus,
+          method() {
+            this[$$formState].focus();
           },
-          {isBound: true},
-        ),
-        method({
+        }),
+        $.method({
           key: $$subscribe,
-          value() {
+          method() {
             if (!this[$$subscribingValid]) {
               return;
             }
@@ -263,9 +247,9 @@ const createField = (consumer, $formApi, $$form) => {
             });
           },
         }),
-        method({
+        $.method({
           key: $$update,
-          value() {
+          method() {
             if (!this[$$updatingValid]) {
               return;
             }
