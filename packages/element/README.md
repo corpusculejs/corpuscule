@@ -262,6 +262,20 @@ To create Customized Built-In Element you have to:
 class MyAnchor extends HTMLAnchorElement {}
 ```
 
+##### List of native elements allowed to create Shadow Root
+* `<article>`
+* `<aside>`
+* `<blockquote>`
+* `<body>`
+* `<div>`
+* `<footer>`
+* `<header>`
+* `<main>`
+* `<nav>`
+* `<p>`
+* `<section>`
+* `<span>`
+
 ## API
 This section describes decorators API and how to use them.
 
