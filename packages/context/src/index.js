@@ -1,9 +1,9 @@
 /* eslint-disable max-classes-per-file */
 import {assertKind} from '@corpuscule/utils/lib/asserts';
-import {accessor, field, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
+import * as $ from '@corpuscule/utils/lib/descriptors';
 import getSupers from '@corpuscule/utils/lib/getSupers';
 
-const [connectedCallbackKey, disconnectedCallbackKey] = lifecycleKeys;
+const [connectedCallbackKey, disconnectedCallbackKey] = $.lifecycleKeys;
 
 const randomString = () => {
   const arr = new Uint32Array(2);
@@ -29,36 +29,32 @@ const createContext = defaultValue => {
     const {initializer: providingValueInitializer = null} =
       elements.find(({key}) => key === providingValue) || {};
 
-    const [supers, finisher] = getSupers(elements, lifecycleKeys);
+    const [supers, finisher] = getSupers(elements, $.lifecycleKeys);
 
     return {
       elements: [
-        ...elements.filter(({key}) => !lifecycleKeys.includes(key) && key !== providingValue),
+        ...elements.filter(({key}) => key !== providingValue),
 
         // Public
-        method(
-          {
-            key: connectedCallbackKey,
-            value() {
-              this.addEventListener(eventName, this[$$subscribe]);
-              supers[connectedCallbackKey].call(this);
-            },
+        $.method({
+          key: connectedCallbackKey,
+          method() {
+            this.addEventListener(eventName, this[$$subscribe]);
+            supers[connectedCallbackKey].call(this);
           },
-          {isBound: true},
-        ),
-        method(
-          {
-            key: disconnectedCallbackKey,
-            value() {
-              this.removeEventListener(eventName, this[$$subscribe]);
-              supers[disconnectedCallbackKey].call(this);
-            },
+          placement: 'own',
+        }),
+        $.method({
+          key: disconnectedCallbackKey,
+          method() {
+            this.removeEventListener(eventName, this[$$subscribe]);
+            supers[disconnectedCallbackKey].call(this);
           },
-          {isBound: true},
-        ),
+          placement: 'own',
+        }),
 
         // Protected
-        accessor({
+        $.accessor({
           get() {
             return this[$$value];
           },
@@ -73,38 +69,34 @@ const createContext = defaultValue => {
         }),
 
         // Private
-        field({
+        $.field({
           initializer: () => [],
           key: $$consumers,
         }),
-        field({
+        $.field({
           initializer: providingValueInitializer || (() => defaultValue),
           key: $$value,
         }),
-        method(
-          {
-            key: $$unsubscribe,
-            value(consume) {
-              this[$$consumers] = this[$$consumers].filter(p => p !== consume);
-            },
+        $.method({
+          bound: true,
+          key: $$unsubscribe,
+          method(consume) {
+            this[$$consumers] = this[$$consumers].filter(p => p !== consume);
           },
-          {isBound: true},
-        ),
-        method(
-          {
-            key: $$subscribe,
-            value(event) {
-              const {consume} = event.detail;
+        }),
+        $.method({
+          bound: true,
+          key: $$subscribe,
+          method(event) {
+            const {consume} = event.detail;
 
-              this[$$consumers].push(consume);
-              consume(this[$$value]);
+            this[$$consumers].push(consume);
+            consume(this[$$value]);
 
-              event.detail.unsubscribe = this[$$unsubscribe];
-              event.stopPropagation();
-            },
+            event.detail.unsubscribe = this[$$unsubscribe];
+            event.stopPropagation();
           },
-          {isBound: true},
-        ),
+        }),
       ],
       finisher,
       kind,
@@ -117,16 +109,16 @@ const createContext = defaultValue => {
     const $$consume = Symbol();
     const $$unsubscribe = Symbol();
 
-    const [supers, finisher] = getSupers(elements, lifecycleKeys);
+    const [supers, finisher] = getSupers(elements, $.lifecycleKeys);
 
     return {
       elements: [
-        ...elements.filter(({key}) => !lifecycleKeys.includes(key) && key !== contextValue),
+        ...elements.filter(({key}) => key !== contextValue),
 
         // Public
-        method({
+        $.method({
           key: connectedCallbackKey,
-          value() {
+          method() {
             const event = new CustomEvent(eventName, {
               bubbles: true,
               cancelable: true,
@@ -144,28 +136,28 @@ const createContext = defaultValue => {
 
             supers[connectedCallbackKey].call(this);
           },
+          placement: 'own',
         }),
-        method({
+        $.method({
           key: disconnectedCallbackKey,
-          value() {
+          method() {
             if (this[$$unsubscribe]) {
               this[$$unsubscribe](this[$$consume]);
             }
 
             supers[disconnectedCallbackKey].call(this);
           },
+          placement: 'own',
         }),
 
         // Private
-        method(
-          {
-            key: $$consume,
-            value(v) {
-              this[contextValue] = v;
-            },
+        $.method({
+          bound: true,
+          key: $$consume,
+          method(v) {
+            this[contextValue] = v;
           },
-          {isBound: true},
-        ),
+        }),
       ],
       finisher,
       kind,

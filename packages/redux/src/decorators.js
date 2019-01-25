@@ -38,29 +38,25 @@ export const dispatcher = ({descriptor, initializer, key, kind, placement}) => {
       throw new TypeError(`@dispatcher: "${key}" should be initialized with a function`);
     }
 
-    return method(
-      {
-        key,
-        value(...args) {
-          this[contextMap.get(this.constructor)].dispatch(initialized(...args));
-        },
+    return method({
+      key,
+      method(...args) {
+        this[contextMap.get(this.constructor)].dispatch(initialized(...args));
       },
-      {isBound: true},
-    );
+      placement: 'own',
+    });
   }
 
   return {
     descriptor,
     extras: [
-      method(
-        {
-          key,
-          value(...args) {
-            this[contextMap.get(this.constructor)].dispatch(descriptor.value.apply(this, args));
-          },
+      method({
+        key,
+        method(...args) {
+          this[contextMap.get(this.constructor)].dispatch(descriptor.value.apply(this, args));
         },
-        {isBound: true},
-      ),
+        placement: 'own',
+      }),
     ],
     key,
     kind,

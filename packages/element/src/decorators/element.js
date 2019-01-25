@@ -1,6 +1,6 @@
 /* eslint-disable no-invalid-this, prefer-arrow-callback */
 import {assertKind} from '@corpuscule/utils/lib/asserts';
-import {field, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
+import * as $ from '@corpuscule/utils/lib/descriptors';
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
 import {
   createRoot as $createRoot,
@@ -12,7 +12,7 @@ import {
 import getSupers from '@corpuscule/utils/lib/getSupers';
 
 const attributeChangedCallbackKey = 'attributeChangedCallback';
-const [connectedCallbackKey] = lifecycleKeys;
+const [connectedCallbackKey] = $.lifecycleKeys;
 
 // eslint-disable-next-line no-empty-function
 const noop = () => {};
@@ -55,105 +55,93 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
       ...elements.filter(({key}) => !filteringNames.includes(key)),
 
       // Static
-      field(
-        {
-          initializer: () => name,
-          key: 'is',
-        },
-        {isReadonly: true, isStatic: true},
-      ),
-      field(
-        {
-          initializer: () => [],
-          key: 'observedAttributes',
-        },
-        {isReadonly: true, isStatic: true},
-      ),
+      $.field({
+        initializer: () => name,
+        key: 'is',
+        placement: 'static',
+        writable: false,
+      }),
+      $.field({
+        initializer: () => [],
+        key: 'observedAttributes',
+        placement: 'static',
+        writable: false,
+      }),
 
       // Public
-      method(
-        {
-          key: connectedCallbackKey,
-          async value() {
-            await this[$$invalidate]();
-            supers[connectedCallbackKey].call(this);
-          },
+      $.method({
+        key: connectedCallbackKey,
+        async method() {
+          await this[$$invalidate]();
+          supers[connectedCallbackKey].call(this);
         },
-        {isBound: true},
-      ),
-      method(
-        {
-          key: attributeChangedCallbackKey,
-          async value(attributeName, oldValue, newValue) {
-            if (oldValue === newValue || !this[$$connected]) {
-              return;
-            }
+        placement: 'own',
+      }),
+      $.method({
+        key: attributeChangedCallbackKey,
+        async method(attributeName, oldValue, newValue) {
+          if (oldValue === newValue || !this[$$connected]) {
+            return;
+          }
 
-            supers[attributeChangedCallbackKey].call(this, attributeName, oldValue, newValue);
-            await this[$$invalidate]();
-          },
+          supers[attributeChangedCallbackKey].call(this, attributeName, oldValue, newValue);
+          await this[$$invalidate]();
         },
-        {isBound: true},
-      ),
+        placement: 'own',
+      }),
 
       // Protected
-      method(
-        {
-          key: $createRoot,
-          value() {
-            return supers[$createRoot].call(this);
-          },
+      $.method({
+        key: $createRoot,
+        method() {
+          return supers[$createRoot].call(this);
         },
-        {isBound: true},
-      ),
-      method(
-        {
-          key: $internalChangedCallback,
-          async value(internalName, oldValue, newValue) {
-            if (!this[$$connected]) {
-              return;
-            }
+        placement: 'own',
+      }),
+      $.method({
+        key: $internalChangedCallback,
+        async method(internalName, oldValue, newValue) {
+          if (!this[$$connected]) {
+            return;
+          }
 
-            supers[$internalChangedCallback].call(this, internalName, oldValue, newValue);
-            await this[$$invalidate]();
-          },
+          supers[$internalChangedCallback].call(this, internalName, oldValue, newValue);
+          await this[$$invalidate]();
         },
-        {isBound: true},
-      ),
-      method(
-        {
-          key: $propertyChangedCallback,
-          async value(propertyName, oldValue, newValue) {
-            if (oldValue === newValue || !this[$$connected]) {
-              return;
-            }
+        placement: 'own',
+      }),
+      $.method({
+        key: $propertyChangedCallback,
+        async method(propertyName, oldValue, newValue) {
+          if (oldValue === newValue || !this[$$connected]) {
+            return;
+          }
 
-            supers[$propertyChangedCallback].call(this, propertyName, oldValue, newValue);
-            await this[$$invalidate]();
-          },
+          supers[$propertyChangedCallback].call(this, propertyName, oldValue, newValue);
+          await this[$$invalidate]();
         },
-        {isBound: true},
-      ),
+        placement: 'own',
+      }),
 
       // Private
-      field({
+      $.field({
         initializer: () => false,
         key: $$connected,
       }),
-      field({
+      $.field({
         initializer() {
           if (!rootProperty.has(this)) {
             rootProperty.set(this, this[$createRoot]());
           }
         },
       }),
-      field({
+      $.field({
         initializer: () => true,
         key: $$valid,
       }),
-      method({
+      $.method({
         key: $$invalidate,
-        value: builtin
+        method: builtin
           ? noop
           : async function() {
               if (!this[$$valid]) {

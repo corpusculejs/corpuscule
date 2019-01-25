@@ -26,22 +26,20 @@ export const connect = classDescriptor => {
 
   return {
     elements: [
-      ...elements.filter(({key}) => key !== disconnectedCallbackKey),
+      ...elements,
 
       // Public
-      method(
-        {
-          key: disconnectedCallbackKey,
-          value() {
-            supers[disconnectedCallbackKey].call(this);
+      method({
+        key: disconnectedCallbackKey,
+        method() {
+          supers[disconnectedCallbackKey].call(this);
 
-            if (this[$$unsubscribe]) {
-              this[$$unsubscribe]();
-            }
-          },
+          if (this[$$unsubscribe]) {
+            this[$$unsubscribe]();
+          }
         },
-        {isBound: true},
-      ),
+        placement: 'own',
+      }),
 
       // Protected
       accessor({
@@ -60,7 +58,7 @@ export const connect = classDescriptor => {
       // Private
       method({
         key: $$subscribe,
-        value() {
+        method() {
           this[$$update](this[$$context]);
 
           this[$$unsubscribe] = this[$$context].subscribe(() => {
@@ -70,7 +68,7 @@ export const connect = classDescriptor => {
       }),
       method({
         key: $$update,
-        value({getState}) {
+        method({getState}) {
           const registry = connectedRegistry.get(this.constructor);
 
           if (!registry) {

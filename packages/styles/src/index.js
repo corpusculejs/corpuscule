@@ -52,39 +52,37 @@ export const createStylesDecorator = ({shadyCSS, adoptedStyleSheets}) => (...pat
     elements: [
       ...elements,
 
-      method(
-        {
-          key: attachShadowKey,
-          value(options) {
-            const root = attachShadow.call(this, options);
+      method({
+        key: attachShadowKey,
+        method(options) {
+          const root = attachShadow.call(this, options);
 
-            if (constructableStyles.length > 0) {
-              if (shadyCSS) {
-                window.ShadyCSS.prepareAdoptedCssText(constructableStyles, this.localName);
-              } else {
-                root.adoptedStyleSheets = constructableStyles;
-              }
-            }
-
-            if (template.content.hasChildNodes()) {
-              const styleElements = template.content.cloneNode(true);
-
-              const observer = new MutationObserver(() => {
-                root.prepend(styleElements);
-                observer.disconnect();
-                supers[stylesAttachedCallback].call(this);
-              });
-
-              observer.observe(root, observerConfig);
+          if (constructableStyles.length > 0) {
+            if (shadyCSS) {
+              window.ShadyCSS.prepareAdoptedCssText(constructableStyles, this.localName);
             } else {
-              supers[stylesAttachedCallback].call(this);
+              root.adoptedStyleSheets = constructableStyles;
             }
+          }
 
-            return root;
-          },
+          if (template.content.hasChildNodes()) {
+            const styleElements = template.content.cloneNode(true);
+
+            const observer = new MutationObserver(() => {
+              root.prepend(styleElements);
+              observer.disconnect();
+              supers[stylesAttachedCallback].call(this);
+            });
+
+            observer.observe(root, observerConfig);
+          } else {
+            supers[stylesAttachedCallback].call(this);
+          }
+
+          return root;
         },
-        {isBound: true},
-      ),
+        placement: 'own',
+      }),
     ],
     finisher,
     kind,
