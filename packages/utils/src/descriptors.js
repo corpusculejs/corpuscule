@@ -1,54 +1,65 @@
 export const lifecycleKeys = ['connectedCallback', 'disconnectedCallback'];
 
-export const field = (
-  {extras, finisher, initializer, key},
-  {isReadonly = false, isStatic = false} = {},
-) => ({
+export const field = ({
+  configurable = true,
+  enumerable = true,
+  kind: _,
+  writable = true,
+  ...other
+}) => ({
   descriptor: {
-    configurable: true,
-    enumerable: true,
-    writable: !isReadonly,
+    configurable,
+    enumerable,
+    writable,
   },
-  extras,
-  finisher,
-  initializer,
-  key: key || Symbol(),
+  key: Symbol(),
   kind: 'field',
-  placement: isStatic ? 'static' : 'own',
+  placement: 'own',
+  ...other,
 });
 
-export const method = (
-  {extras, finisher, key, value},
-  {isBound = false, isStatic = false} = {},
-) => {
-  if (isBound) {
-    return field(
-      {
-        extras,
-        finisher,
+export const method = ({
+  configurable = true,
+  bound = false,
+  enumerable = true,
+  kind: _,
+  method: value,
+  writable = true,
+  ...other
+}) =>
+  bound
+    ? field({
+        configurable,
+        enumerable,
         initializer() {
           return value.bind(this);
         },
-        key,
-      },
-      {isStatic},
-    );
-  }
+        writable,
+        ...other,
+      })
+    : {
+        descriptor: {
+          configurable,
+          enumerable,
+          value,
+          writable,
+        },
+        kind: 'method',
+        placement: 'prototype',
+        ...other,
+      };
 
-  return {
-    descriptor: {configurable: true, value, writable: true},
-    extras,
-    finisher,
-    key,
-    kind: 'method',
-    placement: isStatic ? 'static' : 'prototype',
-  };
-};
-
-export const accessor = (
-  {extras, finisher, initializer, key, get, set},
-  {adjust = methods => methods, isStatic = false, toArray = false} = {},
-) => {
+export const accessor = ({
+  adjust = methods => methods,
+  configurable = true,
+  get,
+  enumerable = true,
+  extras = [],
+  initializer,
+  kind: _,
+  set,
+  ...other
+}) => {
   let accessorMethods;
   let accessorField;
 
@@ -65,6 +76,7 @@ export const accessor = (
     });
 
     accessorField = field({
+      enumerable: false,
       initializer,
       key: storage,
     });
@@ -72,23 +84,15 @@ export const accessor = (
     accessorMethods = adjust({get, set});
   }
 
-  const result = {
-    descriptor: {configurable: true, ...accessorMethods},
-    extras,
-    finisher,
-    key,
+  return {
+    descriptor: {
+      configurable,
+      enumerable,
+      ...accessorMethods,
+    },
+    extras: accessorField ? [...extras, accessorField] : extras,
     kind: 'method',
-    placement: isStatic ? 'static' : 'prototype',
+    placement: 'prototype',
+    ...other,
   };
-
-  if (accessorField) {
-    return toArray
-      ? [result, accessorField]
-      : {
-          ...result,
-          extras: Array.isArray(extras) ? [...extras, accessorField] : [accessorField],
-        };
-  }
-
-  return result;
 };
