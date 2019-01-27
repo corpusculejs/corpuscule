@@ -232,6 +232,50 @@ const testDescriptors = () => {
         expect(testObj[key as string]).toBe(30);
       });
 
+      it('creates accessor with field if original element has no getter and setter', () => {
+        const result = $.accessor({
+          extras,
+          finisher,
+          key: 'test',
+        });
+
+        expect(result).toEqual({
+          descriptor: {
+            configurable: true,
+            enumerable: true,
+            get: jasmine.any(Function),
+            set: jasmine.any(Function),
+          },
+          extras: [
+            {
+              descriptor: {
+                configurable: true,
+                enumerable: false,
+                writable: true,
+              },
+              initializer: undefined,
+              key: jasmine.any(Symbol),
+              kind: 'field',
+              placement: 'own',
+            } as any,
+          ],
+          finisher,
+          key: 'test',
+          kind: 'method',
+          placement: 'prototype',
+        });
+
+        const [{key}] = result.extras!;
+
+        const testObj = {
+          [key]: 20,
+        };
+
+        expect(result.descriptor.get!.call(testObj)).toBe(20);
+        result.descriptor.set!.call(testObj, 30);
+        expect(testObj[key as string]).toBe(30);
+      });
+
       it('allows to adjust internally created set and get', () => {
         const adjustedGetSpy = jasmine.createSpy('adjustedGet');
         const adjustedSetSpy = jasmine.createSpy('adjustedSet');
