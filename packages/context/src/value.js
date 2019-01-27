@@ -29,8 +29,14 @@ const createValue = ({consumers, value, providers}, defaultValue) => ({
         }
       },
     }),
+    extras: [
+      $.hook({
+        start() {
+          value.set(this, key);
+        },
+      }),
+    ],
     finisher(target) {
-      value.set(target, key);
       isProvider = providers.has(target);
       $$consumers = consumers.get(target);
     },
