@@ -1,4 +1,4 @@
-import {assertKind, assertPlacement} from '../src/asserts';
+import {assertKind, assertPlacement, assertRequiredProperty} from '../src/asserts';
 
 const testAsserts = () => {
   describe('asserts', () => {
@@ -72,6 +72,24 @@ const testAsserts = () => {
         expect(() => {
           assertPlacement('foo', 'own', 'static', {customMessage: 'test'});
         }).toThrow(new TypeError('test'));
+      });
+    });
+
+    fdescribe('assertRequiredProperty', () => {
+      it('throws an error if property is undefined or null', () => {
+        expect(() => assertRequiredProperty('foo', 'bar', 'test', undefined)).toThrowError(
+          '@foo requires test property marked with @bar',
+        );
+      });
+
+      it("doesn't throw an error if property is different than undefined", () => {
+        expect(() => assertRequiredProperty('foo', 'bar', 'test', null)).not.toThrow();
+      });
+
+      it('allows to omit property name', () => {
+        expect(() => assertRequiredProperty('foo', 'bar', undefined)).toThrowError(
+          '@foo requires any property marked with @bar',
+        );
       });
     });
   });
