@@ -28,7 +28,7 @@ const createContextElements = <T extends CustomElement, U extends CustomElement>
 
 describe('@corpuscule/context', () => {
   describe('createContext', () => {
-    it('should create context', () => {
+    it('creates context', () => {
       const {consumer, provider, value} = createContext();
 
       @provider
@@ -47,7 +47,7 @@ describe('@corpuscule/context', () => {
       expect(consumerElement.contextValue).toBe(2);
     });
 
-    it('should provide context for all consumers', () => {
+    it('provides context for all consumers', () => {
       const {consumer, provider, value} = createContext();
 
       @provider
@@ -68,7 +68,7 @@ describe('@corpuscule/context', () => {
       expect(consumerElement2.contextValue).toBe(2);
     });
 
-    it('should allow to use default value for context', () => {
+    it('allows to use default value for context', () => {
       const {consumer, provider, value} = createContext(2);
 
       @provider
@@ -89,7 +89,7 @@ describe('@corpuscule/context', () => {
       expect(consumerElement.contextValue).toBe(2);
     });
 
-    it('should allow to set value dynamically', () => {
+    it('allows to set value dynamically', () => {
       const {consumer, provider, value} = createContext(2);
 
       @provider
@@ -111,7 +111,7 @@ describe('@corpuscule/context', () => {
       expect(consumerElement.contextValue).toBe(10);
     });
 
-    it("should call connectedCallback() and disconnectedCallback() of user's class", () => {
+    it("calls connectedCallback and disconnectedCallback of user's class", () => {
       const connectedSpy = jasmine.createSpy('onConnect');
       const disconnectedSpy = jasmine.createSpy('onDisconnect');
       const {consumer, provider, value} = createContext();
@@ -153,7 +153,7 @@ describe('@corpuscule/context', () => {
       expect(disconnectedSpy).toHaveBeenCalledTimes(2);
     });
 
-    it('should stop providing value to disconnected consumers', () => {
+    it('stops providing value to disconnected consumers', () => {
       const {consumer, provider, value} = createContext();
 
       @provider
@@ -177,7 +177,7 @@ describe('@corpuscule/context', () => {
       expect(consumerElement.contextValue).toBe(2);
     });
 
-    it('should throw an error if no provider exists for context', () => {
+    it('throws an error if no provider exists for context', () => {
       const {consumer, value} = createContext();
 
       @consumer
