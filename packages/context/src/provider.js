@@ -66,13 +66,12 @@ const createProvider = (
         },
       }),
 
-      // Initializers
-      $.field({
-        initializer() {
+      // Hooks
+      $.hook({
+        start() {
           providers.add(this);
           consumers.set(this, $$consumers);
         },
-        placement: 'static',
       }),
     ],
     finisher(target) {

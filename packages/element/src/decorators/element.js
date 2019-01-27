@@ -131,8 +131,8 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
         initializer: () => false,
         key: $$connected,
       }),
-      $.field({
-        initializer() {
+      $.hook({
+        start() {
           if (!rootProperty.has(this)) {
             rootProperty.set(this, this[$createRoot]());
           }
