@@ -1,4 +1,4 @@
-import {assertKind} from '@corpuscule/utils/lib/asserts';
+import {assertKind, assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
 import getSupers from '@corpuscule/utils/lib/getSupers';
 import * as $ from '@corpuscule/utils/lib/descriptors';
 import {setValue} from '@corpuscule/utils/lib/propertyUtils';
@@ -69,6 +69,9 @@ const createConsumer = ({eventName, value}, [connectedCallbackKey, disconnectedC
       checkValue(value, target);
 
       $value = value.get(target);
+
+      assertRequiredProperty('consumer', 'value', $value);
+
       prepareSupers(target);
     },
     kind,
