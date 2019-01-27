@@ -177,6 +177,18 @@ describe('@corpuscule/context', () => {
       expect(consumerElement.contextValue).toBe(2);
     });
 
+    it('detects provider', () => {
+      const {isProvider, provider, value} = createContext();
+
+      @provider
+      class Provider extends CustomElement {
+        @value
+        public providingValue: number = 2;
+      }
+
+      expect(isProvider(Provider)).toBeTruthy();
+    });
+
     it('throws an error if no provider exists for context', () => {
       const {consumer, value} = createContext();
 
