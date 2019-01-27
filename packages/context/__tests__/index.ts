@@ -177,6 +177,32 @@ describe('@corpuscule/context', () => {
       expect(consumerElement.contextValue).toBe(2);
     });
 
+    it("removes any default consumer's value", () => {
+      const {consumer, provider, value} = createContext();
+      const constructorSpy = jasmine.createSpy('constructor');
+
+      @provider
+      class Provider extends CustomElement {
+        @value
+        public providingValue: number = 2;
+      }
+
+      @consumer
+      class Consumer extends CustomElement {
+        @value
+        public contextValue: number = 3;
+
+        public constructor() {
+          super();
+          expect(this.contextValue).toBeUndefined();
+          constructorSpy();
+        }
+      }
+
+      createContextElements(Provider, Consumer);
+      expect(constructorSpy).toHaveBeenCalled();
+    });
+
     it('detects provider', () => {
       const {isProvider, provider, value} = createContext();
 

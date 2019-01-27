@@ -35,7 +35,11 @@ const createValue = ({consumers, value, providers}, defaultValue) => ({
       $$consumers = consumers.get(target);
     },
     initializer() {
-      return initializer ? initializer.call(this) : isProvider ? defaultValue : undefined;
+      if (isProvider) {
+        return initializer ? initializer.call(this) : defaultValue;
+      }
+
+      return undefined;
     },
     key,
   });
