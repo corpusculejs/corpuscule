@@ -1,96 +1,23 @@
-import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
+import {assertKind, assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
 import * as $ from '@corpuscule/utils/lib/descriptors';
-import shallowEqual from '@corpuscule/utils/lib/shallowEqual';
-import {configOptions, createForm} from 'final-form';
-import {
-  formState as $formState,
-  compareInitialValues as $compareInitialValues,
-} from './tokens/lifecycle';
-import {all} from './utils';
 import getSupers from '@corpuscule/utils/lib/getSupers';
-
-const configInitializers = new WeakMap();
-const formApiPropertyName = new WeakMap();
+import {getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
+import {createForm} from 'final-form';
+import {all} from './utils';
 
 const [connectedCallbackKey, disconnectedCallbackKey] = $.lifecycleKeys;
 
-export const formOption = configKey => ({descriptor, initializer, key, kind, placement}) => {
-  const {get, set, value} = descriptor;
-
-  assertKind('formOption', 'properties, methods or full accessors', kind, {
-    correct: kind === 'field' || (kind === 'method' && (value || (get && set))),
-  });
-  assertPlacement('formOption', 'own or prototype', placement, {
-    correct: placement === 'own' || placement === 'prototype',
-  });
-
-  if (!configOptions.includes(configKey)) {
-    throw new TypeError(`"${configKey}" is not one of the Final Form configuration keys`);
-  }
-
-  if (kind === 'method' && value) {
-    return {
-      descriptor,
-      finisher(target) {
-        configInitializers.get(target).push([
-          key,
-          function() {
-            return value.bind(this);
-          },
-        ]);
-      },
-      key,
-      kind,
-      placement,
-    };
-  }
-
-  const updateForm =
-    configKey === 'initialValues'
-      ? function(initialValues) {
-          if (!(this[$compareInitialValues] || shallowEqual)(this[key], initialValues)) {
-            this[formApiPropertyName.get(this.constructor)].initialize(initialValues);
-          }
-        }
-      : function(v) {
-          if (this[key] !== v) {
-            this[formApiPropertyName.get(this.constructor)].setConfig(configKey, v);
-          }
-        };
-
-  return $.accessor({
-    adjust({get: originGet, set: originSet}) {
-      return {
-        get: originGet,
-        set(v) {
-          updateForm.call(this, v);
-          originSet.call(this, v);
-        },
-      };
-    },
-    finisher(target) {
-      configInitializers.get(target).push([
-        key,
-        get
-          ? function() {
-              return get.call(this);
-            }
-          : initializer,
-      ]);
-    },
-    get,
-    initializer,
-    key,
-    set,
-  });
-};
-
-const createFormDecorator = (provider, $formApi) => ({
+const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => ({
   decorators,
   subscription = all,
 } = {}) => classDescriptor => {
   assertKind('form', 'class', classDescriptor.kind);
 
+  let $api;
+  let $state;
+  let initializers;
+
+  const $$api = Symbol();
   const $$submit = Symbol();
   const $$unsubscriptions = Symbol();
 
@@ -100,22 +27,24 @@ const createFormDecorator = (provider, $formApi) => ({
 
   return {
     elements: [
-      ...elements.filter(({key}) => key !== $formState),
+      ...elements,
 
       // Public
       $.method({
         bound: true,
         key: connectedCallbackKey,
         method() {
+          const instance = getValue(this, $api);
+
           if (decorators) {
             for (const decorate of decorators) {
-              this[$$unsubscriptions].push(decorate(this[$formApi]));
+              this[$$unsubscriptions].push(decorate(instance));
             }
           }
 
           this[$$unsubscriptions].push(
-            this[$formApi].subscribe(state => {
-              this[$formState] = state;
+            instance.subscribe(newState => {
+              setValue(this, $state, newState);
             }, subscription),
           );
 
@@ -141,26 +70,7 @@ const createFormDecorator = (provider, $formApi) => ({
         placement: 'own',
       }),
 
-      // Protected
-      $.field({
-        initializer() {
-          this[$formApi] = createForm(
-            configInitializers.get(this.constructor).reduce((acc, [key, initializer]) => {
-              acc[key] = initializer ? initializer.call(this) : undefined;
-
-              return acc;
-            }, {}),
-          );
-        },
-      }),
-
       // Private
-      $.field({
-        initializer() {
-          configInitializers.set(this, []);
-        },
-        placement: 'static',
-      }),
       $.field({
         initializer: () => [],
         key: $$unsubscriptions,
@@ -172,13 +82,42 @@ const createFormDecorator = (provider, $formApi) => ({
           e.preventDefault();
           e.stopPropagation();
 
-          this[$formApi].submit();
+          getValue(this, $api).submit();
+        },
+      }),
+
+      // Hooks
+      $.hook({
+        placement: 'own',
+        start() {
+          setValue(
+            this,
+            $api,
+            createForm(
+              initializers.reduce((acc, [key, initializer]) => {
+                acc[key] = initializer ? initializer.call(this) : undefined;
+
+                return acc;
+              }, {}),
+            ),
+          );
+        },
+      }),
+      $.hook({
+        start() {
+          configInitializers.set(this, []);
         },
       }),
     ],
     finisher(target) {
-      formApiPropertyName.set(target, $formApi);
       finish(target);
+
+      $api = api.get(target) || $$api;
+      $state = state.get(target);
+
+      assertRequiredProperty('form', 'api', 'state', $state);
+
+      initializers = configInitializers.get(target);
     },
     kind,
   };

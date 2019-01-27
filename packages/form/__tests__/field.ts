@@ -3,18 +3,7 @@ import {FieldState, FieldValidator, FormApi} from 'final-form';
 import {createMockedContextElements} from '../../../test/mocks/context';
 import {formSpyObject, unsubscribe} from '../../../test/mocks/finalForm';
 import {CustomElement} from '../../../test/utils';
-import {
-  createFormContext,
-  Field,
-  FieldConfigKey,
-  FieldDecorator,
-  FieldInputProps,
-  FieldMetaProps,
-  fieldOption,
-  FormDecorator,
-  input,
-  meta,
-} from '../src';
+import {createFormContext, FieldInputProps, FieldMetaProps, FormDecorator} from '../src';
 import {all} from '../src/utils';
 
 const testField = () => {
@@ -24,9 +13,10 @@ const testField = () => {
     let fieldValue: object;
     let metaObject: FieldMetaProps;
 
+    let api: PropertyDecorator;
     let form: FormDecorator;
-    let field: FieldDecorator;
-    let formApi: 'formApi';
+    let field: ClassDecorator;
+    let option: PropertyDecorator;
 
     const subscribeField = <T>(fieldElement: T): [(state: FieldState) => void, FieldValidator] => {
       const [subscribe] = scheduler.calls.mostRecent().args;
@@ -45,11 +35,12 @@ const testField = () => {
     };
 
     beforeEach(() => {
-      ({field, form, formApi} = createFormContext());
+      scheduler = jasmine.createSpy('scheduler');
+
+      ({api, field, form, option} = createFormContext({scheduler}));
 
       unsubscribe.calls.reset();
       formSpyObject.registerField.calls.reset();
-      scheduler = jasmine.createSpy('scheduler');
       fieldValue = {};
       state = jasmine.createSpyObj('formState', ['blur', 'change', 'focus']);
 
@@ -77,16 +68,16 @@ const testField = () => {
       @form()
       class Form extends CustomElement {}
 
-      @field({scheduler})
-      class FormField extends CustomElement implements Field<string> {
-        public readonly [formApi]: FormApi;
-        public readonly [input]: FieldInputProps<string>;
-        public readonly [meta]: FieldMetaProps;
+      @field
+      class FormField extends CustomElement {
+        @api public readonly form!: FormApi;
+        @api public readonly input!: FieldInputProps<string>;
+        @api public readonly meta!: FieldMetaProps;
       }
 
       const [, fieldElement] = createMockedContextElements(Form, FormField);
 
-      expect(fieldElement[formApi]).toBe(formSpyObject);
+      expect(fieldElement.form).toBe(formSpyObject);
       expect(formSpyObject.subscribe).toHaveBeenCalled();
       expect(scheduler).toHaveBeenCalledWith(jasmine.any(Function));
     });
@@ -95,26 +86,25 @@ const testField = () => {
       @form()
       class Form extends CustomElement {}
 
-      @field({scheduler})
-      class FormField extends CustomElement implements Field<string> {
-        public readonly [formApi]: FormApi;
-        public readonly [input]: FieldInputProps<string>;
-        public readonly [meta]: FieldMetaProps;
+      @field
+      class FormField extends CustomElement {
+        @api public readonly input!: FieldInputProps<string>;
+        @api public readonly meta!: FieldMetaProps;
 
-        @fieldOption('name')
+        @option
         public name: string = 'test';
 
-        @fieldOption('isEqual')
+        @option
         public isEqual(): boolean {
           return true;
         }
 
-        @fieldOption('validate')
+        @option
         public validate(): boolean {
           return true;
         }
 
-        @fieldOption('validateFields')
+        @option
         public validateFields(): boolean {
           return true;
         }
@@ -136,11 +126,10 @@ const testField = () => {
       @form()
       class Form extends CustomElement {}
 
-      @field({scheduler})
-      class FormField extends CustomElement implements Field<object> {
-        public readonly [formApi]: FormApi;
-        public readonly [input]: FieldInputProps<object>;
-        public readonly [meta]: FieldMetaProps;
+      @field
+      class FormField extends CustomElement {
+        @api public readonly input!: FieldInputProps<object>;
+        @api public readonly meta!: FieldMetaProps;
       }
 
       const [, fieldElement] = createMockedContextElements(Form, FormField);
@@ -148,28 +137,27 @@ const testField = () => {
       updateField(fieldElement, listener);
 
       expect(scheduler).toHaveBeenCalledTimes(2);
-      expect(fieldElement[input]).toEqual({
+      expect(fieldElement.input).toEqual({
         name: 'test',
         value: fieldValue,
       });
 
-      expect(fieldElement[meta]).toEqual(metaObject);
+      expect(fieldElement.meta).toEqual(metaObject);
     });
 
     it('formats value for [input] if format option is set and formatOnBlur is disabled', () => {
       @form()
       class Form extends CustomElement {}
 
-      @field({scheduler})
-      class FormField extends CustomElement implements Field<object> {
-        public readonly [formApi]: FormApi;
-        public readonly [input]: FieldInputProps<object>;
-        public readonly [meta]: FieldMetaProps;
+      @field
+      class FormField extends CustomElement {
+        @api public readonly input!: FieldInputProps<object>;
+        @api public readonly meta!: FieldMetaProps;
 
-        @fieldOption('formatOnBlur')
+        @option
         public formatOnBlur: boolean = false;
 
-        @fieldOption('format')
+        @option
         public format(value: unknown): unknown {
           return value;
         }
@@ -189,11 +177,10 @@ const testField = () => {
       @form()
       class Form extends CustomElement {}
 
-      @field({scheduler})
-      class FormField extends CustomElement implements Field<object> {
-        public readonly [formApi]: FormApi;
-        public readonly [input]: FieldInputProps<object>;
-        public readonly [meta]: FieldMetaProps;
+      @field
+      class FormField extends CustomElement {
+        @api public readonly input!: FieldInputProps<object>;
+        @api public readonly meta!: FieldMetaProps;
       }
 
       const [, fieldElement] = createMockedContextElements(Form, FormField);
@@ -211,11 +198,10 @@ const testField = () => {
       @form()
       class Form extends CustomElement {}
 
-      @field({scheduler})
-      class FormField extends CustomElement implements Field<object> {
-        public readonly [formApi]: FormApi;
-        public readonly [input]: FieldInputProps<object>;
-        public readonly [meta]: FieldMetaProps;
+      @field
+      class FormField extends CustomElement {
+        @api public readonly input!: FieldInputProps<object>;
+        @api public readonly meta!: FieldMetaProps;
       }
 
       const [, fieldElement] = createMockedContextElements(Form, FormField);
@@ -229,11 +215,10 @@ const testField = () => {
       @form()
       class Form extends CustomElement {}
 
-      @field({scheduler})
-      class FormField extends CustomElement implements Field<object> {
-        public readonly [formApi]: FormApi;
-        public readonly [input]: FieldInputProps<object>;
-        public readonly [meta]: FieldMetaProps;
+      @field
+      class FormField extends CustomElement {
+        @api public readonly input!: FieldInputProps<object>;
+        @api public readonly meta!: FieldMetaProps;
       }
 
       const [, fieldElement] = createMockedContextElements(Form, FormField);
@@ -248,11 +233,10 @@ const testField = () => {
       @form()
       class Form extends CustomElement {}
 
-      @field({scheduler})
-      class FormField extends CustomElement implements Field<object> {
-        public readonly [formApi]: FormApi;
-        public readonly [input]: FieldInputProps<object>;
-        public readonly [meta]: FieldMetaProps;
+      @field
+      class FormField extends CustomElement {
+        @api public readonly input!: FieldInputProps<object>;
+        @api public readonly meta!: FieldMetaProps;
       }
 
       const [, fieldElement] = createMockedContextElements(Form, FormField);
@@ -263,18 +247,17 @@ const testField = () => {
     });
 
     describe('@fieldOption', () => {
-      const testResubscription = <T>(type: FieldConfigKey, oldValue: T, newValue: T) => {
+      const testResubscription = <T>(type: string, oldValue: T, newValue: T) => {
         it(`resubscribes on option ${type} value change`, () => {
           @form()
           class Form extends CustomElement {}
 
-          @field({scheduler})
-          class FormField extends CustomElement implements Field<object> {
-            public readonly [formApi]: FormApi;
-            public readonly [input]: FieldInputProps<object>;
-            public readonly [meta]: FieldMetaProps;
+          @field
+          class FormField extends CustomElement {
+            @api public readonly input!: FieldInputProps<object>;
+            @api public readonly meta!: FieldMetaProps;
 
-            @fieldOption(type)
+            @option
             // @ts-ignore
             public [type]: T = oldValue;
           }
@@ -292,13 +275,12 @@ const testField = () => {
           @form()
           class Form extends CustomElement {}
 
-          @field({scheduler})
-          class FormField extends CustomElement implements Field<object> {
-            public readonly [formApi]: FormApi;
-            public readonly [input]: FieldInputProps<object>;
-            public readonly [meta]: FieldMetaProps;
+          @field
+          class FormField extends CustomElement {
+            @api public readonly input!: FieldInputProps<object>;
+            @api public readonly meta!: FieldMetaProps;
 
-            @fieldOption(type)
+            @option
             // @ts-ignore
             public [type]: T = oldValue;
           }
@@ -320,13 +302,12 @@ const testField = () => {
         @form()
         class Form extends CustomElement {}
 
-        @field({scheduler})
-        class FormField extends CustomElement implements Field<object> {
-          public readonly [formApi]: FormApi;
-          public readonly [input]: FieldInputProps<object>;
-          public readonly [meta]: FieldMetaProps;
+        @field
+        class FormField extends CustomElement {
+          @api public readonly input!: FieldInputProps<object>;
+          @api public readonly meta!: FieldMetaProps;
 
-          @fieldOption('value')
+          @option
           public value: string = 'test';
         }
 
@@ -344,13 +325,12 @@ const testField = () => {
         @form()
         class Form extends CustomElement {}
 
-        @field({scheduler})
-        class FormField extends CustomElement implements Field<object> {
-          public readonly [formApi]: FormApi;
-          public readonly [input]: FieldInputProps<object>;
-          public readonly [meta]: FieldMetaProps;
+        @field
+        class FormField extends CustomElement {
+          @api public readonly input!: FieldInputProps<object>;
+          @api public readonly meta!: FieldMetaProps;
 
-          @fieldOption('value')
+          @option
           public value: string = 'test';
         }
 
@@ -366,15 +346,14 @@ const testField = () => {
 
       it('throws an error if option name is not one of Field config keys', () => {
         expect(() => {
-          @field({scheduler})
+          @field
           // @ts-ignore
-          class FormField extends CustomElement implements Field<object> {
-            public readonly [formApi]: FormApi;
-            public readonly [input]: FieldInputProps<object>;
-            public readonly [meta]: FieldMetaProps;
+          class FormField extends CustomElement {
+            @api public readonly input!: FieldInputProps<object>;
+            @api public readonly meta!: FieldMetaProps;
 
-            @fieldOption('test' as any)
-            public value: string = 'test';
+            @option
+            public test: string = 'test';
           }
         }).toThrow(new TypeError('"test" is not one of the Final Form Field configuration keys'));
       });
@@ -385,11 +364,10 @@ const testField = () => {
         @form()
         class Form extends CustomElement {}
 
-        @field({scheduler})
-        class FormField extends CustomElement implements Field<object> {
-          public readonly [formApi]: FormApi;
-          public readonly [input]: FieldInputProps<object>;
-          public readonly [meta]: FieldMetaProps;
+        @field
+        class FormField extends CustomElement {
+          @api public readonly input!: FieldInputProps<object>;
+          @api public readonly meta!: FieldMetaProps;
         }
 
         const [, fieldElement] = createMockedContextElements(Form, FormField);
@@ -405,16 +383,15 @@ const testField = () => {
         @form()
         class Form extends CustomElement {}
 
-        @field({scheduler})
-        class FormField extends CustomElement implements Field<object> {
-          public readonly [formApi]: FormApi;
-          public readonly [input]: FieldInputProps<object>;
-          public readonly [meta]: FieldMetaProps;
+        @field
+        class FormField extends CustomElement {
+          @api public readonly input!: FieldInputProps<object>;
+          @api public readonly meta!: FieldMetaProps;
 
-          @fieldOption('formatOnBlur')
+          @option
           public formatOnBlur: boolean = true;
 
-          @fieldOption('format')
+          @option
           public format(value: unknown): unknown {
             return value;
           }
@@ -437,11 +414,10 @@ const testField = () => {
         @form()
         class Form extends CustomElement {}
 
-        @field({scheduler})
-        class FormField extends CustomElement implements Field<object> {
-          public readonly [formApi]: FormApi;
-          public readonly [input]: FieldInputProps<object>;
-          public readonly [meta]: FieldMetaProps;
+        @field
+        class FormField extends CustomElement {
+          @api public readonly input!: FieldInputProps<object>;
+          @api public readonly meta!: FieldMetaProps;
         }
 
         const [, fieldElement] = createMockedContextElements(Form, FormField);
@@ -459,13 +435,12 @@ const testField = () => {
         @form()
         class Form extends CustomElement {}
 
-        @field({scheduler})
-        class FormField extends CustomElement implements Field<string> {
-          public readonly [formApi]: FormApi;
-          public readonly [input]: FieldInputProps<string>;
-          public readonly [meta]: FieldMetaProps;
+        @field
+        class FormField extends CustomElement {
+          @api public readonly input!: FieldInputProps<object>;
+          @api public readonly meta!: FieldMetaProps;
 
-          @fieldOption('parse')
+          @option
           public parse(value: string): object {
             return JSON.parse(value);
           }
@@ -489,11 +464,10 @@ const testField = () => {
         @form()
         class Form extends CustomElement {}
 
-        @field({scheduler})
-        class FormField extends CustomElement implements Field<string> {
-          public readonly [formApi]: FormApi;
-          public readonly [input]: FieldInputProps<string>;
-          public readonly [meta]: FieldMetaProps;
+        @field
+        class FormField extends CustomElement {
+          @api public readonly input!: FieldInputProps<object>;
+          @api public readonly meta!: FieldMetaProps;
         }
 
         const [, fieldElement] = createMockedContextElements(Form, FormField);
@@ -513,11 +487,10 @@ const testField = () => {
         @form()
         class Form extends CustomElement {}
 
-        @field({scheduler})
-        class FormField extends CustomElement implements Field<object> {
-          public readonly [formApi]: FormApi;
-          public readonly [input]: FieldInputProps<object>;
-          public readonly [meta]: FieldMetaProps;
+        @field
+        class FormField extends CustomElement {
+          @api public readonly input!: FieldInputProps<object>;
+          @api public readonly meta!: FieldMetaProps;
         }
 
         [, fieldElement] = createMockedContextElements(Form, FormField);
