@@ -18,7 +18,8 @@ export type AccessorParams = Omit<PropertyDescriptor, 'value'> &
 
 export type FieldParams = Omit<PropertyDescriptor, 'get' | 'set'> &
   ExtendedPropertyDescriptorBasics &
-  Pick<Partial<ExtendedPropertyDescriptor>, 'key' | 'initializer' | 'placement'>;
+  Pick<ExtendedPropertyDescriptor, 'key'> &
+  Pick<Partial<ExtendedPropertyDescriptor>, 'initializer' | 'placement'>;
 
 export type MethodParams = Omit<PropertyDescriptor, 'get' | 'set' | 'value'> &
   ExtendedPropertyDescriptorBasics &
@@ -28,6 +29,11 @@ export type MethodParams = Omit<PropertyDescriptor, 'get' | 'set' | 'value'> &
     readonly method?: Function;
   };
 
+export type HookParams = Pick<Partial<ExtendedPropertyDescriptor>, 'extras' | 'placement'> & {
+  readonly start: () => void;
+};
+
 export const accessor: (params: AccessorParams) => ExtendedPropertyDescriptor;
 export const field: (params: FieldParams) => ExtendedPropertyDescriptor;
 export const method: (params: MethodParams) => ExtendedPropertyDescriptor;
+export const hook: (params: HookParams) => ExtendedPropertyDescriptor;

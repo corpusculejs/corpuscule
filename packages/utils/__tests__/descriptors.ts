@@ -61,14 +61,6 @@ const testDescriptors = () => {
 
         expect(result.placement).toBe('static');
       });
-
-      it('allows field for initialization only', () => {
-        const result = $.field({
-          initializer: () => 10,
-        });
-
-        expect(result.key).toEqual(jasmine.any(Symbol));
-      });
     });
 
     describe('method', () => {
@@ -307,6 +299,26 @@ const testDescriptors = () => {
 
         expect(set).toHaveBeenCalledWith(100);
         expect(adjustedSetSpy).toHaveBeenCalledWith(100);
+      });
+    });
+
+    describe('hook', () => {
+      it('creates hook', () => {
+        const start = jasmine.createSpy('start');
+
+        const hook = $.hook({
+          extras,
+          start,
+        });
+
+        expect(hook).toEqual({
+          descriptor: {},
+          extras,
+          initializer: start,
+          key: jasmine.any(Symbol) as any,
+          kind: 'field',
+          placement: 'static',
+        });
       });
     });
   });
