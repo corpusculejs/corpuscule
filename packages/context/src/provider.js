@@ -1,4 +1,4 @@
-import {assertKind} from '@corpuscule/utils/lib/asserts';
+import {assertKind, assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
 import getSupers from '@corpuscule/utils/lib/getSupers';
 import * as $ from '@corpuscule/utils/lib/descriptors';
 import {getValue} from '@corpuscule/utils/lib/propertyUtils';
@@ -79,6 +79,8 @@ const createProvider = (
       prepareSupers(target);
 
       $value = value.get(target);
+
+      assertRequiredProperty('provider', 'value', $value);
     },
     kind,
   };
