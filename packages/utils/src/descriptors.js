@@ -63,7 +63,7 @@ export const accessor = ({
   let accessorMethods;
   let accessorField;
 
-  if (initializer) {
+  if (initializer || (!get && !set)) {
     const storage = Symbol();
 
     accessorMethods = adjust({
