@@ -12,7 +12,6 @@ export const field = ({
     enumerable,
     writable,
   },
-  key: Symbol(),
   kind: 'field',
   placement: 'own',
   ...other,
@@ -96,3 +95,12 @@ export const accessor = ({
     ...other,
   };
 };
+
+export const hook = ({extras, placement = 'static', start}) => ({
+  descriptor: {},
+  extras,
+  initializer: start,
+  key: Symbol(),
+  kind: 'field',
+  placement,
+});
