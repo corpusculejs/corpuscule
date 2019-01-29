@@ -125,6 +125,13 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
         },
         placement: 'own',
       }),
+      $.method({
+        key: $updatedCallback,
+        async method() {
+          supers[$updatedCallback].call(this);
+        },
+        placement: 'own',
+      }),
 
       // Private
       $.field({
@@ -132,6 +139,7 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
         key: $$connected,
       }),
       $.hook({
+        placement: 'own',
         start() {
           if (!rootProperty.has(this)) {
             rootProperty.set(this, this[$createRoot]());
