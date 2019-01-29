@@ -1,5 +1,5 @@
-// tslint:disable:no-unbound-method
-import {FieldState, FieldValidator, FormApi} from 'final-form';
+// tslint:disable:no-unbound-method no-empty
+import {FieldState, FieldValidator, FormApi, FormState} from 'final-form';
 import {createMockedContextElements} from '../../../test/mocks/context';
 import {formSpyObject, unsubscribe} from '../../../test/mocks/finalForm';
 import {CustomElement} from '../../../test/utils';
@@ -66,13 +66,21 @@ const testField = () => {
 
     it('creates field that receives form', () => {
       @form()
-      class Form extends CustomElement {}
+      class Form extends CustomElement {
+        @api public readonly form!: FormApi;
+        @api public readonly state!: FormState;
+
+        @option
+        public onSubmit(): void {}
+      }
 
       @field
       class FormField extends CustomElement {
         @api public readonly form!: FormApi;
         @api public readonly input!: FieldInputProps<string>;
         @api public readonly meta!: FieldMetaProps;
+
+        @option public readonly name: string = 'test';
       }
 
       const [, fieldElement] = createMockedContextElements(Form, FormField);
@@ -84,15 +92,21 @@ const testField = () => {
 
     it('subscribes to form with defined options', () => {
       @form()
-      class Form extends CustomElement {}
+      class Form extends CustomElement {
+        @api public readonly form!: FormApi;
+        @api public readonly state!: FormState;
+
+        @option
+        public onSubmit(): void {}
+      }
 
       @field
       class FormField extends CustomElement {
+        @api public readonly form!: FormApi;
         @api public readonly input!: FieldInputProps<string>;
         @api public readonly meta!: FieldMetaProps;
 
-        @option
-        public name: string = 'test';
+        @option public readonly name: string = 'test';
 
         @option
         public isEqual(): boolean {
@@ -124,12 +138,21 @@ const testField = () => {
 
     it('creates new input and meta objects on each form update', () => {
       @form()
-      class Form extends CustomElement {}
+      class Form extends CustomElement {
+        @api public readonly form!: FormApi;
+        @api public readonly state!: FormState;
+
+        @option
+        public onSubmit(): void {}
+      }
 
       @field
       class FormField extends CustomElement {
+        @api public readonly form!: FormApi;
         @api public readonly input!: FieldInputProps<object>;
         @api public readonly meta!: FieldMetaProps;
+
+        @option public readonly name: string = 'test';
       }
 
       const [, fieldElement] = createMockedContextElements(Form, FormField);
@@ -145,14 +168,23 @@ const testField = () => {
       expect(fieldElement.meta).toEqual(metaObject);
     });
 
-    it('formats value for [input] if format option is set and formatOnBlur is disabled', () => {
+    it('formats value for input if format option is set and formatOnBlur is disabled', () => {
       @form()
-      class Form extends CustomElement {}
+      class Form extends CustomElement {
+        @api public readonly form!: FormApi;
+        @api public readonly state!: FormState;
+
+        @option
+        public onSubmit(): void {}
+      }
 
       @field
       class FormField extends CustomElement {
+        @api public readonly form!: FormApi;
         @api public readonly input!: FieldInputProps<object>;
         @api public readonly meta!: FieldMetaProps;
+
+        @option public readonly name: string = 'test';
 
         @option
         public formatOnBlur: boolean = false;
@@ -175,12 +207,21 @@ const testField = () => {
 
     it('avoids unnecessary scheduling if update called many times', () => {
       @form()
-      class Form extends CustomElement {}
+      class Form extends CustomElement {
+        @api public readonly form!: FormApi;
+        @api public readonly state!: FormState;
+
+        @option
+        public onSubmit(): void {}
+      }
 
       @field
       class FormField extends CustomElement {
+        @api public readonly form!: FormApi;
         @api public readonly input!: FieldInputProps<object>;
         @api public readonly meta!: FieldMetaProps;
+
+        @option public readonly name: string = 'test';
       }
 
       const [, fieldElement] = createMockedContextElements(Form, FormField);
@@ -196,12 +237,21 @@ const testField = () => {
 
     it('avoids unnecessary scheduling if subscribe called many times', () => {
       @form()
-      class Form extends CustomElement {}
+      class Form extends CustomElement {
+        @api public readonly form!: FormApi;
+        @api public readonly state!: FormState;
+
+        @option
+        public onSubmit(): void {}
+      }
 
       @field
       class FormField extends CustomElement {
+        @api public readonly form!: FormApi;
         @api public readonly input!: FieldInputProps<object>;
         @api public readonly meta!: FieldMetaProps;
+
+        @option public readonly name: string = 'test';
       }
 
       const [, fieldElement] = createMockedContextElements(Form, FormField);
@@ -213,12 +263,21 @@ const testField = () => {
 
     it('unsubscribes on disconnectedCallback', () => {
       @form()
-      class Form extends CustomElement {}
+      class Form extends CustomElement {
+        @api public readonly form!: FormApi;
+        @api public readonly state!: FormState;
+
+        @option
+        public onSubmit(): void {}
+      }
 
       @field
       class FormField extends CustomElement {
+        @api public readonly form!: FormApi;
         @api public readonly input!: FieldInputProps<object>;
         @api public readonly meta!: FieldMetaProps;
+
+        @option public readonly name: string = 'test';
       }
 
       const [, fieldElement] = createMockedContextElements(Form, FormField);
@@ -231,12 +290,21 @@ const testField = () => {
 
     it('unsubscribes on new subscription', () => {
       @form()
-      class Form extends CustomElement {}
+      class Form extends CustomElement {
+        @api public readonly form!: FormApi;
+        @api public readonly state!: FormState;
+
+        @option
+        public onSubmit(): void {}
+      }
 
       @field
       class FormField extends CustomElement {
+        @api public readonly form!: FormApi;
         @api public readonly input!: FieldInputProps<object>;
         @api public readonly meta!: FieldMetaProps;
+
+        @option public readonly name: string = 'test';
       }
 
       const [, fieldElement] = createMockedContextElements(Form, FormField);
@@ -246,66 +314,135 @@ const testField = () => {
       expect(unsubscribe).toHaveBeenCalled();
     });
 
-    describe('@fieldOption', () => {
-      const testResubscription = <T>(type: string, oldValue: T, newValue: T) => {
-        it(`resubscribes on option ${type} value change`, () => {
-          @form()
-          class Form extends CustomElement {}
-
-          @field
-          class FormField extends CustomElement {
-            @api public readonly input!: FieldInputProps<object>;
-            @api public readonly meta!: FieldMetaProps;
-
-            @option
-            // @ts-ignore
-            public [type]: T = oldValue;
-          }
-
-          const [, fieldElement] = createMockedContextElements(Form, FormField);
-          subscribeField(fieldElement);
-
-          // @ts-ignore
-          fieldElement[type] = newValue;
-
-          expect(scheduler).toHaveBeenCalledTimes(2);
-        });
-
-        it(`does not resubscribe on field ${type} change if option values are equal`, () => {
-          @form()
-          class Form extends CustomElement {}
-
-          @field
-          class FormField extends CustomElement {
-            @api public readonly input!: FieldInputProps<object>;
-            @api public readonly meta!: FieldMetaProps;
-
-            @option
-            // @ts-ignore
-            public [type]: T = oldValue;
-          }
-
-          const [, fieldElement] = createMockedContextElements(Form, FormField);
-          subscribeField(fieldElement);
-
-          // @ts-ignore
-          fieldElement[type] = oldValue;
-
-          expect(scheduler).toHaveBeenCalledTimes(1);
-        });
-      };
-
-      testResubscription('name', 'test1', 'test2');
-      testResubscription('subscription', all, {active: true});
-
-      it('updates field if option value is changed', () => {
+    describe('@option', () => {
+      it(`resubscribes on name value change`, () => {
         @form()
-        class Form extends CustomElement {}
+        class Form extends CustomElement {
+          @api public readonly form!: FormApi;
+          @api public readonly state!: FormState;
+
+          @option
+          public onSubmit(): void {}
+        }
 
         @field
         class FormField extends CustomElement {
+          @api public readonly form!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
           @api public readonly meta!: FieldMetaProps;
+
+          @option
+          public name: string = 'test1';
+        }
+
+        const [, fieldElement] = createMockedContextElements(Form, FormField);
+        subscribeField(fieldElement);
+
+        fieldElement.name = 'test2';
+
+        expect(scheduler).toHaveBeenCalledTimes(2);
+      });
+
+      it(`does not resubscribe on name change if option values are equal`, () => {
+        @form()
+        class Form extends CustomElement {
+          @api public readonly form!: FormApi;
+          @api public readonly state!: FormState;
+
+          @option
+          public onSubmit(): void {}
+        }
+
+        @field
+        class FormField extends CustomElement {
+          @api public readonly form!: FormApi;
+          @api public readonly input!: FieldInputProps<object>;
+          @api public readonly meta!: FieldMetaProps;
+
+          @option public name: string = 'test1';
+        }
+
+        const [, fieldElement] = createMockedContextElements(Form, FormField);
+        subscribeField(fieldElement);
+
+        fieldElement.name = 'test1';
+
+        expect(scheduler).toHaveBeenCalledTimes(1);
+      });
+
+      it(`resubscribes on subscription value change`, () => {
+        @form()
+        class Form extends CustomElement {
+          @api public readonly form!: FormApi;
+          @api public readonly state!: FormState;
+
+          @option
+          public onSubmit(): void {}
+        }
+
+        @field
+        class FormField extends CustomElement {
+          @api public readonly form!: FormApi;
+          @api public readonly input!: FieldInputProps<object>;
+          @api public readonly meta!: FieldMetaProps;
+
+          @option public name: string = 'test';
+          @option public subscription: Record<string, boolean> = all;
+        }
+
+        const [, fieldElement] = createMockedContextElements(Form, FormField);
+        subscribeField(fieldElement);
+
+        fieldElement.subscription = {active: true};
+
+        expect(scheduler).toHaveBeenCalledTimes(2);
+      });
+
+      it(`does not resubscribe on subscription change if option values are equal`, () => {
+        @form()
+        class Form extends CustomElement {
+          @api public readonly form!: FormApi;
+          @api public readonly state!: FormState;
+
+          @option
+          public onSubmit(): void {}
+        }
+
+        @field
+        class FormField extends CustomElement {
+          @api public readonly form!: FormApi;
+          @api public readonly input!: FieldInputProps<object>;
+          @api public readonly meta!: FieldMetaProps;
+
+          @option public name: string = 'test';
+          @option public subscription: Record<string, boolean> = all;
+        }
+
+        const [, fieldElement] = createMockedContextElements(Form, FormField);
+        subscribeField(fieldElement);
+
+        fieldElement.subscription = all;
+
+        expect(scheduler).toHaveBeenCalledTimes(1);
+      });
+
+      it('updates field if option value is changed', () => {
+        @form()
+        class Form extends CustomElement {
+          @api public readonly form!: FormApi;
+          @api public readonly state!: FormState;
+
+          @option
+          public onSubmit(): void {}
+        }
+
+        @field
+        class FormField extends CustomElement {
+          @api public readonly form!: FormApi;
+          @api public readonly input!: FieldInputProps<object>;
+          @api public readonly meta!: FieldMetaProps;
+
+          @option public readonly name: string = 'test';
 
           @option
           public value: string = 'test';
@@ -323,12 +460,21 @@ const testField = () => {
 
       it('does not update field if it option values are equal', () => {
         @form()
-        class Form extends CustomElement {}
+        class Form extends CustomElement {
+          @api public readonly form!: FormApi;
+          @api public readonly state!: FormState;
+
+          @option
+          public onSubmit(): void {}
+        }
 
         @field
         class FormField extends CustomElement {
+          @api public readonly form!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
           @api public readonly meta!: FieldMetaProps;
+
+          @option public readonly name: string = 'test';
 
           @option
           public value: string = 'test';
@@ -349,25 +495,39 @@ const testField = () => {
           @field
           // @ts-ignore
           class FormField extends CustomElement {
+            @api public readonly form!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
             @api public readonly meta!: FieldMetaProps;
+
+            @option public readonly name: string = 'test';
 
             @option
             public test: string = 'test';
           }
-        }).toThrow(new TypeError('"test" is not one of the Final Form Field configuration keys'));
+        }).toThrow(
+          new TypeError('"test" is not one of the Final Form or Field configuration keys'),
+        );
       });
     });
 
-    describe('[input]', () => {
-      it('calls blur() method of field state if [input].onBlur() is called', () => {
+    describe('@api input', () => {
+      it('calls blur() method of field state if input.onBlur() is called', () => {
         @form()
-        class Form extends CustomElement {}
+        class Form extends CustomElement {
+          @api public readonly form!: FormApi;
+          @api public readonly state!: FormState;
+
+          @option
+          public onSubmit(): void {}
+        }
 
         @field
         class FormField extends CustomElement {
+          @api public readonly form!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
           @api public readonly meta!: FieldMetaProps;
+
+          @option public readonly name: string = 'test';
         }
 
         const [, fieldElement] = createMockedContextElements(Form, FormField);
@@ -381,12 +541,21 @@ const testField = () => {
 
       it('formats and sets value on blur if appropriate options are set', () => {
         @form()
-        class Form extends CustomElement {}
+        class Form extends CustomElement {
+          @api public readonly form!: FormApi;
+          @api public readonly state!: FormState;
+
+          @option
+          public onSubmit(): void {}
+        }
 
         @field
         class FormField extends CustomElement {
+          @api public readonly form!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
           @api public readonly meta!: FieldMetaProps;
+
+          @option public readonly name: string = 'test';
 
           @option
           public formatOnBlur: boolean = true;
@@ -412,12 +581,21 @@ const testField = () => {
 
       it('calls change() method of field state when new "change" event is fired', () => {
         @form()
-        class Form extends CustomElement {}
+        class Form extends CustomElement {
+          @api public readonly form!: FormApi;
+          @api public readonly state!: FormState;
+
+          @option
+          public onSubmit(): void {}
+        }
 
         @field
         class FormField extends CustomElement {
+          @api public readonly form!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
           @api public readonly meta!: FieldMetaProps;
+
+          @option public readonly name: string = 'test';
         }
 
         const [, fieldElement] = createMockedContextElements(Form, FormField);
@@ -433,12 +611,21 @@ const testField = () => {
 
       it('parses value if parse option is defined', () => {
         @form()
-        class Form extends CustomElement {}
+        class Form extends CustomElement {
+          @api public readonly form!: FormApi;
+          @api public readonly state!: FormState;
+
+          @option
+          public onSubmit(): void {}
+        }
 
         @field
         class FormField extends CustomElement {
+          @api public readonly form!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
           @api public readonly meta!: FieldMetaProps;
+
+          @option public readonly name: string = 'test';
 
           @option
           public parse(value: string): object {
@@ -460,14 +647,23 @@ const testField = () => {
         expect(state.change).toHaveBeenCalledWith({});
       });
 
-      it('calls focus() method of field stat if [input].onFocus() method is called', () => {
+      it('calls focus() method of field stat if input.onFocus() method is called', () => {
         @form()
-        class Form extends CustomElement {}
+        class Form extends CustomElement {
+          @api public readonly form!: FormApi;
+          @api public readonly state!: FormState;
+
+          @option
+          public onSubmit(): void {}
+        }
 
         @field
         class FormField extends CustomElement {
+          @api public readonly form!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
           @api public readonly meta!: FieldMetaProps;
+
+          @option public readonly name: string = 'test';
         }
 
         const [, fieldElement] = createMockedContextElements(Form, FormField);
@@ -485,12 +681,21 @@ const testField = () => {
 
       beforeEach(() => {
         @form()
-        class Form extends CustomElement {}
+        class Form extends CustomElement {
+          @api public readonly form!: FormApi;
+          @api public readonly state!: FormState;
+
+          @option
+          public onSubmit(): void {}
+        }
 
         @field
         class FormField extends CustomElement {
+          @api public readonly form!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
           @api public readonly meta!: FieldMetaProps;
+
+          @option public readonly name: string = 'test';
         }
 
         [, fieldElement] = createMockedContextElements(Form, FormField);

@@ -1,7 +1,7 @@
 import {assertKind, assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
 import * as $ from '@corpuscule/utils/lib/descriptors';
 import getSupers from '@corpuscule/utils/lib/getSupers';
-import {getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
+import {getName, getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
 import {createForm} from 'final-form';
 import {all} from './utils';
 
@@ -17,7 +17,6 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
   let $state;
   let initializers;
 
-  const $$api = Symbol();
   const $$submit = Symbol();
   const $$unsubscriptions = Symbol();
 
@@ -112,12 +111,20 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
     finisher(target) {
       finish(target);
 
-      $api = api.get(target) || $$api;
+      $api = api.get(target);
       $state = state.get(target);
 
+      assertRequiredProperty('form', 'api', 'form', $api);
       assertRequiredProperty('form', 'api', 'state', $state);
 
       initializers = configInitializers.get(target);
+
+      assertRequiredProperty(
+        'form',
+        'option',
+        'onSubmit',
+        initializers.find(([key]) => getName(key) === 'onSubmit'),
+      );
     },
     kind,
   };

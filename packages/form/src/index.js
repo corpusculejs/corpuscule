@@ -1,4 +1,2 @@
-export {default as createFormContext, field, form, formApi} from './createFormContext';
-export {fieldOption} from './field';
-export {formOption} from './form';
+export {default as createFormContext, api, field, form, option} from './createFormContext';
 export * from './tokens/lifecycle';
