@@ -75,7 +75,7 @@ const testAsserts = () => {
       });
     });
 
-    fdescribe('assertRequiredProperty', () => {
+    describe('assertRequiredProperty', () => {
       it('throws an error if property is undefined or null', () => {
         expect(() => assertRequiredProperty('foo', 'bar', 'test', undefined)).toThrowError(
           '@foo requires test property marked with @bar',
