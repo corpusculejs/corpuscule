@@ -5,16 +5,16 @@ import {apis} from './utils';
 
 const createAnotherApi = (descriptor, shared) => {
   const {
-    descriptor: {get, set, value},
+    descriptor: {get, set},
     key,
     kind,
     placement,
   } = descriptor;
 
-  assertKind('formOption', 'properties, methods or full accessors', kind, {
-    correct: kind === 'field' || (kind === 'method' && (value || (get && set))),
+  assertKind('api', 'fields or full accessors', kind, {
+    correct: kind === 'field' || (kind === 'method' && (get && set)),
   });
-  assertPlacement('formOption', 'own', placement);
+  assertPlacement('api', 'own', placement);
 
   return {
     ...descriptor,

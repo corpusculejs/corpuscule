@@ -26,7 +26,6 @@ const createField = (
   let $validate;
   let $validateFields;
 
-  const $$api = Symbol();
   const $$formState = Symbol();
   const $$onBlur = Symbol();
   const $$onChange = Symbol();
@@ -87,13 +86,13 @@ const createField = (
         bound: true,
         key: $$onBlur,
         method() {
-          const format = getValue(this, $format);
+          const format = $format && getValue(this, $format);
 
           const {blur, change, name, value} = this[$$formState];
 
           blur();
 
-          if (format && getValue(this, $formatOnBlur)) {
+          if (format && $formatOnBlur && getValue(this, $formatOnBlur)) {
             change(format(value, name));
           }
         },
@@ -102,7 +101,7 @@ const createField = (
         bound: true,
         key: $$onChange,
         method({detail, target}) {
-          const parse = getValue(this, $parse);
+          const parse = $parse && getValue(this, $parse);
           const {change, name, value} = this[$$formState];
 
           const changeValue = detail || getTargetValue(target, value);
@@ -137,11 +136,11 @@ const createField = (
             this[$$unsubscribe] = getValue(this, $api).registerField(
               getValue(this, $name),
               listener,
-              getValue(this, $subscription) || all,
+              ($subscription && getValue(this, $subscription)) || all,
               {
-                getValidator: () => getValue(this, $validate),
-                isEqual: getValue(this, $isEqual),
-                validateFields: getValue(this, $validateFields),
+                getValidator: () => $validate && getValue(this, $validate),
+                isEqual: $isEqual && getValue(this, $isEqual),
+                validateFields: $validateFields && getValue(this, $validateFields),
               },
             );
 
@@ -159,7 +158,7 @@ const createField = (
           this[$$updatingValid] = false;
 
           scheduler(() => {
-            const format = getValue(this, $format);
+            const format = $format && getValue(this, $format);
 
             const {blur: _b, change: _c, focus: _f, name, length: _l, value, ...metadata} = this[
               $$formState
@@ -167,7 +166,10 @@ const createField = (
 
             setValue(this, $input, {
               name,
-              value: !getValue(this, $formatOnBlur) && format ? format(value, name) : value,
+              value:
+                !($formatOnBlur && getValue(this, $formatOnBlur)) && format
+                  ? format(value, name)
+                  : value,
             });
 
             setValue(this, $meta, metadata);
@@ -187,10 +189,11 @@ const createField = (
     finisher(target) {
       finish(target);
 
-      $api = api.get(target) || $$api;
+      $api = api.get(target);
       $input = input.get(target);
       $meta = meta.get(target);
 
+      assertRequiredProperty('field', 'api', 'form', $api);
       assertRequiredProperty('field', 'api', 'input', $input);
       assertRequiredProperty('field', 'api', 'meta', $meta);
 
@@ -202,6 +205,8 @@ const createField = (
       $subscription = options.subscription.get(target);
       $validate = options.validate.get(target);
       $validateFields = options.validateFields.get(target);
+
+      assertRequiredProperty('field', 'option', 'name', $name);
     },
     kind,
   };

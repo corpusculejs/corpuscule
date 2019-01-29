@@ -12,10 +12,10 @@ const createOptionDecorator = (
   const {descriptor, initializer, key, kind, placement} = propertyDescriptor;
   const {get, set, value} = descriptor;
 
-  assertKind('formOption', 'properties, methods or full accessors', kind, {
+  assertKind('option', 'fields, methods or full accessors', kind, {
     correct: kind === 'field' || (kind === 'method' && (value || (get && set))),
   });
-  assertPlacement('formOption', 'own or prototype', placement, {
+  assertPlacement('option', 'own or prototype', placement, {
     correct: placement === 'own' || placement === 'prototype',
   });
 
@@ -23,7 +23,7 @@ const createOptionDecorator = (
 
   if (name === 'compareInitialValues') {
     return {
-      ...descriptor,
+      ...propertyDescriptor,
       extras: [
         $.hook({
           start() {
@@ -109,11 +109,10 @@ const createOptionDecorator = (
       name === 'initialValues'
         ? function(initialValues) {
             if (
-              !(getValue(this, $compareInitialValues) || shallowEqual).call(
-                this,
-                getValue(this, key),
-                initialValues,
-              )
+              !(
+                ($compareInitialValues && getValue(this, $compareInitialValues)) ||
+                shallowEqual
+              ).call(this, getValue(this, key), initialValues)
             ) {
               getValue(this, $api).initialize(initialValues);
             }
