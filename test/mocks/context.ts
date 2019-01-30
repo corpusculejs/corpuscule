@@ -1,17 +1,24 @@
 // tslint:disable:no-invalid-this
 import {ExtendedPropertyDescriptor} from '../../packages/typings/src';
+import {accessor} from '../../packages/utils/src/descriptors';
 import {Constructor, CustomElement, genName} from '../utils';
 
 export const context = jasmine.createSpyObj('context', ['consumer', 'provider', 'value']);
 
 const values: WeakMap<object, string> = new WeakMap();
 
-context.value.and.callFake((descriptor: ExtendedPropertyDescriptor) => ({
-  ...descriptor,
-  finisher(target: object): void {
-    values.set(target, descriptor.key as string);
-  },
-}));
+context.value.and.callFake(
+  ({descriptor: {get, set}, initializer, key}: ExtendedPropertyDescriptor) =>
+    accessor({
+      finisher(target: object): void {
+        values.set(target, key as string);
+      },
+      get,
+      initializer,
+      key,
+      set,
+    }),
+);
 
 const identity = <T>(descriptor: T) => descriptor;
 
