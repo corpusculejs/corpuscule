@@ -2,7 +2,7 @@
 import {AnyAction, Store} from 'redux';
 import {createMockedContextElements} from '../../../test/mocks/context';
 import {CustomElement} from '../../../test/utils';
-import {connect, connected, dispatcher, provider, store} from '../src';
+import {api, dispatcher, provider, redux, unit} from '../src';
 
 describe('@corpuscule/redux', () => {
   let reduxState: {test: number};
@@ -17,14 +17,14 @@ describe('@corpuscule/redux', () => {
     reduxStore.getState.and.callFake(() => reduxState);
   });
 
-  describe('@connect', () => {
+  describe('@redux', () => {
     it('subscribes to store', () => {
       @provider
       class Provider extends CustomElement {
-        public [store]: Store = reduxStore;
+        @api public store: Store = reduxStore;
       }
 
-      @connect
+      @redux
       class Connected extends CustomElement {}
 
       createMockedContextElements(Provider, Connected);
@@ -35,19 +35,19 @@ describe('@corpuscule/redux', () => {
     it('unsubscribes from store before subscribing to a new one', () => {
       @provider
       class Provider extends CustomElement {
-        public [store]: Store = reduxStore;
+        @api public store: Store = reduxStore;
       }
 
-      @connect
+      @redux
       class Connected extends CustomElement {}
 
-      const nextStore = jasmine.createSpyObj('nextStore', ['subscribe']);
+      const nextStore = jasmine.createSpyObj('nextStore', ['getState', 'subscribe']);
 
       const [providerElement] = createMockedContextElements(Provider, Connected);
 
       expect(unsubscribe).not.toHaveBeenCalled();
 
-      providerElement[store] = nextStore;
+      providerElement.store = nextStore;
 
       expect(unsubscribe).toHaveBeenCalled();
       expect(nextStore.subscribe).toHaveBeenCalled();
@@ -56,10 +56,10 @@ describe('@corpuscule/redux', () => {
     it('unsubscribes on disconnect', () => {
       @provider
       class Provider extends CustomElement {
-        public [store]: Store = reduxStore;
+        @api public store: Store = reduxStore;
       }
 
-      @connect
+      @redux
       class Connected extends CustomElement {}
 
       const [, connectedElement] = createMockedContextElements(Provider, Connected);
@@ -69,16 +69,16 @@ describe('@corpuscule/redux', () => {
       expect(unsubscribe).toHaveBeenCalled();
     });
 
-    describe('@connected', () => {
+    describe('@unit', () => {
       it('allows to declare properties connected with store', () => {
         @provider
         class Provider extends CustomElement {
-          public [store]: Store = reduxStore;
+          @api public store: Store = reduxStore;
         }
 
-        @connect
+        @redux
         class Connected extends CustomElement {
-          @connected((state: typeof reduxState) => state.test)
+          @unit((state: typeof reduxState) => state.test)
           public test?: number;
         }
 
@@ -91,12 +91,12 @@ describe('@corpuscule/redux', () => {
       it('updates properties when store is updated', () => {
         @provider
         class Provider extends CustomElement {
-          public [store]: Store = reduxStore;
+          @api public store: Store = reduxStore;
         }
 
-        @connect
+        @redux
         class Connected extends CustomElement {
-          @connected((state: typeof reduxState) => state.test)
+          @unit((state: typeof reduxState) => state.test)
           public test?: number;
         }
 
@@ -114,14 +114,14 @@ describe('@corpuscule/redux', () => {
 
         @provider
         class Provider extends CustomElement {
-          public [store]: Store = reduxStore;
+          @api public store: Store = reduxStore;
         }
 
-        @connect
+        @redux
         class Connected extends CustomElement {
           public testValue: number = 10;
 
-          @connected((state: typeof reduxState) => state.test)
+          @unit((state: typeof reduxState) => state.test)
           public get test(): number {
             return this.testValue;
           }
@@ -140,6 +140,23 @@ describe('@corpuscule/redux', () => {
 
         expect(setterSpy).not.toHaveBeenCalled();
       });
+
+      it('disallows assigning to @unit properties', () => {
+        @redux
+        class Connected extends CustomElement {
+          @unit((state: typeof reduxState) => state.test)
+          public test?: number;
+        }
+
+        const descriptor = Object.getOwnPropertyDescriptor(Connected.prototype, 'test');
+
+        expect(descriptor).toEqual({
+          configurable: true,
+          enumerable: true,
+          get: jasmine.any(Function),
+          set: undefined,
+        });
+      });
     });
   });
 
@@ -152,10 +169,10 @@ describe('@corpuscule/redux', () => {
 
       @provider
       class Provider extends CustomElement {
-        public [store]: Store = reduxStore;
+        @api public store: Store = reduxStore;
       }
 
-      @connect
+      @redux
       class Connected extends CustomElement {
         @dispatcher
         public external: typeof externalActionCreator = externalActionCreator;
@@ -196,7 +213,7 @@ describe('@corpuscule/redux', () => {
           @dispatcher
           public external: number = 1;
         }
-      }).toThrow(new TypeError('@dispatcher: "external" should be initialized with a function'));
+      }).toThrow(new TypeError('@dispatcher "external" should be initialized with a function'));
 
       expect(() => {
         // @ts-ignore
@@ -204,7 +221,7 @@ describe('@corpuscule/redux', () => {
           @dispatcher
           public nothing?: unknown;
         }
-      }).toThrow(new TypeError('@dispatcher: "nothing" should be initialized with a function'));
+      }).toThrow(new TypeError('@dispatcher "nothing" should be initialized with a function'));
     });
   });
 });
