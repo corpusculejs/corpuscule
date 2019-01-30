@@ -205,6 +205,9 @@ Function can receive `FormContextOptions` object which contains:
 field element. Specifying scheduler is not required, [`@corpuscule/utils` scheduler](../utils/README.md#scheduler)
 is used by default.
 
+#### `isForm(target: unknown): boolean`
+[See the @corpuscule/context docs on `isProvider`](../context/README.md#isprovider-target-unknown--boolean).
+
 #### Example
 ```html
 <script type="module">
