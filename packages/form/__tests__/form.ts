@@ -359,6 +359,37 @@ const testForm = () => {
       test.disconnectedCallback();
       expect(removeEventListener).toHaveBeenCalledWith('submit', fn);
     });
+
+    describe('@api', () => {
+      it('requires form and state fields defined', () => {
+        expect(() => {
+          @form()
+          // @ts-ignore
+          class FormField extends CustomElement {}
+        }).toThrowError('@form requires form property marked with @api');
+
+        expect(() => {
+          @form()
+          // @ts-ignore
+          class FormField extends CustomElement {
+            @api public readonly form!: FormApi;
+          }
+        }).toThrowError('@form requires state property marked with @api');
+      });
+    });
+
+    describe('@option', () => {
+      it('requires onSubmit method defined', () => {
+        expect(() => {
+          @form()
+          // @ts-ignore
+          class FormField extends CustomElement {
+            @api public readonly form!: FormApi;
+            @api public readonly state!: FormState;
+          }
+        }).toThrowError('@form requires onSubmit property marked with @option');
+      });
+    });
   });
 };
 
