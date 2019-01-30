@@ -41,8 +41,9 @@ export const createFormContext = ({scheduler = defaultScheduler} = {}) => {
     api,
     field,
     form,
+    isForm: context.isProvider,
     option,
   };
 };
 
-export const {api, field, form, option} = createFormContext();
+export const {api, field, form, isForm, option} = createFormContext();
