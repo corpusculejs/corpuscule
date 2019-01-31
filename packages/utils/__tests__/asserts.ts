@@ -1,77 +1,67 @@
-import {assertKind, assertPlacement, assertRequiredProperty} from '../src/asserts';
+// tslint:disable:no-bitwise
+import {
+  assertKind,
+  assertPlacement,
+  assertRequiredProperty,
+  Kinds,
+  Placements,
+} from '../src/asserts';
 
 const testAsserts = () => {
   describe('asserts', () => {
     describe('assertKind', () => {
-      it('throws an error when expected and received kinds are different', () => {
-        expect(() => {
-          assertKind('foo', 'field', 'class');
-        }).toThrow(new TypeError('@foo can be applied only to field, not to class'));
+      it('throws an error if descriptor kind is not specified in allowed', () => {
+        expect(() =>
+          assertKind('foo', Kinds.Field | Kinds.Accessor, {
+            descriptor: {
+              value(): null {
+                return null;
+              },
+            },
+            key: 'test',
+            kind: 'method',
+            placement: 'prototype',
+          }),
+        ).toThrow(new TypeError('@foo cannot be applied to test: it is not accessor or field'));
       });
 
-      it('throws an error when "correct" is specified and false', () => {
-        expect(() => {
-          // E.g. descriptor.get is undefined
-          assertKind('foo', 'getter', 'method', {correct: false});
-        }).toThrow(new TypeError('@foo can be applied only to getter, not to method'));
-      });
-
-      it("doesn't throw an error when expected and received kinds are equal", () => {
-        expect(() => {
-          assertKind('foo', 'field', 'field');
-        }).not.toThrow();
-      });
-
-      it('doesn\'t throw an error when "correct" is specified and true', () => {
-        expect(() => {
-          // E.g. descriptor.get exists
-          assertKind('foo', 'getter', 'method', {correct: true});
-        }).not.toThrow();
-      });
-
-      it('allows to set custom message for error', () => {
-        expect(() => {
-          assertKind('foo', 'field', 'method', {customMessage: 'test'});
-        }).toThrow(new TypeError('test'));
+      it('does not throw an error if descriptor kind is specified in allowed', () => {
+        expect(() =>
+          assertKind('foo', Kinds.Field | Kinds.Method, {
+            descriptor: {
+              value(): null {
+                return null;
+              },
+            },
+            key: 'test',
+            kind: 'method',
+            placement: 'prototype',
+          }),
+        ).not.toThrow();
       });
     });
 
     describe('assertPlacement', () => {
-      it('throws an error when expected and received placements are different', () => {
-        expect(() => {
-          assertPlacement('foo', 'own', 'static');
-        }).toThrow(new TypeError('@foo can be applied only to own class element, not to static'));
+      it('throws an error if descriptor placement is not specified in allowed', () => {
+        expect(() =>
+          assertPlacement('foo', Placements.Own, {
+            descriptor: {},
+            key: 'test',
+            kind: 'method',
+            placement: 'prototype',
+          }),
+        ).toThrow(new TypeError('@foo cannot be applied to test: it is not own class element'));
       });
 
-      it('throws an error when "correct" is specified and false', () => {
-        expect(() => {
-          // E.g. placement can be own and static but received placement is prototype
-          assertPlacement('foo', 'own or static', 'prototype', {
-            correct: false,
-          });
-        }).toThrow(
-          new TypeError(
-            '@foo can be applied only to own or static class element, not to prototype',
-          ),
-        );
-      });
-
-      it("doesn't throw an error when expected and received kinds are equal", () => {
-        expect(() => {
-          assertPlacement('foo', 'own', 'own');
-        }).not.toThrow();
-      });
-
-      it('doesn\'t throw an error when "correct" is specified and true', () => {
-        expect(() => {
-          assertPlacement('foo', 'own or static', 'static', {correct: true});
-        }).not.toThrow();
-      });
-
-      it('allows to set custom message for error', () => {
-        expect(() => {
-          assertPlacement('foo', 'own', 'static', {customMessage: 'test'});
-        }).toThrow(new TypeError('test'));
+      it('does not throw an error if descriptor placement is specified in allowed', () => {
+        expect(() =>
+          assertPlacement('foo', Placements.Own | Placements.Prototype, {
+            descriptor: {},
+            key: 'test',
+            kind: 'method',
+            placement: 'prototype',
+          }),
+        ).not.toThrow();
       });
     });
 
