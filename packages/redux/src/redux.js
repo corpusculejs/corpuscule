@@ -10,7 +10,7 @@ export const createReduxDecorator = ({consumer, value}, {units}, {store}) => cla
 
   const {elements, kind} = consumer(classDescriptor);
 
-  let unitList;
+  let unitMap;
 
   const $$api = Symbol();
   const $$subscribe = Symbol();
@@ -73,14 +73,18 @@ export const createReduxDecorator = ({consumer, value}, {units}, {store}) => cla
       method({
         key: $$update,
         method({getState}) {
-          if (!unitList) {
+          if (!unitMap) {
             return;
           }
 
           const state = getState();
 
-          for (const key of unitList) {
-            setValue(this, key, state);
+          for (const [key, getter] of unitMap) {
+            const v = getter(state);
+
+            if (v !== getValue(this, key)) {
+              setValue(this, key, v);
+            }
           }
         },
       }),
@@ -89,12 +93,12 @@ export const createReduxDecorator = ({consumer, value}, {units}, {store}) => cla
       hook({
         start() {
           store.set(this, $$api);
-          units.set(this, []);
+          units.set(this, new Map());
         },
       }),
     ],
     finisher(target) {
-      unitList = units.get(target);
+      unitMap = units.get(target);
       finish(target);
       finishContext(target);
     },
