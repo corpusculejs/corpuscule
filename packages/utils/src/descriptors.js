@@ -3,38 +3,48 @@ export const lifecycleKeys = ['connectedCallback', 'disconnectedCallback'];
 export const field = ({
   configurable = true,
   enumerable = true,
-  kind: _,
+  extras,
+  finisher,
+  initializer,
+  key,
+  placement = 'own',
   writable = true,
-  ...other
 }) => ({
   descriptor: {
     configurable,
     enumerable,
     writable,
   },
+  extras,
+  finisher,
+  initializer,
+  key,
   kind: 'field',
-  placement: 'own',
-  ...other,
+  placement,
 });
 
 export const method = ({
   configurable = true,
   bound = false,
   enumerable = true,
-  kind: _,
+  extras,
+  finisher,
+  key,
   method: value,
   writable = true,
-  ...other
+  placement = 'prototype',
 }) =>
   bound
     ? field({
         configurable,
         enumerable,
+        extras,
+        finisher,
         initializer() {
           return value.bind(this);
         },
+        key,
         writable,
-        ...other,
       })
     : {
         descriptor: {
@@ -43,21 +53,24 @@ export const method = ({
           value,
           writable,
         },
+        extras,
+        finisher,
+        key,
         kind: 'method',
-        placement: 'prototype',
-        ...other,
+        placement,
       };
 
 export const accessor = ({
   adjust = methods => methods,
   configurable = true,
-  get,
   enumerable = true,
   extras,
+  finisher,
+  get,
   initializer,
-  kind: _,
+  key,
+  placement = 'prototype',
   set,
-  ...other
 }) => {
   let accessorMethods;
   let accessorField;
@@ -90,9 +103,10 @@ export const accessor = ({
       ...accessorMethods,
     },
     extras: accessorField ? [...(extras || []), accessorField] : extras,
+    finisher,
+    key,
     kind: 'method',
-    placement: 'prototype',
-    ...other,
+    placement,
   };
 };
 
