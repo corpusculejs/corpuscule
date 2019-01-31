@@ -140,23 +140,6 @@ describe('@corpuscule/redux', () => {
 
         expect(setterSpy).not.toHaveBeenCalled();
       });
-
-      it('disallows assigning to @unit properties', () => {
-        @redux
-        class Connected extends CustomElement {
-          @unit((state: typeof reduxState) => state.test)
-          public test?: number;
-        }
-
-        const descriptor = Object.getOwnPropertyDescriptor(Connected.prototype, 'test');
-
-        expect(descriptor).toEqual({
-          configurable: true,
-          enumerable: true,
-          get: jasmine.any(Function),
-          set: undefined,
-        });
-      });
     });
   });
 

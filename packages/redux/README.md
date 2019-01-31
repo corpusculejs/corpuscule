@@ -40,9 +40,6 @@ property if property value and store value are not equal.
 
 You can mark any type of property: string, symbolic or private.
 
-**Note**: `@unit` decorator should be the last executing one (execution performs from the bottom to
-top). It is necessary because it converts property to a getter to forbid manual assigning.
-
 #### `@dispatcher: PropertyDecorator`
 This decorator makes class element a redux dispatcher. It works for both own and prototype
 fields, so it is possible to bind bare action creators as well as class methods.
