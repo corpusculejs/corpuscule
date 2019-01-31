@@ -70,6 +70,7 @@ export const accessor = ({
   initializer,
   key,
   placement = 'prototype',
+  readonly = false,
   set,
 }) => {
   let accessorMethods;
@@ -96,18 +97,45 @@ export const accessor = ({
     accessorMethods = adjust({get, set});
   }
 
-  return {
-    descriptor: {
-      configurable,
-      enumerable,
-      ...accessorMethods,
-    },
-    extras: accessorField ? [...(extras || []), accessorField] : extras,
-    finisher,
-    key,
+  const finalExtras = accessorField ? [...(extras || []), accessorField] : extras;
+
+  const worker = {
+    descriptor: accessorMethods,
     kind: 'method',
     placement,
   };
+
+  if (!readonly) {
+    return {
+      ...worker,
+      descriptor: {
+        ...worker.descriptor,
+        configurable,
+        enumerable,
+      },
+      extras: finalExtras,
+      finisher,
+      key,
+    };
+  }
+
+  const storage = Symbol();
+
+  return accessor({
+    extras: [
+      ...(extras || []),
+      {
+        ...worker,
+        key: storage,
+      },
+    ],
+    finisher,
+    get() {
+      return this[storage];
+    },
+    key,
+    placement,
+  });
 };
 
 export const hook = ({extras, placement = 'static', start}) => ({
