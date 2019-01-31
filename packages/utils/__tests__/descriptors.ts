@@ -3,13 +3,7 @@ import * as $ from '../src/descriptors';
 
 const testDescriptors = () => {
   describe('descriptors', () => {
-    const extraProp: ExtendedPropertyDescriptor = {
-      descriptor: {},
-      key: 'extra',
-      kind: 'field',
-      placement: 'own',
-    };
-    const extras: ExtendedPropertyDescriptor[] = [extraProp];
+    const extras: ExtendedPropertyDescriptor[] = [];
     const finisher = () => {}; // tslint:disable-line:no-empty
 
     describe('field', () => {
@@ -201,7 +195,6 @@ const testDescriptors = () => {
             set: jasmine.any(Function),
           },
           extras: [
-            extraProp,
             {
               descriptor: {
                 configurable: true,
@@ -222,7 +215,7 @@ const testDescriptors = () => {
           placement: 'prototype',
         });
 
-        const [, {key}] = result.extras!;
+        const [{key}] = result.extras!;
 
         const testObj = {
           [key]: 20,
@@ -248,7 +241,6 @@ const testDescriptors = () => {
             set: jasmine.any(Function),
           },
           extras: [
-            extraProp,
             {
               descriptor: {
                 configurable: true,
@@ -269,7 +261,7 @@ const testDescriptors = () => {
           placement: 'prototype',
         });
 
-        const [, {key}] = result.extras!;
+        const [{key}] = result.extras!;
 
         const testObj = {
           [key]: 20,
@@ -311,54 +303,6 @@ const testDescriptors = () => {
 
         expect(set).toHaveBeenCalledWith(100);
         expect(adjustedSetSpy).toHaveBeenCalledWith(100);
-      });
-
-      it('creates working accessor that is readonly for user', () => {
-        const result = $.accessor({
-          extras,
-          finisher,
-          get,
-          key: 'test',
-          readonly: true,
-          set,
-        });
-
-        expect(result).toEqual({
-          descriptor: {
-            configurable: true,
-            enumerable: true,
-            get: jasmine.any(Function),
-            set: undefined,
-          },
-          extras: [
-            extraProp,
-            {
-              descriptor: {
-                get: jasmine.any(Function),
-                set: jasmine.any(Function),
-              },
-              key: jasmine.any(Symbol) as any,
-              kind: 'method',
-              placement: 'prototype',
-            },
-          ],
-          finisher,
-          key: 'test',
-          kind: 'method',
-          placement: 'prototype',
-        });
-
-        const [, hiddenProp] = result.extras!;
-
-        const test = {};
-        Object.defineProperty(test, hiddenProp.key, hiddenProp.descriptor);
-
-        result.descriptor.get!.call(test);
-
-        expect(get).toHaveBeenCalled();
-        hiddenProp.descriptor.set!(10);
-
-        expect(set).toHaveBeenCalledWith(10);
       });
     });
 
