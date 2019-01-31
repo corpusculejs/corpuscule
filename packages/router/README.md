@@ -44,7 +44,7 @@ export const router = createRouter(routes);
 
 ### Provide it down the DOM tree
 Router uses [`@corpuscule/context`](../context) under the hood, so to work it requires provider
-component that will sent it to nested components. Use `@provider` and `@value` decorators to
+component that will sent it to nested components. Use `@provider` and `@api` decorators to
 accomplish it.
 ```javascript
 import {provider, value} from '@corpuscule/router';
@@ -52,7 +52,7 @@ import {router} from './router';
 
 @provider
 class Provider extends HTMLElement {
-  @value router = router;
+  @api router = router;
 }
 ```
 
@@ -63,10 +63,10 @@ decorator accepts list of routes (whatever nesting they have) and on route chang
 single route that is equal with the route chosen for current path by Universal Router. If matching
 route is found, update for this outlet is performed, otherwise nothing happens.
 
-Result of route's `action` is written to the property marked with `@value` decorator.
+Result of route's `action` is written to the property marked with `@api` decorator.
 
 To get more control over the path selection you can override `[resolve]` function that is able to
-adjust both original path and returned component before it comes to the class `@value` property.
+adjust both original path and returned component before it comes to the class `@api` property.
 
 ```javascript
 import {outlet, resolve, value} from '@corpuscule/router';
@@ -75,7 +75,7 @@ import {routes} from './router';
 
 @outlet(routes)
 class Outlet extends HTMLElement {
-  @value layout;
+  @api layout;
   
   *[resolve](path) {
     const result = yield path;
@@ -107,11 +107,23 @@ work in `@corpuscule/router` system.
 [See the `@corpuscule/context` docs on `@provider` decorator](../context/README.md#provider-classdecorator).
 `UniversalRouter` instance should be sent.
 
-#### `@value: PropertyDecorator`
+#### `@api: PropertyDecorator`
 [See the `@corpuscule/context` docs on `@value` decorator](../context/README.md#value-propertydecorator).
 
-Also, used for `@outlet` class, defines property where result of route's `action` method will be
-written. After it, you can use this property wherever it is necessary to display routing outcome.
+##### Inside `@outlet` class
+For `@outlet` class it defines property where result of route's `action` method will be written.
+After it, you can use this property wherever it is necessary to display routing outcome.
+
+It works with following rules:
+* Any kind of property can be marked with `@api` decorator: string, symbolic or private. 
+* Property should have the same name as the API element it implements.
+  * String property should just have the API element name, e.g. `form`.
+  * Symbolic property should have description identical to the API element name, e.g. `const form =
+  Symbol('form')`.
+  * Private property should have description identical to the API element name, e.g. `#form` or
+  `new PrivateName('form')`.
+* Only one property is allowed for each API element.
+
 ```javascript
 import {outlet, value} from '@corpuscule/router';
 import {routes} from './router';
@@ -120,7 +132,7 @@ import {routes} from './router';
 class Outlet extends HTMLElement {
   #layout;
   
-  @value 
+  @api 
   get layout() {
     return this.#layout;
   };
