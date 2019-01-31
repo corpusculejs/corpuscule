@@ -2,7 +2,7 @@
 import UniversalRouter from 'universal-router';
 import {createMockedContextElements} from '../../../test/mocks/context';
 import {CustomElement} from '../../../test/utils';
-import {layout, outlet, provider, router, RouterOutlet} from '../src';
+import {api, outlet, provider} from '../src';
 
 const outletTest = () => {
   describe('outlet', () => {
@@ -60,19 +60,20 @@ const outletTest = () => {
     it('creates router outlet that fills layout on popstate event', async () => {
       @provider
       class Provider extends CustomElement {
-        public readonly [router]: UniversalRouter = appRouter;
+        @api public readonly router: UniversalRouter = appRouter;
       }
 
       @outlet(routes)
-      class Outlet extends CustomElement implements RouterOutlet<string> {
+      class Outlet extends CustomElement {
         public initial: boolean = true;
         public storage: string = '';
 
-        public get [layout](): string {
+        @api
+        public get layout(): string {
           return this.storage;
         }
 
-        public set [layout](value: string) {
+        public set layout(value: string) {
           this.storage = value;
 
           if (this.initial) {
@@ -88,7 +89,7 @@ const outletTest = () => {
 
       await initialPromise;
 
-      expect(outletElement[layout]).toBe('Test');
+      expect(outletElement.layout).toBe('Test');
 
       window.dispatchEvent(
         new PopStateEvent('popstate', {
@@ -98,7 +99,7 @@ const outletTest = () => {
 
       await finalPromise;
 
-      expect(outletElement[layout]).toBe('Test2');
+      expect(outletElement.layout).toBe('Test2');
     });
 
     it("ignores path that wasn't in the routes", async () => {
@@ -110,19 +111,20 @@ const outletTest = () => {
 
       @provider
       class Provider extends CustomElement {
-        public readonly [router]: UniversalRouter = appRouter;
+        @api public readonly router: UniversalRouter = appRouter;
       }
 
       @outlet(routes)
-      class Outlet extends CustomElement implements RouterOutlet<string> {
+      class Outlet extends CustomElement {
         public initial: boolean = true;
         public storage: string = '';
 
-        public get [layout](): string {
+        @api
+        public get layout(): string {
           return this.storage;
         }
 
-        public set [layout](value: string) {
+        public set layout(value: string) {
           this.storage = value;
 
           if (this.initial) {
@@ -136,7 +138,7 @@ const outletTest = () => {
 
       await initialPromise;
 
-      expect(outletElement[layout]).toBe('Test');
+      expect(outletElement.layout).toBe('Test');
 
       window.dispatchEvent(
         new PopStateEvent('popstate', {
@@ -146,7 +148,7 @@ const outletTest = () => {
 
       await finalPromise;
 
-      expect(outletElement[layout]).toBe('Test');
+      expect(outletElement.layout).toBe('Test');
     });
 
     it('ignores routes that are not in current component route list', async () => {
@@ -158,19 +160,20 @@ const outletTest = () => {
 
       @provider
       class Provider extends CustomElement {
-        public readonly [router]: UniversalRouter = appRouter;
+        @api public readonly router: UniversalRouter = appRouter;
       }
 
       @outlet(routes)
-      class Outlet extends CustomElement implements RouterOutlet<string> {
+      class Outlet extends CustomElement {
         public initial: boolean = true;
         public storage: string = '';
 
-        public get [layout](): string {
+        @api
+        public get layout(): string {
           return this.storage;
         }
 
-        public set [layout](value: string) {
+        public set layout(value: string) {
           this.storage = value;
 
           if (this.initial) {
@@ -184,7 +187,7 @@ const outletTest = () => {
 
       await initialPromise;
 
-      expect(outletElement[layout]).toBe('Test');
+      expect(outletElement.layout).toBe('Test');
 
       window.dispatchEvent(
         new PopStateEvent('popstate', {
@@ -194,7 +197,7 @@ const outletTest = () => {
 
       await finalPromise;
 
-      expect(outletElement[layout]).toBe('Test');
+      expect(outletElement.layout).toBe('Test');
     });
 
     it("calls user's connectedCallback and disconnectedCallback methods", () => {
@@ -203,11 +206,13 @@ const outletTest = () => {
 
       @provider
       class Provider extends CustomElement {
-        public readonly [router]: UniversalRouter = appRouter;
+        @api public readonly router: UniversalRouter = appRouter;
       }
 
       @outlet(routes)
       class Outlet extends CustomElement {
+        @api public readonly layout?: string;
+
         public connectedCallback(): void {
           connectedSpy();
         }

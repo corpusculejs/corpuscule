@@ -20,12 +20,16 @@ export class Link extends HTMLAnchorElement implements CustomElement {
 
 export const push: (path: string, title?: string) => void;
 
-export const provider: ReturnType<typeof createContext>['provider'];
-export const router: unique symbol;
+export type OutletDecorator = (routes: ReadonlyArray<Route>) => ClassDecorator;
 
-export interface RouterOutlet<T> {
-  readonly [layout]: T;
-  [resolve]?(path: string): IterableIterator<any>;
+export const api: PropertyDecorator;
+export const outlet: OutletDecorator;
+export const provider: ClassDecorator;
+
+export interface RouterContext {
+  readonly api: PropertyDecorator;
+  readonly outlet: OutletDecorator;
+  readonly provider: ClassDecorator;
 }
 
-export const outlet: (routes: ReadonlyArray<Route>) => ClassDecorator;
+export const createRouterContext: () => RouterContext;
