@@ -14,7 +14,6 @@ export type AccessorParams = Omit<PropertyDescriptor, 'value'> &
   Pick<ExtendedPropertyDescriptor, 'key'> &
   Pick<Partial<ExtendedPropertyDescriptor>, 'initializer' | 'placement'> & {
     readonly adjust?: (methods: AccessorMethods) => AccessorMethods;
-    readonly readonly?: boolean;
   };
 
 export type FieldParams = Omit<PropertyDescriptor, 'get' | 'set'> &
