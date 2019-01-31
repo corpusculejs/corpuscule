@@ -8,10 +8,12 @@ const createValue = ({consumers, value, providers}, defaultValue) => ({
   kind,
   placement,
 }) => {
-  assertKind('formOption', 'properties, methods or full accessors', kind, {
+  assertKind('value', 'properties, methods or full accessors', kind, {
     correct: kind === 'field' || (kind === 'method' && (value || (get && set))),
   });
-  assertPlacement('formOption', 'own', placement);
+  assertPlacement('value', 'own or prototype', placement, {
+    correct: placement === 'own' || placement === 'prototype',
+  });
 
   let $$consumers;
   let isProvider;
