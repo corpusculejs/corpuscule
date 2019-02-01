@@ -12,7 +12,7 @@ const Own = 1;
 const Prototype = 2;
 const Static = 4;
 
-export const Kinds = {
+export const Kind = {
   Accessor,
   Class,
   Field,
@@ -21,7 +21,7 @@ export const Kinds = {
   Setter,
 };
 
-export const Placements = {
+export const Placement = {
   Own,
   Prototype,
   Static,
@@ -36,7 +36,9 @@ const stringifyAllowed = (mask, enumeration) => {
     return arr;
   }, []);
 
-  return result.length > 1 ? `${result.slice(0, -1).join(',')} or ${result.slice(-1)}` : result[0];
+  return result.length > 1
+    ? `${result.slice(0, -1).join(',')} or ${result[result.length - 1]}`
+    : result[0];
 };
 
 // eslint-disable-next-line complexity
@@ -58,7 +60,7 @@ export const assertKind = (
     throw new TypeError(
       `@${decoratorName} cannot be applied to ${
         kind === 'class' ? 'class' : getName(key)
-      }: it is not ${stringifyAllowed(allowed, Kinds)}`,
+      }: it is not ${stringifyAllowed(allowed, Kind)}`,
     );
   }
 };
@@ -74,7 +76,7 @@ export const assertPlacement = (decoratorName, allowed, {key, placement}) => {
     throw new TypeError(
       `@${decoratorName} cannot be applied to ${getName(key)}: it is not ${stringifyAllowed(
         allowed,
-        Placements,
+        Placement,
       )} class element`,
     );
   }
