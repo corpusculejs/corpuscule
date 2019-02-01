@@ -56,7 +56,7 @@ export const createReduxDecorator = ({consumer, value}, {units}, {store}) => des
         ...contextDescriptor,
         ...contextValue,
       }),
-      ...(extras || []),
+      ...extras,
 
       // Private
       method({
@@ -73,7 +73,7 @@ export const createReduxDecorator = ({consumer, value}, {units}, {store}) => des
       method({
         key: $$update,
         method({getState}) {
-          if (!unitMap) {
+          if (unitMap.size === 0) {
             return;
           }
 

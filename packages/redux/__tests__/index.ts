@@ -141,6 +141,20 @@ describe('@corpuscule/redux', () => {
         expect(setterSpy).not.toHaveBeenCalled();
       });
     });
+
+    it('does nothing during update if no @unit is defined', () => {
+      @provider
+      class Provider extends CustomElement {
+        @api public store: Store = reduxStore;
+      }
+
+      @redux
+      class Connected extends CustomElement {}
+
+      createMockedContextElements(Provider, Connected);
+
+      expect(reduxStore.getState).not.toHaveBeenCalled();
+    });
   });
 
   describe('@dispatcher', () => {
