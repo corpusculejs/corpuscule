@@ -21,7 +21,6 @@
     "@corpuscule/utils": "^0.6.0"
   },
   "peerDependencies": {
-    "@types/universal-router": "^6.0.0",
-    "universal-router": "^6.0.0"
+    "universal-router": "^8.0.0"
   }
 }
