@@ -5,14 +5,14 @@ export interface AssertOptions {
   readonly customMessage?: string;
 }
 
-export enum Kinds {
+export enum Kind {
   Accessor,
   Class,
   Field,
   Method,
 }
 
-export enum Placements {
+export enum Placement {
   Own,
   Prototype,
   Static,

@@ -1,18 +1,12 @@
 // tslint:disable:no-bitwise
-import {
-  assertKind,
-  assertPlacement,
-  assertRequiredProperty,
-  Kinds,
-  Placements,
-} from '../src/asserts';
+import {assertKind, assertPlacement, assertRequiredProperty, Kind, Placement} from '../src/asserts';
 
 const testAsserts = () => {
   describe('asserts', () => {
     describe('assertKind', () => {
       it('throws an error if descriptor kind is not specified in allowed', () => {
         expect(() =>
-          assertKind('foo', Kinds.Field | Kinds.Accessor, {
+          assertKind('foo', Kind.Field | Kind.Accessor, {
             descriptor: {
               value(): null {
                 return null;
@@ -27,7 +21,7 @@ const testAsserts = () => {
 
       it('does not throw an error if descriptor kind is specified in allowed', () => {
         expect(() =>
-          assertKind('foo', Kinds.Field | Kinds.Method, {
+          assertKind('foo', Kind.Field | Kind.Method, {
             descriptor: {
               value(): null {
                 return null;
@@ -44,7 +38,7 @@ const testAsserts = () => {
     describe('assertPlacement', () => {
       it('throws an error if descriptor placement is not specified in allowed', () => {
         expect(() =>
-          assertPlacement('foo', Placements.Own, {
+          assertPlacement('foo', Placement.Own, {
             descriptor: {},
             key: 'test',
             kind: 'method',
@@ -55,7 +49,7 @@ const testAsserts = () => {
 
       it('does not throw an error if descriptor placement is specified in allowed', () => {
         expect(() =>
-          assertPlacement('foo', Placements.Own | Placements.Prototype, {
+          assertPlacement('foo', Placement.Own | Placement.Prototype, {
             descriptor: {},
             key: 'test',
             kind: 'method',
