@@ -584,6 +584,30 @@ const testField = () => {
         expect(fieldElement.storage).toBe(formSpyObject);
       });
 
+      it('allows only specific names for property api', () => {
+        expect(() => {
+          @form()
+          // @ts-ignore
+          class Form extends CustomElement {
+            @api public readonly notForm!: FormApi;
+
+            @option
+            public onSubmit(): void {}
+          }
+        }).toThrow(new TypeError('Property name notForm is not allowed'));
+
+        expect(() => {
+          @field
+          // @ts-ignore
+          class Field extends CustomElement {
+            @api public readonly notInput!: FieldInputProps<object>;
+
+            @option
+            public onSubmit(): void {}
+          }
+        }).toThrow(new TypeError('Property name notInput is not allowed'));
+      });
+
       describe('input', () => {
         it('calls blur() method of field state if input.onBlur() is called', () => {
           @form()
