@@ -3,6 +3,8 @@
 using it in production. API is not ready yet and can receive large changes.
 
 # @corpuscule/router
+[![Latest Stable Version](https://img.shields.io/npm/v/@corpuscule/router.svg)](https://www.npmjs.com/package/@corpuscule/router)
+
 Lightweight set of decorators and components for providing routing for web components. Built on top
 of [Universal Router](https://github.com/kriasoft/universal-router).
 

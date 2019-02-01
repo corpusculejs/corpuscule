@@ -3,6 +3,8 @@
 using it in production. API is not ready yet and can receive large changes.
 
 # @corpuscule/lit-html-renderer
+[![Latest Stable Version](https://img.shields.io/npm/v/@corpuscule/lit-html-renderer.svg)](https://www.npmjs.com/package/@corpuscule/lit-html-renderer)
+
 Renderer for [`@corpuscule/element`](../element) based on the [`lit-html`](https://lit-html.polymer-project.org/)
 library.
 

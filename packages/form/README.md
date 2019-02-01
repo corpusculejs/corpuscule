@@ -3,6 +3,8 @@
 using it in production. API is not ready yet and can receive large changes.
 
 # `@corpuscule/form`
+[![Latest Stable Version](https://img.shields.io/npm/v/@corpuscule/form.svg)](https://www.npmjs.com/package/@corpuscule/form)
+
 Lightweight set of decorators for providing solid form experience for web components. Works as a
 connector to [🏁 Final Form](https://github.com/final-form/final-form).
 

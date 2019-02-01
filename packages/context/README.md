@@ -3,6 +3,8 @@
 using it in production. API is not ready yet and can receive large changes.
 
 # `@corpuscule/context`
+[![Latest Stable Version](https://img.shields.io/npm/v/@corpuscule/context.svg)](https://www.npmjs.com/package/@corpuscule/context)
+
 Lightweight set of decorators for creating DOM-dependent context for web components.
 
 Context is an approach to share some data for all components in a some DOM tree branch. It creates

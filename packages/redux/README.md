@@ -3,6 +3,8 @@
 using it in production. API is not ready yet and can receive large changes.
 
 # @corpuscule/redux
+[![Latest Stable Version](https://img.shields.io/npm/v/@corpuscule/redux.svg)](https://www.npmjs.com/package/@corpuscule/redux)
+
 Lightweight set of decorators for providing [Redux](https://redux.js.org/) support for web
 components. 
 

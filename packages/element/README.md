@@ -3,6 +3,8 @@
 using it in production. API is not ready yet and can receive large changes.
 
 # `@corpuscule/element`
+[![Latest Stable Version](https://img.shields.io/npm/v/@corpuscule/element.svg)](https://www.npmjs.com/package/@corpuscule/element)
+
 Lightweight set of decorators for creating web components. It is a decorator-based analogue for
 Polymer's [LitElement](https://github.com/Polymer/lit-element) or a web components based view
 rendering library like React or Vue. 
