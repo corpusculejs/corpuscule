@@ -1,6 +1,6 @@
 {
   "name": "@corpuscule/typings",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Common types for Corpuscule",
   "types": "lib/index.d.ts",
   "author": "Vlad Rindevich <rindevich.vs@gmail.com> (https://github.com/Lodin)",
@@ -12,5 +12,8 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/corpusculejs/corpuscule.git"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
