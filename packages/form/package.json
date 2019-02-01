@@ -28,6 +28,6 @@
     "@corpuscule/utils": "^0.6.0"
   },
   "peerDependencies": {
-    "final-form": "^4.10.0"
+    "final-form": "^4.11.0"
   }
 }
