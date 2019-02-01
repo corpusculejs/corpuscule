@@ -1,19 +1,11 @@
-import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
+import {assertKind, assertPlacement, Kind, Placement} from '@corpuscule/utils/lib/asserts';
 import * as $ from '@corpuscule/utils/lib/descriptors';
 
-const createValue = ({consumers, value, providers}, defaultValue) => ({
-  descriptor: {get, set},
-  initializer,
-  key,
-  kind,
-  placement,
-}) => {
-  assertKind('value', 'properties, methods or full accessors', kind, {
-    correct: kind === 'field' || (kind === 'method' && (value || (get && set))),
-  });
-  assertPlacement('value', 'own or prototype', placement, {
-    correct: placement === 'own' || placement === 'prototype',
-  });
+const createValue = ({consumers, value, providers}, defaultValue) => descriptor => {
+  assertKind('value', Kind.Field | Kind.Method | Kind.Accessor, descriptor);
+  assertPlacement('value', Placement.Own | Placement.Prototype, descriptor);
+
+  const {initializer, key} = descriptor;
 
   let $$consumers;
   let isProvider;

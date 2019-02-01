@@ -1,14 +1,14 @@
-import {assertKind} from '@corpuscule/utils/lib/asserts';
+import {assertKind, Kind} from '@corpuscule/utils/lib/asserts';
 import getSupers from '@corpuscule/utils/lib/getSupers';
 import {accessor, field, hook, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
 import {getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
 
 const [, disconnectedCallbackKey] = lifecycleKeys;
 
-export const createReduxDecorator = ({consumer, value}, {units}, {store}) => classDescriptor => {
-  assertKind('connect', 'class', classDescriptor.kind);
+export const createReduxDecorator = ({consumer, value}, {units}, {store}) => descriptor => {
+  assertKind('connect', Kind.Class, descriptor);
 
-  const {elements, kind} = consumer(classDescriptor);
+  const {elements, kind} = consumer(descriptor);
 
   let unitMap;
 

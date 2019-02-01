@@ -2,14 +2,14 @@ import {accessor} from '@corpuscule/utils/lib/descriptors';
 import {propertyChangedCallback as $propertyChangedCallback} from '../tokens/lifecycle';
 import {assertElementProperty} from '../utils';
 
-const property = (guard = null) => ({
-  descriptor: {get, set},
-  initializer,
-  key,
-  kind,
-  placement,
-}) => {
-  assertElementProperty('property', get, set, kind, placement);
+const property = (guard = null) => descriptor => {
+  assertElementProperty('property', descriptor);
+
+  const {
+    descriptor: {get, set},
+    initializer,
+    key,
+  } = descriptor;
 
   return accessor({
     adjust: ({get: originalGet, set: originalSet}) => ({

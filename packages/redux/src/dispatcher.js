@@ -1,22 +1,17 @@
-import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
+import {assertKind, assertPlacement, Kind, Placement} from '@corpuscule/utils/lib/asserts';
 import {method} from '@corpuscule/utils/lib/descriptors';
 import {getValue} from '@corpuscule/utils/lib/propertyUtils';
 
-export const createDispatcherDecorator = ({store}) => propertyDescriptor => {
+export const createDispatcherDecorator = ({store}) => descriptor => {
+  assertKind('dispatcher', Kind.Field | Kind.Method, descriptor);
+  assertPlacement('dispatcher', Placement.Own | Placement.Prototype, descriptor);
+
   const {
     descriptor: {value},
     initializer,
     key,
     kind,
-    placement,
-  } = propertyDescriptor;
-
-  assertKind('dispatcher', 'field or method', kind, {
-    correct: kind === 'method' || kind === 'field',
-  });
-  assertPlacement('dispatcher', 'own or prototype', placement, {
-    correct: placement === 'own' || placement === 'prototype',
-  });
+  } = descriptor;
 
   let $store;
 
@@ -42,7 +37,7 @@ export const createDispatcherDecorator = ({store}) => propertyDescriptor => {
   }
 
   return {
-    ...propertyDescriptor,
+    ...descriptor,
     extras: [
       method({
         key,

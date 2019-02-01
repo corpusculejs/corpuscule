@@ -1,21 +1,12 @@
-import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
+import {assertKind, assertPlacement, Kind, Placement} from '@corpuscule/utils/lib/asserts';
 import {hook} from '@corpuscule/utils/lib/descriptors';
 import {getName} from '@corpuscule/utils/lib/propertyUtils';
 
 const createApiDecorator = ({value}, {api}) => descriptor => {
-  const {
-    descriptor: {get, set},
-    key,
-    kind,
-    placement,
-  } = descriptor;
+  assertKind('api', Kind.Field | Kind.Method | Kind.Accessor, descriptor);
+  assertPlacement('api', Placement.Own | Placement.Prototype, descriptor);
 
-  assertKind('api', 'properties, methods or full accessors', kind, {
-    correct: kind === 'field' || (kind === 'method' && (value || (get && set))),
-  });
-  assertPlacement('api', 'own or prototype', placement, {
-    correct: placement === 'own' || placement === 'prototype',
-  });
+  const {key} = descriptor;
 
   if (getName(key) === 'layout') {
     return {

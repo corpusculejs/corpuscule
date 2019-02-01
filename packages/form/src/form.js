@@ -1,4 +1,4 @@
-import {assertKind, assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
+import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/asserts';
 import * as $ from '@corpuscule/utils/lib/descriptors';
 import getSupers from '@corpuscule/utils/lib/getSupers';
 import {getName, getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
@@ -10,8 +10,8 @@ const [connectedCallbackKey, disconnectedCallbackKey] = $.lifecycleKeys;
 const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => ({
   decorators,
   subscription = all,
-} = {}) => classDescriptor => {
-  assertKind('form', 'class', classDescriptor.kind);
+} = {}) => descriptor => {
+  assertKind('form', Kind.Class, descriptor);
 
   let $api;
   let $state;
@@ -20,7 +20,7 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
   const $$submit = Symbol();
   const $$unsubscriptions = Symbol();
 
-  const {elements, kind} = provider(classDescriptor);
+  const {elements, kind} = provider(descriptor);
 
   const [supers, finish] = getSupers(elements, $.lifecycleKeys);
 

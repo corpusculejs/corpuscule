@@ -1,13 +1,18 @@
-import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
+import {assertKind, assertPlacement, Kind, Placement} from '@corpuscule/utils/lib/asserts';
 import {accessor, field} from '@corpuscule/utils/lib/descriptors';
 import {assertElementProperty} from '../utils';
 
 const createComputingPair = () => {
   const registry = new WeakMap();
 
-  const computer = ({descriptor: {get, set}, key, kind, placement}) => {
-    assertKind('computed', 'getter', kind, {correct: get && !set});
-    assertPlacement('computed', 'prototype', placement);
+  const computer = descriptor => {
+    assertKind('computer', Kind.Getter, descriptor);
+    assertPlacement('computer', Placement.Prototype, descriptor);
+
+    const {
+      descriptor: {get},
+      key,
+    } = descriptor;
 
     const storage = Symbol();
     const correct = Symbol();
@@ -41,8 +46,14 @@ const createComputingPair = () => {
     });
   };
 
-  const observer = ({descriptor: {get, set}, initializer, key, kind, placement}) => {
-    assertElementProperty('observer', get, set, kind, placement);
+  const observer = descriptor => {
+    assertElementProperty('observer', descriptor);
+
+    const {
+      descriptor: {get, set},
+      initializer,
+      key,
+    } = descriptor;
 
     return accessor({
       adjust({get: originalGet, set: originalSet}) {

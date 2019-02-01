@@ -1,4 +1,4 @@
-import {assertKind, assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
+import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/asserts';
 import * as $ from '@corpuscule/utils/lib/descriptors';
 import {getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
 import {all, getTargetValue, noop} from './utils';
@@ -10,8 +10,8 @@ const createField = (
   {consumer},
   {api},
   {input, meta, options, scheduler, subscribe, update},
-) => classDescriptor => {
-  assertKind('field', 'class', classDescriptor.kind);
+) => descriptor => {
+  assertKind('field', Kind.Class, descriptor);
 
   let $api;
   let $input;
@@ -36,7 +36,7 @@ const createField = (
   const $$update = Symbol();
   const $$updatingValid = Symbol();
 
-  const {elements, kind} = consumer(classDescriptor);
+  const {elements, kind} = consumer(descriptor);
   const [supers, finish] = getSupers(elements, $.lifecycleKeys);
 
   return {

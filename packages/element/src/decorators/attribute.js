@@ -1,14 +1,15 @@
 import {accessor} from '@corpuscule/utils/lib/descriptors';
-import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
+import {assertKind, assertPlacement, Kind, Placement} from '@corpuscule/utils/lib/asserts';
 
-const attribute = (name, guard) => ({key, kind, placement}) => {
-  assertKind('attribute', 'field', kind);
-  assertPlacement('attribute', 'own', placement);
+const attribute = (name, guard) => descriptor => {
+  assertKind('attribute', Kind.Field, descriptor);
+  assertPlacement('attribute', Placement.Own, descriptor);
 
   if (guard !== Boolean && guard !== Number && guard !== String) {
     throw new TypeError('Guard for @attribute should be either Number, Boolean or String');
   }
 
+  const {key} = descriptor;
   const guardType = typeof guard(null);
 
   return accessor({

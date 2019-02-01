@@ -1,5 +1,5 @@
 /* eslint-disable no-invalid-this, prefer-arrow-callback */
-import {assertKind} from '@corpuscule/utils/lib/asserts';
+import {assertKind, Kind} from '@corpuscule/utils/lib/asserts';
 import * as $ from '@corpuscule/utils/lib/descriptors';
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
 import {
@@ -25,8 +25,10 @@ const rootProperty = new WeakMap();
 const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
   name,
   {extends: builtin} = {},
-) => ({kind, elements}) => {
-  assertKind('createElementDecorator', 'class', kind);
+) => descriptor => {
+  assertKind('element', Kind.Class, descriptor);
+
+  const {elements, kind} = descriptor;
 
   const hasRender = elements.some(({key}) => key === $render);
 

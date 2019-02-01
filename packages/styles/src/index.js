@@ -1,5 +1,5 @@
 /* eslint-disable capitalized-comments, no-sync */
-import {assertKind} from '@corpuscule/utils/lib/asserts';
+import {assertKind, Kind} from '@corpuscule/utils/lib/asserts';
 import {method} from '@corpuscule/utils/lib/descriptors';
 import getSupers from '@corpuscule/utils/lib/getSupers';
 
@@ -10,11 +10,12 @@ const {attachShadow} = HTMLElement.prototype;
 
 export const stylesAttachedCallback = Symbol();
 
-export const createStylesDecorator = ({shadyCSS, adoptedStyleSheets}) => (...pathsOrStyles) => ({
-  elements,
-  kind,
-}) => {
-  assertKind('styles', 'class', kind);
+export const createStylesDecorator = ({shadyCSS, adoptedStyleSheets}) => (
+  ...pathsOrStyles
+) => descriptor => {
+  assertKind('styles', Kind.Class, descriptor);
+
+  const {elements, kind} = descriptor;
 
   const template = document.createElement('template');
   const constructableStyles = [];
