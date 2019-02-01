@@ -1,15 +1,15 @@
-import testAddToRegistry from './addToRegistry';
 import testAsserts from './asserts';
-import testCreateSupers from './createSupers';
 import testDescriptors from './descriptors';
+import testGetSupers from './getSupers';
 import testPropertyUtils from './propertyUtils';
 import testSchedule from './scheduler';
+import testShallowEqual from './shallowEqual';
 
 describe('@corpuscule/utils', () => {
-  testAddToRegistry();
   testAsserts();
   testDescriptors();
-  testCreateSupers();
+  testGetSupers();
   testPropertyUtils();
   testSchedule();
+  testShallowEqual();
 });

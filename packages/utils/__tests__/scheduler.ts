@@ -33,6 +33,11 @@ const testSchedule = () => {
     it('consistently rejects rendering promises until the top one', async () => {
       const rejectSpy = jasmine.createSpy('onCatch');
 
+      let resolve: Function;
+      const promise = new Promise<void>(r => {
+        resolve = r;
+      });
+
       let nesting = 0;
 
       const task = () => {
@@ -42,17 +47,20 @@ const testSchedule = () => {
 
         schedule(task).catch(() => {
           rejectSpy();
+          nesting -= 1;
+
+          if (nesting === 0) {
+            resolve();
+          }
         });
 
         nesting += 1;
       };
 
-      try {
-        await schedule(task);
-      } catch (e) {
+      return Promise.all([schedule(task), promise]).catch(e => {
         expect(e.message).toBe('foo');
         expect(rejectSpy).toHaveBeenCalledTimes(2);
-      }
+      });
     });
   });
 };

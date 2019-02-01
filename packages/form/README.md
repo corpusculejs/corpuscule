@@ -84,14 +84,9 @@ section.
 This function is used to compare new initial values that are received by `initialValues` form
 option. By default simple checking of shallow equality is performed.
 
-#### `@field(params?: FieldDecoratorParams): ClassDecorator`
+#### `@field: ClassDecorator`
 Field decorator makes element a 🏁 FinalForm field, a consumer via [`@corpsucule/context`](../context)
 with form instance as a context value.
-
-Decorator can receive `FieldDecoratorParams` object which contains:
-* `scheduler: (callback: () => void) => Promise<void>`. Function that performs scheduling for your
-form element. Specifying scheduler is not required, [`@corpuscule/utils` scheduler](../utils/README.md#scheduler)
-is used by default.
 
 #### Field `@api` decorator
 Field `@api` decorator has following property names it can be applied to:
@@ -205,12 +200,20 @@ context.
 Created context is completely independent from the default context and can be used to create complex
 structures like a form inside a form.  
 
+Function can receive `FormContextOptions` object which contains:
+* `scheduler: (callback: () => void) => Promise<void>`. Function that performs scheduling for your
+field element. Specifying scheduler is not required, [`@corpuscule/utils` scheduler](../utils/README.md#scheduler)
+is used by default.
+
+#### `isForm(target: unknown): boolean`
+[See the @corpuscule/context docs on `isProvider`](../context/README.md#isprovider-target-unknown--boolean).
+
 #### Example
 ```html
 <script type="module">
   import {api, form, field, option} from '@corpuscule/form';
   
-  @form
+  @form()
   class Form extends HTMLElement {
     @api form;
     @api state;
@@ -237,7 +240,7 @@ structures like a form inside a form.
   @field
   class Field extends HTMLElement {
     @api form;
-    @option name;
+    @option name = 'my-field';
     
     #input;
     #meta;

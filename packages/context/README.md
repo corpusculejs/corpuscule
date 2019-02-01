@@ -122,3 +122,13 @@ applied to a whole class). Using this decorator for provider and consumer is req
 class field is allowed.
 
 You can mark as a value any type of property: string, symbolic or private.
+
+#### `isProvider: (target: unknown) => boolean`
+Function to detect if class definition is marked with `@provider`.
+```javascript
+@provider
+class Provider extends HTMLElement {
+}
+
+assert(isProvider(Test) === true);
+```

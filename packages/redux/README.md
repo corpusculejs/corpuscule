@@ -24,7 +24,7 @@ $ yarn add redux @corpuscule/redux
 [See the `@corpuscule/context` docs on `@provider` decorator](../context/README.md#provider-classdecorator).
 Redux store should be sent.
 
-#### `@value: PropertyDecorator`
+#### `@api: PropertyDecorator`
 [See the `@corpuscule/context` docs on `@value` decorator](../context/README.md#value-propertydecorator).
 
 #### `@redux: ClassDecorator`
@@ -32,7 +32,7 @@ Basically it is [`@consumer` decorator](../context/README.md#consumer-classdecor
 `@corpuscule/context` that receives store sent by `@provider`. Decorator provides API to access the
 store instance with `@unit` and `@dispatcher` property decorators.
 
-**Note**: applying `@value` in this class unnecessary and will cause an error.
+**Note**: applying `@api` in this class unnecessary and will cause an error.
 
 #### `@unit<S extends ReduxState>(getter: (state: S) => unknown): PropertyDecorator`
 This decorator extracts value from the store on each store update using getter and saves it in
@@ -46,6 +46,9 @@ fields, so it is possible to bind bare action creators as well as class methods.
 
 You can mark any type of property: string, symbolic or private.
 
+#### `isProvider(target: unknown): boolean`
+[See the @corpuscule/context docs on `isProvider`](../context/README.md#isprovider-target-unknown--boolean).
+
 ## Example
 ```html
 <script type="module">
@@ -55,7 +58,7 @@ You can mark any type of property: string, symbolic or private.
   
   @provider
   class Provider extends HTMLElement {
-    @value store = configureStore();
+    @api store = configureStore();
     
     constructor() {
       super();

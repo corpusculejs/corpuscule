@@ -1,102 +1,99 @@
-import createContext from '@corpuscule/context';
-import {assertKind} from '@corpuscule/utils/lib/asserts';
-import createSupers from '@corpuscule/utils/lib/createSupers';
-import {lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
-import {layout, resolve} from './tokens/lifecycle';
-
-const {consumer, contextValue, provider, providingValue: router} = createContext();
-
-export {provider, router};
+import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/asserts';
+import {field, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
+import {setValue} from '@corpuscule/utils/lib/propertyUtils';
+import {resolve} from './tokens/lifecycle';
+import getSupers from '@corpuscule/utils/lib/getSupers';
 
 const methods = [...lifecycleKeys, resolve];
 
-const filteringNames = methods;
-
 const [connectedCallbackKey, disconnectedCallbackKey] = lifecycleKeys;
 
-const outlet = routes => classDescriptor => {
-  assertKind('outlet', 'class', classDescriptor.kind);
+const createOutletDecorator = ({consumer, value}, {api}) => routes => descriptor => {
+  assertKind('outlet', Kind.Class, descriptor);
 
-  const {elements, kind} = consumer(classDescriptor);
+  const {elements, kind} = consumer(descriptor);
 
+  let $api;
+
+  const $$contextValue = Symbol();
   const $$updateRoute = Symbol();
 
-  const $$superConnectedCallback = Symbol();
-  const $$superDisconnectedCallback = Symbol();
-
-  const supers = createSupers(
-    elements,
-    new Map([
-      [connectedCallbackKey, $$superConnectedCallback],
-      [disconnectedCallbackKey, $$superDisconnectedCallback],
-      [
-        resolve,
-        {
-          *fallback(path) {
-            return yield path;
-          },
-          key: resolve,
-        },
-      ],
-    ]),
+  const [supers, finish] = getSupers(elements, methods);
+  const {extras, finisher: contextFinisher, ...contextValueDescriptor} = value(
+    field({key: $$contextValue}),
   );
 
   return {
     elements: [
-      ...elements.filter(({key}) => !filteringNames.includes(key)),
-      ...supers,
+      ...elements,
 
       // Public
-      method(
-        {
-          key: connectedCallbackKey,
-          value() {
-            window.addEventListener('popstate', this[$$updateRoute]);
-            this[$$superConnectedCallback]();
+      method({
+        key: connectedCallbackKey,
+        method() {
+          window.addEventListener('popstate', this[$$updateRoute]);
+          supers[connectedCallbackKey].call(this);
 
-            this[$$updateRoute](location.pathname);
-          },
+          this[$$updateRoute](location.pathname);
         },
-        {isBound: true},
-      ),
-      method(
-        {
-          key: disconnectedCallbackKey,
-          value() {
-            window.removeEventListener('popstate', this[$$updateRoute]);
-            this[$$superDisconnectedCallback]();
-          },
+        placement: 'own',
+      }),
+      method({
+        key: disconnectedCallbackKey,
+        method() {
+          window.removeEventListener('popstate', this[$$updateRoute]);
+          supers[disconnectedCallbackKey].call(this);
         },
-        {isBound: true},
-      ),
+        placement: 'own',
+      }),
+
+      // Protected
+      method({
+        key: resolve,
+        method(...args) {
+          return supers[resolve].apply(this, args);
+        },
+      }),
 
       // Private
-      method(
-        {
-          key: $$updateRoute,
-          async value(pathOrEvent) {
-            const path = typeof pathOrEvent === 'string' ? pathOrEvent : pathOrEvent.state || '';
+      ...extras,
+      contextValueDescriptor,
 
-            const iter = this[resolve](path);
+      method({
+        bound: true,
+        key: $$updateRoute,
+        async method(pathOrEvent) {
+          const path = typeof pathOrEvent === 'string' ? pathOrEvent : pathOrEvent.state || '';
 
-            const resolved = await this[contextValue].resolve(iter.next().value);
+          const iter = this[resolve](path);
 
-            if (resolved === undefined) {
-              return;
-            }
+          const resolved = await this[$$contextValue].resolve(iter.next().value);
 
-            const [result, {route}] = resolved;
+          if (resolved === undefined) {
+            return;
+          }
 
-            if (routes.includes(route)) {
-              this[layout] = iter.next(result).value;
-            }
-          },
+          const [result, {route}] = resolved;
+
+          if (routes.includes(route)) {
+            setValue(this, $api, iter.next(result).value);
+          }
         },
-        {isBound: true},
-      ),
+      }),
     ],
+    finisher(target) {
+      $api = api.get(target);
+      assertRequiredProperty('outlet', 'api', $api);
+
+      finish(target, {
+        *[resolve](path) {
+          return yield path;
+        },
+      });
+      contextFinisher(target);
+    },
     kind,
   };
 };
 
-export default outlet;
+export default createOutletDecorator;

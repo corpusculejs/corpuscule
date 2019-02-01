@@ -1,203 +1,130 @@
-import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
-import createSupers from '@corpuscule/utils/lib/createSupers';
-import {accessor, field, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
-import shallowEqual from '@corpuscule/utils/lib/shallowEqual';
-import {configOptions, createForm} from 'final-form';
-import {
-  formState as $formState,
-  compareInitialValues as $compareInitialValues,
-} from './tokens/lifecycle';
+import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/asserts';
+import * as $ from '@corpuscule/utils/lib/descriptors';
+import getSupers from '@corpuscule/utils/lib/getSupers';
+import {getName, getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
+import {createForm} from 'final-form';
 import {all} from './utils';
 
-const configInitializers = new WeakMap();
-const formApiPropertyName = new WeakMap();
+const [connectedCallbackKey, disconnectedCallbackKey] = $.lifecycleKeys;
 
-const [connectedCallbackKey, disconnectedCallbackKey] = lifecycleKeys;
-
-export const formOption = configKey => ({descriptor, initializer, key, kind, placement}) => {
-  const {get, set, value} = descriptor;
-
-  assertKind('formOption', 'properties, methods or full accessors', kind, {
-    correct: kind === 'field' || (kind === 'method' && (value || (get && set))),
-  });
-  assertPlacement('formOption', 'own or prototype', placement, {
-    correct: placement === 'own' || placement === 'prototype',
-  });
-
-  if (!configOptions.includes(configKey)) {
-    throw new TypeError(`"${configKey}" is not one of the Final Form configuration keys`);
-  }
-
-  if (kind === 'method' && value) {
-    return {
-      descriptor,
-      finisher(target) {
-        configInitializers.get(target).push([
-          key,
-          function() {
-            return value.bind(this);
-          },
-        ]);
-      },
-      key,
-      kind,
-      placement,
-    };
-  }
-
-  const updateForm =
-    configKey === 'initialValues'
-      ? function(initialValues) {
-          if (!(this[$compareInitialValues] || shallowEqual)(this[key], initialValues)) {
-            this[formApiPropertyName.get(this.constructor)].initialize(initialValues);
-          }
-        }
-      : function(v) {
-          if (this[key] !== v) {
-            this[formApiPropertyName.get(this.constructor)].setConfig(configKey, v);
-          }
-        };
-
-  return accessor(
-    {
-      finisher(target) {
-        configInitializers.get(target).push([
-          key,
-          get
-            ? function() {
-                return get.call(this);
-              }
-            : initializer,
-        ]);
-      },
-      get,
-      initializer,
-      key,
-      set,
-    },
-    {
-      adjust({get: originGet, set: originSet}) {
-        return {
-          get: originGet,
-          set(v) {
-            updateForm.call(this, v);
-            originSet.call(this, v);
-          },
-        };
-      },
-    },
-  );
-};
-
-const createFormDecorator = (provider, $formApi) => ({
+const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => ({
   decorators,
   subscription = all,
-} = {}) => classDescriptor => {
-  assertKind('form', 'class', classDescriptor.kind);
+} = {}) => descriptor => {
+  assertKind('form', Kind.Class, descriptor);
+
+  let $api;
+  let $state;
+  let initializers;
 
   const $$submit = Symbol();
   const $$unsubscriptions = Symbol();
 
-  const $$superConnectedCallback = Symbol();
-  const $$superDisconnectedCallback = Symbol();
+  const {elements, kind} = provider(descriptor);
 
-  const {elements, kind} = provider(classDescriptor);
-
-  const supers = createSupers(
-    elements,
-    new Map([
-      [connectedCallbackKey, $$superConnectedCallback],
-      [disconnectedCallbackKey, $$superDisconnectedCallback],
-    ]),
-  );
+  const [supers, finish] = getSupers(elements, $.lifecycleKeys);
 
   return {
     elements: [
-      ...elements.filter(({key}) => !lifecycleKeys.includes(key) && key !== $formState),
-      ...supers,
+      ...elements,
 
       // Public
-      method(
-        {
-          key: connectedCallbackKey,
-          value() {
-            if (decorators) {
-              for (const decorate of decorators) {
-                this[$$unsubscriptions].push(decorate(this[$formApi]));
-              }
+      $.method({
+        bound: true,
+        key: connectedCallbackKey,
+        method() {
+          const instance = getValue(this, $api);
+
+          if (decorators) {
+            for (const decorate of decorators) {
+              this[$$unsubscriptions].push(decorate(instance));
             }
+          }
 
-            this[$$unsubscriptions].push(
-              this[$formApi].subscribe(state => {
-                this[$formState] = state;
-              }, subscription),
-            );
-
-            this.addEventListener('submit', this[$$submit]);
-
-            this[$$superConnectedCallback]();
-          },
-        },
-        {isBound: true},
-      ),
-      method(
-        {
-          key: disconnectedCallbackKey,
-          value() {
-            for (const unsubscribe of this[$$unsubscriptions]) {
-              unsubscribe();
-            }
-
-            this[$$unsubscriptions] = [];
-
-            this.removeEventListener('submit', this[$$submit]);
-            this[$$superDisconnectedCallback]();
-          },
-        },
-        {isBound: true},
-      ),
-
-      // Protected
-      field({
-        initializer() {
-          this[$formApi] = createForm(
-            configInitializers.get(this.constructor).reduce((acc, [key, initializer]) => {
-              acc[key] = initializer ? initializer.call(this) : undefined;
-
-              return acc;
-            }, {}),
+          this[$$unsubscriptions].push(
+            instance.subscribe(newState => {
+              setValue(this, $state, newState);
+            }, subscription),
           );
+
+          this.addEventListener('submit', this[$$submit]);
+
+          supers[connectedCallbackKey].call(this);
         },
+        placement: 'own',
+      }),
+      $.method({
+        key: disconnectedCallbackKey,
+        method() {
+          for (const unsubscribe of this[$$unsubscriptions]) {
+            unsubscribe();
+          }
+
+          this[$$unsubscriptions] = [];
+
+          this.removeEventListener('submit', this[$$submit]);
+
+          supers[disconnectedCallbackKey].call(this);
+        },
+        placement: 'own',
       }),
 
       // Private
-      field(
-        {
-          initializer() {
-            configInitializers.set(this, []);
-          },
-        },
-        {isStatic: true},
-      ),
-      field({
+      $.field({
         initializer: () => [],
         key: $$unsubscriptions,
       }),
-      method(
-        {
-          key: $$submit,
-          value(e) {
-            e.preventDefault();
-            e.stopPropagation();
+      $.method({
+        bound: true,
+        key: $$submit,
+        method(e) {
+          e.preventDefault();
+          e.stopPropagation();
 
-            this[$formApi].submit();
-          },
+          getValue(this, $api).submit();
         },
-        {isBound: true},
-      ),
+      }),
+
+      // Hooks
+      $.hook({
+        placement: 'own',
+        start() {
+          setValue(
+            this,
+            $api,
+            createForm(
+              initializers.reduce((acc, [key, initializer]) => {
+                acc[key] = initializer ? initializer.call(this) : undefined;
+
+                return acc;
+              }, {}),
+            ),
+          );
+        },
+      }),
+      $.hook({
+        start() {
+          configInitializers.set(this, []);
+        },
+      }),
     ],
     finisher(target) {
-      formApiPropertyName.set(target, $formApi);
+      finish(target);
+
+      $api = api.get(target);
+      $state = state.get(target);
+
+      assertRequiredProperty('form', 'api', 'form', $api);
+      assertRequiredProperty('form', 'api', 'state', $state);
+
+      initializers = configInitializers.get(target);
+
+      assertRequiredProperty(
+        'form',
+        'option',
+        'onSubmit',
+        initializers.find(([key]) => getName(key) === 'onSubmit'),
+      );
     },
     kind,
   };

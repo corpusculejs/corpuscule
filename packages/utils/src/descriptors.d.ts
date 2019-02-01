@@ -1,43 +1,39 @@
-import {ExtendedPropertyDescriptor} from '@corpuscule/typings';
-
-export type AccessorMethods = Required<Pick<PropertyDescriptor, 'get' | 'set'>>;
-
-export interface DescriptorOptions {
-  readonly isPrivate?: boolean;
-  readonly isStatic?: boolean;
-}
-
-export interface AccessorOptions extends DescriptorOptions {
-  readonly adjust?: (methods: AccessorMethods) => AccessorMethods;
-  readonly toArray?: boolean;
-}
-
-export interface FieldOptions extends DescriptorOptions {
-  readonly isReadonly?: boolean;
-}
-
-export interface MethodOptions extends DescriptorOptions {
-  readonly isBound?: boolean;
-}
-
-export type AccessorParams = Pick<PropertyDescriptor, 'get' | 'set'> &
-  Pick<ExtendedPropertyDescriptor, 'extras' | 'finisher' | 'initializer' | 'key'>;
-
-export interface FieldParams
-  extends Pick<ExtendedPropertyDescriptor, 'extras' | 'finisher' | 'initializer'> {
-  readonly key?: ExtendedPropertyDescriptor['key'];
-}
-
-export type MethodParams = Pick<PropertyDescriptor, 'value'> &
-  Pick<ExtendedPropertyDescriptor, 'extras' | 'finisher' | 'key'>;
+import {ExtendedPropertyDescriptor, Omit} from '@corpuscule/typings';
 
 export const lifecycleKeys: ['connectedCallback', 'disconnectedCallback'];
 
-export const accessor: <T extends AccessorOptions>(
-  params: AccessorParams,
-  options?: T,
-) => T extends {readonly toArray: true}
-  ? ReadonlyArray<ExtendedPropertyDescriptor>
-  : ExtendedPropertyDescriptor;
-export const field: (params: FieldParams, options?: FieldOptions) => ExtendedPropertyDescriptor;
-export const method: (params: MethodParams, options?: MethodOptions) => ExtendedPropertyDescriptor;
+export type AccessorMethods = Required<Pick<PropertyDescriptor, 'get' | 'set'>>;
+
+export type ExtendedPropertyDescriptorBasics = Pick<
+  ExtendedPropertyDescriptor,
+  'extras' | 'finisher'
+>;
+
+export type AccessorParams = Omit<PropertyDescriptor, 'value'> &
+  ExtendedPropertyDescriptorBasics &
+  Pick<ExtendedPropertyDescriptor, 'key'> &
+  Pick<Partial<ExtendedPropertyDescriptor>, 'initializer' | 'placement'> & {
+    readonly adjust?: (methods: AccessorMethods) => AccessorMethods;
+  };
+
+export type FieldParams = Omit<PropertyDescriptor, 'get' | 'set'> &
+  ExtendedPropertyDescriptorBasics &
+  Pick<ExtendedPropertyDescriptor, 'key'> &
+  Pick<Partial<ExtendedPropertyDescriptor>, 'initializer' | 'placement'>;
+
+export type MethodParams = Omit<PropertyDescriptor, 'get' | 'set' | 'value'> &
+  ExtendedPropertyDescriptorBasics &
+  Pick<ExtendedPropertyDescriptor, 'key'> &
+  Pick<Partial<ExtendedPropertyDescriptor>, 'placement'> & {
+    readonly bound?: boolean;
+    readonly method?: Function;
+  };
+
+export type HookParams = Pick<Partial<ExtendedPropertyDescriptor>, 'extras' | 'placement'> & {
+  readonly start: () => void;
+};
+
+export const accessor: (params: AccessorParams) => ExtendedPropertyDescriptor;
+export const field: (params: FieldParams) => ExtendedPropertyDescriptor;
+export const method: (params: MethodParams) => ExtendedPropertyDescriptor;
+export const hook: (params: HookParams) => ExtendedPropertyDescriptor;

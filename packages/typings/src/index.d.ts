@@ -18,3 +18,8 @@ export interface ExtendedPropertyDescriptor {
   placement: 'own' | 'prototype' | 'static';
   initializer?(): unknown;
 }
+
+export interface ClassDescriptor {
+  elements: ReadonlyArray<ExtendedPropertyDescriptor>;
+  kind: 'class';
+}
