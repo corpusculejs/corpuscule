@@ -1,24 +1,18 @@
-// tslint:disable:no-unused-expression
+// tslint:disable:no-unused-expression no-empty
 import {FormApi, FormState} from 'final-form';
 import {createForm, formSpyObject, unsubscribe} from '../../../test/mocks/finalForm';
 import {CustomElement, genName} from '../../../test/utils';
-import {
-  compareInitialValues,
-  createFormContext,
-  Form,
-  FormDecorator,
-  formOption,
-  formState,
-} from '../src';
+import {createFormContext, FormDecorator} from '../src';
 import {all} from '../src/utils';
 
 const testForm = () => {
   describe('@form', () => {
+    let api: PropertyDecorator;
     let form: FormDecorator;
-    let formApi: 'formApi';
+    let option: PropertyDecorator;
 
     beforeEach(() => {
-      ({form, formApi} = createFormContext());
+      ({api, form, option} = createFormContext());
 
       createForm.calls.reset();
       unsubscribe.calls.reset();
@@ -32,17 +26,21 @@ const testForm = () => {
 
     it('allows to declare form configuration with decorator', () => {
       @form()
-      class Test implements Form {
-        public [formApi]: FormApi;
-        public [formState]: FormState;
+      class Test {
+        @api public readonly form!: FormApi;
+        @api public readonly state!: FormState;
 
-        @formOption('debug')
+        @option
         public debug: boolean = true;
+
+        @option
+        public onSubmit(): void {}
       }
 
       new Test();
       expect(createForm).toHaveBeenCalledWith({
         debug: true,
+        onSubmit: jasmine.any(Function),
       });
     });
 
@@ -50,15 +48,15 @@ const testForm = () => {
       const submitSpy = jasmine.createSpy('OnSubmit');
 
       @form()
-      class Test implements Form {
-        public [formApi]: FormApi;
-        public [formState]: FormState;
+      class Test {
+        @api public readonly form!: FormApi;
+        @api public readonly state!: FormState;
 
         public call(): void {
           submitSpy();
         }
 
-        @formOption('onSubmit')
+        @option
         public onSubmit(): void {
           this.call();
         }
@@ -77,12 +75,13 @@ const testForm = () => {
 
     it('allows to declare configuration on full accessor', () => {
       @form()
-      class Test implements Form {
-        public [formApi]: FormApi;
-        public [formState]: FormState;
+      class Test {
+        @api public readonly form!: FormApi;
+        @api public readonly state!: FormState;
+
         public secret: boolean = true;
 
-        @formOption('debug')
+        @option
         public get debug(): boolean {
           return this.secret;
         }
@@ -90,22 +89,29 @@ const testForm = () => {
         public set debug(v: boolean) {
           this.secret = v;
         }
+
+        @option
+        public onSubmit(): void {}
       }
 
       new Test();
       expect(createForm).toHaveBeenCalledWith({
         debug: true,
+        onSubmit: jasmine.any(Function),
       });
     });
 
     it('allows to update form data with defined properties', () => {
       @form()
-      class Test implements Form {
-        public [formApi]: FormApi;
-        public [formState]: FormState;
+      class Test {
+        @api public readonly form!: FormApi;
+        @api public readonly state!: FormState;
 
-        @formOption('debug')
+        @option
         public debug: boolean = true;
+
+        @option
+        public onSubmit(): void {}
       }
 
       const test = new Test();
@@ -116,12 +122,15 @@ const testForm = () => {
 
     it('does not update property if it is the same', () => {
       @form()
-      class Test implements Form {
-        public [formApi]: FormApi;
-        public [formState]: FormState;
+      class Test {
+        @api public readonly form!: FormApi;
+        @api public readonly state!: FormState;
 
-        @formOption('debug')
+        @option
         public debug: boolean = true;
+
+        @option
+        public onSubmit(): void {}
       }
 
       const test = new Test();
@@ -134,27 +143,33 @@ const testForm = () => {
       expect(() => {
         @form()
         // @ts-ignore
-        class Test implements Form {
-          public [formApi]: FormApi;
-          public [formState]: FormState;
+        class Test {
+          @api public readonly form!: FormApi;
+          @api public readonly state!: FormState;
 
-          @formOption('test' as any)
+          @option
           public test: boolean = true;
+
+          @option
+          public onSubmit(): void {}
         }
-      }).toThrow(new TypeError('"test" is not one of the Final Form configuration keys'));
+      }).toThrow(new TypeError('"test" is not one of the Final Form or Field configuration keys'));
     });
 
     it('initializes form if new "initialValues" are set', () => {
       @form()
-      class Test implements Form {
-        public [formApi]: FormApi;
-        public [formState]: FormState;
+      class Test {
+        @api public readonly form!: FormApi;
+        @api public readonly state!: FormState;
 
-        @formOption('initialValues')
+        @option
         public initialValues: object = {
           bar: 2,
           foo: 1,
         };
+
+        @option
+        public onSubmit(): void {}
       }
 
       const test = new Test();
@@ -172,15 +187,18 @@ const testForm = () => {
 
     it('checks shallow equality by default for initialValues', () => {
       @form()
-      class Test implements Form {
-        public [formApi]: FormApi;
-        public [formState]: FormState;
+      class Test {
+        @api public readonly form!: FormApi;
+        @api public readonly state!: FormState;
 
-        @formOption('initialValues')
+        @option
         public initialValues: object = {
           bar: 2,
           foo: 1,
         };
+
+        @option
+        public onSubmit(): void {}
       }
 
       const test = new Test();
@@ -193,25 +211,29 @@ const testForm = () => {
       expect(formSpyObject.initialize).not.toHaveBeenCalled();
     });
 
-    it('uses [compareInitialValues] to check initial values equality if set', () => {
+    it('uses @option compareInitialValues to check initial values equality if set', () => {
       const compareInitialValuesSpy = jasmine.createSpy('compareInitialValues');
 
       @form()
-      class Test implements Form {
-        public [formApi]: FormApi;
-        public [formState]: FormState;
+      class Test {
+        @api public readonly form!: FormApi;
+        @api public readonly state!: FormState;
 
-        @formOption('initialValues')
+        @option
         public initialValues: object = {
           bar: 2,
           foo: 1,
         };
 
-        public [compareInitialValues]<T extends {foo: number}>(a: T, b: T): boolean {
+        @option
+        public compareInitialValues<T extends {foo: number}>(a: T, b: T): boolean {
           compareInitialValuesSpy();
 
           return a.foo === b.foo;
         }
+
+        @option
+        public onSubmit(): void {}
       }
 
       const test = new Test();
@@ -231,17 +253,21 @@ const testForm = () => {
 
     it('sets default undefined if option exists but not set', () => {
       @form()
-      class Test implements Form {
-        public [formApi]: FormApi;
-        public [formState]: FormState;
+      class Test {
+        @api public readonly form!: FormApi;
+        @api public readonly state!: FormState;
 
-        @formOption('debug')
+        @option
         public debug?: boolean;
+
+        @option
+        public onSubmit(): void {}
       }
 
       new Test();
       expect(createForm).toHaveBeenCalledWith({
         debug: undefined,
+        onSubmit: jasmine.any(Function),
       });
     });
 
@@ -252,9 +278,12 @@ const testForm = () => {
       @form({
         decorators: [decorate],
       })
-      class Test extends CustomElement implements Form {
-        public [formApi]: FormApi;
-        public [formState]: FormState;
+      class Test extends CustomElement {
+        @api public readonly form!: FormApi;
+        @api public readonly state!: FormState;
+
+        @option
+        public onSubmit(): void {}
       }
 
       customElements.define(genName(), Test);
@@ -270,9 +299,12 @@ const testForm = () => {
 
     it('subscribes to the form on connection, unsubscribes on disconnection and sets form state', () => {
       @form()
-      class Test extends CustomElement implements Form {
-        public [formApi]: FormApi;
-        public [formState]: FormState;
+      class Test extends CustomElement {
+        @api public readonly form!: FormApi;
+        @api public readonly state!: FormState;
+
+        @option
+        public onSubmit(): void {}
       }
 
       customElements.define(genName(), Test);
@@ -287,7 +319,7 @@ const testForm = () => {
       const [fn] = formSpyObject.subscribe.calls.mostRecent().args;
       fn(state);
 
-      expect(test[formState]).toBe(state as FormState);
+      expect(test.state).toBe(state as FormState);
 
       test.disconnectedCallback();
       expect(unsubscribe).toHaveBeenCalled();
@@ -295,9 +327,12 @@ const testForm = () => {
 
     it('sets submit callback on form submit listener on connection and removes it on disconnection', () => {
       @form()
-      class Test extends CustomElement implements Form {
-        public [formApi]: FormApi;
-        public [formState]: FormState;
+      class Test extends CustomElement {
+        @api public readonly form!: FormApi;
+        @api public readonly state!: FormState;
+
+        @option
+        public onSubmit(): void {}
       }
 
       customElements.define(genName(), Test);
@@ -323,6 +358,37 @@ const testForm = () => {
 
       test.disconnectedCallback();
       expect(removeEventListener).toHaveBeenCalledWith('submit', fn);
+    });
+
+    describe('@api', () => {
+      it('requires form and state fields defined', () => {
+        expect(() => {
+          @form()
+          // @ts-ignore
+          class FormField extends CustomElement {}
+        }).toThrowError('@form requires form property marked with @api');
+
+        expect(() => {
+          @form()
+          // @ts-ignore
+          class FormField extends CustomElement {
+            @api public readonly form!: FormApi;
+          }
+        }).toThrowError('@form requires state property marked with @api');
+      });
+    });
+
+    describe('@option', () => {
+      it('requires onSubmit method defined', () => {
+        expect(() => {
+          @form()
+          // @ts-ignore
+          class FormField extends CustomElement {
+            @api public readonly form!: FormApi;
+            @api public readonly state!: FormState;
+          }
+        }).toThrowError('@form requires onSubmit property marked with @option');
+      });
     });
   });
 };

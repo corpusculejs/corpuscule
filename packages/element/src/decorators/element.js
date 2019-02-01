@@ -1,7 +1,6 @@
 /* eslint-disable no-invalid-this, prefer-arrow-callback */
-import {assertKind} from '@corpuscule/utils/lib/asserts';
-import createSupers from '@corpuscule/utils/lib/createSupers';
-import {field, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
+import {assertKind, Kind} from '@corpuscule/utils/lib/asserts';
+import * as $ from '@corpuscule/utils/lib/descriptors';
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
 import {
   createRoot as $createRoot,
@@ -10,9 +9,11 @@ import {
   render as $render,
   internalChangedCallback as $internalChangedCallback,
 } from '../tokens/lifecycle';
+import getSupers from '@corpuscule/utils/lib/getSupers';
+import {shadowElements} from '../utils';
 
 const attributeChangedCallbackKey = 'attributeChangedCallback';
-const [connectedCallbackKey] = lifecycleKeys;
+const [connectedCallbackKey] = $.lifecycleKeys;
 
 // eslint-disable-next-line no-empty-function
 const noop = () => {};
@@ -24,154 +25,137 @@ const rootProperty = new WeakMap();
 const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
   name,
   {extends: builtin} = {},
-) => ({kind, elements}) => {
-  assertKind('createElementDecorator', 'class', kind);
+) => descriptor => {
+  assertKind('element', Kind.Class, descriptor);
+
+  const {elements, kind} = descriptor;
 
   const hasRender = elements.some(({key}) => key === $render);
 
-  if (!builtin && !hasRender) {
+  const isShadow = !builtin || shadowElements.includes(builtin);
+
+  if (isShadow && !hasRender) {
     throw new Error('[render]() is not implemented');
   }
 
-  if (builtin && hasRender) {
-    throw new Error('[render]() cannot be used for built-in elements');
+  if (!isShadow && hasRender) {
+    throw new Error(`[render]() is not allowed for <${builtin}> element`);
   }
 
   const $$connected = Symbol();
   const $$invalidate = Symbol();
   const $$valid = Symbol();
 
-  const $$superAttributeChangedCallback = Symbol();
-  const $$superConnectedCallback = Symbol();
-  const $$superInternalChangedCallback = Symbol();
-  const $$superPropertyChangedCallback = Symbol();
-
-  const supers = createSupers(
-    elements,
-    new Map([
-      [attributeChangedCallbackKey, $$superAttributeChangedCallback],
-      [connectedCallbackKey, $$superConnectedCallback],
-      [
-        $createRoot,
-        {
-          fallback: builtin
-            ? noop
-            : function() {
-                return this.attachShadow({mode: 'open'});
-              },
-          key: $createRoot,
-        },
-      ],
-      [$internalChangedCallback, $$superInternalChangedCallback],
-      [$propertyChangedCallback, $$superPropertyChangedCallback],
-      [
-        $updatedCallback,
-        {
-          fallback: noop,
-          key: $updatedCallback,
-        },
-      ],
-    ]),
-  );
+  const [supers, finish] = getSupers(elements, [
+    attributeChangedCallbackKey,
+    connectedCallbackKey,
+    $createRoot,
+    $internalChangedCallback,
+    $propertyChangedCallback,
+    $updatedCallback,
+  ]);
 
   return {
     elements: [
       ...elements.filter(({key}) => !filteringNames.includes(key)),
-      ...supers,
 
       // Static
-      field(
-        {
-          initializer: () => name,
-          key: 'is',
-        },
-        {isReadonly: true, isStatic: true},
-      ),
-      field(
-        {
-          initializer: () => [],
-          key: 'observedAttributes',
-        },
-        {isReadonly: true, isStatic: true},
-      ),
+      $.field({
+        initializer: () => name,
+        key: 'is',
+        placement: 'static',
+        writable: false,
+      }),
+      $.field({
+        initializer: () => [],
+        key: 'observedAttributes',
+        placement: 'static',
+        writable: false,
+      }),
 
       // Public
-      method(
-        {
-          key: connectedCallbackKey,
-          async value() {
-            await this[$$invalidate]();
-            this[$$superConnectedCallback]();
-          },
+      $.method({
+        key: connectedCallbackKey,
+        async method() {
+          await this[$$invalidate]();
+          supers[connectedCallbackKey].call(this);
         },
-        {isBound: true},
-      ),
-      method(
-        {
-          key: attributeChangedCallbackKey,
-          async value(attributeName, oldValue, newValue) {
-            if (oldValue === newValue || !this[$$connected]) {
-              return;
-            }
+        placement: 'own',
+      }),
+      $.method({
+        key: attributeChangedCallbackKey,
+        async method(attributeName, oldValue, newValue) {
+          if (oldValue === newValue || !this[$$connected]) {
+            return;
+          }
 
-            this[$$superAttributeChangedCallback](attributeName, oldValue, newValue);
-            await this[$$invalidate]();
-          },
+          supers[attributeChangedCallbackKey].call(this, attributeName, oldValue, newValue);
+          await this[$$invalidate]();
         },
-        {isBound: true},
-      ),
+        placement: 'own',
+      }),
 
       // Protected
-      method(
-        {
-          key: $internalChangedCallback,
-          async value(internalName, oldValue, newValue) {
-            if (!this[$$connected]) {
-              return;
-            }
-
-            this[$$superInternalChangedCallback](internalName, oldValue, newValue);
-            await this[$$invalidate]();
-          },
+      $.method({
+        key: $createRoot,
+        method() {
+          return supers[$createRoot].call(this);
         },
-        {isBound: true},
-      ),
-      method(
-        {
-          key: $propertyChangedCallback,
-          async value(propertyName, oldValue, newValue) {
-            if (oldValue === newValue || !this[$$connected]) {
-              return;
-            }
+        placement: 'own',
+      }),
+      $.method({
+        key: $internalChangedCallback,
+        async method(internalName, oldValue, newValue) {
+          if (!this[$$connected]) {
+            return;
+          }
 
-            this[$$superPropertyChangedCallback](propertyName, oldValue, newValue);
-            await this[$$invalidate]();
-          },
+          supers[$internalChangedCallback].call(this, internalName, oldValue, newValue);
+          await this[$$invalidate]();
         },
-        {isBound: true},
-      ),
+        placement: 'own',
+      }),
+      $.method({
+        key: $propertyChangedCallback,
+        async method(propertyName, oldValue, newValue) {
+          if (oldValue === newValue || !this[$$connected]) {
+            return;
+          }
+
+          supers[$propertyChangedCallback].call(this, propertyName, oldValue, newValue);
+          await this[$$invalidate]();
+        },
+        placement: 'own',
+      }),
+      $.method({
+        key: $updatedCallback,
+        async method() {
+          supers[$updatedCallback].call(this);
+        },
+        placement: 'own',
+      }),
 
       // Private
-      field({
+      $.field({
         initializer: () => false,
         key: $$connected,
       }),
-      field({
-        initializer() {
+      $.hook({
+        placement: 'own',
+        start() {
           if (!rootProperty.has(this)) {
             rootProperty.set(this, this[$createRoot]());
           }
         },
       }),
-      field({
+      $.field({
         initializer: () => true,
         key: $$valid,
       }),
-      method({
+      $.method({
         key: $$invalidate,
-        value: builtin
-          ? noop
-          : async function() {
+        method: isShadow
+          ? async function() {
               if (!this[$$valid]) {
                 return;
               }
@@ -189,11 +173,20 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
               if (!isConnecting) {
                 this[$updatedCallback]();
               }
-            },
+            }
+          : noop,
       }),
     ],
     finisher(target) {
       customElements.define(name, target, builtin && {extends: builtin});
+
+      finish(target, {
+        [$createRoot]: isShadow
+          ? function() {
+              return this.attachShadow({mode: 'open'});
+            }
+          : noop,
+      });
     },
     kind,
   };

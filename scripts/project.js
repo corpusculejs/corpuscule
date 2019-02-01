@@ -7,13 +7,13 @@ const packages = {
   router: ['index'],
   styles: ['index'],
   utils: [
-    'addToRegistry',
     'asserts',
     'compose',
     'descriptors',
-    'createSupers',
-    'shallowEqual',
+    'getSupers',
+    'propertyUtils',
     'scheduler',
+    'shallowEqual',
   ],
 };
 

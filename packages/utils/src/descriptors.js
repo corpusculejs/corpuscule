@@ -1,58 +1,81 @@
 export const lifecycleKeys = ['connectedCallback', 'disconnectedCallback'];
 
-export const field = (
-  {extras, finisher, initializer, key},
-  {isReadonly = false, isStatic = false} = {},
-) => ({
+export const field = ({
+  configurable = true,
+  enumerable = true,
+  extras,
+  finisher,
+  initializer,
+  key,
+  placement = 'own',
+  writable = true,
+}) => ({
   descriptor: {
-    configurable: true,
-    enumerable: true,
-    writable: !isReadonly,
+    configurable,
+    enumerable,
+    writable,
   },
   extras,
   finisher,
   initializer,
-  key: key || Symbol(),
+  key,
   kind: 'field',
-  placement: isStatic ? 'static' : 'own',
+  placement,
 });
 
-export const method = (
-  {extras, finisher, key, value},
-  {isBound = false, isStatic = false} = {},
-) => {
-  if (isBound) {
-    return field(
-      {
+export const method = ({
+  configurable = true,
+  bound = false,
+  enumerable = true,
+  extras,
+  finisher,
+  key,
+  method: value,
+  writable = true,
+  placement = 'prototype',
+}) =>
+  bound
+    ? field({
+        configurable,
+        enumerable,
         extras,
         finisher,
         initializer() {
           return value.bind(this);
         },
         key,
-      },
-      {isStatic},
-    );
-  }
+        writable,
+      })
+    : {
+        descriptor: {
+          configurable,
+          enumerable,
+          value,
+          writable,
+        },
+        extras,
+        finisher,
+        key,
+        kind: 'method',
+        placement,
+      };
 
-  return {
-    descriptor: {configurable: true, value, writable: true},
-    extras,
-    finisher,
-    key,
-    kind: 'method',
-    placement: isStatic ? 'static' : 'prototype',
-  };
-};
-
-export const accessor = (
-  {extras, finisher, initializer, key, get, set},
-  {adjust = methods => methods, isStatic = false, toArray = false} = {},
-) => {
+export const accessor = ({
+  adjust = methods => methods,
+  configurable = true,
+  enumerable = true,
+  extras,
+  finisher,
+  get,
+  initializer,
+  key,
+  placement = 'prototype',
+  set,
+}) => {
   let accessorMethods;
   let accessorField;
 
-  if (initializer) {
+  if (initializer || (!get && !set)) {
     const storage = Symbol();
 
     accessorMethods = adjust({
@@ -65,6 +88,7 @@ export const accessor = (
     });
 
     accessorField = field({
+      enumerable: false,
       initializer,
       key: storage,
     });
@@ -72,23 +96,25 @@ export const accessor = (
     accessorMethods = adjust({get, set});
   }
 
-  const result = {
-    descriptor: {configurable: true, ...accessorMethods},
-    extras,
+  return {
+    descriptor: {
+      configurable,
+      enumerable,
+      ...accessorMethods,
+    },
+    extras: accessorField ? [...(extras || []), accessorField] : extras,
     finisher,
     key,
     kind: 'method',
-    placement: isStatic ? 'static' : 'prototype',
+    placement,
   };
-
-  if (accessorField) {
-    return toArray
-      ? [result, accessorField]
-      : {
-          ...result,
-          extras: Array.isArray(extras) ? [...extras, accessorField] : [accessorField],
-        };
-  }
-
-  return result;
 };
+
+export const hook = ({extras, placement = 'static', start}) => ({
+  descriptor: {},
+  extras,
+  initializer: start,
+  key: Symbol(),
+  kind: 'field',
+  placement,
+});

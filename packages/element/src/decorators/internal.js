@@ -2,26 +2,28 @@ import {internalChangedCallback as $internalChangedCallback} from '../tokens/lif
 import {accessor} from '@corpuscule/utils/lib/descriptors';
 import {assertElementProperty} from '../utils';
 
-const internal = ({descriptor: {get, set}, initializer, key, kind, placement}) => {
-  assertElementProperty('internal', get, set, kind, placement);
+const internal = descriptor => {
+  assertElementProperty('internal', descriptor);
 
-  return accessor(
-    {
-      get,
-      initializer,
-      key,
-      set,
-    },
-    {
-      adjust: ({get: originalGet, set: originalSet}) => ({
-        get: originalGet,
-        set(value) {
-          this[$internalChangedCallback](key, originalGet.call(this), value);
-          originalSet.call(this, value);
-        },
-      }),
-    },
-  );
+  const {
+    descriptor: {get, set},
+    initializer,
+    key,
+  } = descriptor;
+
+  return accessor({
+    adjust: ({get: originalGet, set: originalSet}) => ({
+      get: originalGet,
+      set(value) {
+        this[$internalChangedCallback](key, originalGet.call(this), value);
+        originalSet.call(this, value);
+      },
+    }),
+    get,
+    initializer,
+    key,
+    set,
+  });
 };
 
 export default internal;
