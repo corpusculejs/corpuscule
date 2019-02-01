@@ -1,4 +1,4 @@
-import {ExtendedPropertyDescriptor} from '@corpuscule/typings';
+import {ClassDescriptor, ExtendedPropertyDescriptor} from '@corpuscule/typings';
 
 export interface AssertOptions {
   readonly correct?: boolean;
@@ -9,7 +9,9 @@ export enum Kind {
   Accessor,
   Class,
   Field,
+  Getter,
   Method,
+  Setter,
 }
 
 export enum Placement {
@@ -21,7 +23,7 @@ export enum Placement {
 export const assertKind: (
   decoratorName: string,
   types: number,
-  descriptor: ExtendedPropertyDescriptor,
+  descriptor: ExtendedPropertyDescriptor | ClassDescriptor,
 ) => void;
 
 export const assertPlacement: (
