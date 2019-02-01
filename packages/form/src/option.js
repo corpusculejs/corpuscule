@@ -1,4 +1,4 @@
-import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
+import {assertKind, assertPlacement, Kind, Placement} from '@corpuscule/utils/lib/asserts';
 import {getName, getValue} from '@corpuscule/utils/lib/propertyUtils';
 import shallowEqual from '@corpuscule/utils/lib/shallowEqual';
 import * as $ from '@corpuscule/utils/lib/descriptors';
@@ -8,22 +8,18 @@ const createOptionDecorator = (
   {api},
   {options, subscribe, update},
   {compare, configInitializers},
-) => propertyDescriptor => {
-  const {descriptor, initializer, key, kind, placement} = propertyDescriptor;
-  const {get, set, value} = descriptor;
+) => descriptor => {
+  assertKind('option', Kind.Field | Kind.Method | Kind.Accessor, descriptor);
+  assertPlacement('option', Placement.Own | Placement.Prototype, descriptor);
 
-  assertKind('option', 'fields, methods or full accessors', kind, {
-    correct: kind === 'field' || (kind === 'method' && (value || (get && set))),
-  });
-  assertPlacement('option', 'own or prototype', placement, {
-    correct: placement === 'own' || placement === 'prototype',
-  });
+  const {descriptor: d, initializer, key, kind, placement} = descriptor;
+  const {get, set, value} = d;
 
   const name = getName(key);
 
   if (name === 'compareInitialValues') {
     return {
-      ...propertyDescriptor,
+      ...descriptor,
       extras: [
         $.hook({
           start() {
@@ -151,7 +147,7 @@ const createOptionDecorator = (
 
   if (kind === 'method' && value) {
     return {
-      descriptor,
+      descriptor: d,
       key,
       kind,
       placement,

@@ -1,4 +1,4 @@
-import {assertKind, assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
+import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/asserts';
 import getSupers from '@corpuscule/utils/lib/getSupers';
 import * as $ from '@corpuscule/utils/lib/descriptors';
 import {getValue} from '@corpuscule/utils/lib/propertyUtils';
@@ -7,8 +7,8 @@ import {checkValue} from './utils';
 const createProvider = (
   {consumers, eventName, providers, value},
   [connectedCallbackKey, disconnectedCallbackKey],
-) => ({elements, kind}) => {
-  assertKind('provider', 'class', kind);
+) => descriptor => {
+  assertKind('provider', Kind.Class, descriptor);
 
   let $value;
 
@@ -16,11 +16,12 @@ const createProvider = (
   const $$subscribe = Symbol();
   const $$unsubscribe = Symbol();
 
-  const [supers, prepareSupers] = getSupers(elements, $.lifecycleKeys);
+  const [supers, prepareSupers] = getSupers(descriptor.elements, $.lifecycleKeys);
 
   return {
+    ...descriptor,
     elements: [
-      ...elements,
+      ...descriptor.elements,
 
       // Public
       $.method({
@@ -82,7 +83,6 @@ const createProvider = (
 
       assertRequiredProperty('provider', 'value', $value);
     },
-    kind,
   };
 };
 

@@ -1,13 +1,8 @@
-import {assertKind, assertPlacement} from '@corpuscule/utils/lib/asserts';
+import {assertKind, assertPlacement, Kind, Placement} from '@corpuscule/utils/lib/asserts';
 
-export const assertElementProperty = (decoratorName, get, set, kind, placement) => {
-  assertKind(decoratorName, 'field or accessor', kind, {
-    correct: kind === 'field' || (kind === 'method' && get && set),
-  });
-
-  assertPlacement(decoratorName, 'own or prototype', placement, {
-    correct: placement === 'own' || placement === 'prototype',
-  });
+export const assertElementProperty = (decoratorName, descriptor) => {
+  assertKind(decoratorName, Kind.Field | Kind.Accessor, descriptor);
+  assertPlacement(decoratorName, Placement.Own | Placement.Prototype, descriptor);
 };
 
 export const shadowElements = [

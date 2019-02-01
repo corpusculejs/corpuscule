@@ -1,4 +1,4 @@
-import {assertKind, assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
+import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/asserts';
 import {field, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
 import {setValue} from '@corpuscule/utils/lib/propertyUtils';
 import {resolve} from './tokens/lifecycle';
@@ -8,10 +8,10 @@ const methods = [...lifecycleKeys, resolve];
 
 const [connectedCallbackKey, disconnectedCallbackKey] = lifecycleKeys;
 
-const createOutletDecorator = ({consumer, value}, {api}) => routes => classDescriptor => {
-  assertKind('outlet', 'class', classDescriptor.kind);
+const createOutletDecorator = ({consumer, value}, {api}) => routes => descriptor => {
+  assertKind('outlet', Kind.Class, descriptor);
 
-  const {elements, kind} = consumer(classDescriptor);
+  const {elements, kind} = consumer(descriptor);
 
   let $api;
 
