@@ -9,6 +9,7 @@
     "callback-return": "off",
     "global-require": "off",
     "func-names": "off",
+    "no-bitwise": "off",
     "no-extra-parens": "off",
     "no-invalid-this": "off",
     "prefer-arrow-callback": "off"
