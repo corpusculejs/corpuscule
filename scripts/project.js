@@ -7,7 +7,6 @@ const packages = {
   router: ['index'],
   styles: ['index'],
   utils: [
-    'addToRegistry',
     'asserts',
     'compose',
     'descriptors',
