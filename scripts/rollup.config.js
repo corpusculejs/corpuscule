@@ -16,7 +16,7 @@ const babelPlugin = babel({
 module.exports = Object.entries(packages).reduce((acc, [pack, entries]) => {
   for (const file of entries) {
     acc.push({
-      external: ['.'],
+      external: ['.', ...(pack === 'utils' ? entries.map(e => `./${e}`) : [])],
       input: `packages/${pack}/src/${file}.js`,
       output: {
         file: `packages/${pack}/lib/${file}.js`,
