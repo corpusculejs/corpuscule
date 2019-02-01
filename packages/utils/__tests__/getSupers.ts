@@ -86,6 +86,27 @@ const testGetSupers = () => {
       expect(boundFooSpy).toHaveBeenCalledWith(test);
     });
 
+    it('ignores static methods even with the same name', () => {
+      const staticFooSpy = jasmine.createSpy('staticFoo');
+
+      let supers: {readonly [key: string]: Function} = {};
+      const decorator = createDecorator(['foo'], s => {
+        supers = s;
+      });
+
+      @decorator
+      class Test {
+        public static foo(): void {
+          staticFooSpy(this);
+        }
+      }
+
+      const test = new Test();
+      supers.foo.call(test);
+
+      expect(staticFooSpy).not.toHaveBeenCalled();
+    });
+
     it('calls super method if exist and there is no descriptors', () => {
       const fooSpy = jasmine.createSpy('foo');
 
