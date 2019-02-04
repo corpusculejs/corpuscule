@@ -9,7 +9,7 @@ Lightweight set of decorators for providing solid form experience for web compon
 connector to [🏁 Final Form](https://github.com/final-form/final-form).
 
 ## Features
-* **Small**. Only [3.1Kb gzipped](https://bundlephobia.com/result?p=@corpuscule/form@0.6.1)
+* **Small**. Only [4.2Kb gzipped](https://bundlephobia.com/result?p=@corpuscule/form@0.7.0)
 * **Typed**. [Typescript](http://www.typescriptlang.org/) typings are included.
 
 ## Installation

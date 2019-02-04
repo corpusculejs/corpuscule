@@ -9,7 +9,7 @@ Lightweight set of decorators for providing [Redux](https://redux.js.org/) suppo
 components. 
 
 ## Features
-* **Small**. Only [1.8Kb gzipped](https://bundlephobia.com/result?p=@corpuscule/redux@0.6.1)
+* **Small**. Only [2.6Kb gzipped](https://bundlephobia.com/result?p=@corpuscule/redux@0.7.0)
 * **Typed**. [Typescript](http://www.typescriptlang.org/) typings are included.
 
 ## Installation

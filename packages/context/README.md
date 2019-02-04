@@ -20,7 +20,7 @@ in [his talk](https://youtu.be/6o5zaKHedTE).
 * **Zero third-party dependencies**. Package still contains Corpuscule dependencies, but no
 third-party library is used.
 * **Framework agnostic**. You can use package with any Web Components compatible framework/library.
-* **Small**. Only [1.3Kb gzipped](https://bundlephobia.com/result?p=@corpuscule/context@0.6.0)
+* **Small**. Only [2Kb gzipped](https://bundlephobia.com/result?p=@corpuscule/context@0.7.0)
 * **Typed**. [Typescript](http://www.typescriptlang.org/) typings are included.
 
 ## Installation

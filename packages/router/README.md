@@ -9,7 +9,7 @@ Lightweight set of decorators and components for providing routing for web compo
 of [Universal Router](https://github.com/kriasoft/universal-router).
 
 ## Features
-* **Small**. Only [1.9Kb gzipped](https://bundlephobia.com/result?p=@corpuscule/router@0.6.1)
+* **Small**. Only [2.8Kb gzipped](https://bundlephobia.com/result?p=@corpuscule/router@0.7.0)
 * **Typed**. [Typescript](http://www.typescriptlang.org/) typings are included.
 
 ## Installation

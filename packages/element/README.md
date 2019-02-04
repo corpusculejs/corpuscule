@@ -15,7 +15,7 @@ third-party library is used.
 * **Renderer agnostic**. You can use `@corpuscule/element` with any renderer you want: `lit-html`,
 `hyperHTML`, `preact` or even `React`. Just choose an existing renderer or create a new one and send
 it as a decorator option.
-* **Small**. Only [2.9Kb gzipped](https://bundlephobia.com/result?p=@corpuscule/element@0.6.0).
+* **Small**. Only [2.5Kb gzipped](https://bundlephobia.com/result?p=@corpuscule/element@0.7.0).
 * **Typed**. [Typescript](http://www.typescriptlang.org/) typings are included.
 
 ## Installation
