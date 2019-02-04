@@ -1,5 +1,5 @@
 import {assertKind, assertPlacement, Kind, Placement} from '@corpuscule/utils/lib/asserts';
-import * as $ from '@corpuscule/utils/lib/descriptors';
+import {hook} from '@corpuscule/utils/lib/descriptors';
 import {getName} from '@corpuscule/utils/lib/propertyUtils';
 import {apis} from './utils';
 
@@ -19,7 +19,7 @@ const createApiDecorator = ({value}, {api}, {input, meta}, {state}) => descripto
   return {
     ...(isFormApi ? value(descriptor) : descriptor),
     extras: [
-      $.hook({
+      hook({
         start() {
           if (isFormApi) {
             api.set(this, key);

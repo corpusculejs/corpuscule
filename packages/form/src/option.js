@@ -1,7 +1,7 @@
 import {assertKind, assertPlacement, Kind, Placement} from '@corpuscule/utils/lib/asserts';
 import {getName, getValue} from '@corpuscule/utils/lib/propertyUtils';
 import shallowEqual from '@corpuscule/utils/lib/shallowEqual';
-import * as $ from '@corpuscule/utils/lib/descriptors';
+import {accessor, hook, method} from '@corpuscule/utils/lib/descriptors';
 import {fieldOptions, formOptions} from './utils';
 
 const createOptionDecorator = (
@@ -21,7 +21,7 @@ const createOptionDecorator = (
     return {
       ...descriptor,
       extras: [
-        $.hook({
+        hook({
           start() {
             compare.set(this, key);
           },
@@ -52,7 +52,7 @@ const createOptionDecorator = (
 
     methodPart = {
       extras: [
-        $.method({
+        method({
           bound: true,
           key,
           method: value,
@@ -155,7 +155,7 @@ const createOptionDecorator = (
     };
   }
 
-  return $.accessor({
+  return accessor({
     get,
     initializer,
     key,

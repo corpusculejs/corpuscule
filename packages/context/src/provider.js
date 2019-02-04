@@ -1,8 +1,8 @@
 import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/asserts';
 import getSupers from '@corpuscule/utils/lib/getSupers';
-import * as $ from '@corpuscule/utils/lib/descriptors';
+import {field, hook, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
 import {getValue} from '@corpuscule/utils/lib/propertyUtils';
-import {checkValue} from './utils';
+import {checkValue, filter} from './utils';
 
 const createProvider = (
   {consumers, eventName, providers, value},
@@ -10,21 +10,22 @@ const createProvider = (
 ) => descriptor => {
   assertKind('provider', Kind.Class, descriptor);
 
+  const {elements, kind} = descriptor;
+
   let $value;
 
   const $$consumers = Symbol();
   const $$subscribe = Symbol();
   const $$unsubscribe = Symbol();
 
-  const [supers, prepareSupers] = getSupers(descriptor.elements, $.lifecycleKeys);
+  const [supers, prepareSupers] = getSupers(elements, lifecycleKeys);
 
   return {
-    ...descriptor,
     elements: [
-      ...descriptor.elements,
+      ...filter(elements),
 
       // Public
-      $.method({
+      method({
         key: connectedCallbackKey,
         method() {
           this.addEventListener(eventName, this[$$subscribe]);
@@ -32,7 +33,7 @@ const createProvider = (
         },
         placement: 'own',
       }),
-      $.method({
+      method({
         key: disconnectedCallbackKey,
         method() {
           this.removeEventListener(eventName, this[$$subscribe]);
@@ -42,18 +43,18 @@ const createProvider = (
       }),
 
       // Private
-      $.field({
+      field({
         initializer: () => [],
         key: $$consumers,
       }),
-      $.method({
+      method({
         bound: true,
         key: $$unsubscribe,
         method(consume) {
           this[$$consumers] = this[$$consumers].filter(p => p !== consume);
         },
       }),
-      $.method({
+      method({
         bound: true,
         key: $$subscribe,
         method(event) {
@@ -68,7 +69,7 @@ const createProvider = (
       }),
 
       // Hooks
-      $.hook({
+      hook({
         start() {
           providers.add(this);
           consumers.set(this, $$consumers);
@@ -83,6 +84,7 @@ const createProvider = (
 
       assertRequiredProperty('provider', 'value', $value);
     },
+    kind,
   };
 };
 

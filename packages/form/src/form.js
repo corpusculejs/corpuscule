@@ -1,11 +1,11 @@
 import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/asserts';
-import * as $ from '@corpuscule/utils/lib/descriptors';
+import {field, hook, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
 import getSupers from '@corpuscule/utils/lib/getSupers';
 import {getName, getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
 import {createForm} from 'final-form';
-import {all} from './utils';
+import {all, filter} from './utils';
 
-const [connectedCallbackKey, disconnectedCallbackKey] = $.lifecycleKeys;
+const [connectedCallbackKey, disconnectedCallbackKey] = lifecycleKeys;
 
 const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => ({
   decorators,
@@ -22,14 +22,14 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
 
   const {elements, kind} = provider(descriptor);
 
-  const [supers, finish] = getSupers(elements, $.lifecycleKeys);
+  const [supers, finish] = getSupers(elements, lifecycleKeys);
 
   return {
     elements: [
-      ...elements,
+      ...filter(elements),
 
       // Public
-      $.method({
+      method({
         bound: true,
         key: connectedCallbackKey,
         method() {
@@ -53,7 +53,7 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
         },
         placement: 'own',
       }),
-      $.method({
+      method({
         key: disconnectedCallbackKey,
         method() {
           for (const unsubscribe of this[$$unsubscriptions]) {
@@ -70,11 +70,11 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
       }),
 
       // Private
-      $.field({
+      field({
         initializer: () => [],
         key: $$unsubscriptions,
       }),
-      $.method({
+      method({
         bound: true,
         key: $$submit,
         method(e) {
@@ -86,7 +86,7 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
       }),
 
       // Hooks
-      $.hook({
+      hook({
         placement: 'own',
         start() {
           setValue(
@@ -102,7 +102,7 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
           );
         },
       }),
-      $.hook({
+      hook({
         start() {
           configInitializers.set(this, []);
         },

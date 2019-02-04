@@ -1,6 +1,6 @@
 /* eslint-disable no-invalid-this, prefer-arrow-callback */
 import {assertKind, Kind} from '@corpuscule/utils/lib/asserts';
-import * as $ from '@corpuscule/utils/lib/descriptors';
+import {field, method, hook, lifecycleKeys} from '@corpuscule/utils/lib/descriptors';
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
 import {
   createRoot as $createRoot,
@@ -13,7 +13,7 @@ import getSupers from '@corpuscule/utils/lib/getSupers';
 import {shadowElements} from '../utils';
 
 const attributeChangedCallbackKey = 'attributeChangedCallback';
-const [connectedCallbackKey] = $.lifecycleKeys;
+const [connectedCallbackKey] = lifecycleKeys;
 
 // eslint-disable-next-line no-empty-function
 const noop = () => {};
@@ -57,16 +57,23 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
 
   return {
     elements: [
-      ...elements.filter(({key}) => !filteringNames.includes(key)),
+      ...elements.filter(
+        ({key, placement}) =>
+          !(
+            (filteringNames.includes(key) && placement === 'static') ||
+            ((key === connectedCallbackKey || key === attributeChangedCallbackKey) &&
+              placement === 'own')
+          ),
+      ),
 
       // Static
-      $.field({
+      field({
         initializer: () => name,
         key: 'is',
         placement: 'static',
         writable: false,
       }),
-      $.field({
+      field({
         initializer: () => [],
         key: 'observedAttributes',
         placement: 'static',
@@ -74,7 +81,7 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
       }),
 
       // Public
-      $.method({
+      method({
         key: connectedCallbackKey,
         async method() {
           await this[$$invalidate]();
@@ -82,7 +89,7 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
         },
         placement: 'own',
       }),
-      $.method({
+      method({
         key: attributeChangedCallbackKey,
         async method(attributeName, oldValue, newValue) {
           if (oldValue === newValue || !this[$$connected]) {
@@ -96,14 +103,14 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
       }),
 
       // Protected
-      $.method({
+      method({
         key: $createRoot,
         method() {
           return supers[$createRoot].call(this);
         },
         placement: 'own',
       }),
-      $.method({
+      method({
         key: $internalChangedCallback,
         async method(internalName, oldValue, newValue) {
           if (!this[$$connected]) {
@@ -115,7 +122,7 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
         },
         placement: 'own',
       }),
-      $.method({
+      method({
         key: $propertyChangedCallback,
         async method(propertyName, oldValue, newValue) {
           if (oldValue === newValue || !this[$$connected]) {
@@ -127,7 +134,7 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
         },
         placement: 'own',
       }),
-      $.method({
+      method({
         key: $updatedCallback,
         async method() {
           supers[$updatedCallback].call(this);
@@ -136,11 +143,11 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
       }),
 
       // Private
-      $.field({
+      field({
         initializer: () => false,
         key: $$connected,
       }),
-      $.hook({
+      hook({
         placement: 'own',
         start() {
           if (!rootProperty.has(this)) {
@@ -148,11 +155,11 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
           }
         },
       }),
-      $.field({
+      field({
         initializer: () => true,
         key: $$valid,
       }),
-      $.method({
+      method({
         key: $$invalidate,
         method: isShadow
           ? async function() {

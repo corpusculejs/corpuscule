@@ -354,6 +354,28 @@ const testElementDecorator = () => {
       expect(rendererSpy).toHaveBeenCalledWith('render', root, jasmine.any(Object));
     });
 
+    it('does not throw an error if class already have own lifecycle element', () => {
+      expect(() => {
+        @element(genName())
+        // @ts-ignore
+        class Test extends CustomElement {
+          public constructor() {
+            super();
+            this.connectedCallback = this.connectedCallback.bind(this);
+            this.attributeChangedCallback = this.attributeChangedCallback.bind(this);
+          }
+
+          public connectedCallback(): void {}
+
+          public attributeChangedCallback(): void {}
+
+          public [render](): string {
+            return 'render';
+          }
+        }
+      }).not.toThrow();
+    });
+
     describe('elements extending', () => {
       it('allows extending existing element', () => {
         @element(genName())

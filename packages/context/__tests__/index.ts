@@ -248,5 +248,47 @@ describe('@corpuscule/context', () => {
         class Consumer extends CustomElement {}
       }).toThrowError('No Consumer field is marked with @value');
     });
+
+    it('does not throw an error if class already have own lifecycle element', () => {
+      const {consumer, provider, value} = createContext();
+
+      expect(() => {
+        @provider
+        // @ts-ignore
+        class Provider extends CustomElement {
+          @value
+          public providingValue: number = 2;
+
+          public constructor() {
+            super();
+            this.connectedCallback = this.disconnectedCallback.bind(this);
+            this.disconnectedCallback = this.connectedCallback.bind(this);
+          }
+
+          public connectedCallback(): void {} // tslint:disable-line:no-empty
+
+          public disconnectedCallback(): void {} // tslint:disable-line:no-empty
+        }
+      }).not.toThrow();
+
+      expect(() => {
+        @consumer
+        // @ts-ignore
+        class Consumer extends CustomElement {
+          @value
+          public contextValue!: number;
+
+          public constructor() {
+            super();
+            this.connectedCallback = this.disconnectedCallback.bind(this);
+            this.disconnectedCallback = this.connectedCallback.bind(this);
+          }
+
+          public connectedCallback(): void {} // tslint:disable-line:no-empty
+
+          public disconnectedCallback(): void {} // tslint:disable-line:no-empty
+        }
+      }).not.toThrow();
+    });
   });
 });

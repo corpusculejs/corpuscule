@@ -946,6 +946,30 @@ const testField = () => {
           expect(state.change).toHaveBeenCalledWith(['1', '2']);
         });
       });
+
+      it('does not throw an error if class already have own lifecycle element', () => {
+        expect(() => {
+          @field
+          // @ts-ignore
+          class FormField extends CustomElement {
+            @api public readonly form!: FormApi;
+            @api public readonly input!: FieldInputProps<string>;
+            @api public readonly meta!: FieldMetaProps;
+
+            @option public readonly name: string = 'test';
+
+            public constructor() {
+              super();
+              this.connectedCallback = this.connectedCallback.bind(this);
+              this.disconnectedCallback = this.disconnectedCallback.bind(this);
+            }
+
+            public connectedCallback(): void {}
+
+            public disconnectedCallback(): void {}
+          }
+        }).not.toThrow();
+      });
     });
   });
 };

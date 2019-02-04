@@ -25,7 +25,9 @@ const createOutletDecorator = ({consumer, value}, {api}) => routes => descriptor
 
   return {
     elements: [
-      ...elements,
+      ...elements.filter(
+        ({key, placement}) => !(lifecycleKeys.includes(key) && placement === 'own'),
+      ),
 
       // Public
       method({

@@ -24,7 +24,9 @@ export const createReduxDecorator = ({consumer, value}, {units}, {store}) => des
 
   return {
     elements: [
-      ...elements,
+      ...elements.filter(
+        ({key, placement}) => !(key === disconnectedCallbackKey && placement === 'own'),
+      ),
 
       // Public
       method({
