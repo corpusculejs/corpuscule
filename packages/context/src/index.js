@@ -1,7 +1,7 @@
+import {lifecycleKeys} from '@corpuscule/utils/lib/descriptors';
 import createProvider from './provider';
 import createValue from './value';
 import createConsumer from './consumer';
-import {lifecycleKeys} from '@corpuscule/utils/lib/descriptors';
 
 const randomString = () => {
   const arr = new Uint32Array(2);
