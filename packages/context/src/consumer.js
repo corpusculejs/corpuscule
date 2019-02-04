@@ -1,6 +1,6 @@
 import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/asserts';
 import getSupers from '@corpuscule/utils/lib/getSupers';
-import * as $ from '@corpuscule/utils/lib/descriptors';
+import {lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
 import {setValue} from '@corpuscule/utils/lib/propertyUtils';
 import {checkValue} from './utils';
 
@@ -17,14 +17,14 @@ const createConsumer = (
   const $$consume = Symbol();
   const $$unsubscribe = Symbol();
 
-  const [supers, prepareSupers] = getSupers(elements, $.lifecycleKeys);
+  const [supers, prepareSupers] = getSupers(elements, lifecycleKeys);
 
   return {
     elements: [
       ...elements,
 
       // Public
-      $.method({
+      method({
         key: connectedCallbackKey,
         method() {
           const event = new CustomEvent(eventName, {
@@ -46,7 +46,7 @@ const createConsumer = (
         },
         placement: 'own',
       }),
-      $.method({
+      method({
         key: disconnectedCallbackKey,
         method() {
           if (this[$$unsubscribe]) {
@@ -59,7 +59,7 @@ const createConsumer = (
       }),
 
       // Private
-      $.method({
+      method({
         bound: true,
         key: $$consume,
         method(v) {

@@ -1,5 +1,5 @@
 import {assertKind, assertPlacement, Kind, Placement} from '@corpuscule/utils/lib/asserts';
-import * as $ from '@corpuscule/utils/lib/descriptors';
+import {accessor, hook} from '@corpuscule/utils/lib/descriptors';
 
 const createValue = ({consumers, value, providers}, defaultValue) => descriptor => {
   assertKind('value', Kind.Field | Kind.Method | Kind.Accessor, descriptor);
@@ -10,7 +10,7 @@ const createValue = ({consumers, value, providers}, defaultValue) => descriptor 
   let $$consumers;
   let isProvider;
 
-  return $.accessor({
+  return accessor({
     adjust: ({get: originalGet, set: originalSet}) => ({
       get: originalGet,
       set(v) {
@@ -24,7 +24,7 @@ const createValue = ({consumers, value, providers}, defaultValue) => descriptor 
       },
     }),
     extras: [
-      $.hook({
+      hook({
         start() {
           value.set(this, key);
         },

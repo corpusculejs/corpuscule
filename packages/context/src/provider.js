@@ -1,6 +1,6 @@
 import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/asserts';
 import getSupers from '@corpuscule/utils/lib/getSupers';
-import * as $ from '@corpuscule/utils/lib/descriptors';
+import {field, hook, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
 import {getValue} from '@corpuscule/utils/lib/propertyUtils';
 import {checkValue} from './utils';
 
@@ -18,14 +18,14 @@ const createProvider = (
   const $$subscribe = Symbol();
   const $$unsubscribe = Symbol();
 
-  const [supers, prepareSupers] = getSupers(elements, $.lifecycleKeys);
+  const [supers, prepareSupers] = getSupers(elements, lifecycleKeys);
 
   return {
     elements: [
       ...elements,
 
       // Public
-      $.method({
+      method({
         key: connectedCallbackKey,
         method() {
           this.addEventListener(eventName, this[$$subscribe]);
@@ -33,7 +33,7 @@ const createProvider = (
         },
         placement: 'own',
       }),
-      $.method({
+      method({
         key: disconnectedCallbackKey,
         method() {
           this.removeEventListener(eventName, this[$$subscribe]);
@@ -43,18 +43,18 @@ const createProvider = (
       }),
 
       // Private
-      $.field({
+      field({
         initializer: () => [],
         key: $$consumers,
       }),
-      $.method({
+      method({
         bound: true,
         key: $$unsubscribe,
         method(consume) {
           this[$$consumers] = this[$$consumers].filter(p => p !== consume);
         },
       }),
-      $.method({
+      method({
         bound: true,
         key: $$subscribe,
         method(event) {
@@ -69,7 +69,7 @@ const createProvider = (
       }),
 
       // Hooks
-      $.hook({
+      hook({
         start() {
           providers.add(this);
           consumers.set(this, $$consumers);
