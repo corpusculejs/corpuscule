@@ -2,7 +2,7 @@ import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/as
 import getSupers from '@corpuscule/utils/lib/getSupers';
 import {lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
 import {setValue} from '@corpuscule/utils/lib/propertyUtils';
-import {checkValue} from './utils';
+import {checkValue, filter} from './utils';
 
 const createConsumer = (
   {eventName, value},
@@ -21,7 +21,7 @@ const createConsumer = (
 
   return {
     elements: [
-      ...elements,
+      ...filter(elements),
 
       // Public
       method({

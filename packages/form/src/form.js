@@ -3,7 +3,7 @@ import {field, hook, lifecycleKeys, method} from '@corpuscule/utils/lib/descript
 import getSupers from '@corpuscule/utils/lib/getSupers';
 import {getName, getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
 import {createForm} from 'final-form';
-import {all} from './utils';
+import {all, filter} from './utils';
 
 const [connectedCallbackKey, disconnectedCallbackKey] = lifecycleKeys;
 
@@ -26,7 +26,7 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
 
   return {
     elements: [
-      ...elements,
+      ...filter(elements),
 
       // Public
       method({

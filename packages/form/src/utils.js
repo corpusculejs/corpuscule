@@ -1,3 +1,4 @@
+import {lifecycleKeys} from '@corpuscule/utils/lib/descriptors';
 import {configOptions, formSubscriptionItems} from 'final-form';
 
 export const noop = () => {}; // eslint-disable-line no-empty-function
@@ -56,3 +57,6 @@ export const getTargetValue = (
       return value;
   }
 };
+
+export const filter = elements =>
+  elements.filter(({key, placement}) => !(lifecycleKeys.includes(key) && placement === 'own'));

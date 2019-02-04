@@ -230,6 +230,26 @@ const outletTest = () => {
 
       expect(disconnectedSpy).toHaveBeenCalled();
     });
+
+    it('does not throw an error if class already have own lifecycle element', () => {
+      expect(() => {
+        @outlet(routes)
+        // @ts-ignore
+        class Outlet extends CustomElement {
+          @api public readonly layout?: string;
+
+          public constructor() {
+            super();
+            this.connectedCallback = this.connectedCallback.bind(this);
+            this.disconnectedCallback = this.disconnectedCallback.bind(this);
+          }
+
+          public connectedCallback(): void {} // tslint:disable-line:no-empty
+
+          public disconnectedCallback(): void {} // tslint:disable-line:no-empty
+        }
+      }).not.toThrow();
+    });
   });
 };
 

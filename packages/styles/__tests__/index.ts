@@ -198,4 +198,18 @@ describe('@corpuscule/styles', () => {
 
     expect(test.shadowRoot!.innerHTML).toBe(`<style>${rawStyles}</style><div>Bar</div>`);
   });
+
+  it('does not throw an error if class already have own lifecycle element', () => {
+    expect(() => {
+      @styles('')
+      class Test extends HTMLElement {
+        public constructor() {
+          super();
+          this.attachShadow = this.attachShadow.bind(this);
+        }
+      }
+
+      customElements.define(genName(), Test);
+    }).not.toThrow();
+  });
 });

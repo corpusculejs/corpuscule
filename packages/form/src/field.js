@@ -1,7 +1,7 @@
 import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/asserts';
 import * as $ from '@corpuscule/utils/lib/descriptors';
 import {getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
-import {all, getTargetValue, noop} from './utils';
+import {all, filter, getTargetValue, noop} from './utils';
 import getSupers from '@corpuscule/utils/lib/getSupers';
 
 const [connectedCallbackKey, disconnectedCallbackKey] = $.lifecycleKeys;
@@ -41,7 +41,7 @@ const createField = (
 
   return {
     elements: [
-      ...elements,
+      ...filter(elements),
 
       // Public
       $.method({

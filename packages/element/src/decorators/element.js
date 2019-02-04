@@ -57,7 +57,14 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
 
   return {
     elements: [
-      ...elements.filter(({key}) => !filteringNames.includes(key)),
+      ...elements.filter(
+        ({key, placement}) =>
+          !(
+            (filteringNames.includes(key) && placement === 'static') ||
+            ((key === connectedCallbackKey || key === attributeChangedCallbackKey) &&
+              placement === 'own')
+          ),
+      ),
 
       // Static
       field({

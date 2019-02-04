@@ -390,6 +390,29 @@ const testForm = () => {
         }).toThrowError('@form requires onSubmit property marked with @option');
       });
     });
+
+    it('does not throw an error if class already have own lifecycle element', () => {
+      expect(() => {
+        @form()
+        // @ts-ignore
+        class Test {
+          @api public readonly form!: FormApi;
+          @api public readonly state!: FormState;
+
+          public constructor() {
+            this.connectedCallback = this.connectedCallback.bind(this);
+            this.disconnectedCallback = this.disconnectedCallback.bind(this);
+          }
+
+          public connectedCallback(): void {}
+
+          public disconnectedCallback(): void {}
+
+          @option
+          public onSubmit(): void {}
+        }
+      }).not.toThrow();
+    });
   });
 };
 

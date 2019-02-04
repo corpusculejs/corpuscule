@@ -155,6 +155,21 @@ describe('@corpuscule/redux', () => {
 
       expect(reduxStore.getState).not.toHaveBeenCalled();
     });
+
+    it('does not throw an error if class already have own lifecycle element', () => {
+      expect(() => {
+        @redux
+        // @ts-ignore
+        class Connected extends CustomElement {
+          public constructor() {
+            super();
+            this.disconnectedCallback = this.disconnectedCallback.bind(this);
+          }
+
+          public disconnectedCallback(): void {} // tslint:disable-line:no-empty
+        }
+      }).not.toThrow();
+    });
   });
 
   describe('@dispatcher', () => {

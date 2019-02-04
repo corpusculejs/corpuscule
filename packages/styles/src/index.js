@@ -6,7 +6,6 @@ import getSupers from '@corpuscule/utils/lib/getSupers';
 const observerConfig = {childList: true};
 
 const attachShadowKey = 'attachShadow';
-const {attachShadow} = HTMLElement.prototype;
 
 export const stylesAttachedCallback = Symbol();
 
@@ -47,16 +46,16 @@ export const createStylesDecorator = ({shadyCSS, adoptedStyleSheets}) => (
     }
   }
 
-  const [supers, finisher] = getSupers(elements, [stylesAttachedCallback]);
+  const [supers, finisher] = getSupers(elements, [attachShadowKey, stylesAttachedCallback]);
 
   return {
     elements: [
-      ...elements,
+      ...elements.filter(({key, placement}) => !(key === attachShadowKey && placement === 'own')),
 
       method({
         key: attachShadowKey,
         method(options) {
-          const root = attachShadow.call(this, options);
+          const root = supers.attachShadow.call(this, options);
 
           if (constructableStyles.length > 0) {
             if (shadyCSS) {
