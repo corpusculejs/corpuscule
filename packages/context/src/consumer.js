@@ -10,17 +10,18 @@ const createConsumer = (
 ) => descriptor => {
   assertKind('consumer', Kind.Class, descriptor);
 
+  const {elements, kind} = descriptor;
+
   let $value;
 
   const $$consume = Symbol();
   const $$unsubscribe = Symbol();
 
-  const [supers, prepareSupers] = getSupers(descriptor.elements, $.lifecycleKeys);
+  const [supers, prepareSupers] = getSupers(elements, $.lifecycleKeys);
 
   return {
-    ...descriptor,
     elements: [
-      ...descriptor.elements,
+      ...elements,
 
       // Public
       $.method({
@@ -75,6 +76,7 @@ const createConsumer = (
 
       prepareSupers(target);
     },
+    kind,
   };
 };
 

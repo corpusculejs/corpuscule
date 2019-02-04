@@ -10,18 +10,19 @@ const createProvider = (
 ) => descriptor => {
   assertKind('provider', Kind.Class, descriptor);
 
+  const {elements, kind} = descriptor;
+
   let $value;
 
   const $$consumers = Symbol();
   const $$subscribe = Symbol();
   const $$unsubscribe = Symbol();
 
-  const [supers, prepareSupers] = getSupers(descriptor.elements, $.lifecycleKeys);
+  const [supers, prepareSupers] = getSupers(elements, $.lifecycleKeys);
 
   return {
-    ...descriptor,
     elements: [
-      ...descriptor.elements,
+      ...elements,
 
       // Public
       $.method({
@@ -83,6 +84,7 @@ const createProvider = (
 
       assertRequiredProperty('provider', 'value', $value);
     },
+    kind,
   };
 };
 
