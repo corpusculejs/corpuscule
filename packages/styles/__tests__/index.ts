@@ -200,6 +200,8 @@ describe('@corpuscule/styles', () => {
   });
 
   it('does not throw an error if class already have own lifecycle element', () => {
+    styles = createStylesDecorator({adoptedStyleSheets: false, shadyCSS: false});
+
     expect(() => {
       @styles('')
       class Test extends HTMLElement {
