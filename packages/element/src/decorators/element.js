@@ -185,8 +185,6 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
       }),
     ],
     finisher(target) {
-      customElements.define(name, target, builtin && {extends: builtin});
-
       finish(target, {
         [$createRoot]: isShadow
           ? function() {
@@ -194,6 +192,8 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
             }
           : noop,
       });
+
+      customElements.define(name, target, builtin && {extends: builtin});
     },
     kind,
   };
