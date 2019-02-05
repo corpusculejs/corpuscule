@@ -1,6 +1,7 @@
 import {assertKind, Kind} from '@corpuscule/utils/lib/asserts';
-import getSupers from '@corpuscule/utils/lib/getSupers';
 import {accessor, field, hook, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
+import getSupers from '@corpuscule/utils/lib/getSupers';
+import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
 import {getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
 
 const [, disconnectedCallbackKey] = lifecycleKeys;
@@ -10,7 +11,10 @@ export const createReduxDecorator = ({consumer, value}, {units}, {store}) => des
 
   const {elements, kind} = consumer(descriptor);
 
+  let constructor;
   let unitMap;
+
+  const getConstructor = () => constructor;
 
   const $$api = Symbol();
   const $$subscribe = Symbol();
@@ -25,21 +29,24 @@ export const createReduxDecorator = ({consumer, value}, {units}, {store}) => des
   return {
     elements: [
       ...elements.filter(
-        ({key, placement}) => !(key === disconnectedCallbackKey && placement === 'own'),
+        ({key, placement}) => !(key === disconnectedCallbackKey && placement === 'prototype'),
       ),
 
       // Public
-      method({
-        key: disconnectedCallbackKey,
-        method() {
-          supers[disconnectedCallbackKey].call(this);
+      ...lifecycleMethod(
+        {
+          key: disconnectedCallbackKey,
+          method() {
+            supers[disconnectedCallbackKey].call(this);
 
-          if (this[$$unsubscribe]) {
-            this[$$unsubscribe]();
-          }
+            if (this[$$unsubscribe]) {
+              this[$$unsubscribe]();
+            }
+          },
         },
-        placement: 'own',
-      }),
+        supers,
+        getConstructor,
+      ),
 
       // Context
       accessor({
@@ -100,6 +107,7 @@ export const createReduxDecorator = ({consumer, value}, {units}, {store}) => des
       }),
     ],
     finisher(target) {
+      constructor = target;
       unitMap = units.get(target);
       finish(target);
       finishContext(target);

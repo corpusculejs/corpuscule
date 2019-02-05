@@ -1,8 +1,8 @@
-import testAttributeDecorator from './decorators/attribute';
-import testComputingPair from './decorators/computingPair';
-import testElementDecorator from './decorators/element';
-import testInternalDecorator from './decorators/internal';
-import testPropertyDecorator from './decorators/property';
+import testAttributeDecorator from './attribute';
+import testComputingPair from './computingPair';
+import testElementDecorator from './element';
+import testInternalDecorator from './internal';
+import testPropertyDecorator from './property';
 
 describe('@corpuscule/element', () => {
   testAttributeDecorator();

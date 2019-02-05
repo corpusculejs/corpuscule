@@ -1,5 +1,6 @@
 import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/asserts';
 import {field, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
+import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
 import {setValue} from '@corpuscule/utils/lib/propertyUtils';
 import {resolve} from './tokens/lifecycle';
 import getSupers from '@corpuscule/utils/lib/getSupers';
@@ -13,7 +14,10 @@ const createOutletDecorator = ({consumer, value}, {api}) => routes => descriptor
 
   const {elements, kind} = consumer(descriptor);
 
+  let constructor;
   let $api;
+
+  const getConstructor = () => constructor;
 
   const $$contextValue = Symbol();
   const $$updateRoute = Symbol();
@@ -26,28 +30,34 @@ const createOutletDecorator = ({consumer, value}, {api}) => routes => descriptor
   return {
     elements: [
       ...elements.filter(
-        ({key, placement}) => !(lifecycleKeys.includes(key) && placement === 'own'),
+        ({key, placement}) => !(lifecycleKeys.includes(key) && placement === 'prototype'),
       ),
 
       // Public
-      method({
-        key: connectedCallbackKey,
-        method() {
-          window.addEventListener('popstate', this[$$updateRoute]);
-          supers[connectedCallbackKey].call(this);
+      ...lifecycleMethod(
+        {
+          key: connectedCallbackKey,
+          method() {
+            window.addEventListener('popstate', this[$$updateRoute]);
+            supers[connectedCallbackKey].call(this);
 
-          this[$$updateRoute](location.pathname);
+            this[$$updateRoute](location.pathname);
+          },
         },
-        placement: 'own',
-      }),
-      method({
-        key: disconnectedCallbackKey,
-        method() {
-          window.removeEventListener('popstate', this[$$updateRoute]);
-          supers[disconnectedCallbackKey].call(this);
+        supers,
+        getConstructor,
+      ),
+      ...lifecycleMethod(
+        {
+          key: disconnectedCallbackKey,
+          method() {
+            window.removeEventListener('popstate', this[$$updateRoute]);
+            supers[disconnectedCallbackKey].call(this);
+          },
         },
-        placement: 'own',
-      }),
+        supers,
+        getConstructor,
+      ),
 
       // Protected
       method({
@@ -84,6 +94,7 @@ const createOutletDecorator = ({consumer, value}, {api}) => routes => descriptor
       }),
     ],
     finisher(target) {
+      constructor = target;
       $api = api.get(target);
       assertRequiredProperty('outlet', 'api', $api);
 
@@ -92,6 +103,7 @@ const createOutletDecorator = ({consumer, value}, {api}) => routes => descriptor
           return yield path;
         },
       });
+
       contextFinisher(target);
     },
     kind,

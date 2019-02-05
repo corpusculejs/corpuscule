@@ -1,5 +1,5 @@
 // tslint:disable:max-classes-per-file
-import {property, propertyChangedCallback} from '../../src';
+import {property, propertyChangedCallback} from '../src';
 
 class CorpusculeElementMock {
   public [propertyChangedCallback](

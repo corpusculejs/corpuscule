@@ -1,5 +1,6 @@
 import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/asserts';
 import {field, hook, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
+import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
 import getSupers from '@corpuscule/utils/lib/getSupers';
 import {getName, getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
 import {createForm} from 'final-form';
@@ -14,60 +15,68 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
   assertKind('form', Kind.Class, descriptor);
 
   let $api;
+  let constructor;
   let $state;
   let initializers;
+
+  const getConstructor = () => constructor;
 
   const $$submit = Symbol();
   const $$unsubscriptions = Symbol();
 
   const {elements, kind} = provider(descriptor);
 
-  const [supers, finish] = getSupers(elements, lifecycleKeys);
+  const [supers, prepareSupers] = getSupers(elements, lifecycleKeys);
 
   return {
     elements: [
       ...filter(elements),
 
       // Public
-      method({
-        bound: true,
-        key: connectedCallbackKey,
-        method() {
-          const instance = getValue(this, $api);
+      ...lifecycleMethod(
+        {
+          key: connectedCallbackKey,
+          method() {
+            const instance = getValue(this, $api);
 
-          if (decorators) {
-            for (const decorate of decorators) {
-              this[$$unsubscriptions].push(decorate(instance));
+            if (decorators) {
+              for (const decorate of decorators) {
+                this[$$unsubscriptions].push(decorate(instance));
+              }
             }
-          }
 
-          this[$$unsubscriptions].push(
-            instance.subscribe(newState => {
-              setValue(this, $state, newState);
-            }, subscription),
-          );
+            this[$$unsubscriptions].push(
+              instance.subscribe(newState => {
+                setValue(this, $state, newState);
+              }, subscription),
+            );
 
-          this.addEventListener('submit', this[$$submit]);
+            this.addEventListener('submit', this[$$submit]);
 
-          supers[connectedCallbackKey].call(this);
+            supers[connectedCallbackKey].call(this);
+          },
         },
-        placement: 'own',
-      }),
-      method({
-        key: disconnectedCallbackKey,
-        method() {
-          for (const unsubscribe of this[$$unsubscriptions]) {
-            unsubscribe();
-          }
+        supers,
+        getConstructor,
+      ),
+      ...lifecycleMethod(
+        {
+          key: disconnectedCallbackKey,
+          method() {
+            for (const unsubscribe of this[$$unsubscriptions]) {
+              unsubscribe();
+            }
 
-          this[$$unsubscriptions] = [];
+            this[$$unsubscriptions] = [];
 
-          this.removeEventListener('submit', this[$$submit]);
+            this.removeEventListener('submit', this[$$submit]);
 
-          supers[disconnectedCallbackKey].call(this);
+            supers[disconnectedCallbackKey].call(this);
+          },
         },
-        placement: 'own',
-      }),
+        supers,
+        getConstructor,
+      ),
 
       // Private
       field({
@@ -109,7 +118,9 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
       }),
     ],
     finisher(target) {
-      finish(target);
+      prepareSupers(target);
+
+      constructor = target;
 
       $api = api.get(target);
       $state = state.get(target);

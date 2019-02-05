@@ -1,6 +1,6 @@
 import {assertKind, assertPlacement, Kind, Placement} from '@corpuscule/utils/lib/asserts';
 import {accessor, field} from '@corpuscule/utils/lib/descriptors';
-import {assertElementProperty} from '../utils';
+import {assertElementProperty} from './utils';
 
 const createComputingPair = () => {
   const registry = new WeakMap();

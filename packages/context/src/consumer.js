@@ -1,6 +1,7 @@
 import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/asserts';
 import getSupers from '@corpuscule/utils/lib/getSupers';
 import {lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
+import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
 import {setValue} from '@corpuscule/utils/lib/propertyUtils';
 import {checkValue, filter} from './utils';
 
@@ -12,7 +13,10 @@ const createConsumer = (
 
   const {elements, kind} = descriptor;
 
+  let constructor;
   let $value;
+
+  const getConstructor = () => constructor;
 
   const $$consume = Symbol();
   const $$unsubscribe = Symbol();
@@ -24,39 +28,45 @@ const createConsumer = (
       ...filter(elements),
 
       // Public
-      method({
-        key: connectedCallbackKey,
-        method() {
-          const event = new CustomEvent(eventName, {
-            bubbles: true,
-            cancelable: true,
-            composed: true,
-            detail: {consume: this[$$consume]},
-          });
+      ...lifecycleMethod(
+        {
+          key: connectedCallbackKey,
+          method() {
+            const event = new CustomEvent(eventName, {
+              bubbles: true,
+              cancelable: true,
+              composed: true,
+              detail: {consume: this[$$consume]},
+            });
 
-          this.dispatchEvent(event);
+            this.dispatchEvent(event);
 
-          this[$$unsubscribe] = event.detail.unsubscribe;
+            this[$$unsubscribe] = event.detail.unsubscribe;
 
-          if (!this[$$unsubscribe]) {
-            throw new Error(`No provider found for ${this.constructor.name}`);
-          }
+            if (!this[$$unsubscribe]) {
+              throw new Error(`No provider found for ${this.constructor.name}`);
+            }
 
-          supers[connectedCallbackKey].call(this);
+            supers[connectedCallbackKey].call(this);
+          },
         },
-        placement: 'own',
-      }),
-      method({
-        key: disconnectedCallbackKey,
-        method() {
-          if (this[$$unsubscribe]) {
-            this[$$unsubscribe](this[$$consume]);
-          }
+        supers,
+        getConstructor,
+      ),
+      ...lifecycleMethod(
+        {
+          key: disconnectedCallbackKey,
+          method() {
+            if (this[$$unsubscribe]) {
+              this[$$unsubscribe](this[$$consume]);
+            }
 
-          supers[disconnectedCallbackKey].call(this);
+            supers[disconnectedCallbackKey].call(this);
+          },
         },
-        placement: 'own',
-      }),
+        supers,
+        getConstructor,
+      ),
 
       // Private
       method({
@@ -70,6 +80,7 @@ const createConsumer = (
     finisher(target) {
       checkValue(value, target);
 
+      constructor = target;
       $value = value.get(target);
 
       assertRequiredProperty('consumer', 'value', $value);

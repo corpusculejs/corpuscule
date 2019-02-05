@@ -5,13 +5,13 @@ import {Constructor, CustomElement, genName} from '../utils';
 
 export const context = jasmine.createSpyObj('context', ['consumer', 'provider', 'value']);
 
-const values: WeakMap<object, string> = new WeakMap();
+export const valuesMap: WeakMap<object, string> = new WeakMap();
 
 context.value.and.callFake(
   ({descriptor: {get, set}, initializer, key}: ExtendedPropertyDescriptor) =>
     accessor({
       finisher(target: object): void {
-        values.set(target, key as string);
+        valuesMap.set(target, key as string);
       },
       get,
       initializer,
@@ -39,14 +39,14 @@ export const createMockedContextElements = <T extends CustomElement[]>(
 
   const consumers = new Array(consumerConstructors.length);
   const provider = new providerConstructor();
-  const providingValue = values.get(providerConstructor)!;
+  const providingValue = valuesMap.get(providerConstructor)!;
 
   // tslint:disable-next-line:no-increment-decrement
   for (let i = 0; i < consumerConstructors.length; i++) {
     customElements.define(genName(), consumerConstructors[i]);
     consumers[i] = new consumerConstructors[i]();
 
-    const contextValue = values.get(consumerConstructors[i])!;
+    const contextValue = valuesMap.get(consumerConstructors[i])!;
     consumers[i][contextValue] = (provider as any)[providingValue];
   }
 
@@ -66,7 +66,7 @@ export const createMockedContextElements = <T extends CustomElement[]>(
 
         // tslint:disable-next-line:no-increment-decrement
         for (let i = 0; i < consumers.length; i++) {
-          const contextValue = values.get(consumerConstructors[i])!;
+          const contextValue = valuesMap.get(consumerConstructors[i])!;
           consumers[i][contextValue] = value;
         }
       },

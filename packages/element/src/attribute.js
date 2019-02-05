@@ -1,5 +1,5 @@
-import {accessor} from '@corpuscule/utils/lib/descriptors';
 import {assertKind, assertPlacement, Kind, Placement} from '@corpuscule/utils/lib/asserts';
+import {accessor} from '@corpuscule/utils/lib/descriptors';
 
 const attribute = (name, guard) => descriptor => {
   assertKind('attribute', Kind.Field, descriptor);

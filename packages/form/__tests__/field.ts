@@ -2,7 +2,7 @@
 import {FieldState, FieldValidator, FormApi, FormState} from 'final-form';
 import {createMockedContextElements} from '../../../test/mocks/context';
 import {formSpyObject, unsubscribe} from '../../../test/mocks/finalForm';
-import {CustomElement} from '../../../test/utils';
+import {CustomElement, genName} from '../../../test/utils';
 import {createFormContext, FieldInputProps, FieldMetaProps, FormDecorator} from '../src';
 import {all} from '../src/utils';
 
@@ -312,6 +312,32 @@ const testField = () => {
       subscribeField(fieldElement);
 
       expect(unsubscribe).toHaveBeenCalled();
+    });
+
+    it('executes connectedCallback on real DOM', async () => {
+      const connectedCallbackSpy = jasmine.createSpy('connectedCallback');
+
+      @field
+      class Field extends HTMLElement {
+        @api public readonly form!: FormApi;
+        @api public readonly input!: FieldInputProps<object>;
+        @api public readonly meta!: FieldMetaProps;
+
+        @option public readonly name: string = 'test';
+
+        public connectedCallback(): void {
+          connectedCallbackSpy();
+        }
+      }
+
+      customElements.define(genName(), Field);
+
+      const fieldElement = new Field();
+
+      document.body.appendChild(fieldElement);
+
+      expect(connectedCallbackSpy).toHaveBeenCalled();
+      expect(scheduler).toHaveBeenCalled();
     });
 
     describe('@option', () => {

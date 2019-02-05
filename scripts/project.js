@@ -11,6 +11,7 @@ const packages = {
     'compose',
     'descriptors',
     'getSupers',
+    'lifecycleDescriptors',
     'propertyUtils',
     'scheduler',
     'shallowEqual',

@@ -1,6 +1,6 @@
 import {accessor} from '@corpuscule/utils/lib/descriptors';
-import {propertyChangedCallback as $propertyChangedCallback} from '../tokens/lifecycle';
-import {assertElementProperty} from '../utils';
+import {propertyChangedCallback as $propertyChangedCallback} from './tokens/lifecycle';
+import {assertElementProperty} from './utils';
 
 const property = (guard = null) => descriptor => {
   assertElementProperty('property', descriptor);

@@ -1,7 +1,7 @@
 // tslint:disable:max-classes-per-file
 import {AnyAction, Store} from 'redux';
-import {createMockedContextElements} from '../../../test/mocks/context';
-import {CustomElement} from '../../../test/utils';
+import {createMockedContextElements, valuesMap} from '../../../test/mocks/context';
+import {CustomElement, genName} from '../../../test/utils';
 import {api, dispatcher, provider, redux, unit} from '../src';
 
 describe('@corpuscule/redux', () => {
@@ -69,79 +69,6 @@ describe('@corpuscule/redux', () => {
       expect(unsubscribe).toHaveBeenCalled();
     });
 
-    describe('@unit', () => {
-      it('allows to declare properties connected with store', () => {
-        @provider
-        class Provider extends CustomElement {
-          @api public store: Store = reduxStore;
-        }
-
-        @redux
-        class Connected extends CustomElement {
-          @unit((state: typeof reduxState) => state.test)
-          public test?: number;
-        }
-
-        const [, connectedElement] = createMockedContextElements(Provider, Connected);
-
-        expect(reduxStore.getState).toHaveBeenCalled();
-        expect(connectedElement.test).toBe(10);
-      });
-
-      it('updates properties when store is updated', () => {
-        @provider
-        class Provider extends CustomElement {
-          @api public store: Store = reduxStore;
-        }
-
-        @redux
-        class Connected extends CustomElement {
-          @unit((state: typeof reduxState) => state.test)
-          public test?: number;
-        }
-
-        const [, connectedElement] = createMockedContextElements(Provider, Connected);
-
-        const [subscription] = reduxStore.subscribe.calls.argsFor(0);
-        reduxState = {test: 20};
-        subscription();
-
-        expect(connectedElement.test).toBe(20);
-      });
-
-      it('avoids property update if new value is equal to old one', () => {
-        const setterSpy = jasmine.createSpy('setter');
-
-        @provider
-        class Provider extends CustomElement {
-          @api public store: Store = reduxStore;
-        }
-
-        @redux
-        class Connected extends CustomElement {
-          public testValue: number = 10;
-
-          @unit((state: typeof reduxState) => state.test)
-          public get test(): number {
-            return this.testValue;
-          }
-
-          public set test(value: number) {
-            setterSpy();
-            this.testValue = value;
-          }
-        }
-
-        createMockedContextElements(Provider, Connected);
-
-        const [subscription] = reduxStore.subscribe.calls.argsFor(0);
-        reduxState = {test: 10};
-        subscription();
-
-        expect(setterSpy).not.toHaveBeenCalled();
-      });
-    });
-
     it('does nothing during update if no @unit is defined', () => {
       @provider
       class Provider extends CustomElement {
@@ -169,6 +96,103 @@ describe('@corpuscule/redux', () => {
           public disconnectedCallback(): void {} // tslint:disable-line:no-empty
         }
       }).not.toThrow();
+    });
+
+    it('executes disconnectedCallback on real DOM', async () => {
+      const disconnectedCallbackSpy = jasmine.createSpy('disconnectedCallback');
+
+      @redux
+      class Connected extends HTMLElement {
+        public disconnectedCallback(): void {
+          disconnectedCallbackSpy();
+        }
+      }
+
+      customElements.define(genName(), Connected);
+
+      const connectedElement = new Connected();
+
+      document.body.appendChild(connectedElement);
+      const contextValue = valuesMap.get(Connected)!;
+      (connectedElement as any)[contextValue] = reduxStore;
+
+      document.body.removeChild(connectedElement);
+
+      expect(disconnectedCallbackSpy).toHaveBeenCalled();
+      expect(unsubscribe).toHaveBeenCalled();
+    });
+  });
+
+  describe('@unit', () => {
+    it('allows to declare properties connected with store', () => {
+      @provider
+      class Provider extends CustomElement {
+        @api public store: Store = reduxStore;
+      }
+
+      @redux
+      class Connected extends CustomElement {
+        @unit((state: typeof reduxState) => state.test)
+        public test?: number;
+      }
+
+      const [, connectedElement] = createMockedContextElements(Provider, Connected);
+
+      expect(reduxStore.getState).toHaveBeenCalled();
+      expect(connectedElement.test).toBe(10);
+    });
+
+    it('updates properties when store is updated', () => {
+      @provider
+      class Provider extends CustomElement {
+        @api public store: Store = reduxStore;
+      }
+
+      @redux
+      class Connected extends CustomElement {
+        @unit((state: typeof reduxState) => state.test)
+        public test?: number;
+      }
+
+      const [, connectedElement] = createMockedContextElements(Provider, Connected);
+
+      const [subscription] = reduxStore.subscribe.calls.argsFor(0);
+      reduxState = {test: 20};
+      subscription();
+
+      expect(connectedElement.test).toBe(20);
+    });
+
+    it('avoids property update if new value is equal to old one', () => {
+      const setterSpy = jasmine.createSpy('setter');
+
+      @provider
+      class Provider extends CustomElement {
+        @api public store: Store = reduxStore;
+      }
+
+      @redux
+      class Connected extends CustomElement {
+        public testValue: number = 10;
+
+        @unit((state: typeof reduxState) => state.test)
+        public get test(): number {
+          return this.testValue;
+        }
+
+        public set test(value: number) {
+          setterSpy();
+          this.testValue = value;
+        }
+      }
+
+      createMockedContextElements(Provider, Connected);
+
+      const [subscription] = reduxStore.subscribe.calls.argsFor(0);
+      reduxState = {test: 10};
+      subscription();
+
+      expect(setterSpy).not.toHaveBeenCalled();
     });
   });
 

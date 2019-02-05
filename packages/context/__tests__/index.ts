@@ -1,5 +1,5 @@
 // tslint:disable:max-classes-per-file
-import {Constructor, CustomElement, genName} from '../../../test/utils';
+import {Constructor, createTestingPromise, CustomElement, genName} from '../../../test/utils';
 import createContext from '../src';
 
 const createContextElements = <T extends CustomElement, U extends CustomElement>(
@@ -33,14 +33,12 @@ describe('@corpuscule/context', () => {
 
       @provider
       class Provider extends CustomElement {
-        @value
-        public providingValue: number = 2;
+        @value public providingValue: number = 2;
       }
 
       @consumer
       class Consumer extends CustomElement {
-        @value
-        public contextValue!: number;
+        @value public contextValue!: number;
       }
 
       const [, consumerElement] = createContextElements(Provider, Consumer);
@@ -52,14 +50,12 @@ describe('@corpuscule/context', () => {
 
       @provider
       class Provider extends CustomElement {
-        @value
-        public providingValue: number = 2;
+        @value public providingValue: number = 2;
       }
 
       @consumer
       class Consumer extends CustomElement {
-        @value
-        public contextValue!: number;
+        @value public contextValue!: number;
       }
 
       const [, consumerElement1, consumerElement2] = createContextElements(Provider, Consumer, 2);
@@ -73,14 +69,12 @@ describe('@corpuscule/context', () => {
 
       @provider
       class Provider extends CustomElement {
-        @value
-        public providingValue!: number;
+        @value public providingValue!: number;
       }
 
       @consumer
       class Consumer extends CustomElement {
-        @value
-        public contextValue!: number;
+        @value public contextValue!: number;
       }
 
       const [providerElement, consumerElement] = createContextElements(Provider, Consumer);
@@ -94,14 +88,12 @@ describe('@corpuscule/context', () => {
 
       @provider
       class Provider extends CustomElement {
-        @value
-        public providingValue!: number;
+        @value public providingValue!: number;
       }
 
       @consumer
       class Consumer extends CustomElement {
-        @value
-        public contextValue!: number;
+        @value public contextValue!: number;
       }
 
       const [providerElement, consumerElement] = createContextElements(Provider, Consumer);
@@ -118,8 +110,7 @@ describe('@corpuscule/context', () => {
 
       @provider
       class Provider extends CustomElement {
-        @value
-        public providingValue!: number;
+        @value public providingValue!: number;
 
         public connectedCallback(): void {
           connectedSpy();
@@ -132,8 +123,7 @@ describe('@corpuscule/context', () => {
 
       @consumer
       class Consumer extends CustomElement {
-        @value
-        public contextValue!: number;
+        @value public contextValue!: number;
 
         public connectedCallback(): void {
           connectedSpy();
@@ -158,14 +148,12 @@ describe('@corpuscule/context', () => {
 
       @provider
       class Provider extends CustomElement {
-        @value
-        public providingValue: number = 2;
+        @value public providingValue: number = 2;
       }
 
       @consumer
       class Consumer extends CustomElement {
-        @value
-        public contextValue!: number;
+        @value public contextValue!: number;
       }
 
       const [providerElement, consumerElement] = createContextElements(Provider, Consumer);
@@ -183,14 +171,12 @@ describe('@corpuscule/context', () => {
 
       @provider
       class Provider extends CustomElement {
-        @value
-        public providingValue: number = 2;
+        @value public providingValue: number = 2;
       }
 
       @consumer
       class Consumer extends CustomElement {
-        @value
-        public contextValue: number = 3;
+        @value public contextValue: number = 3;
 
         public constructor() {
           super();
@@ -208,8 +194,7 @@ describe('@corpuscule/context', () => {
 
       @provider
       class Provider extends CustomElement {
-        @value
-        public providingValue: number = 2;
+        @value public providingValue: number = 2;
       }
 
       expect(isProvider(Provider)).toBeTruthy();
@@ -220,8 +205,7 @@ describe('@corpuscule/context', () => {
 
       @consumer
       class Consumer extends CustomElement {
-        @value
-        public contextValue!: number;
+        @value public contextValue!: number;
       }
 
       customElements.define(genName(), Consumer);
@@ -247,6 +231,58 @@ describe('@corpuscule/context', () => {
         // @ts-ignore
         class Consumer extends CustomElement {}
       }).toThrowError('No Consumer field is marked with @value');
+    });
+
+    it('executes connectedCallback on real DOM', async () => {
+      const providerConnectedCallbackSpy = jasmine.createSpy('provider.connectedCallback');
+      const consumerConnectedCallbackSpy = jasmine.createSpy('consumer.connectedCallback');
+      const {consumer, provider, value} = createContext();
+
+      const [promise, resolve] = createTestingPromise();
+      let count = 0;
+
+      @provider
+      class Provider extends HTMLElement {
+        @value public providingValue: number = 10;
+
+        public connectedCallback(): void {
+          providerConnectedCallbackSpy();
+          count += 1;
+
+          if (count === 2) {
+            resolve();
+          }
+        }
+      }
+      customElements.define(genName(), Provider);
+
+      @consumer
+      class Consumer extends HTMLElement {
+        @value public contextValue!: number;
+
+        public connectedCallback(): void {
+          consumerConnectedCallbackSpy();
+          count += 1;
+
+          if (count === 2) {
+            resolve();
+          }
+        }
+      }
+      customElements.define(genName(), Consumer);
+
+      const providerElement = new Provider();
+      const consumerElement = new Consumer();
+
+      providerElement.appendChild(consumerElement);
+
+      document.body.appendChild(providerElement);
+      await promise;
+
+      expect(providerConnectedCallbackSpy).toHaveBeenCalled();
+      expect(consumerConnectedCallbackSpy).toHaveBeenCalled();
+      expect(consumerElement.contextValue).toBe(10);
+      document.body.innerHTML = ''; // tslint:disable-line:no-inner-html
     });
 
     it('does not throw an error if class already have own lifecycle element', () => {

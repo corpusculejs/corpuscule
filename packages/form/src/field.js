@@ -1,5 +1,6 @@
 import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/asserts';
 import * as $ from '@corpuscule/utils/lib/descriptors';
+import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
 import {getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
 import {all, filter, getTargetValue, noop} from './utils';
 import getSupers from '@corpuscule/utils/lib/getSupers';
@@ -12,6 +13,9 @@ const createField = (
   {input, meta, options, scheduler, subscribe, update},
 ) => descriptor => {
   assertKind('field', Kind.Class, descriptor);
+
+  let constructor;
+  const getConstructor = () => constructor;
 
   let $api;
   let $input;
@@ -37,37 +41,43 @@ const createField = (
   const $$updatingValid = Symbol();
 
   const {elements, kind} = consumer(descriptor);
-  const [supers, finish] = getSupers(elements, $.lifecycleKeys);
+  const [supers, prepareSupers] = getSupers(elements, $.lifecycleKeys);
 
   return {
     elements: [
       ...filter(elements),
 
       // Public
-      $.method({
-        key: connectedCallbackKey,
-        method() {
-          this.addEventListener('blur', this[$$onBlur]);
-          this.addEventListener('change', this[$$onChange]);
-          this.addEventListener('focus', this[$$onFocus]);
+      ...lifecycleMethod(
+        {
+          key: connectedCallbackKey,
+          method() {
+            this.addEventListener('blur', this[$$onBlur]);
+            this.addEventListener('change', this[$$onChange]);
+            this.addEventListener('focus', this[$$onFocus]);
 
-          supers[connectedCallbackKey].call(this);
-          this[$$subscribe]();
+            supers[connectedCallbackKey].call(this);
+            this[$$subscribe]();
+          },
         },
-        placement: 'own',
-      }),
-      $.method({
-        key: disconnectedCallbackKey,
-        method() {
-          this.removeEventListener('blur', this[$$onBlur]);
-          this.removeEventListener('change', this[$$onChange]);
-          this.removeEventListener('focus', this[$$onFocus]);
+        supers,
+        getConstructor,
+      ),
+      ...lifecycleMethod(
+        {
+          key: disconnectedCallbackKey,
+          method() {
+            this.removeEventListener('blur', this[$$onBlur]);
+            this.removeEventListener('change', this[$$onChange]);
+            this.removeEventListener('focus', this[$$onFocus]);
 
-          this[$$unsubscribe]();
-          supers[disconnectedCallbackKey].call(this);
+            this[$$unsubscribe]();
+            supers[disconnectedCallbackKey].call(this);
+          },
         },
-        placement: 'own',
-      }),
+        supers,
+        getConstructor,
+      ),
 
       // Private
       $.field({
@@ -187,7 +197,9 @@ const createField = (
       }),
     ],
     finisher(target) {
-      finish(target);
+      prepareSupers(target);
+
+      constructor = target;
 
       $api = api.get(target);
       $input = input.get(target);

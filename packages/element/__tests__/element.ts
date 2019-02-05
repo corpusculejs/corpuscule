@@ -1,5 +1,5 @@
 // tslint:disable:no-unnecessary-class max-classes-per-file no-unbound-method no-empty
-import {createTestingPromise, CustomElement, genName} from '../../../../test/utils';
+import {createTestingPromise, CustomElement, genName} from '../../../test/utils';
 import {
   createElementDecorator,
   createRoot,
@@ -7,7 +7,7 @@ import {
   propertyChangedCallback,
   render,
   updatedCallback,
-} from '../../src';
+} from '../src';
 
 const testElementDecorator = () => {
   describe('@element', () => {
@@ -374,6 +374,33 @@ const testElementDecorator = () => {
           }
         }
       }).not.toThrow();
+    });
+
+    it('executes connectedCallback on real DOM', async () => {
+      const connectedCallbackSpy = jasmine.createSpy('connectedCallback');
+
+      const [promise, resolve] = createTestingPromise();
+
+      @element(genName())
+      class Test extends HTMLElement {
+        public connectedCallback(): void {
+          connectedCallbackSpy();
+          resolve();
+        }
+
+        public [render](): null {
+          return null;
+        }
+      }
+
+      const test = new Test();
+
+      document.body.appendChild(test);
+      await promise;
+
+      expect(connectedCallbackSpy).toHaveBeenCalled();
+      expect(schedulerSpy).toHaveBeenCalled();
+      document.body.innerHTML = ''; // tslint:disable-line:no-inner-html
     });
 
     describe('elements extending', () => {

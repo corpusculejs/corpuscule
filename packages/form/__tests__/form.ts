@@ -360,6 +360,32 @@ const testForm = () => {
       expect(removeEventListener).toHaveBeenCalledWith('submit', fn);
     });
 
+    it('executes connectedCallback on real DOM', async () => {
+      const connectedCallbackSpy = jasmine.createSpy('connectedCallback');
+
+      @form()
+      class Form extends HTMLElement {
+        @api public readonly form!: FormApi;
+        @api public readonly state!: FormState;
+
+        public connectedCallback(): void {
+          connectedCallbackSpy();
+        }
+
+        @option
+        public onSubmit(): void {}
+      }
+
+      customElements.define(genName(), Form);
+
+      const formElement = new Form();
+
+      document.body.appendChild(formElement);
+
+      expect(connectedCallbackSpy).toHaveBeenCalled();
+      expect(formSpyObject.subscribe).toHaveBeenCalled();
+    });
+
     describe('@api', () => {
       it('requires form and state fields defined', () => {
         expect(() => {

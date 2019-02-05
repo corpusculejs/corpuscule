@@ -1,6 +1,8 @@
 /* eslint-disable no-invalid-this, prefer-arrow-callback */
 import {assertKind, Kind} from '@corpuscule/utils/lib/asserts';
-import {field, method, hook, lifecycleKeys} from '@corpuscule/utils/lib/descriptors';
+import {field, method, lifecycleKeys} from '@corpuscule/utils/lib/descriptors';
+import getSupers from '@corpuscule/utils/lib/getSupers';
+import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
 import {
   createRoot as $createRoot,
@@ -8,9 +10,8 @@ import {
   propertyChangedCallback as $propertyChangedCallback,
   render as $render,
   internalChangedCallback as $internalChangedCallback,
-} from '../tokens/lifecycle';
-import getSupers from '@corpuscule/utils/lib/getSupers';
-import {shadowElements} from '../utils';
+} from './tokens/lifecycle';
+import {shadowElements} from './utils';
 
 const attributeChangedCallbackKey = 'attributeChangedCallback';
 const [connectedCallbackKey] = lifecycleKeys;
@@ -19,8 +20,6 @@ const [connectedCallbackKey] = lifecycleKeys;
 const noop = () => {};
 
 const filteringNames = ['is', 'observedAttributes'];
-
-const rootProperty = new WeakMap();
 
 const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
   name,
@@ -42,11 +41,15 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
     throw new Error(`[render]() is not allowed for <${builtin}> element`);
   }
 
+  let constructor;
+  const getConstructor = () => constructor;
+
   const $$connected = Symbol();
   const $$invalidate = Symbol();
+  const $$root = Symbol();
   const $$valid = Symbol();
 
-  const [supers, finish] = getSupers(elements, [
+  const [supers, prepareSupers] = getSupers(elements, [
     attributeChangedCallbackKey,
     connectedCallbackKey,
     $createRoot,
@@ -62,7 +65,7 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
           !(
             (filteringNames.includes(key) && placement === 'static') ||
             ((key === connectedCallbackKey || key === attributeChangedCallbackKey) &&
-              placement === 'own')
+              placement === 'prototype')
           ),
       ),
 
@@ -81,26 +84,32 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
       }),
 
       // Public
-      method({
-        key: connectedCallbackKey,
-        async method() {
-          await this[$$invalidate]();
-          supers[connectedCallbackKey].call(this);
+      ...lifecycleMethod(
+        {
+          key: connectedCallbackKey,
+          async method() {
+            await this[$$invalidate]();
+            supers[connectedCallbackKey].call(this);
+          },
         },
-        placement: 'own',
-      }),
-      method({
-        key: attributeChangedCallbackKey,
-        async method(attributeName, oldValue, newValue) {
-          if (oldValue === newValue || !this[$$connected]) {
-            return;
-          }
+        supers,
+        getConstructor,
+      ),
+      ...lifecycleMethod(
+        {
+          key: attributeChangedCallbackKey,
+          async method(attributeName, oldValue, newValue) {
+            if (oldValue === newValue || !this[$$connected]) {
+              return;
+            }
 
-          supers[attributeChangedCallbackKey].call(this, attributeName, oldValue, newValue);
-          await this[$$invalidate]();
+            supers[attributeChangedCallbackKey].call(this, attributeName, oldValue, newValue);
+            await this[$$invalidate]();
+          },
         },
-        placement: 'own',
-      }),
+        supers,
+        getConstructor,
+      ),
 
       // Protected
       method({
@@ -147,13 +156,12 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
         initializer: () => false,
         key: $$connected,
       }),
-      hook({
-        placement: 'own',
-        start() {
-          if (!rootProperty.has(this)) {
-            rootProperty.set(this, this[$createRoot]());
-          }
+      field({
+        initializer() {
+          // Inheritance workaround. If class is inherited, it will do nothing
+          return this.constructor === constructor ? this[$createRoot]() : null;
         },
+        key: $$root,
       }),
       field({
         initializer: () => true,
@@ -172,7 +180,7 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
               const isConnecting = !this[$$connected];
 
               await scheduler(() => {
-                renderer(this[$render](), rootProperty.get(this), this);
+                renderer(this[$render](), this[$$root], this);
                 this[$$connected] = true;
                 this[$$valid] = true;
               });
@@ -185,15 +193,17 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
       }),
     ],
     finisher(target) {
-      customElements.define(name, target, builtin && {extends: builtin});
-
-      finish(target, {
+      prepareSupers(target, {
         [$createRoot]: isShadow
           ? function() {
               return this.attachShadow({mode: 'open'});
             }
           : noop,
       });
+
+      constructor = target;
+
+      customElements.define(name, target, builtin && {extends: builtin});
     },
     kind,
   };

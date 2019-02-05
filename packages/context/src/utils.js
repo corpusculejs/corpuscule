@@ -7,4 +7,6 @@ export const checkValue = (value, target) => {
 };
 
 export const filter = elements =>
-  elements.filter(({key, placement}) => !(lifecycleKeys.includes(key) && placement !== 'own'));
+  elements.filter(
+    ({key, placement}) => !(lifecycleKeys.includes(key) && placement === 'prototype'),
+  );

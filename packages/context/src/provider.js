@@ -1,6 +1,7 @@
 import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/asserts';
 import getSupers from '@corpuscule/utils/lib/getSupers';
 import {field, hook, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
+import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
 import {getValue} from '@corpuscule/utils/lib/propertyUtils';
 import {checkValue, filter} from './utils';
 
@@ -12,7 +13,10 @@ const createProvider = (
 
   const {elements, kind} = descriptor;
 
+  let constructor;
   let $value;
+
+  const getConstructor = () => constructor;
 
   const $$consumers = Symbol();
   const $$subscribe = Symbol();
@@ -25,22 +29,28 @@ const createProvider = (
       ...filter(elements),
 
       // Public
-      method({
-        key: connectedCallbackKey,
-        method() {
-          this.addEventListener(eventName, this[$$subscribe]);
-          supers[connectedCallbackKey].call(this);
+      ...lifecycleMethod(
+        {
+          key: connectedCallbackKey,
+          method() {
+            this.addEventListener(eventName, this[$$subscribe]);
+            supers[connectedCallbackKey].call(this);
+          },
         },
-        placement: 'own',
-      }),
-      method({
-        key: disconnectedCallbackKey,
-        method() {
-          this.removeEventListener(eventName, this[$$subscribe]);
-          supers[disconnectedCallbackKey].call(this);
+        supers,
+        getConstructor,
+      ),
+      ...lifecycleMethod(
+        {
+          key: disconnectedCallbackKey,
+          method() {
+            this.removeEventListener(eventName, this[$$subscribe]);
+            supers[disconnectedCallbackKey].call(this);
+          },
         },
-        placement: 'own',
-      }),
+        supers,
+        getConstructor,
+      ),
 
       // Private
       field({
@@ -79,6 +89,7 @@ const createProvider = (
     finisher(target) {
       checkValue(value, target);
       prepareSupers(target);
+      constructor = target;
 
       $value = value.get(target);
 
