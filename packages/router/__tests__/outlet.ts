@@ -1,7 +1,7 @@
 // tslint:disable:max-classes-per-file
 import UniversalRouter from 'universal-router';
-import {createMockedContextElements} from '../../../test/mocks/context';
-import {createTestingPromise, CustomElement} from '../../../test/utils';
+import {createMockedContextElements, valuesMap} from '../../../test/mocks/context';
+import {createTestingPromise, CustomElement, genName} from '../../../test/utils';
 import {api, outlet, provider} from '../src';
 
 const outletTest = () => {
@@ -244,6 +244,30 @@ const outletTest = () => {
           public disconnectedCallback(): void {} // tslint:disable-line:no-empty
         }
       }).not.toThrow();
+    });
+
+    it('executes connectedCallback on real DOM', async () => {
+      const connectedCallbackSpy = jasmine.createSpy('connectedCallback');
+
+      @outlet(routes)
+      class Outlet extends CustomElement {
+        @api public readonly layout?: string;
+
+        public connectedCallback(): void {
+          connectedCallbackSpy();
+        }
+      }
+
+      customElements.define(genName(), Outlet);
+
+      const outletElement = new Outlet();
+
+      const contextValue = valuesMap.get(Outlet)!;
+      (outletElement as any)[contextValue] = appRouter;
+
+      document.body.appendChild(outletElement);
+      expect(connectedCallbackSpy).toHaveBeenCalled();
+      expect(appRouter.resolve).toHaveBeenCalled();
     });
   });
 };
