@@ -11,6 +11,7 @@
     "tslint": "tslint \"packages/**/*.ts\" -e \"packages/**/+(node_modules|lib)/**/*\" -c tslint.json -p tsconfig.json -t verbose",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "prepare": "run-s bootstrap build lint",
+    "prepublish": "run-s build",
     "precommit": "run-p typecheck lint-staged",
     "prettier": "prettier --write \"{packages,scripts,test}/**/*.{js,ts}\"",
     "test": "karma start test/karma.conf.js"
