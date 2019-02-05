@@ -1,7 +1,7 @@
 // tslint:disable:max-classes-per-file
 import UniversalRouter from 'universal-router';
 import {createMockedContextElements} from '../../../test/mocks/context';
-import {CustomElement} from '../../../test/utils';
+import {createTestingPromise, CustomElement} from '../../../test/utils';
 import {api, outlet, provider} from '../src';
 
 const outletTest = () => {
@@ -48,13 +48,8 @@ const outletTest = () => {
 
       appRouter.resolve.and.callFake(fakeResolve);
 
-      initialPromise = new Promise(r => {
-        initialResolve = r;
-      });
-
-      finalPromise = new Promise(r => {
-        finalResolve = r;
-      });
+      [initialPromise, initialResolve] = createTestingPromise();
+      [finalPromise, finalResolve] = createTestingPromise();
     });
 
     it('creates router outlet that fills layout on popstate event', async () => {
