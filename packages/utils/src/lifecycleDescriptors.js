@@ -1,6 +1,6 @@
 import {field, method as mmethod} from './descriptors';
 
-export const method = ({key, method: value, supers}, constructor) => {
+export const method = ({key, method: value}, supers, getConstructor) => {
   const $$key = Symbol();
 
   return [
@@ -12,7 +12,7 @@ export const method = ({key, method: value, supers}, constructor) => {
     }),
     field({
       initializer() {
-        return this.constructor === constructor ? value : supers[key];
+        return this.constructor === getConstructor() ? value : supers[key];
       },
       key: $$key,
     }),

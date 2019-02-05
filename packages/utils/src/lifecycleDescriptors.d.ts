@@ -2,10 +2,10 @@ import {ExtendedPropertyDescriptor} from '@corpuscule/typings';
 
 export type LifecycleMethodParams = Pick<ExtendedPropertyDescriptor, 'key'> & {
   readonly method: Function;
-  readonly supers: Record<PropertyKey, Function>;
 };
 
 export const method: (
   params: LifecycleMethodParams,
-  constructor: unknown,
+  supers: Record<PropertyKey, Function>,
+  constructor: () => unknown,
 ) => [ExtendedPropertyDescriptor, ExtendedPropertyDescriptor];

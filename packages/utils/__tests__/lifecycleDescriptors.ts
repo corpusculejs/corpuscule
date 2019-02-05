@@ -14,7 +14,7 @@ const testLifecycleDescriptors = () => {
       superSpies = jasmine.createSpyObj('supers', ['test']);
 
       constructor = {};
-      result = method({key: 'test', method: methodSpy, supers: superSpies}, constructor);
+      result = method({key: 'test', method: methodSpy}, superSpies, () => constructor);
     });
 
     it('creates method and field descriptors', () => {
