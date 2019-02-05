@@ -1,5 +1,5 @@
 // tslint:disable:max-classes-per-file
-import {internal, internalChangedCallback} from '../../src';
+import {internal, internalChangedCallback} from '../src';
 
 class CorpusculeElementMock {
   public [internalChangedCallback](

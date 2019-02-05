@@ -1,6 +1,7 @@
 /* eslint-disable no-invalid-this, prefer-arrow-callback */
 import {assertKind, Kind} from '@corpuscule/utils/lib/asserts';
 import {field, method, lifecycleKeys} from '@corpuscule/utils/lib/descriptors';
+import getSupers from '@corpuscule/utils/lib/getSupers';
 import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
 import {
@@ -9,9 +10,8 @@ import {
   propertyChangedCallback as $propertyChangedCallback,
   render as $render,
   internalChangedCallback as $internalChangedCallback,
-} from '../tokens/lifecycle';
-import getSupers from '@corpuscule/utils/lib/getSupers';
-import {shadowElements} from '../utils';
+} from './tokens/lifecycle';
+import {shadowElements} from './utils';
 
 const attributeChangedCallbackKey = 'attributeChangedCallback';
 const [connectedCallbackKey] = lifecycleKeys;

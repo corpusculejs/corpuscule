@@ -1,6 +1,6 @@
 // tslint:disable:max-classes-per-file
-import {CustomElement, genName} from '../../../../test/utils';
-import {attribute} from '../../src';
+import {CustomElement, genName} from '../../../test/utils';
+import {attribute} from '../src';
 
 const testAttributeDecorator = () => {
   describe('@attribute', () => {

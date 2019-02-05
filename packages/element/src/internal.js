@@ -1,6 +1,6 @@
-import {internalChangedCallback as $internalChangedCallback} from '../tokens/lifecycle';
 import {accessor} from '@corpuscule/utils/lib/descriptors';
-import {assertElementProperty} from '../utils';
+import {internalChangedCallback as $internalChangedCallback} from './tokens/lifecycle';
+import {assertElementProperty} from './utils';
 
 const internal = descriptor => {
   assertElementProperty('internal', descriptor);

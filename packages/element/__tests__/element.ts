@@ -1,5 +1,5 @@
 // tslint:disable:no-unnecessary-class max-classes-per-file no-unbound-method no-empty
-import {createTestingPromise, CustomElement, genName} from '../../../../test/utils';
+import {createTestingPromise, CustomElement, genName} from '../../../test/utils';
 import {
   createElementDecorator,
   createRoot,
@@ -7,7 +7,7 @@ import {
   propertyChangedCallback,
   render,
   updatedCallback,
-} from '../../src';
+} from '../src';
 
 const testElementDecorator = () => {
   describe('@element', () => {
