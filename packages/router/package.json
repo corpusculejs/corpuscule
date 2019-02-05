@@ -1,6 +1,6 @@
 {
   "name": "@corpuscule/router",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Routing utils for Corpuscule",
   "main": "lib/index.js",
   "module": "lib/index.js",
@@ -16,9 +16,9 @@
     "url": "git+https://github.com/corpusculejs/corpuscule.git"
   },
   "dependencies": {
-    "@corpuscule/context": "^0.8.0",
-    "@corpuscule/typings": "^0.8.0",
-    "@corpuscule/utils": "^0.8.0"
+    "@corpuscule/context": "^0.8.1",
+    "@corpuscule/typings": "^0.8.1",
+    "@corpuscule/utils": "^0.8.1"
   },
   "peerDependencies": {
     "universal-router": "^8.0.0"
