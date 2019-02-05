@@ -14,15 +14,18 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
   assertKind('form', Kind.Class, descriptor);
 
   let $api;
+  let constructor;
   let $state;
   let initializers;
 
+  const $$connectedCallback = Symbol();
+  const $$disconnectedCallback = Symbol();
   const $$submit = Symbol();
   const $$unsubscriptions = Symbol();
 
   const {elements, kind} = provider(descriptor);
 
-  const [supers, finish] = getSupers(elements, lifecycleKeys);
+  const [supers, prepareSupers] = getSupers(elements, lifecycleKeys);
 
   return {
     elements: [
@@ -30,49 +33,74 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
 
       // Public
       method({
-        bound: true,
         key: connectedCallbackKey,
         method() {
-          const instance = getValue(this, $api);
-
-          if (decorators) {
-            for (const decorate of decorators) {
-              this[$$unsubscriptions].push(decorate(instance));
-            }
-          }
-
-          this[$$unsubscriptions].push(
-            instance.subscribe(newState => {
-              setValue(this, $state, newState);
-            }, subscription),
-          );
-
-          this.addEventListener('submit', this[$$submit]);
-
-          supers[connectedCallbackKey].call(this);
+          // Workaround for Custom Element spec that cannot accept anything
+          // than prototype method
+          this[$$connectedCallback]();
         },
-        placement: 'own',
       }),
       method({
         key: disconnectedCallbackKey,
         method() {
-          for (const unsubscribe of this[$$unsubscriptions]) {
-            unsubscribe();
-          }
-
-          this[$$unsubscriptions] = [];
-
-          this.removeEventListener('submit', this[$$submit]);
-
-          supers[disconnectedCallbackKey].call(this);
+          // Workaround for Custom Element spec that cannot accept anything
+          // than prototype method
+          this[$$disconnectedCallback]();
         },
-        placement: 'own',
       }),
 
       // Private
       field({
         initializer: () => [],
         key: $$unsubscriptions,
+      }),
+      field({
+        initializer() {
+          // Inheritance workaround. If class is inherited, it will use
+          // user-defined callback, if not - system one.
+          return this.constructor === constructor
+            ? () => {
+                const instance = getValue(this, $api);
+
+                if (decorators) {
+                  for (const decorate of decorators) {
+                    this[$$unsubscriptions].push(decorate(instance));
+                  }
+                }
+
+                this[$$unsubscriptions].push(
+                  instance.subscribe(newState => {
+                    setValue(this, $state, newState);
+                  }, subscription),
+                );
+
+                this.addEventListener('submit', this[$$submit]);
+
+                supers[connectedCallbackKey].call(this);
+              }
+            : supers[connectedCallbackKey];
+        },
+        key: $$connectedCallback,
+      }),
+      field({
+        initializer() {
+          // Inheritance workaround. If class is inherited, it will use
+          // user-defined callback, if not - system one.
+          return this.constructor === constructor
+            ? () => {
+                for (const unsubscribe of this[$$unsubscriptions]) {
+                  unsubscribe();
+                }
+
+                this[$$unsubscriptions] = [];
+
+                this.removeEventListener('submit', this[$$submit]);
+
+                supers[disconnectedCallbackKey].call(this);
+              }
+            : supers[disconnectedCallbackKey];
+        },
+        key: $$disconnectedCallback,
       }),
       method({
         bound: true,
@@ -109,7 +137,9 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
       }),
     ],
     finisher(target) {
-      finish(target);
+      prepareSupers(target);
+
+      constructor = target;
 
       $api = api.get(target);
       $state = state.get(target);

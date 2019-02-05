@@ -13,8 +13,11 @@ const createOutletDecorator = ({consumer, value}, {api}) => routes => descriptor
 
   const {elements, kind} = consumer(descriptor);
 
+  let constructor;
   let $api;
 
+  const $$connectedCallback = Symbol();
+  const $$disconnectedCallback = Symbol();
   const $$contextValue = Symbol();
   const $$updateRoute = Symbol();
 
@@ -26,27 +29,25 @@ const createOutletDecorator = ({consumer, value}, {api}) => routes => descriptor
   return {
     elements: [
       ...elements.filter(
-        ({key, placement}) => !(lifecycleKeys.includes(key) && placement === 'own'),
+        ({key, placement}) => !(lifecycleKeys.includes(key) && placement === 'prototype'),
       ),
 
       // Public
       method({
         key: connectedCallbackKey,
         method() {
-          window.addEventListener('popstate', this[$$updateRoute]);
-          supers[connectedCallbackKey].call(this);
-
-          this[$$updateRoute](location.pathname);
+          // Workaround for Custom Element spec that cannot accept anything
+          // than prototype method
+          this[$$connectedCallback]();
         },
-        placement: 'own',
       }),
       method({
         key: disconnectedCallbackKey,
         method() {
-          window.removeEventListener('popstate', this[$$updateRoute]);
-          supers[disconnectedCallbackKey].call(this);
+          // Workaround for Custom Element spec that cannot accept anything
+          // than prototype method
+          this[$$disconnectedCallback]();
         },
-        placement: 'own',
       }),
 
       // Protected
@@ -61,6 +62,34 @@ const createOutletDecorator = ({consumer, value}, {api}) => routes => descriptor
       ...extras,
       contextValueDescriptor,
 
+      field({
+        initializer() {
+          // Inheritance workaround. If class is inherited, it will use
+          // user-defined callback, if not - system one.
+          return this.constructor === constructor
+            ? () => {
+                window.addEventListener('popstate', this[$$updateRoute]);
+                supers[connectedCallbackKey].call(this);
+
+                this[$$updateRoute](location.pathname);
+              }
+            : supers[connectedCallbackKey];
+        },
+        key: $$connectedCallback,
+      }),
+      field({
+        initializer() {
+          // Inheritance workaround. If class is inherited, it will use
+          // user-defined callback, if not - system one.
+          return this.constructor === constructor
+            ? () => {
+                window.removeEventListener('popstate', this[$$updateRoute]);
+                supers[disconnectedCallbackKey].call(this);
+              }
+            : supers[disconnectedCallbackKey];
+        },
+        key: $$disconnectedCallback,
+      }),
       method({
         bound: true,
         key: $$updateRoute,
@@ -84,6 +113,7 @@ const createOutletDecorator = ({consumer, value}, {api}) => routes => descriptor
       }),
     ],
     finisher(target) {
+      constructor = target;
       $api = api.get(target);
       assertRequiredProperty('outlet', 'api', $api);
 
@@ -92,6 +122,7 @@ const createOutletDecorator = ({consumer, value}, {api}) => routes => descriptor
           return yield path;
         },
       });
+
       contextFinisher(target);
     },
     kind,

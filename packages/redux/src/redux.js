@@ -10,9 +10,11 @@ export const createReduxDecorator = ({consumer, value}, {units}, {store}) => des
 
   const {elements, kind} = consumer(descriptor);
 
+  let constructor;
   let unitMap;
 
   const $$api = Symbol();
+  const $$disconnectedCallback = Symbol();
   const $$subscribe = Symbol();
   const $$unsubscribe = Symbol();
   const $$update = Symbol();
@@ -25,20 +27,17 @@ export const createReduxDecorator = ({consumer, value}, {units}, {store}) => des
   return {
     elements: [
       ...elements.filter(
-        ({key, placement}) => !(key === disconnectedCallbackKey && placement === 'own'),
+        ({key, placement}) => !(key === disconnectedCallbackKey && placement === 'prototype'),
       ),
 
       // Public
       method({
         key: disconnectedCallbackKey,
         method() {
-          supers[disconnectedCallbackKey].call(this);
-
-          if (this[$$unsubscribe]) {
-            this[$$unsubscribe]();
-          }
+          // Workaround for Custom Element spec that cannot accept anything
+          // than prototype method
+          this[$$disconnectedCallback]();
         },
-        placement: 'own',
       }),
 
       // Context
@@ -61,6 +60,22 @@ export const createReduxDecorator = ({consumer, value}, {units}, {store}) => des
       ...extras,
 
       // Private
+      field({
+        initializer() {
+          // Inheritance workaround. If class is inherited, it will use
+          // user-defined callback, if not - system one.
+          return this.constructor === constructor
+            ? () => {
+                supers[disconnectedCallbackKey].call(this);
+
+                if (this[$$unsubscribe]) {
+                  this[$$unsubscribe]();
+                }
+              }
+            : supers[disconnectedCallbackKey];
+        },
+        key: $$disconnectedCallback,
+      }),
       method({
         key: $$subscribe,
         method() {
@@ -100,6 +115,7 @@ export const createReduxDecorator = ({consumer, value}, {units}, {store}) => des
       }),
     ],
     finisher(target) {
+      constructor = target;
       unitMap = units.get(target);
       finish(target);
       finishContext(target);

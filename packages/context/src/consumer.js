@@ -1,6 +1,6 @@
 import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/asserts';
 import getSupers from '@corpuscule/utils/lib/getSupers';
-import {lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
+import {field, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
 import {setValue} from '@corpuscule/utils/lib/propertyUtils';
 import {checkValue, filter} from './utils';
 
@@ -12,8 +12,11 @@ const createConsumer = (
 
   const {elements, kind} = descriptor;
 
+  let constructor;
   let $value;
 
+  const $$connectedCallback = Symbol();
+  const $$disconnectedCallback = Symbol();
   const $$consume = Symbol();
   const $$unsubscribe = Symbol();
 
@@ -27,38 +30,64 @@ const createConsumer = (
       method({
         key: connectedCallbackKey,
         method() {
-          const event = new CustomEvent(eventName, {
-            bubbles: true,
-            cancelable: true,
-            composed: true,
-            detail: {consume: this[$$consume]},
-          });
-
-          this.dispatchEvent(event);
-
-          this[$$unsubscribe] = event.detail.unsubscribe;
-
-          if (!this[$$unsubscribe]) {
-            throw new Error(`No provider found for ${this.constructor.name}`);
-          }
-
-          supers[connectedCallbackKey].call(this);
+          // Workaround for Custom Element spec that cannot accept anything
+          // than prototype method
+          this[$$connectedCallback]();
         },
-        placement: 'own',
       }),
       method({
         key: disconnectedCallbackKey,
         method() {
-          if (this[$$unsubscribe]) {
-            this[$$unsubscribe](this[$$consume]);
-          }
-
-          supers[disconnectedCallbackKey].call(this);
+          // Workaround for Custom Element spec that cannot accept anything
+          // than prototype method
+          this[$$disconnectedCallback]();
         },
-        placement: 'own',
       }),
 
       // Private
+      field({
+        initializer() {
+          // Inheritance workaround. If class is inherited, it will use
+          // user-defined callback, if not - system one.
+          return this.constructor === constructor
+            ? () => {
+                const event = new CustomEvent(eventName, {
+                  bubbles: true,
+                  cancelable: true,
+                  composed: true,
+                  detail: {consume: this[$$consume]},
+                });
+
+                this.dispatchEvent(event);
+
+                this[$$unsubscribe] = event.detail.unsubscribe;
+
+                if (!this[$$unsubscribe]) {
+                  throw new Error(`No provider found for ${this.constructor.name}`);
+                }
+
+                supers[connectedCallbackKey].call(this);
+              }
+            : supers[connectedCallbackKey];
+        },
+        key: $$connectedCallback,
+      }),
+      field({
+        initializer() {
+          // Inheritance workaround. If class is inherited, it will use
+          // user-defined callback, if not - system one.
+          return this.constructor === constructor
+            ? () => {
+                if (this[$$unsubscribe]) {
+                  this[$$unsubscribe](this[$$consume]);
+                }
+
+                supers[disconnectedCallbackKey].call(this);
+              }
+            : supers[disconnectedCallbackKey];
+        },
+        key: $$disconnectedCallback,
+      }),
       method({
         bound: true,
         key: $$consume,
@@ -70,6 +99,7 @@ const createConsumer = (
     finisher(target) {
       checkValue(value, target);
 
+      constructor = target;
       $value = value.get(target);
 
       assertRequiredProperty('consumer', 'value', $value);

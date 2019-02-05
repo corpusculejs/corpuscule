@@ -376,6 +376,33 @@ const testElementDecorator = () => {
       }).not.toThrow();
     });
 
+    it('executes connectedCallback on real DOM', async () => {
+      const connectedCallbackSpy = jasmine.createSpy('connectedCallback');
+
+      const [promise, resolve] = createTestingPromise();
+
+      @element(genName())
+      class Test extends HTMLElement {
+        public connectedCallback(): void {
+          connectedCallbackSpy();
+          resolve();
+        }
+
+        public [render](): null {
+          return null;
+        }
+      }
+
+      const test = new Test();
+
+      document.body.appendChild(test);
+      await promise;
+
+      expect(connectedCallbackSpy).toHaveBeenCalled();
+      expect(schedulerSpy).toHaveBeenCalled();
+      document.body.innerHTML = ''; // tslint:disable-line:no-inner-html
+    });
+
     describe('elements extending', () => {
       it('allows extending existing element', () => {
         @element(genName())

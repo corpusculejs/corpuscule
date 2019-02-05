@@ -12,8 +12,11 @@ const createProvider = (
 
   const {elements, kind} = descriptor;
 
+  let constructor;
   let $value;
 
+  const $$connectedCallback = Symbol();
+  const $$disconnectedCallback = Symbol();
   const $$consumers = Symbol();
   const $$subscribe = Symbol();
   const $$unsubscribe = Symbol();
@@ -28,24 +31,50 @@ const createProvider = (
       method({
         key: connectedCallbackKey,
         method() {
-          this.addEventListener(eventName, this[$$subscribe]);
-          supers[connectedCallbackKey].call(this);
+          // Workaround for Custom Element spec that cannot accept anything
+          // than prototype method
+          this[$$connectedCallback]();
         },
-        placement: 'own',
       }),
       method({
         key: disconnectedCallbackKey,
         method() {
-          this.removeEventListener(eventName, this[$$subscribe]);
-          supers[disconnectedCallbackKey].call(this);
+          // Workaround for Custom Element spec that cannot accept anything
+          // than prototype method
+          this[$$disconnectedCallback]();
         },
-        placement: 'own',
       }),
 
       // Private
       field({
         initializer: () => [],
         key: $$consumers,
+      }),
+      field({
+        initializer() {
+          // Inheritance workaround. If class is inherited, it will use
+          // user-defined callback, if not - system one.
+          return this.constructor === constructor
+            ? () => {
+                this.addEventListener(eventName, this[$$subscribe]);
+                supers[connectedCallbackKey].call(this);
+              }
+            : supers[connectedCallbackKey];
+        },
+        key: $$connectedCallback,
+      }),
+      field({
+        initializer() {
+          // Inheritance workaround. If class is inherited, it will use
+          // user-defined callback, if not - system one.
+          return this.constructor === constructor
+            ? () => {
+                this.removeEventListener(eventName, this[$$subscribe]);
+                supers[disconnectedCallbackKey].call(this);
+              }
+            : supers[disconnectedCallbackKey];
+        },
+        key: $$disconnectedCallback,
       }),
       method({
         bound: true,
@@ -79,6 +108,7 @@ const createProvider = (
     finisher(target) {
       checkValue(value, target);
       prepareSupers(target);
+      constructor = target;
 
       $value = value.get(target);
 

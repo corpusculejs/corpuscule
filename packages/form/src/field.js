@@ -13,6 +13,8 @@ const createField = (
 ) => descriptor => {
   assertKind('field', Kind.Class, descriptor);
 
+  let constructor;
+
   let $api;
   let $input;
   let $meta;
@@ -26,6 +28,8 @@ const createField = (
   let $validate;
   let $validateFields;
 
+  const $$connectedCallback = Symbol();
+  const $$disconnectedCallback = Symbol();
   const $$formState = Symbol();
   const $$onBlur = Symbol();
   const $$onChange = Symbol();
@@ -37,7 +41,7 @@ const createField = (
   const $$updatingValid = Symbol();
 
   const {elements, kind} = consumer(descriptor);
-  const [supers, finish] = getSupers(elements, $.lifecycleKeys);
+  const [supers, prepareSupers] = getSupers(elements, $.lifecycleKeys);
 
   return {
     elements: [
@@ -47,26 +51,18 @@ const createField = (
       $.method({
         key: connectedCallbackKey,
         method() {
-          this.addEventListener('blur', this[$$onBlur]);
-          this.addEventListener('change', this[$$onChange]);
-          this.addEventListener('focus', this[$$onFocus]);
-
-          supers[connectedCallbackKey].call(this);
-          this[$$subscribe]();
+          // Workaround for Custom Element spec that cannot accept anything
+          // than prototype method
+          this[$$connectedCallback]();
         },
-        placement: 'own',
       }),
       $.method({
         key: disconnectedCallbackKey,
         method() {
-          this.removeEventListener('blur', this[$$onBlur]);
-          this.removeEventListener('change', this[$$onChange]);
-          this.removeEventListener('focus', this[$$onFocus]);
-
-          this[$$unsubscribe]();
-          supers[disconnectedCallbackKey].call(this);
+          // Workaround for Custom Element spec that cannot accept anything
+          // than prototype method
+          this[$$disconnectedCallback]();
         },
-        placement: 'own',
       }),
 
       // Private
@@ -81,6 +77,40 @@ const createField = (
       $.field({
         initializer: () => true,
         key: $$updatingValid,
+      }),
+      $.field({
+        initializer() {
+          // Inheritance workaround. If class is inherited, it will use
+          // user-defined callback, if not - system one.
+          return this.constructor === constructor
+            ? () => {
+                this.addEventListener('blur', this[$$onBlur]);
+                this.addEventListener('change', this[$$onChange]);
+                this.addEventListener('focus', this[$$onFocus]);
+
+                supers[connectedCallbackKey].call(this);
+                this[$$subscribe]();
+              }
+            : supers[connectedCallbackKey];
+        },
+        key: $$connectedCallback,
+      }),
+      $.field({
+        initializer() {
+          // Inheritance workaround. If class is inherited, it will use
+          // user-defined callback, if not - system one.
+          return this.constructor === constructor
+            ? () => {
+                this.removeEventListener('blur', this[$$onBlur]);
+                this.removeEventListener('change', this[$$onChange]);
+                this.removeEventListener('focus', this[$$onFocus]);
+
+                this[$$unsubscribe]();
+                supers[disconnectedCallbackKey].call(this);
+              }
+            : supers[disconnectedCallbackKey];
+        },
+        key: $$disconnectedCallback,
       }),
       $.method({
         bound: true,
@@ -187,7 +217,9 @@ const createField = (
       }),
     ],
     finisher(target) {
-      finish(target);
+      prepareSupers(target);
+
+      constructor = target;
 
       $api = api.get(target);
       $input = input.get(target);

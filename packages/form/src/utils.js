@@ -59,4 +59,6 @@ export const getTargetValue = (
 };
 
 export const filter = elements =>
-  elements.filter(({key, placement}) => !(lifecycleKeys.includes(key) && placement === 'own'));
+  elements.filter(
+    ({key, placement}) => !(lifecycleKeys.includes(key) && placement === 'prototype'),
+  );
