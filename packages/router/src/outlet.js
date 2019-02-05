@@ -1,5 +1,6 @@
 import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/asserts';
 import {field, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
+import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
 import {setValue} from '@corpuscule/utils/lib/propertyUtils';
 import {resolve} from './tokens/lifecycle';
 import getSupers from '@corpuscule/utils/lib/getSupers';
@@ -16,8 +17,8 @@ const createOutletDecorator = ({consumer, value}, {api}) => routes => descriptor
   let constructor;
   let $api;
 
-  const $$connectedCallback = Symbol();
-  const $$disconnectedCallback = Symbol();
+  const getConstructor = () => constructor;
+
   const $$contextValue = Symbol();
   const $$updateRoute = Symbol();
 
@@ -33,22 +34,30 @@ const createOutletDecorator = ({consumer, value}, {api}) => routes => descriptor
       ),
 
       // Public
-      method({
-        key: connectedCallbackKey,
-        method() {
-          // Workaround for Custom Element spec that cannot accept anything
-          // than prototype method
-          this[$$connectedCallback]();
+      ...lifecycleMethod(
+        {
+          key: connectedCallbackKey,
+          method() {
+            window.addEventListener('popstate', this[$$updateRoute]);
+            supers[connectedCallbackKey].call(this);
+
+            this[$$updateRoute](location.pathname);
+          },
         },
-      }),
-      method({
-        key: disconnectedCallbackKey,
-        method() {
-          // Workaround for Custom Element spec that cannot accept anything
-          // than prototype method
-          this[$$disconnectedCallback]();
+        supers,
+        getConstructor,
+      ),
+      ...lifecycleMethod(
+        {
+          key: disconnectedCallbackKey,
+          method() {
+            window.removeEventListener('popstate', this[$$updateRoute]);
+            supers[disconnectedCallbackKey].call(this);
+          },
         },
-      }),
+        supers,
+        getConstructor,
+      ),
 
       // Protected
       method({
@@ -62,34 +71,6 @@ const createOutletDecorator = ({consumer, value}, {api}) => routes => descriptor
       ...extras,
       contextValueDescriptor,
 
-      field({
-        initializer() {
-          // Inheritance workaround. If class is inherited, it will use
-          // user-defined callback, if not - system one.
-          return this.constructor === constructor
-            ? () => {
-                window.addEventListener('popstate', this[$$updateRoute]);
-                supers[connectedCallbackKey].call(this);
-
-                this[$$updateRoute](location.pathname);
-              }
-            : supers[connectedCallbackKey];
-        },
-        key: $$connectedCallback,
-      }),
-      field({
-        initializer() {
-          // Inheritance workaround. If class is inherited, it will use
-          // user-defined callback, if not - system one.
-          return this.constructor === constructor
-            ? () => {
-                window.removeEventListener('popstate', this[$$updateRoute]);
-                supers[disconnectedCallbackKey].call(this);
-              }
-            : supers[disconnectedCallbackKey];
-        },
-        key: $$disconnectedCallback,
-      }),
       method({
         bound: true,
         key: $$updateRoute,

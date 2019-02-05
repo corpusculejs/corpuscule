@@ -1,5 +1,6 @@
 import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/asserts';
 import {field, hook, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
+import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
 import getSupers from '@corpuscule/utils/lib/getSupers';
 import {getName, getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
 import {createForm} from 'final-form';
@@ -18,8 +19,8 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
   let $state;
   let initializers;
 
-  const $$connectedCallback = Symbol();
-  const $$disconnectedCallback = Symbol();
+  const getConstructor = () => constructor;
+
   const $$submit = Symbol();
   const $$unsubscriptions = Symbol();
 
@@ -32,75 +33,55 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
       ...filter(elements),
 
       // Public
-      method({
-        key: connectedCallbackKey,
-        method() {
-          // Workaround for Custom Element spec that cannot accept anything
-          // than prototype method
-          this[$$connectedCallback]();
+      ...lifecycleMethod(
+        {
+          key: connectedCallbackKey,
+          method() {
+            const instance = getValue(this, $api);
+
+            if (decorators) {
+              for (const decorate of decorators) {
+                this[$$unsubscriptions].push(decorate(instance));
+              }
+            }
+
+            this[$$unsubscriptions].push(
+              instance.subscribe(newState => {
+                setValue(this, $state, newState);
+              }, subscription),
+            );
+
+            this.addEventListener('submit', this[$$submit]);
+
+            supers[connectedCallbackKey].call(this);
+          },
         },
-      }),
-      method({
-        key: disconnectedCallbackKey,
-        method() {
-          // Workaround for Custom Element spec that cannot accept anything
-          // than prototype method
-          this[$$disconnectedCallback]();
+        supers,
+        getConstructor,
+      ),
+      ...lifecycleMethod(
+        {
+          key: disconnectedCallbackKey,
+          method() {
+            for (const unsubscribe of this[$$unsubscriptions]) {
+              unsubscribe();
+            }
+
+            this[$$unsubscriptions] = [];
+
+            this.removeEventListener('submit', this[$$submit]);
+
+            supers[disconnectedCallbackKey].call(this);
+          },
         },
-      }),
+        supers,
+        getConstructor,
+      ),
 
       // Private
       field({
         initializer: () => [],
         key: $$unsubscriptions,
-      }),
-      field({
-        initializer() {
-          // Inheritance workaround. If class is inherited, it will use
-          // user-defined callback, if not - system one.
-          return this.constructor === constructor
-            ? () => {
-                const instance = getValue(this, $api);
-
-                if (decorators) {
-                  for (const decorate of decorators) {
-                    this[$$unsubscriptions].push(decorate(instance));
-                  }
-                }
-
-                this[$$unsubscriptions].push(
-                  instance.subscribe(newState => {
-                    setValue(this, $state, newState);
-                  }, subscription),
-                );
-
-                this.addEventListener('submit', this[$$submit]);
-
-                supers[connectedCallbackKey].call(this);
-              }
-            : supers[connectedCallbackKey];
-        },
-        key: $$connectedCallback,
-      }),
-      field({
-        initializer() {
-          // Inheritance workaround. If class is inherited, it will use
-          // user-defined callback, if not - system one.
-          return this.constructor === constructor
-            ? () => {
-                for (const unsubscribe of this[$$unsubscriptions]) {
-                  unsubscribe();
-                }
-
-                this[$$unsubscriptions] = [];
-
-                this.removeEventListener('submit', this[$$submit]);
-
-                supers[disconnectedCallbackKey].call(this);
-              }
-            : supers[disconnectedCallbackKey];
-        },
-        key: $$disconnectedCallback,
       }),
       method({
         bound: true,

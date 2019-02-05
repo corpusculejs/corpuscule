@@ -1,6 +1,7 @@
 import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/asserts';
 import getSupers from '@corpuscule/utils/lib/getSupers';
 import {field, hook, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
+import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
 import {getValue} from '@corpuscule/utils/lib/propertyUtils';
 import {checkValue, filter} from './utils';
 
@@ -15,8 +16,8 @@ const createProvider = (
   let constructor;
   let $value;
 
-  const $$connectedCallback = Symbol();
-  const $$disconnectedCallback = Symbol();
+  const getConstructor = () => constructor;
+
   const $$consumers = Symbol();
   const $$subscribe = Symbol();
   const $$unsubscribe = Symbol();
@@ -28,53 +29,33 @@ const createProvider = (
       ...filter(elements),
 
       // Public
-      method({
-        key: connectedCallbackKey,
-        method() {
-          // Workaround for Custom Element spec that cannot accept anything
-          // than prototype method
-          this[$$connectedCallback]();
+      ...lifecycleMethod(
+        {
+          key: connectedCallbackKey,
+          method() {
+            this.addEventListener(eventName, this[$$subscribe]);
+            supers[connectedCallbackKey].call(this);
+          },
         },
-      }),
-      method({
-        key: disconnectedCallbackKey,
-        method() {
-          // Workaround for Custom Element spec that cannot accept anything
-          // than prototype method
-          this[$$disconnectedCallback]();
+        supers,
+        getConstructor,
+      ),
+      ...lifecycleMethod(
+        {
+          key: disconnectedCallbackKey,
+          method() {
+            this.removeEventListener(eventName, this[$$subscribe]);
+            supers[disconnectedCallbackKey].call(this);
+          },
         },
-      }),
+        supers,
+        getConstructor,
+      ),
 
       // Private
       field({
         initializer: () => [],
         key: $$consumers,
-      }),
-      field({
-        initializer() {
-          // Inheritance workaround. If class is inherited, it will use
-          // user-defined callback, if not - system one.
-          return this.constructor === constructor
-            ? () => {
-                this.addEventListener(eventName, this[$$subscribe]);
-                supers[connectedCallbackKey].call(this);
-              }
-            : supers[connectedCallbackKey];
-        },
-        key: $$connectedCallback,
-      }),
-      field({
-        initializer() {
-          // Inheritance workaround. If class is inherited, it will use
-          // user-defined callback, if not - system one.
-          return this.constructor === constructor
-            ? () => {
-                this.removeEventListener(eventName, this[$$subscribe]);
-                supers[disconnectedCallbackKey].call(this);
-              }
-            : supers[disconnectedCallbackKey];
-        },
-        key: $$disconnectedCallback,
       }),
       method({
         bound: true,

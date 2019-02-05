@@ -1,6 +1,7 @@
 /* eslint-disable no-invalid-this, prefer-arrow-callback */
 import {assertKind, Kind} from '@corpuscule/utils/lib/asserts';
 import {field, method, lifecycleKeys} from '@corpuscule/utils/lib/descriptors';
+import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
 import {
   createRoot as $createRoot,
@@ -41,10 +42,9 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
   }
 
   let constructor;
+  const getConstructor = () => constructor;
 
   const $$connected = Symbol();
-  const $$connectedCallback = Symbol();
-  const $$attributeChangedCallback = Symbol();
   const $$invalidate = Symbol();
   const $$root = Symbol();
   const $$valid = Symbol();
@@ -84,22 +84,32 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
       }),
 
       // Public
-      method({
-        key: connectedCallbackKey,
-        method() {
-          // Workaround for Custom Element spec that cannot accept anything
-          // than prototype method
-          this[$$connectedCallback]();
+      ...lifecycleMethod(
+        {
+          key: connectedCallbackKey,
+          async method() {
+            await this[$$invalidate]();
+            supers[connectedCallbackKey].call(this);
+          },
         },
-      }),
-      method({
-        key: attributeChangedCallbackKey,
-        method(...args) {
-          // Workaround for Custom Element spec that cannot accept anything
-          // than prototype method
-          this[$$attributeChangedCallback](...args);
+        supers,
+        getConstructor,
+      ),
+      ...lifecycleMethod(
+        {
+          key: attributeChangedCallbackKey,
+          async method(attributeName, oldValue, newValue) {
+            if (oldValue === newValue || !this[$$connected]) {
+              return;
+            }
+
+            supers[attributeChangedCallbackKey].call(this, attributeName, oldValue, newValue);
+            await this[$$invalidate]();
+          },
         },
-      }),
+        supers,
+        getConstructor,
+      ),
 
       // Protected
       method({
@@ -145,36 +155,6 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
       field({
         initializer: () => false,
         key: $$connected,
-      }),
-      field({
-        initializer() {
-          // Inheritance workaround. If class is inherited, it will use
-          // user-defined callback, if not - system one.
-          return this.constructor === constructor
-            ? async () => {
-                await this[$$invalidate]();
-                supers[connectedCallbackKey].call(this);
-              }
-            : supers[connectedCallbackKey];
-        },
-        key: $$connectedCallback,
-      }),
-      field({
-        initializer() {
-          // Inheritance workaround. If class is inherited, it will use
-          // user-defined callback, if not - system one.
-          return this.constructor === constructor
-            ? async (attributeName, oldValue, newValue) => {
-                if (oldValue === newValue || !this[$$connected]) {
-                  return;
-                }
-
-                supers[attributeChangedCallbackKey].call(this, attributeName, oldValue, newValue);
-                await this[$$invalidate]();
-              }
-            : supers[attributeChangedCallbackKey];
-        },
-        key: $$attributeChangedCallback,
       }),
       field({
         initializer() {

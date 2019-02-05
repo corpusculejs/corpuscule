@@ -1,6 +1,7 @@
 import {assertKind, Kind} from '@corpuscule/utils/lib/asserts';
-import getSupers from '@corpuscule/utils/lib/getSupers';
 import {accessor, field, hook, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
+import getSupers from '@corpuscule/utils/lib/getSupers';
+import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
 import {getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
 
 const [, disconnectedCallbackKey] = lifecycleKeys;
@@ -13,8 +14,9 @@ export const createReduxDecorator = ({consumer, value}, {units}, {store}) => des
   let constructor;
   let unitMap;
 
+  const getConstructor = () => constructor;
+
   const $$api = Symbol();
-  const $$disconnectedCallback = Symbol();
   const $$subscribe = Symbol();
   const $$unsubscribe = Symbol();
   const $$update = Symbol();
@@ -31,14 +33,20 @@ export const createReduxDecorator = ({consumer, value}, {units}, {store}) => des
       ),
 
       // Public
-      method({
-        key: disconnectedCallbackKey,
-        method() {
-          // Workaround for Custom Element spec that cannot accept anything
-          // than prototype method
-          this[$$disconnectedCallback]();
+      ...lifecycleMethod(
+        {
+          key: disconnectedCallbackKey,
+          method() {
+            supers[disconnectedCallbackKey].call(this);
+
+            if (this[$$unsubscribe]) {
+              this[$$unsubscribe]();
+            }
+          },
         },
-      }),
+        supers,
+        getConstructor,
+      ),
 
       // Context
       accessor({
@@ -60,22 +68,6 @@ export const createReduxDecorator = ({consumer, value}, {units}, {store}) => des
       ...extras,
 
       // Private
-      field({
-        initializer() {
-          // Inheritance workaround. If class is inherited, it will use
-          // user-defined callback, if not - system one.
-          return this.constructor === constructor
-            ? () => {
-                supers[disconnectedCallbackKey].call(this);
-
-                if (this[$$unsubscribe]) {
-                  this[$$unsubscribe]();
-                }
-              }
-            : supers[disconnectedCallbackKey];
-        },
-        key: $$disconnectedCallback,
-      }),
       method({
         key: $$subscribe,
         method() {
