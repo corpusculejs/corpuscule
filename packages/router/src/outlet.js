@@ -12,7 +12,7 @@ const [connectedCallbackKey, disconnectedCallbackKey] = lifecycleKeys;
 const createOutletDecorator = ({consumer, value}, {api}) => routes => descriptor => {
   assertKind('outlet', Kind.Class, descriptor);
 
-  const {elements, kind} = consumer(descriptor);
+  const {elements, finisher: consumerFinisher, kind} = consumer(descriptor);
 
   let constructor;
   let $api;
@@ -23,7 +23,7 @@ const createOutletDecorator = ({consumer, value}, {api}) => routes => descriptor
   const $$updateRoute = Symbol();
 
   const [supers, finish] = getSupers(elements, methods);
-  const {extras, finisher: contextFinisher, ...contextValueDescriptor} = value(
+  const {extras, finisher: contextValueFinisher, ...contextValueDescriptor} = value(
     field({key: $$contextValue}),
   );
 
@@ -94,6 +94,8 @@ const createOutletDecorator = ({consumer, value}, {api}) => routes => descriptor
       }),
     ],
     finisher(target) {
+      consumerFinisher(target);
+
       constructor = target;
       $api = api.get(target);
       assertRequiredProperty('outlet', 'api', $api);
@@ -104,7 +106,7 @@ const createOutletDecorator = ({consumer, value}, {api}) => routes => descriptor
         },
       });
 
-      contextFinisher(target);
+      contextValueFinisher(target);
     },
     kind,
   };

@@ -9,7 +9,7 @@ const [, disconnectedCallbackKey] = lifecycleKeys;
 export const createReduxDecorator = ({consumer, value}, {units}, {store}) => descriptor => {
   assertKind('connect', Kind.Class, descriptor);
 
-  const {elements, kind} = consumer(descriptor);
+  const {elements, finisher: consumerFinisher, kind} = consumer(descriptor);
 
   let constructor;
   let unitMap;
@@ -107,6 +107,7 @@ export const createReduxDecorator = ({consumer, value}, {units}, {store}) => des
       }),
     ],
     finisher(target) {
+      consumerFinisher(target);
       constructor = target;
       unitMap = units.get(target);
       finish(target);

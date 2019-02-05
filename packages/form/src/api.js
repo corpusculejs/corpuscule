@@ -16,9 +16,12 @@ const createApiDecorator = ({value}, {api}, {input, meta}, {state}) => descripto
     throw new TypeError(`Property name ${name} is not allowed`);
   }
 
+  const {extras = [], ...finalDescriptor} = isFormApi ? value(descriptor) : descriptor;
+
   return {
-    ...(isFormApi ? value(descriptor) : descriptor),
+    ...finalDescriptor,
     extras: [
+      ...extras,
       hook({
         start() {
           if (isFormApi) {
