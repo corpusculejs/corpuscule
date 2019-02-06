@@ -3,9 +3,7 @@ dist: trusty
 addons:
   chrome: stable
 node_js:
-  - '11'
   - '10'
-  - '8'
 cache:
   directories:
   - $HOME/.npm
