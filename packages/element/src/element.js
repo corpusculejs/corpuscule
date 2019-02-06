@@ -203,11 +203,7 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
 
       constructor = target;
 
-      // Registry creates an instance of the class, so it is necessary to wait
-      // unit all finishers are called
-      Promise.resolve().then(() => {
-        customElements.define(name, target, builtin && {extends: builtin});
-      });
+      customElements.define(name, target, builtin && {extends: builtin});
     },
     kind,
   };
