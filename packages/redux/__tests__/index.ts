@@ -1,6 +1,6 @@
 // tslint:disable:max-classes-per-file
 import {AnyAction, Store} from 'redux';
-import {createMockedContextElements, valuesMap} from '../../../test/mocks/context';
+import {createMockedContextElements, finisher, valuesMap} from '../../../test/mocks/context';
 import {CustomElement, genName} from '../../../test/utils';
 import {api, dispatcher, provider, redux, unit} from '../src';
 
@@ -18,7 +18,7 @@ describe('@corpuscule/redux', () => {
   });
 
   describe('@redux', () => {
-    it('subscribes to store', () => {
+    it('creates element that subscribes to a store', () => {
       @provider
       class Provider extends CustomElement {
         @api public store: Store = reduxStore;
@@ -30,6 +30,7 @@ describe('@corpuscule/redux', () => {
       createMockedContextElements(Provider, Connected);
 
       expect(reduxStore.subscribe).toHaveBeenCalled();
+      expect(finisher).toHaveBeenCalledWith(Connected);
     });
 
     it('unsubscribes from store before subscribing to a new one', () => {

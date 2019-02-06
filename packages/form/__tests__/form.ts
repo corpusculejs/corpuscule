@@ -1,5 +1,6 @@
 // tslint:disable:no-unused-expression no-empty
 import {FormApi, FormState} from 'final-form';
+import {finisher} from '../../../test/mocks/context';
 import {createForm, formSpyObject, unsubscribe} from '../../../test/mocks/finalForm';
 import {CustomElement, genName} from '../../../test/utils';
 import {createFormContext, FormDecorator} from '../src';
@@ -42,6 +43,8 @@ const testForm = () => {
         debug: true,
         onSubmit: jasmine.any(Function),
       });
+
+      expect(finisher).toHaveBeenCalledWith(Test);
     });
 
     it('allows to declare configuration with method and makes it bound', () => {

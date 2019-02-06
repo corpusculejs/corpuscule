@@ -1,6 +1,6 @@
 // tslint:disable:max-classes-per-file
 import UniversalRouter from 'universal-router';
-import {createMockedContextElements, valuesMap} from '../../../test/mocks/context';
+import {createMockedContextElements, finisher, valuesMap} from '../../../test/mocks/context';
 import {createTestingPromise, CustomElement, genName} from '../../../test/utils';
 import {api, outlet, provider} from '../src';
 
@@ -85,6 +85,7 @@ const outletTest = () => {
       await initialPromise;
 
       expect(outletElement.layout).toBe('Test');
+      expect(finisher).toHaveBeenCalledWith(Outlet);
 
       window.dispatchEvent(
         new PopStateEvent('popstate', {

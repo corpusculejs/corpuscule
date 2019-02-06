@@ -4,6 +4,7 @@ import {accessor} from '../../packages/utils/src/descriptors';
 import {Constructor, CustomElement, genName} from '../utils';
 
 export const context = jasmine.createSpyObj('context', ['consumer', 'provider', 'value']);
+export const finisher = jasmine.createSpy('context.finisher');
 
 export const valuesMap: WeakMap<object, string> = new WeakMap();
 
@@ -20,10 +21,13 @@ context.value.and.callFake(
     }),
 );
 
-const identity = <T>(descriptor: T) => descriptor;
+const fakeDecorator = <T>(descriptor: T) => ({
+  ...descriptor,
+  finisher,
+});
 
-context.consumer.and.callFake(identity);
-context.provider.and.callFake(identity);
+context.consumer.and.callFake(fakeDecorator);
+context.provider.and.callFake(fakeDecorator);
 
 const createContext = jasmine.createSpy('createContext');
 createContext.and.returnValue(context);

@@ -1,6 +1,6 @@
 // tslint:disable:no-unbound-method no-empty
 import {FieldState, FieldValidator, FormApi, FormState} from 'final-form';
-import {createMockedContextElements} from '../../../test/mocks/context';
+import {createMockedContextElements, finisher} from '../../../test/mocks/context';
 import {formSpyObject, unsubscribe} from '../../../test/mocks/finalForm';
 import {CustomElement, genName} from '../../../test/utils';
 import {createFormContext, FieldInputProps, FieldMetaProps, FormDecorator} from '../src';
@@ -88,6 +88,7 @@ const testField = () => {
       expect(fieldElement.form).toBe(formSpyObject);
       expect(formSpyObject.subscribe).toHaveBeenCalled();
       expect(scheduler).toHaveBeenCalledWith(jasmine.any(Function));
+      expect(finisher).toHaveBeenCalledWith(FormField);
     });
 
     it('subscribes to form with defined options', () => {
