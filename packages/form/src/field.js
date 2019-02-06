@@ -40,7 +40,7 @@ const createField = (
   const $$update = Symbol();
   const $$updatingValid = Symbol();
 
-  const {elements, kind} = consumer(descriptor);
+  const {elements, finisher: consumerFinisher, kind} = consumer(descriptor);
   const [supers, prepareSupers] = getSupers(elements, $.lifecycleKeys);
 
   return {
@@ -198,6 +198,7 @@ const createField = (
     ],
     finisher(target) {
       prepareSupers(target);
+      consumerFinisher(target);
 
       constructor = target;
 

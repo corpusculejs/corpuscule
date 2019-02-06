@@ -299,6 +299,9 @@ Creator function returns an `@element` decorator function that receives followin
   * `extends?: keyof HTMLElementTagNameMap`. This parameter allows to create a
   [Customized Built-In Element](#customized-builtin-element) instead of a regular Custom Element.
 
+**Note**: `@element` decorator should go **ON TOP** of all other decorators. Otherwise, you could expect strange errors
+happening.
+
 ##### Example
 ```javascript
 import {createElementDecorator, render} from '@corpuscule/element';

@@ -24,7 +24,7 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
   const $$submit = Symbol();
   const $$unsubscriptions = Symbol();
 
-  const {elements, kind} = provider(descriptor);
+  const {elements, finisher: providerFinisher, kind} = provider(descriptor);
 
   const [supers, prepareSupers] = getSupers(elements, lifecycleKeys);
 
@@ -119,6 +119,7 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
     ],
     finisher(target) {
       prepareSupers(target);
+      providerFinisher(target);
 
       constructor = target;
 
