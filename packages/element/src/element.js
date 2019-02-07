@@ -185,11 +185,9 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
     ],
     finisher(target) {
       prepareSupers(target, {
-        [$createRoot]: isShadow
-          ? function() {
-              return isShadow ? this.attachShadow({mode: 'open'}) : this;
-            }
-          : noop,
+        [$createRoot]() {
+          return isShadow ? this.attachShadow({mode: 'open'}) : this;
+        },
       });
 
       constructor = target;
