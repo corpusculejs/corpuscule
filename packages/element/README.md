@@ -5,12 +5,12 @@ using it in production. API is not ready yet and can receive large changes.
 # `@corpuscule/element`
 [![Latest Stable Version](https://img.shields.io/npm/v/@corpuscule/element.svg)](https://www.npmjs.com/package/@corpuscule/element)
 
-Lightweight set of decorators for creating web components. It is a decorator-based analogue for
+A lightweight set of decorators for creating web components. It is a decorator-based analog for
 Polymer's [LitElement](https://github.com/Polymer/lit-element) or a web components based view
 rendering library like React or Vue. 
 
 ## Features
-* **Zero third-party dependencies**. Package still contains Corpuscule dependencies, but no
+* **Zero third-party dependencies**. The package still contains Corpuscule dependencies, but no
 third-party library is used.
 * **Renderer agnostic**. You can use `@corpuscule/element` with any renderer you want: `lit-html`,
 `hyperHTML`, `preact` or even `React`. Just choose an existing renderer or create a new one and send
@@ -68,30 +68,30 @@ class Bar {
 ```
 
 ## Property Types
-Corpuscule element contains three types of properties that differs in displaying, settings and
+Corpuscule element contains three types of properties that differ in displaying, settings and
 affecting the rendering process. 
 
 ### Attribute
 The most well-known property type, it is also the most complex type to work with. Standard requires
-that it should only be string type, but Corpuscule allows it to have three primitive type: `String`,
-`Boolean` and `Number`. This type also has several features and limitations:
-  * Attribute cannot have default value. This decision was made because creating element with
-  attributes defined in constructor is [forbidden](https://html.spec.whatwg.org/multipage/custom-elements.html#custom-element-conformance)
-  by standard. Setting attributes manually in `connectedCallback` is possible yet also limited,
-  because component users can set these attributes before connection to DOM and would be upset 
-  if default values override ones made by them. If you consider all these possibilities, you can
-  set defaults in `connectedCallback` manually: it will require additional render for your
-  component though.
-  * Attribute are saved as strings in HTMLElement attributes storage, and whenever you request them,
-  cast to proper type happens. That's the reason you cannot save in attribute more than just a
-  primitive type.
-  * It's not required for the attribute name to be equal to the property it is bound with. There is
-  no restrictions for it.
-  * Attributes are pure (in React meaning). It means that the old attribute value is compared with 
+that it should only be a string type, but Corpuscule allows it to have three primitive types:
+`String`, `Boolean`, and `Number`. This type also has several features and limitations:
+  * The attribute cannot have a default value. This decision was made because creating an element
+  with attributes defined in a constructor is [forbidden](https://html.spec.whatwg.org/multipage/custom-elements.html#custom-element-conformance)
+  by the standard. Setting attributes manually in `connectedCallback` is possible yet also limited,
+  because component users can set these attributes before connection to DOM and would be upset if
+  default values override ones made by them. If you consider all these possibilities, you can set
+  defaults in `connectedCallback` manually: it will require additional render for your component 
+  though.
+  * Attribute are saved as strings in `HTMLElement` attributes storage, and whenever you request
+  them, cast to proper type happens. That's the reason you cannot save in attribute more than
+  just a primitive type. 
+  * It is not required for the attribute name to be equal to the property it is bound with. There
+  are no restrictions for it.
+  * Attributes are pure (in React meaning). It means that the old attribute value is compared with
   the new one on set and if they are equal rendering won't happen.
-  * Each attribute update calls `attributeChangedCallback` method with attribute name, old and new
-  value. 
-  * Each attribute update initiates rendering. 
+  * Each attribute update calls the `attributeChangedCallback` method with attribute name, old and
+  new value.
+  * Each attribute update initiates rendering.
 
 ### Property
 Property is a simple element class property that has two main differences:
@@ -119,15 +119,15 @@ Features:
 
 ### Other
 You can also create regular class properties, but their change won't initiate rendering process 
-unless you trigger any property of this three types. To cause rendering changing a property is the
+unless you trigger any property of these three types. To cause rendering changing a property is the
 only way. No request method is provided.
 
 ## Element Lifecycle
-Each custom element marked with an `@element` decorator has following lifecycle. To be more
+Each custom element marked with an `@element` decorator has the following lifecycle. To be more
 consistent, this description includes standard JS class and custom element lifecycle.
 
 ### Creation
-It is possible to create custom element with `document.createElement` method, so this stage is
+It is possible to create a custom element with `document.createElement` method, so this stage is
 separate from others.
 
 #### `constructor()`
@@ -138,7 +138,7 @@ Everything starts with the creation of the custom element class.
 #### `[createRoot](): Element | ShadowRoot`
 **Hook Type**: Corpuscule
 
-This method creates a root container that will be used in rendering method. By default it has
+This method creates a root container that will be used in the rendering method. By default, it has
 following implementation and just creates Shadow Root (or Light DOM for elements that are unable
 to have Shadow Root).
 ```typescript
@@ -156,7 +156,7 @@ could be connected multiple times.
 #### `connectedCallback(): void`
 **Hook Type**: Custom Element
 
-This callback is called whenever element is connected to DOM. During the connection Corpuscule 
+This callback is called whenever the element is connected to DOM. During the connection, Corpuscule
 performs the initial rendering, and then user-defined `connectedCallback` is fired.
 
 React users may consider it as a [`componentDidMount`](https://reactjs.org/docs/react-component.html#componentdidmount)
@@ -165,34 +165,34 @@ lifecycle hook.
 #### `disconnectedCallback(): void`
 **Hook Type**: Custom Element
 
-This callback is called whenever element is disconnected from DOM. Since there is nothing for 
+This callback is called whenever the element is disconnected from DOM. Since there is nothing for 
 Corpuscule to do at this time, user-defined `disconnectedCallback` will be called directly.
 
 React users may consider it as a [`componentWillUnmount`](https://reactjs.org/docs/react-component.html#componentwill)
-lifecycle hook, but note that it is called **after** component is removed from DOM tree when
+lifecycle hook, but note that it is called **after** the component is removed from DOM tree when
 `componentWillUnmount` is called **before** it.
 
 ### Property Change
-Depending on property of what type is changed different callback is called. You can read more about
-property types at the section [Property Types](#property-types).
+Depending on the property of what type is changed different callback is called. You can read more
+about property types at the section [Property Types](#property-types).
 
 **Important Note**: Rendering system is able to wait until all properties are set and performs 
 rendering only after it. So multiple rendering initiation doesn't cause rendering multiple times.
-However, it is correct only for properties set synchronously. If some property is set during
+However, it is correct only for properties set synchronously. If some property is set during the
 asynchronous process, it will cause additional render. 
 
 #### `attributeChangedCallback(attributeName: string, oldValue: string, newValue: string): void`
 **Hook Type**: Custom Element
 
-This callback is called each time [attribute](#attribute) is changed. It receives name of the
+This callback is called each time [attribute](#attribute) is changed. It receives the name of the
 changed attribute, its old and new value. Do not check old and new values equality, Corpuscule
-already does it and doesn't start user-defined `attributeChangedCallback` if values are equal. After
-the user-defined callback is over the rendering starts.
+already does it and doesn't start user-defined `attributeChangedCallback` if values are equal.
+After the user-defined callback is over the rendering starts.
 
 #### `[propertyChangedCallback](propertyName: PropertyKey, oldValue: unknown, newValue: unknown): void`
 **Hook Type**: Corpuscule
 
-This callback is called each time [property](#property) is changed. It received name of the changed
+This callback is called each time [property](#property) is changed. It receives the name of the changed
 property, its old and new value. The behavior is identical to `attributesChangedCallback` except for
 receiving values type: old and new value have the type of current property and the property name
 could be `string` or `symbol`.
@@ -200,7 +200,7 @@ could be `string` or `symbol`.
 #### `[internalChangedCallback](propertyName: PropertyKey, oldValue: unknown, newValue: unknown): void`
 **Hook Type**: Corpuscule
 
-This callback is called each time [internal property](#internal) is changed. It receives name of the
+This callback is called each time [internal property](#internal) is changed. It receives the name of the
 changed internal property, its old and new value. In contrast with other property callbacks, 
 `[internalChangedCallback]` does not perform equality check.
 
@@ -215,7 +215,7 @@ lifecycle hook.
 
 ### Rendering
 This stage is performed almost without user control. Each component has it's own `scheduler` system
-that schedules when it should be rendered. By default the [`@corpuscule/utils` scheduler](../utils/README.md#scheduler)
+that schedules when it should be rendered. By default, the [`@corpuscule/utils` scheduler](../utils/README.md#scheduler)
 is used.
 
 #### `[render](): unknown`
@@ -230,11 +230,11 @@ If you don't specify `[render]` function, re-rendering won't ever happen on your
 ## Features
 ### Inheritable
 Basically, `@element` doesn't restrict working with JS OOP in any way. You can create any hierarchy
-you want, extending both classes marked with `@element` and regular ones. Decorated elements in
-that case will act as regular classes.
+you want, extending both classes marked with `@element` and regular ones. Decorated elements, in
+that case, will act as regular classes.
 
 ### Renderer Agnostic
-As mentioned above, `@corpuscule/element` is renderer-agnostic, so you can to use any renderer
+As mentioned above, `@corpuscule/element` is renderer-agnostic, so you can use any renderer
 system you can put into a renderer function with the following signature.
 ```typescript
 const renderer: <C, R>(result: R, container: Element | DocumentFragment, context: C) => void;
@@ -254,7 +254,7 @@ Using the `@corpuscule/element` you are allowed to create not only regular Custo
 as well. 
 
 Customized Built-In Elements differs from regular Custom Elements in many ways. E.g., many native
-elements cannot be extended by creating Shadow Root on them; by default for these element LightDOM
+elements cannot be extended by creating Shadow Root on them; by default for these elements, LightDOM
 will be created.
 
 You can avoid any change in elements that are unable to have Shadow Root by omitting `[render]`
@@ -293,9 +293,9 @@ brings other decorators together and unites them.
 
 Creator function receives single `options` param which is an object that consists of following:
 * `renderer: <C, R>(result: R, container: Element | DocumentFragment, context: C) => void`.
-  Function that performs renderer operation for the element. More details at the [Renderer Agnostic](#renderer-agnostic)
+  A function that performs renderer operation for the element. More details at the [Renderer Agnostic](#renderer-agnostic)
   section. Specifying this function is required.
-* `scheduler?: (callback: () => void) => Promise<void>`. Function that performs scheduling for your
+* `scheduler?: (callback: () => void) => Promise<void>`. A function that performs scheduling for your
   element. Specifying scheduler is not required, [`@corpuscule/utils` scheduler](../utils/README.md#scheduler)
   is used by default.
   
@@ -324,11 +324,12 @@ class MyComponent extends HTMLElement {
 ```
 
 #### `@attribute(name: string, guard: AttributeGuard): PropertyDecorator`
-Attribute decorator binds class property to an attribute with the `name` and provides transformation
-mechanism that allows to convert value with type described by `guard` to and from attribute string.
-* `name`. Attribute name by which it can be set via `setAttribute` and get by `getAttribute`.
-* `guard`. Constructor of one of three primitive types: `String`, `Boolean` or `Number`. It
-describes transformation process for the attribute.
+Attribute decorator binds a class property to an attribute with the `name` and provides a
+transformation mechanism that allows converting value with the type described by `guard` to and
+from attribute string.
+* `name`. An attribute name by which it can be set via `setAttribute` and get by `getAttribute`.
+* `guard`. A constructor of one of three primitive types: `String`, `Boolean` or `Number`. It describes
+the transformation process for the attribute.
 
 ##### Example
 ```javascript
@@ -351,7 +352,7 @@ class MyButton extends HTMLElement {
 
 #### `@property(guard: (value: unknown) => boolean): PropertyDecorator`
 Property decorator converts class property to an element property.
-* `guard`. Function that checks received value to be proper type. Guards are inspired by [React
+* `guard`. A function that checks received value to be proper type. Guards are inspired by [React
 PropTypes](https://reactjs.org/docs/typechecking-with-proptypes.html) and should be used in a
 similar way.
 
