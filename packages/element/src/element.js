@@ -30,16 +30,7 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
   const {elements, kind} = descriptor;
 
   const hasRender = elements.some(({key}) => key === $render);
-
   const isShadow = !builtin || shadowElements.includes(builtin);
-
-  if (isShadow && !hasRender) {
-    throw new Error('[render]() is not implemented');
-  }
-
-  if (!isShadow && hasRender) {
-    throw new Error(`[render]() is not allowed for <${builtin}> element`);
-  }
 
   let constructor;
   const getConstructor = () => constructor;
@@ -169,7 +160,7 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
       }),
       method({
         key: $$invalidate,
-        method: isShadow
+        method: hasRender
           ? async function() {
               if (!this[$$valid]) {
                 return;
@@ -194,11 +185,9 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
     ],
     finisher(target) {
       prepareSupers(target, {
-        [$createRoot]: isShadow
-          ? function() {
-              return this.attachShadow({mode: 'open'});
-            }
-          : noop,
+        [$createRoot]() {
+          return isShadow ? this.attachShadow({mode: 'open'}) : this;
+        },
       });
 
       constructor = target;

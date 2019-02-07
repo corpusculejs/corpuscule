@@ -59,12 +59,23 @@ const testElementDecorator = () => {
       expect(Test.is).toBe(name);
     });
 
-    it('throws an error if [render] method is not implemented', () => {
-      expect(() => {
-        @element(genName())
-        // @ts-ignore
-        class Test extends CustomElement {}
-      }).toThrowError('[render]() is not implemented');
+    it('defines invalidate function only if [render] is present', async () => {
+      const tag = genName();
+      const [promise, resolve] = createTestingPromise();
+
+      @element(tag)
+      // @ts-ignore
+      class Test extends HTMLElement {
+        public connectedCallback(): void {
+          resolve();
+        }
+      }
+
+      fixtureSync(`<${tag}></${tag}>`);
+
+      await promise;
+
+      expect(schedulerSpy).not.toHaveBeenCalled();
     });
 
     it('renders on element connection', async () => {
@@ -501,24 +512,40 @@ const testElementDecorator = () => {
         expect(schedulerSpy).not.toHaveBeenCalled();
       });
 
-      it('throws error if [render] is defined for non-shadow elements', () => {
-        expect(() => {
-          @element(genName(), {extends: 'a'})
-          // @ts-ignore
-          class Test extends HTMLAnchorElement {
-            public [render](): null {
-              return null;
-            }
+      it('creates ShadowRoot for allowed elements', async () => {
+        const tag = genName();
+        const [promise, resolve] = createTestingPromise();
+
+        @element(tag, {extends: 'span'})
+        class Test extends HTMLSpanElement {
+          public connectedCallback(): void {
+            resolve();
           }
-        }).toThrowError('[render]() is not allowed for <a> element');
+        }
+
+        const test = fixtureSync(`<span is="${tag}"></span>`) as Test;
+
+        await promise;
+
+        expect(test.shadowRoot).not.toBeUndefined();
       });
 
-      it('throws if [render] is not defined for shadow elements', () => {
-        expect(() => {
-          @element(genName(), {extends: 'div'})
-          // @ts-ignore
-          class Test extends HTMLDivElement {}
-        }).toThrowError('[render]() is not implemented');
+      it('creates LightDOM for other elements', async () => {
+        const tag = genName();
+        const [promise, resolve] = createTestingPromise();
+
+        @element(tag, {extends: 'a'})
+        class Test extends HTMLAnchorElement {
+          public connectedCallback(): void {
+            resolve();
+          }
+        }
+
+        const test = fixtureSync(`<a is="${tag}"></a>`) as Test;
+
+        await promise;
+
+        expect(test.shadowRoot).toBeNull();
       });
     });
   });
