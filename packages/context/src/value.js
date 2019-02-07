@@ -1,11 +1,15 @@
 import {assertKind, assertPlacement, Kind, Placement} from '@corpuscule/utils/lib/asserts';
 import {accessor, hook} from '@corpuscule/utils/lib/descriptors';
 
-const createValue = ({consumers, value, providers}, defaultValue) => descriptor => {
+const createValue = ({consumers, value, providers}) => descriptor => {
   assertKind('value', Kind.Field | Kind.Method | Kind.Accessor, descriptor);
   assertPlacement('value', Placement.Own | Placement.Prototype, descriptor);
 
-  const {initializer, key} = descriptor;
+  const {
+    descriptor: {get, set},
+    initializer,
+    key,
+  } = descriptor;
 
   let $$consumers;
   let isProvider;
@@ -34,14 +38,12 @@ const createValue = ({consumers, value, providers}, defaultValue) => descriptor 
       isProvider = providers.has(target);
       $$consumers = consumers.get(target);
     },
+    get,
     initializer() {
-      if (isProvider) {
-        return initializer ? initializer.call(this) : defaultValue;
-      }
-
-      return undefined;
+      return isProvider && initializer ? initializer.call(this) : undefined;
     },
     key,
+    set,
   });
 };
 

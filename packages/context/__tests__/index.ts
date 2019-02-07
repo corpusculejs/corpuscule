@@ -195,6 +195,80 @@ describe('@corpuscule/context', () => {
       expect(constructorSpy).toHaveBeenCalled();
     });
 
+    it('allows to use accessors for a value', async () => {
+      const {consumer, provider, value} = createContext();
+
+      @provider
+      class Provider extends CustomElement {
+        public storage: number = 10;
+
+        @value
+        public get providingValue(): number {
+          return this.storage;
+        }
+
+        public set providingValue(v: number) {
+          this.storage = v;
+        }
+      }
+
+      @consumer
+      class Consumer extends CustomElement {
+        public storage!: number;
+
+        @value
+        public get contextValue(): number {
+          return this.storage;
+        }
+
+        public set contextValue(v: number) {
+          this.storage = v;
+        }
+      }
+
+      const [providerElement, consumerElement] = await mountDefaultContext(Provider, Consumer);
+
+      expect(providerElement.providingValue).toBe(10);
+      expect(consumerElement.contextValue).toBe(10);
+    });
+
+    it('sets default value for provider value with accessors if it is not defined', async () => {
+      const {consumer, provider, value} = createContext(2);
+
+      @provider
+      class Provider extends CustomElement {
+        public storage!: number;
+
+        @value
+        public get providingValue(): number {
+          return this.storage;
+        }
+
+        public set providingValue(v: number) {
+          this.storage = v;
+        }
+      }
+
+      @consumer
+      class Consumer extends CustomElement {
+        public storage!: number;
+
+        @value
+        public get contextValue(): number {
+          return this.storage;
+        }
+
+        public set contextValue(v: number) {
+          this.storage = v;
+        }
+      }
+
+      const [providerElement, consumerElement] = await mountDefaultContext(Provider, Consumer);
+
+      expect(providerElement.providingValue).toBe(2);
+      expect(consumerElement.contextValue).toBe(2);
+    });
+
     it('detects provider', () => {
       const {isProvider, provider, value} = createContext();
 
