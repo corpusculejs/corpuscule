@@ -12,6 +12,7 @@
     "mapRoot": "dist",
     "module": "esnext",
     "moduleResolution": "node",
+    "noImplicitAny": false,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
