@@ -1,10 +1,10 @@
-// tslint:disable:max-classes-per-file
-import {CustomElement, genName} from '../../../test/utils';
+import {defineCE, fixture} from '@open-wc/testing-helpers';
+import {CustomElement} from '../../../test/utils';
 import {attribute} from '../src';
 
 const testAttributeDecorator = () => {
   describe('@attribute', () => {
-    it('gets string attribute', () => {
+    it('gets string attribute', async () => {
       class Test extends CustomElement {
         public static readonly observedAttributes: ReadonlyArray<string> = [];
 
@@ -12,16 +12,13 @@ const testAttributeDecorator = () => {
         public attribute: string | null = null;
       }
 
-      customElements.define(genName(), Test);
-
-      const test = new Test();
-      test.setAttribute('attr', 'str');
-      test.connectedCallback();
+      const tag = defineCE(Test);
+      const test = (await fixture(`<${tag} attr="str"></${tag}>`)) as Test;
 
       expect(test.attribute).toBe('str');
     });
 
-    it('properly gets boolean attribute', () => {
+    it('properly gets boolean attribute', async () => {
       class Test extends CustomElement {
         public static readonly observedAttributes: ReadonlyArray<string> = [];
 
@@ -32,17 +29,14 @@ const testAttributeDecorator = () => {
         public attr2: boolean | null = null;
       }
 
-      customElements.define(genName(), Test);
-
-      const test = new Test();
-      test.setAttribute('a1', '');
-      test.connectedCallback();
+      const tag = defineCE(Test);
+      const test = (await fixture(`<${tag} a1></${tag}>`)) as Test;
 
       expect(test.attr1).toBeTruthy();
       expect(test.attr2).not.toBeTruthy();
     });
 
-    it('properly gets number attributes', () => {
+    it('properly gets number attributes', async () => {
       class Test extends CustomElement {
         public static readonly observedAttributes: ReadonlyArray<string> = [];
 
@@ -50,16 +44,13 @@ const testAttributeDecorator = () => {
         public numAttribute: number | null = null;
       }
 
-      customElements.define(genName(), Test);
-
-      const test = new Test();
-      test.setAttribute('num', '10');
-      test.connectedCallback();
+      const tag = defineCE(Test);
+      const test = (await fixture(`<${tag} num="10"></${tag}>`)) as Test;
 
       expect(test.numAttribute).toBe(10);
     });
 
-    it('sets string attribute', () => {
+    it('sets string attribute', async () => {
       class Test extends CustomElement {
         public static readonly observedAttributes: ReadonlyArray<string> = [];
 
@@ -67,17 +58,15 @@ const testAttributeDecorator = () => {
         public attribute: string | null = null;
       }
 
-      customElements.define(genName(), Test);
-
-      const test = new Test();
-      test.connectedCallback();
+      const tag = defineCE(Test);
+      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
 
       test.attribute = 'str';
 
       expect(test.getAttribute('attr')).toBe('str');
     });
 
-    it('properly sets boolean attributes', () => {
+    it('properly sets boolean attributes', async () => {
       class Test extends CustomElement {
         public static readonly observedAttributes: ReadonlyArray<string> = [];
 
@@ -88,11 +77,8 @@ const testAttributeDecorator = () => {
         public attr2: boolean | null = null;
       }
 
-      customElements.define(genName(), Test);
-
-      const test = new Test();
-      test.setAttribute('a2', '');
-      test.connectedCallback();
+      const tag = defineCE(Test);
+      const test = (await fixture(`<${tag} a2></${tag}>`)) as Test;
 
       test.attr1 = true;
       test.attr2 = false;
@@ -101,7 +87,7 @@ const testAttributeDecorator = () => {
       expect(test.hasAttribute('a2')).toBeFalsy();
     });
 
-    it('properly sets number attribute', () => {
+    it('properly sets number attribute', async () => {
       class Test extends CustomElement {
         public static readonly observedAttributes: ReadonlyArray<string> = [];
 
@@ -109,10 +95,8 @@ const testAttributeDecorator = () => {
         public numAttribute: number | null = null;
       }
 
-      customElements.define(genName(), Test);
-
-      const test = new Test();
-      test.connectedCallback();
+      const tag = defineCE(Test);
+      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
 
       test.numAttribute = 10;
 
@@ -130,12 +114,11 @@ const testAttributeDecorator = () => {
         public attr2: string | null = null;
       }
 
-      customElements.define(genName(), Test);
-
+      defineCE(Test);
       expect(Test.observedAttributes).toEqual(['a1', 'a2']);
     });
 
-    it('runs "attributeChangedCallback" on change', () => {
+    it('runs "attributeChangedCallback" on change', async () => {
       const attributeChangedCallbackSpy = jasmine.createSpy('onAttributeChange');
 
       class Test extends CustomElement {
@@ -153,9 +136,8 @@ const testAttributeDecorator = () => {
         }
       }
 
-      customElements.define(genName(), Test);
-
-      const test = new Test();
+      const tag = defineCE(Test);
+      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
 
       test.attribute = 'test';
 
@@ -173,7 +155,7 @@ const testAttributeDecorator = () => {
       }).toThrow(new TypeError('Guard for @attribute should be either Number, Boolean or String'));
     });
 
-    it('throws an error if value does not fit guard', () => {
+    it('throws an error if value does not fit guard', async () => {
       class Test extends CustomElement {
         public static readonly observedAttributes: ReadonlyArray<string> = [];
 
@@ -181,17 +163,15 @@ const testAttributeDecorator = () => {
         public numAttribute: number | null = null;
       }
 
-      customElements.define(genName(), Test);
-
-      const test = new Test();
-      test.connectedCallback();
+      const tag = defineCE(Test);
+      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
 
       expect(() => {
         (test as any).numAttribute = 'str';
       }).toThrow(new TypeError('Value applied to "numAttribute" is not Number or undefined'));
     });
 
-    it('gets null if no attribute exist', () => {
+    it('gets null if no attribute exist', async () => {
       class Test extends CustomElement {
         public static readonly observedAttributes: ReadonlyArray<string> = [];
 
@@ -199,15 +179,13 @@ const testAttributeDecorator = () => {
         public numAttribute: number | null = null;
       }
 
-      customElements.define(genName(), Test);
-
-      const test = new Test();
-      test.connectedCallback();
+      const tag = defineCE(Test);
+      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
 
       expect(test.numAttribute).toBeNull();
     });
 
-    it('accepts both null and undefined as a value of attribute', () => {
+    it('accepts both null and undefined as a value of attribute', async () => {
       class Test extends CustomElement {
         public static readonly observedAttributes: ReadonlyArray<string> = [];
 
@@ -218,9 +196,8 @@ const testAttributeDecorator = () => {
         public a2?: number | null = 20;
       }
 
-      customElements.define(genName(), Test);
-
-      const test = new Test();
+      const tag = defineCE(Test);
+      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
 
       expect(() => {
         test.a1 = null;

@@ -1,4 +1,3 @@
-// tslint:disable:max-classes-per-file
 import {ComputingPair, createComputingPair} from '../src';
 
 const repeatGetTenTimes = <C extends object, M extends keyof C, T extends C[M]>(

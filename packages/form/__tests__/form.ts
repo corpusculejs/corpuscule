@@ -1,8 +1,7 @@
-// tslint:disable:no-unused-expression no-empty
+import {defineCE, fixture, html, unsafeStatic} from '@open-wc/testing-helpers';
 import {FormApi, FormState} from 'final-form';
-import {finisher} from '../../../test/mocks/context';
 import {createForm, formSpyObject, unsubscribe} from '../../../test/mocks/finalForm';
-import {CustomElement, genName} from '../../../test/utils';
+import {CustomElement} from '../../../test/utils';
 import {createFormContext, FormDecorator} from '../src';
 import {all} from '../src/utils';
 
@@ -25,9 +24,9 @@ const testForm = () => {
       formSpyObject.subscribe.calls.reset();
     });
 
-    it('allows to declare form configuration with decorator', () => {
+    it('allows to declare form configuration with decorator', async () => {
       @form()
-      class Test {
+      class Test extends CustomElement {
         @api public readonly form!: FormApi;
         @api public readonly state!: FormState;
 
@@ -38,20 +37,20 @@ const testForm = () => {
         public onSubmit(): void {}
       }
 
-      new Test();
+      const tag = defineCE(Test);
+      await fixture(`<${tag}></${tag}>`);
+
       expect(createForm).toHaveBeenCalledWith({
         debug: true,
         onSubmit: jasmine.any(Function),
       });
-
-      expect(finisher).toHaveBeenCalledWith(Test);
     });
 
-    it('allows to declare configuration with method and makes it bound', () => {
+    it('allows to declare configuration with method and makes it bound', async () => {
       const submitSpy = jasmine.createSpy('OnSubmit');
 
       @form()
-      class Test {
+      class Test extends CustomElement {
         @api public readonly form!: FormApi;
         @api public readonly state!: FormState;
 
@@ -65,7 +64,9 @@ const testForm = () => {
         }
       }
 
-      new Test();
+      const tag = defineCE(Test);
+      await fixture(`<${tag}></${tag}>`);
+
       expect(createForm).toHaveBeenCalledWith({
         onSubmit: jasmine.any(Function),
       });
@@ -76,9 +77,9 @@ const testForm = () => {
       expect(submitSpy).toHaveBeenCalled();
     });
 
-    it('allows to declare configuration on full accessor', () => {
+    it('allows to declare configuration on full accessor', async () => {
       @form()
-      class Test {
+      class Test extends CustomElement {
         @api public readonly form!: FormApi;
         @api public readonly state!: FormState;
 
@@ -97,16 +98,18 @@ const testForm = () => {
         public onSubmit(): void {}
       }
 
-      new Test();
+      const tag = defineCE(Test);
+      await fixture(`<${tag}></${tag}>`);
+
       expect(createForm).toHaveBeenCalledWith({
         debug: true,
         onSubmit: jasmine.any(Function),
       });
     });
 
-    it('allows to update form data with defined properties', () => {
+    it('allows to update form data with defined properties', async () => {
       @form()
-      class Test {
+      class Test extends CustomElement {
         @api public readonly form!: FormApi;
         @api public readonly state!: FormState;
 
@@ -117,15 +120,17 @@ const testForm = () => {
         public onSubmit(): void {}
       }
 
-      const test = new Test();
+      const tag = defineCE(Test);
+      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
+
       test.debug = false;
 
       expect(formSpyObject.setConfig).toHaveBeenCalledWith('debug', false);
     });
 
-    it('does not update property if it is the same', () => {
+    it('does not update property if it is the same', async () => {
       @form()
-      class Test {
+      class Test extends CustomElement {
         @api public readonly form!: FormApi;
         @api public readonly state!: FormState;
 
@@ -136,7 +141,9 @@ const testForm = () => {
         public onSubmit(): void {}
       }
 
-      const test = new Test();
+      const tag = defineCE(Test);
+      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
+
       test.debug = true;
 
       expect(formSpyObject.setConfig).not.toHaveBeenCalled();
@@ -146,7 +153,7 @@ const testForm = () => {
       expect(() => {
         @form()
         // @ts-ignore
-        class Test {
+        class Test extends CustomElement {
           @api public readonly form!: FormApi;
           @api public readonly state!: FormState;
 
@@ -159,9 +166,9 @@ const testForm = () => {
       }).toThrow(new TypeError('"test" is not one of the Final Form or Field configuration keys'));
     });
 
-    it('initializes form if new "initialValues" are set', () => {
+    it('initializes form if new "initialValues" are set', async () => {
       @form()
-      class Test {
+      class Test extends CustomElement {
         @api public readonly form!: FormApi;
         @api public readonly state!: FormState;
 
@@ -175,12 +182,13 @@ const testForm = () => {
         public onSubmit(): void {}
       }
 
-      const test = new Test();
-
-      test.initialValues = {
-        bar: 3,
-        foo: 3,
-      };
+      const tag = unsafeStatic(defineCE(Test));
+      await fixture(
+        html`<${tag} .initialValues="${{
+          bar: 3,
+          foo: 3,
+        }}"></${tag}>`,
+      );
 
       expect(formSpyObject.initialize).toHaveBeenCalledWith({
         bar: 3,
@@ -188,9 +196,9 @@ const testForm = () => {
       });
     });
 
-    it('checks shallow equality by default for initialValues', () => {
+    it('checks shallow equality by default for initialValues', async () => {
       @form()
-      class Test {
+      class Test extends CustomElement {
         @api public readonly form!: FormApi;
         @api public readonly state!: FormState;
 
@@ -204,21 +212,22 @@ const testForm = () => {
         public onSubmit(): void {}
       }
 
-      const test = new Test();
-
-      test.initialValues = {
-        bar: 2,
-        foo: 1,
-      };
+      const tag = unsafeStatic(defineCE(Test));
+      await fixture(
+        html`<${tag} .initialValues="${{
+          bar: 2,
+          foo: 1,
+        }}"></${tag}>`,
+      );
 
       expect(formSpyObject.initialize).not.toHaveBeenCalled();
     });
 
-    it('uses @option compareInitialValues to check initial values equality if set', () => {
+    it('uses @option compareInitialValues to check initial values equality if set', async () => {
       const compareInitialValuesSpy = jasmine.createSpy('compareInitialValues');
 
       @form()
-      class Test {
+      class Test extends CustomElement {
         @api public readonly form!: FormApi;
         @api public readonly state!: FormState;
 
@@ -239,12 +248,14 @@ const testForm = () => {
         public onSubmit(): void {}
       }
 
-      const test = new Test();
+      const tag = unsafeStatic(defineCE(Test));
 
-      test.initialValues = {
-        bar: 2,
-        foo: 3,
-      };
+      await fixture(
+        html`<${tag} .initialValues="${{
+          bar: 2,
+          foo: 3,
+        }}"></${tag}>`,
+      );
 
       expect(formSpyObject.initialize).toHaveBeenCalledWith({
         bar: 2,
@@ -254,9 +265,9 @@ const testForm = () => {
       expect(compareInitialValuesSpy).toHaveBeenCalled();
     });
 
-    it('sets default undefined if option exists but not set', () => {
+    it('sets default undefined if option exists but not set', async () => {
       @form()
-      class Test {
+      class Test extends CustomElement {
         @api public readonly form!: FormApi;
         @api public readonly state!: FormState;
 
@@ -267,14 +278,16 @@ const testForm = () => {
         public onSubmit(): void {}
       }
 
-      new Test();
+      const tag = defineCE(Test);
+      await fixture(`<${tag}></${tag}>`);
+
       expect(createForm).toHaveBeenCalledWith({
         debug: undefined,
         onSubmit: jasmine.any(Function),
       });
     });
 
-    it('decorates form on connection and unsubscribes decorators on disconnection', () => {
+    it('decorates form on connection and unsubscribes decorators on disconnection', async () => {
       const decorate = jasmine.createSpy('decorate');
       decorate.and.returnValue(unsubscribe);
 
@@ -289,18 +302,16 @@ const testForm = () => {
         public onSubmit(): void {}
       }
 
-      customElements.define(genName(), Test);
+      const tag = defineCE(Test);
+      const test = await fixture(`<${tag}></${tag}>`);
 
-      const test = new Test();
-
-      test.connectedCallback();
       expect(decorate).toHaveBeenCalledWith(formSpyObject);
 
-      test.disconnectedCallback();
+      test.remove();
       expect(unsubscribe).toHaveBeenCalledTimes(2);
     });
 
-    it('subscribes to the form on connection, unsubscribes on disconnection and sets form state', () => {
+    it('subscribes to the form on connection, unsubscribes on disconnection and sets form state', async () => {
       @form()
       class Test extends CustomElement {
         @api public readonly form!: FormApi;
@@ -310,11 +321,9 @@ const testForm = () => {
         public onSubmit(): void {}
       }
 
-      customElements.define(genName(), Test);
+      const tag = defineCE(Test);
+      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
 
-      const test = new Test();
-
-      test.connectedCallback();
       expect(formSpyObject.subscribe).toHaveBeenCalledWith(jasmine.any(Function), all);
 
       const state = {};
@@ -324,7 +333,7 @@ const testForm = () => {
 
       expect(test.state).toBe(state as FormState);
 
-      test.disconnectedCallback();
+      test.remove();
       expect(unsubscribe).toHaveBeenCalled();
     });
 
@@ -338,7 +347,7 @@ const testForm = () => {
         public onSubmit(): void {}
       }
 
-      customElements.define(genName(), Test);
+      defineCE(Test);
 
       const test = new Test();
       const addEventListener = spyOn(test, 'addEventListener');
@@ -361,32 +370,6 @@ const testForm = () => {
 
       test.disconnectedCallback();
       expect(removeEventListener).toHaveBeenCalledWith('submit', fn);
-    });
-
-    it('executes connectedCallback on real DOM', async () => {
-      const connectedCallbackSpy = jasmine.createSpy('connectedCallback');
-
-      @form()
-      class Form extends HTMLElement {
-        @api public readonly form!: FormApi;
-        @api public readonly state!: FormState;
-
-        public connectedCallback(): void {
-          connectedCallbackSpy();
-        }
-
-        @option
-        public onSubmit(): void {}
-      }
-
-      customElements.define(genName(), Form);
-
-      const formElement = new Form();
-
-      document.body.appendChild(formElement);
-
-      expect(connectedCallbackSpy).toHaveBeenCalled();
-      expect(formSpyObject.subscribe).toHaveBeenCalled();
     });
 
     describe('@api', () => {
@@ -424,11 +407,12 @@ const testForm = () => {
       expect(() => {
         @form()
         // @ts-ignore
-        class Test {
+        class Test extends CustomElement {
           @api public readonly form!: FormApi;
           @api public readonly state!: FormState;
 
           public constructor() {
+            super();
             this.connectedCallback = this.connectedCallback.bind(this);
             this.disconnectedCallback = this.disconnectedCallback.bind(this);
           }

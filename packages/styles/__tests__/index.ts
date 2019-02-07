@@ -1,6 +1,13 @@
 // tslint:disable:max-classes-per-file no-inner-html await-promise
-import {createTestingPromise, genName} from '../../../test/utils';
+import {defineCE, fixtureSync} from '@open-wc/testing-helpers';
+import {Constructor, createTestingPromise} from '../../../test/utils';
 import {createStylesDecorator, stylesAttachedCallback, StylesDecorator} from '../src';
+
+const createSimpleElement = <T extends Element>(cls: Constructor<T>): T => {
+  const tag = defineCE(cls);
+
+  return fixtureSync(`<${tag}></${tag}>`) as any;
+};
 
 describe('@corpuscule/styles', () => {
   const rawStyles = '.foo{color: red;}';
@@ -30,10 +37,7 @@ describe('@corpuscule/styles', () => {
         }
       }
 
-      customElements.define(genName(), Test);
-
-      const test = new Test();
-      test.connectedCallback();
+      const test = createSimpleElement(Test);
 
       await promise;
 
@@ -61,10 +65,7 @@ describe('@corpuscule/styles', () => {
         }
       }
 
-      customElements.define(genName(), Test);
-
-      const test = new Test();
-      test.connectedCallback();
+      const test = createSimpleElement(Test);
 
       await promise;
 
@@ -116,10 +117,7 @@ describe('@corpuscule/styles', () => {
         }
       }
 
-      customElements.define(genName(), Test);
-
-      const test = new Test();
-      test.connectedCallback();
+      createSimpleElement(Test);
 
       await promise;
 
@@ -154,10 +152,7 @@ describe('@corpuscule/styles', () => {
         }
       }
 
-      customElements.define(genName(), Test);
-
-      const test = new Test();
-      test.connectedCallback();
+      const test = createSimpleElement(Test);
 
       await promise;
 
@@ -189,10 +184,7 @@ describe('@corpuscule/styles', () => {
       }
     }
 
-    customElements.define(genName(), Test);
-
-    const test = new Test();
-    test.connectedCallback();
+    const test = createSimpleElement(Test);
 
     await promise;
 
@@ -211,7 +203,7 @@ describe('@corpuscule/styles', () => {
         }
       }
 
-      customElements.define(genName(), Test);
+      defineCE(Test);
     }).not.toThrow();
   });
 });

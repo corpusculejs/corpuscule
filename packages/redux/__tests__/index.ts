@@ -1,7 +1,6 @@
 // tslint:disable:max-classes-per-file
 import {AnyAction, Store} from 'redux';
-import {createMockedContextElements, finisher, valuesMap} from '../../../test/mocks/context';
-import {CustomElement, genName} from '../../../test/utils';
+import {createSimpleContext, CustomElement} from '../../../test/utils';
 import {api, dispatcher, provider, redux, unit} from '../src';
 
 describe('@corpuscule/redux', () => {
@@ -18,7 +17,7 @@ describe('@corpuscule/redux', () => {
   });
 
   describe('@redux', () => {
-    it('creates element that subscribes to a store', () => {
+    it('creates element that subscribes to a store', async () => {
       @provider
       class Provider extends CustomElement {
         @api public store: Store = reduxStore;
@@ -27,13 +26,12 @@ describe('@corpuscule/redux', () => {
       @redux
       class Connected extends CustomElement {}
 
-      createMockedContextElements(Provider, Connected);
+      await createSimpleContext(Provider, Connected);
 
       expect(reduxStore.subscribe).toHaveBeenCalled();
-      expect(finisher).toHaveBeenCalledWith(Connected);
     });
 
-    it('unsubscribes from store before subscribing to a new one', () => {
+    it('unsubscribes from store before subscribing to a new one', async () => {
       @provider
       class Provider extends CustomElement {
         @api public store: Store = reduxStore;
@@ -44,7 +42,7 @@ describe('@corpuscule/redux', () => {
 
       const nextStore = jasmine.createSpyObj('nextStore', ['getState', 'subscribe']);
 
-      const [providerElement] = createMockedContextElements(Provider, Connected);
+      const [providerElement] = await createSimpleContext(Provider, Connected);
 
       expect(unsubscribe).not.toHaveBeenCalled();
 
@@ -54,7 +52,7 @@ describe('@corpuscule/redux', () => {
       expect(nextStore.subscribe).toHaveBeenCalled();
     });
 
-    it('unsubscribes on disconnect', () => {
+    it('unsubscribes on disconnect', async () => {
       @provider
       class Provider extends CustomElement {
         @api public store: Store = reduxStore;
@@ -63,14 +61,14 @@ describe('@corpuscule/redux', () => {
       @redux
       class Connected extends CustomElement {}
 
-      const [, connectedElement] = createMockedContextElements(Provider, Connected);
+      const [, connectedElement] = await createSimpleContext(Provider, Connected);
 
       connectedElement.disconnectedCallback();
 
       expect(unsubscribe).toHaveBeenCalled();
     });
 
-    it('does nothing during update if no @unit is defined', () => {
+    it('does nothing during update if no @unit is defined', async () => {
       @provider
       class Provider extends CustomElement {
         @api public store: Store = reduxStore;
@@ -79,7 +77,7 @@ describe('@corpuscule/redux', () => {
       @redux
       class Connected extends CustomElement {}
 
-      createMockedContextElements(Provider, Connected);
+      await createSimpleContext(Provider, Connected);
 
       expect(reduxStore.getState).not.toHaveBeenCalled();
     });
@@ -98,34 +96,10 @@ describe('@corpuscule/redux', () => {
         }
       }).not.toThrow();
     });
-
-    it('executes disconnectedCallback on real DOM', async () => {
-      const disconnectedCallbackSpy = jasmine.createSpy('disconnectedCallback');
-
-      @redux
-      class Connected extends HTMLElement {
-        public disconnectedCallback(): void {
-          disconnectedCallbackSpy();
-        }
-      }
-
-      customElements.define(genName(), Connected);
-
-      const connectedElement = new Connected();
-
-      document.body.appendChild(connectedElement);
-      const contextValue = valuesMap.get(Connected)!;
-      (connectedElement as any)[contextValue] = reduxStore;
-
-      document.body.removeChild(connectedElement);
-
-      expect(disconnectedCallbackSpy).toHaveBeenCalled();
-      expect(unsubscribe).toHaveBeenCalled();
-    });
   });
 
   describe('@unit', () => {
-    it('allows to declare properties connected with store', () => {
+    it('allows to declare properties connected with store', async () => {
       @provider
       class Provider extends CustomElement {
         @api public store: Store = reduxStore;
@@ -137,13 +111,13 @@ describe('@corpuscule/redux', () => {
         public test?: number;
       }
 
-      const [, connectedElement] = createMockedContextElements(Provider, Connected);
+      const [, connectedElement] = await createSimpleContext(Provider, Connected);
 
       expect(reduxStore.getState).toHaveBeenCalled();
       expect(connectedElement.test).toBe(10);
     });
 
-    it('updates properties when store is updated', () => {
+    it('updates properties when store is updated', async () => {
       @provider
       class Provider extends CustomElement {
         @api public store: Store = reduxStore;
@@ -155,7 +129,7 @@ describe('@corpuscule/redux', () => {
         public test?: number;
       }
 
-      const [, connectedElement] = createMockedContextElements(Provider, Connected);
+      const [, connectedElement] = await createSimpleContext(Provider, Connected);
 
       const [subscription] = reduxStore.subscribe.calls.argsFor(0);
       reduxState = {test: 20};
@@ -164,7 +138,7 @@ describe('@corpuscule/redux', () => {
       expect(connectedElement.test).toBe(20);
     });
 
-    it('avoids property update if new value is equal to old one', () => {
+    it('avoids property update if new value is equal to old one', async () => {
       const setterSpy = jasmine.createSpy('setter');
 
       @provider
@@ -187,7 +161,7 @@ describe('@corpuscule/redux', () => {
         }
       }
 
-      createMockedContextElements(Provider, Connected);
+      await createSimpleContext(Provider, Connected);
 
       const [subscription] = reduxStore.subscribe.calls.argsFor(0);
       reduxState = {test: 10};
@@ -198,7 +172,7 @@ describe('@corpuscule/redux', () => {
   });
 
   describe('@dispatcher', () => {
-    it('allows to define dispatchers', () => {
+    it('allows to define dispatchers', async () => {
       const externalActionCreator = (arg: number): AnyAction => ({
         arg,
         type: 'external',
@@ -226,7 +200,7 @@ describe('@corpuscule/redux', () => {
         }
       }
 
-      const [, connectedElement] = createMockedContextElements(Provider, Connected);
+      const [, connectedElement] = await createSimpleContext(Provider, Connected);
 
       connectedElement.external(20);
       connectedElement.test(10);

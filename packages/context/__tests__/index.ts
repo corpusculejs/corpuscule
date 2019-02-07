@@ -1,22 +1,6 @@
 import {defineCE, fixture} from '@open-wc/testing-helpers';
-import {Constructor, CustomElement} from '../../../test/utils';
+import {createSimpleContext, CustomElement} from '../../../test/utils';
 import createContext from '../src';
-
-const mountDefaultContext = async <P extends Element, C extends Element>(
-  Provider: Constructor<P>, // tslint:disable-line:naming-convention
-  Consumer: Constructor<C>, // tslint:disable-line:naming-convention
-): Promise<[P, C]> => {
-  const providerTag = defineCE(Provider);
-  const consumerTag = defineCE(Consumer);
-
-  const providerElement = await fixture(`
-        <${providerTag}>
-          <${consumerTag}></${consumerTag}>
-        </${providerTag}>
-      `);
-
-  return [providerElement as P, providerElement.children[0] as C];
-};
 
 describe('@corpuscule/context', () => {
   describe('createContext', () => {
@@ -33,7 +17,7 @@ describe('@corpuscule/context', () => {
         @value public contextValue!: number;
       }
 
-      const [, consumerElement] = await mountDefaultContext(Provider, Consumer);
+      const [, consumerElement] = await createSimpleContext(Provider, Consumer);
 
       expect(consumerElement.contextValue).toBe(2);
     });
@@ -82,7 +66,7 @@ describe('@corpuscule/context', () => {
         @value public contextValue!: number;
       }
 
-      const [providerElement, consumerElement] = await mountDefaultContext(Provider, Consumer);
+      const [providerElement, consumerElement] = await createSimpleContext(Provider, Consumer);
 
       expect(providerElement.providingValue).toBe(2);
       expect(consumerElement.contextValue).toBe(2);
@@ -101,7 +85,7 @@ describe('@corpuscule/context', () => {
         @value public contextValue!: number;
       }
 
-      const [providerElement, consumerElement] = await mountDefaultContext(Provider, Consumer);
+      const [providerElement, consumerElement] = await createSimpleContext(Provider, Consumer);
 
       providerElement.providingValue = 10;
 
@@ -139,7 +123,7 @@ describe('@corpuscule/context', () => {
         }
       }
 
-      const [providerElement, consumerElement] = await mountDefaultContext(Provider, Consumer);
+      const [providerElement, consumerElement] = await createSimpleContext(Provider, Consumer);
 
       consumerElement.remove();
       providerElement.remove();
@@ -161,7 +145,7 @@ describe('@corpuscule/context', () => {
         @value public contextValue!: number;
       }
 
-      const [providerElement, consumerElement] = await mountDefaultContext(Provider, Consumer);
+      const [providerElement, consumerElement] = await createSimpleContext(Provider, Consumer);
 
       consumerElement.remove();
 
@@ -190,7 +174,7 @@ describe('@corpuscule/context', () => {
         }
       }
 
-      await mountDefaultContext(Provider, Consumer);
+      await createSimpleContext(Provider, Consumer);
 
       expect(constructorSpy).toHaveBeenCalled();
     });
@@ -226,7 +210,7 @@ describe('@corpuscule/context', () => {
         }
       }
 
-      const [providerElement, consumerElement] = await mountDefaultContext(Provider, Consumer);
+      const [providerElement, consumerElement] = await createSimpleContext(Provider, Consumer);
 
       expect(providerElement.providingValue).toBe(10);
       expect(consumerElement.contextValue).toBe(10);
@@ -263,7 +247,7 @@ describe('@corpuscule/context', () => {
         }
       }
 
-      const [providerElement, consumerElement] = await mountDefaultContext(Provider, Consumer);
+      const [providerElement, consumerElement] = await createSimpleContext(Provider, Consumer);
 
       expect(providerElement.providingValue).toBe(2);
       expect(consumerElement.contextValue).toBe(2);

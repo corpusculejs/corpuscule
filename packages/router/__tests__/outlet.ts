@@ -1,7 +1,6 @@
 // tslint:disable:max-classes-per-file
 import UniversalRouter from 'universal-router';
-import {createMockedContextElements, finisher, valuesMap} from '../../../test/mocks/context';
-import {createTestingPromise, CustomElement, genName} from '../../../test/utils';
+import {createSimpleContext, createTestingPromise, CustomElement} from '../../../test/utils';
 import {api, outlet, provider} from '../src';
 
 const outletTest = () => {
@@ -80,12 +79,11 @@ const outletTest = () => {
         }
       }
 
-      const [, outletElement] = createMockedContextElements(Provider, Outlet);
+      const [, outletElement] = await createSimpleContext(Provider, Outlet);
 
       await initialPromise;
 
       expect(outletElement.layout).toBe('Test');
-      expect(finisher).toHaveBeenCalledWith(Outlet);
 
       window.dispatchEvent(
         new PopStateEvent('popstate', {
@@ -130,7 +128,7 @@ const outletTest = () => {
         }
       }
 
-      const [, outletElement] = createMockedContextElements(Provider, Outlet);
+      const [, outletElement] = await createSimpleContext(Provider, Outlet);
 
       await initialPromise;
 
@@ -179,7 +177,7 @@ const outletTest = () => {
         }
       }
 
-      const [, outletElement] = createMockedContextElements(Provider, Outlet);
+      const [, outletElement] = await createSimpleContext(Provider, Outlet);
 
       await initialPromise;
 
@@ -196,7 +194,7 @@ const outletTest = () => {
       expect(outletElement.layout).toBe('Test');
     });
 
-    it("calls user's connectedCallback and disconnectedCallback methods", () => {
+    it("calls user's connectedCallback and disconnectedCallback methods", async () => {
       const connectedSpy = jasmine.createSpy('connectedCallback');
       const disconnectedSpy = jasmine.createSpy('disconnectedCallback');
 
@@ -218,7 +216,7 @@ const outletTest = () => {
         }
       }
 
-      const [, outletElement] = createMockedContextElements(Provider, Outlet);
+      const [, outletElement] = await createSimpleContext(Provider, Outlet);
 
       expect(connectedSpy).toHaveBeenCalled();
 
@@ -245,30 +243,6 @@ const outletTest = () => {
           public disconnectedCallback(): void {} // tslint:disable-line:no-empty
         }
       }).not.toThrow();
-    });
-
-    it('executes connectedCallback on real DOM', async () => {
-      const connectedCallbackSpy = jasmine.createSpy('connectedCallback');
-
-      @outlet(routes)
-      class Outlet extends CustomElement {
-        @api public readonly layout?: string;
-
-        public connectedCallback(): void {
-          connectedCallbackSpy();
-        }
-      }
-
-      customElements.define(genName(), Outlet);
-
-      const outletElement = new Outlet();
-
-      const contextValue = valuesMap.get(Outlet)!;
-      (outletElement as any)[contextValue] = appRouter;
-
-      document.body.appendChild(outletElement);
-      expect(connectedCallbackSpy).toHaveBeenCalled();
-      expect(appRouter.resolve).toHaveBeenCalled();
     });
   });
 };

@@ -198,7 +198,6 @@ const createField = (
     ],
     finisher(target) {
       prepareSupers(target);
-      consumerFinisher(target);
 
       constructor = target;
 
@@ -209,6 +208,8 @@ const createField = (
       assertRequiredProperty('field', 'api', 'form', $api);
       assertRequiredProperty('field', 'api', 'input', $input);
       assertRequiredProperty('field', 'api', 'meta', $meta);
+
+      consumerFinisher(target);
 
       $format = options.format.get(target);
       $formatOnBlur = options.formatOnBlur.get(target);
