@@ -1,34 +1,26 @@
-// tslint:disable:max-classes-per-file
-import {Constructor, createTestingPromise, CustomElement, genName} from '../../../test/utils';
+import {defineCE, fixture} from '@open-wc/testing-helpers';
+import {Constructor, CustomElement} from '../../../test/utils';
 import createContext from '../src';
 
-const createContextElements = <T extends CustomElement, U extends CustomElement>(
-  providerConstructor: Constructor<T>,
-  consumerConstructor: Constructor<U>,
-  consumersNumber: number = 1,
-) => {
-  customElements.define(genName(), providerConstructor);
-  customElements.define(genName(), consumerConstructor);
+const mountDefaultContext = async <P extends Element, C extends Element>(
+  Provider: Constructor<P>, // tslint:disable-line:naming-convention
+  Consumer: Constructor<C>, // tslint:disable-line:naming-convention
+): Promise<[P, C]> => {
+  const providerTag = defineCE(Provider);
+  const consumerTag = defineCE(Consumer);
 
-  // tslint:disable-line:readonly-array
-  const consumers = new Array(consumersNumber);
-  const provider = new providerConstructor();
-  provider.connectedCallback();
+  const providerElement = await fixture(`
+        <${providerTag}>
+          <${consumerTag}></${consumerTag}>
+        </${providerTag}>
+      `);
 
-  // tslint:disable-next-line:no-increment-decrement
-  for (let i = 0; i < consumersNumber; i++) {
-    consumers[i] = new consumerConstructor();
-
-    provider.appendChild(consumers[i]);
-    consumers[i].connectedCallback();
-  }
-
-  return [provider, ...consumers];
+  return [providerElement as P, providerElement.children[0] as C];
 };
 
 describe('@corpuscule/context', () => {
   describe('createContext', () => {
-    it('creates context', () => {
+    it('creates context', async () => {
       const {consumer, provider, value} = createContext();
 
       @provider
@@ -41,11 +33,12 @@ describe('@corpuscule/context', () => {
         @value public contextValue!: number;
       }
 
-      const [, consumerElement] = createContextElements(Provider, Consumer);
+      const [, consumerElement] = await mountDefaultContext(Provider, Consumer);
+
       expect(consumerElement.contextValue).toBe(2);
     });
 
-    it('provides context for all consumers', () => {
+    it('provides context for all consumers', async () => {
       const {consumer, provider, value} = createContext();
 
       @provider
@@ -58,13 +51,25 @@ describe('@corpuscule/context', () => {
         @value public contextValue!: number;
       }
 
-      const [, consumerElement1, consumerElement2] = createContextElements(Provider, Consumer, 2);
+      const providerTag = defineCE(Provider);
+      const consumerTag = defineCE(Consumer);
+
+      const providerElement = await fixture(`
+        <${providerTag}>
+          <${consumerTag}></${consumerTag}>
+          <${consumerTag}></${consumerTag}>
+        </${providerTag}>
+      `);
+
+      const [consumerElement1, consumerElement2] = Array.from<Consumer>(
+        providerElement.children as any,
+      );
 
       expect(consumerElement1.contextValue).toBe(2);
       expect(consumerElement2.contextValue).toBe(2);
     });
 
-    it('allows to use default value for context', () => {
+    it('allows to use default value for context', async () => {
       const {consumer, provider, value} = createContext(2);
 
       @provider
@@ -77,13 +82,13 @@ describe('@corpuscule/context', () => {
         @value public contextValue!: number;
       }
 
-      const [providerElement, consumerElement] = createContextElements(Provider, Consumer);
+      const [providerElement, consumerElement] = await mountDefaultContext(Provider, Consumer);
 
       expect(providerElement.providingValue).toBe(2);
       expect(consumerElement.contextValue).toBe(2);
     });
 
-    it('allows to set value dynamically', () => {
+    it('allows to set value dynamically', async () => {
       const {consumer, provider, value} = createContext(2);
 
       @provider
@@ -96,14 +101,14 @@ describe('@corpuscule/context', () => {
         @value public contextValue!: number;
       }
 
-      const [providerElement, consumerElement] = createContextElements(Provider, Consumer);
+      const [providerElement, consumerElement] = await mountDefaultContext(Provider, Consumer);
 
       providerElement.providingValue = 10;
 
       expect(consumerElement.contextValue).toBe(10);
     });
 
-    it("calls connectedCallback and disconnectedCallback of user's class", () => {
+    it("calls connectedCallback and disconnectedCallback of user's class", async () => {
       const connectedSpy = jasmine.createSpy('onConnect');
       const disconnectedSpy = jasmine.createSpy('onDisconnect');
       const {consumer, provider, value} = createContext();
@@ -134,16 +139,16 @@ describe('@corpuscule/context', () => {
         }
       }
 
-      const [providerElement, consumerElement] = createContextElements(Provider, Consumer);
+      const [providerElement, consumerElement] = await mountDefaultContext(Provider, Consumer);
 
-      providerElement.disconnectedCallback();
-      consumerElement.disconnectedCallback();
+      consumerElement.remove();
+      providerElement.remove();
 
       expect(connectedSpy).toHaveBeenCalledTimes(2);
       expect(disconnectedSpy).toHaveBeenCalledTimes(2);
     });
 
-    it('stops providing value to disconnected consumers', () => {
+    it('stops providing value to disconnected consumers', async () => {
       const {consumer, provider, value} = createContext();
 
       @provider
@@ -156,16 +161,16 @@ describe('@corpuscule/context', () => {
         @value public contextValue!: number;
       }
 
-      const [providerElement, consumerElement] = createContextElements(Provider, Consumer);
+      const [providerElement, consumerElement] = await mountDefaultContext(Provider, Consumer);
 
-      consumerElement.disconnectedCallback();
+      consumerElement.remove();
 
       providerElement.providingValue = 10;
 
       expect(consumerElement.contextValue).toBe(2);
     });
 
-    it("removes any default consumer's value", () => {
+    it("removes any default consumer's value", async () => {
       const {consumer, provider, value} = createContext();
       const constructorSpy = jasmine.createSpy('constructor');
 
@@ -185,7 +190,8 @@ describe('@corpuscule/context', () => {
         }
       }
 
-      createContextElements(Provider, Consumer);
+      await mountDefaultContext(Provider, Consumer);
+
       expect(constructorSpy).toHaveBeenCalled();
     });
 
@@ -200,7 +206,7 @@ describe('@corpuscule/context', () => {
       expect(isProvider(Provider)).toBeTruthy();
     });
 
-    it('throws an error if no provider exists for context', () => {
+    it('throws an error if no provider exists for context', done => {
       const {consumer, value} = createContext();
 
       @consumer
@@ -208,13 +214,14 @@ describe('@corpuscule/context', () => {
         @value public contextValue!: number;
       }
 
-      customElements.define(genName(), Consumer);
+      const tag = defineCE(Consumer);
 
-      const consumerElement = new Consumer();
+      window.onerror = message => {
+        expect(message).toEqual('Uncaught Error: No provider found for Consumer');
+        done();
+      };
 
-      expect(() => {
-        consumerElement.connectedCallback();
-      }).toThrowError('No provider found for Consumer');
+      fixture(`<${tag}></${tag}>`);
     });
 
     it('throws an error if no value is marked with @value', () => {
@@ -231,58 +238,6 @@ describe('@corpuscule/context', () => {
         // @ts-ignore
         class Consumer extends CustomElement {}
       }).toThrowError('No Consumer field is marked with @value');
-    });
-
-    it('executes connectedCallback on real DOM', async () => {
-      const providerConnectedCallbackSpy = jasmine.createSpy('provider.connectedCallback');
-      const consumerConnectedCallbackSpy = jasmine.createSpy('consumer.connectedCallback');
-      const {consumer, provider, value} = createContext();
-
-      const [promise, resolve] = createTestingPromise();
-      let count = 0;
-
-      @provider
-      class Provider extends HTMLElement {
-        @value public providingValue: number = 10;
-
-        public connectedCallback(): void {
-          providerConnectedCallbackSpy();
-          count += 1;
-
-          if (count === 2) {
-            resolve();
-          }
-        }
-      }
-      customElements.define(genName(), Provider);
-
-      @consumer
-      class Consumer extends HTMLElement {
-        @value public contextValue!: number;
-
-        public connectedCallback(): void {
-          consumerConnectedCallbackSpy();
-          count += 1;
-
-          if (count === 2) {
-            resolve();
-          }
-        }
-      }
-      customElements.define(genName(), Consumer);
-
-      const providerElement = new Provider();
-      const consumerElement = new Consumer();
-
-      providerElement.appendChild(consumerElement);
-
-      document.body.appendChild(providerElement);
-      await promise;
-
-      expect(providerConnectedCallbackSpy).toHaveBeenCalled();
-      expect(consumerConnectedCallbackSpy).toHaveBeenCalled();
-      expect(consumerElement.contextValue).toBe(10);
-      document.body.innerHTML = ''; // tslint:disable-line:no-inner-html
     });
 
     it('does not throw an error if class already have own lifecycle element', () => {
