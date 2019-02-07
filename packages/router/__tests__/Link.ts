@@ -6,6 +6,10 @@ const linkTest = () => {
     let historyStateSpy: jasmine.Spy;
     let link: Link;
 
+    afterEach(() => {
+      document.body.innerHTML = ''; // tslint:disable-line:no-inner-html
+    });
+
     afterAll(() => {
       historyStateSpy.and.callThrough();
       historyPushStateSpy.and.callThrough();

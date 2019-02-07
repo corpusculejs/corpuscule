@@ -21,8 +21,8 @@ const createContext = defaultValue => {
   return {
     consumer: createConsumer(shared, lifecycleKeys),
     isProvider: target => shared.providers.has(target),
-    provider: createProvider(shared, lifecycleKeys),
-    value: createValue(shared, defaultValue),
+    provider: createProvider(shared, lifecycleKeys, defaultValue),
+    value: createValue(shared),
   };
 };
 

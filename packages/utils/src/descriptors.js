@@ -75,7 +75,9 @@ export const accessor = ({
   let accessorMethods;
   let accessorField;
 
-  if (initializer || (!get && !set)) {
+  if (set || get) {
+    accessorMethods = adjust({get, set});
+  } else {
     const storage = Symbol();
 
     accessorMethods = adjust({
@@ -92,8 +94,6 @@ export const accessor = ({
       initializer,
       key: storage,
     });
-  } else {
-    accessorMethods = adjust({get, set});
   }
 
   return {

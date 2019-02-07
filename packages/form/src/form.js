@@ -119,7 +119,6 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
     ],
     finisher(target) {
       prepareSupers(target);
-      providerFinisher(target);
 
       constructor = target;
 
@@ -128,6 +127,8 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
 
       assertRequiredProperty('form', 'api', 'form', $api);
       assertRequiredProperty('form', 'api', 'state', $state);
+
+      providerFinisher(target);
 
       initializers = configInitializers.get(target);
 

@@ -6,7 +6,6 @@ module.exports = {
   mode: 'development',
   resolve: {
     alias: {
-      '@corpuscule/context': resolve(__dirname, './mocks/context'),
       'final-form$': resolve(__dirname, './mocks/finalForm'),
       'lit-html$': resolve(__dirname, './mocks/litHtml'),
       'lit-html/lib/shady-render$': resolve(__dirname, './mocks/litHtmlShady'),

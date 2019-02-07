@@ -1,4 +1,5 @@
-// tslint:disable:no-unnecessary-class max-classes-per-file no-unbound-method no-empty
+// tslint:disable:no-unbound-method
+import {fixtureSync} from '@open-wc/testing-helpers';
 import {createTestingPromise, CustomElement, genName} from '../../../test/utils';
 import {
   createElementDecorator,
@@ -15,6 +16,11 @@ const testElementDecorator = () => {
     let element: (name: string, params?: {extends?: keyof HTMLElementTagNameMap}) => ClassDecorator;
     let rendererSpy: jasmine.Spy;
     let schedulerSpy: jasmine.Spy;
+
+    const runRender = () => {
+      const [renderCallback] = schedulerSpy.calls.mostRecent().args;
+      renderCallback();
+    };
 
     beforeEach(() => {
       rendererSpy = jasmine.createSpy('onTemplateRender');
@@ -64,9 +70,11 @@ const testElementDecorator = () => {
     it('renders on element connection', async () => {
       const connectedCallbackSpy = jasmine.createSpy('onConnect');
 
+      const tag = genName();
       const [promise, resolve] = createTestingPromise();
 
-      @element(genName())
+      @element(tag)
+      // @ts-ignore
       class Test extends CustomElement {
         public connectedCallback(): void {
           connectedCallbackSpy();
@@ -78,9 +86,7 @@ const testElementDecorator = () => {
         }
       }
 
-      const test = new Test();
-      test.connectedCallback();
-
+      fixtureSync(`<${tag}></${tag}>`);
       await promise;
 
       expect(connectedCallbackSpy).toHaveBeenCalled();
@@ -90,7 +96,9 @@ const testElementDecorator = () => {
     it('re-renders on each attribute change', () => {
       const attributeChangedCallbackSpy = jasmine.createSpy('onAttributeChange');
 
-      @element(genName())
+      const tag = genName();
+
+      @element(tag)
       class Test extends CustomElement {
         public attributeChangedCallback(...args: Array<unknown>): void {
           attributeChangedCallbackSpy(...args);
@@ -101,11 +109,8 @@ const testElementDecorator = () => {
         }
       }
 
-      const test = new Test();
-      test.connectedCallback();
-
-      const [renderCallback] = schedulerSpy.calls.mostRecent().args;
-      renderCallback();
+      const test = fixtureSync(`<${tag}></${tag}>`) as Test;
+      runRender();
 
       test.attributeChangedCallback('test', 'old', 'new');
       expect(attributeChangedCallbackSpy).toHaveBeenCalledWith('test', 'old', 'new');
@@ -115,7 +120,9 @@ const testElementDecorator = () => {
     it('re-renders on each [propertyChangedCallback]', () => {
       const propertyChangedCallbackSpy = jasmine.createSpy('onPropertyChange');
 
-      @element(genName())
+      const tag = genName();
+
+      @element(tag)
       class Test extends CustomElement {
         public [propertyChangedCallback](...args: Array<unknown>): void {
           propertyChangedCallbackSpy(...args);
@@ -126,11 +133,8 @@ const testElementDecorator = () => {
         }
       }
 
-      const test = new Test();
-      test.connectedCallback();
-
-      const [renderCallback] = schedulerSpy.calls.mostRecent().args;
-      renderCallback();
+      const test = fixtureSync(`<${tag}></${tag}>`) as Test;
+      runRender();
 
       test[propertyChangedCallback]('test', 'old', 'new');
       expect(propertyChangedCallbackSpy).toHaveBeenCalledWith('test', 'old', 'new');
@@ -140,7 +144,9 @@ const testElementDecorator = () => {
     it('re-renders on each [internalChangedCallback]', () => {
       const internalChangedCallbackSpy = jasmine.createSpy('onInternalChange');
 
-      @element(genName())
+      const tag = genName();
+
+      @element(tag)
       class Test extends CustomElement {
         public [internalChangedCallback](...args: Array<unknown>): void {
           internalChangedCallbackSpy(...args);
@@ -151,11 +157,8 @@ const testElementDecorator = () => {
         }
       }
 
-      const test = new Test();
-      test.connectedCallback();
-
-      const [renderCallback] = schedulerSpy.calls.mostRecent().args;
-      renderCallback();
+      const test = fixtureSync(`<${tag}></${tag}>`) as Test;
+      runRender();
 
       test[internalChangedCallback]('test', 'old', 'new');
       expect(internalChangedCallbackSpy).toHaveBeenCalledWith('test', 'old', 'new');
@@ -166,9 +169,11 @@ const testElementDecorator = () => {
       const updatedCallbackSpy = jasmine.createSpy('onUpdate');
 
       const [connectedPromise, connectedResolve] = createTestingPromise();
-      const [promise, resolve] = createTestingPromise();
+      const [updatedPromise, updatedResolve] = createTestingPromise();
 
-      @element(genName())
+      const tag = genName();
+
+      @element(tag)
       class Test extends CustomElement {
         public connectedCallback(): void {
           connectedResolve();
@@ -176,7 +181,7 @@ const testElementDecorator = () => {
 
         public [updatedCallback](): void {
           updatedCallbackSpy();
-          resolve();
+          updatedResolve();
         }
 
         public [render](): null {
@@ -184,38 +189,32 @@ const testElementDecorator = () => {
         }
       }
 
-      const test = new Test();
-
-      // This commands proceed connecting stage
-      test.connectedCallback();
-      const [renderCallback] = schedulerSpy.calls.mostRecent().args;
-      renderCallback();
+      const test = fixtureSync(`<${tag}></${tag}>`) as Test;
+      runRender();
 
       await connectedPromise;
 
       // This commands causes update
       test.attributeChangedCallback('test', '1', '2');
-      const [renderCallbackForUpdate] = schedulerSpy.calls.mostRecent().args;
-      renderCallbackForUpdate();
+      runRender();
 
-      await promise;
+      await updatedPromise;
 
       expect(updatedCallbackSpy).toHaveBeenCalledTimes(1);
     });
 
     it('sends to the renderer function result of [render]', () => {
-      @element(genName())
+      const tag = genName();
+
+      @element(tag)
       class Test extends CustomElement {
         public [render](): string {
           return 'rendered string';
         }
       }
 
-      const test = new Test();
-      test.connectedCallback();
-
-      const [renderCallback] = schedulerSpy.calls.mostRecent().args;
-      renderCallback();
+      const test = fixtureSync(`<${tag}></${tag}>`) as Test;
+      runRender();
 
       expect(rendererSpy).toHaveBeenCalledWith('rendered string', jasmine.any(Node), test);
     });
@@ -225,7 +224,9 @@ const testElementDecorator = () => {
       const propertyChangedCallbackSpy = jasmine.createSpy('onPropertyChange');
       const internalChangedCallbackSpy = jasmine.createSpy('onInternalChange');
 
-      @element(genName())
+      const tag = genName();
+
+      @element(tag)
       class Test extends CustomElement {
         public attributeChangedCallback(...args: Array<unknown>): void {
           attributeChangedCallbackSpy(...args);
@@ -244,11 +245,8 @@ const testElementDecorator = () => {
         }
       }
 
-      const test = new Test();
-      test.connectedCallback();
-
-      const [renderCallback] = schedulerSpy.calls.mostRecent().args;
-      renderCallback();
+      const test = fixtureSync(`<${tag}></${tag}>`) as Test;
+      runRender();
       schedulerSpy.calls.reset();
 
       test.attributeChangedCallback('attr', 'same', 'same');
@@ -267,7 +265,9 @@ const testElementDecorator = () => {
       const propertyChangedCallbackSpy = jasmine.createSpy('onPropertyChange');
       const internalChangedCallbackSpy = jasmine.createSpy('onInternalChange');
 
-      @element(genName())
+      const tag = genName();
+
+      @element(tag)
       class Test extends CustomElement {
         public attributeChangedCallback(...args: Array<unknown>): void {
           attributeChangedCallbackSpy(...args);
@@ -286,15 +286,13 @@ const testElementDecorator = () => {
         }
       }
 
-      const test = new Test();
-      test.connectedCallback();
+      const test = fixtureSync(`<${tag}></${tag}>`) as Test;
 
       test.attributeChangedCallback('attr', 'old', 'new');
       test[propertyChangedCallback]('attr', 'old', 'new');
       test[internalChangedCallback]('attr', 'old', 'new');
 
-      const [renderCallback] = schedulerSpy.calls.mostRecent().args;
-      renderCallback();
+      runRender();
 
       expect(attributeChangedCallbackSpy).not.toHaveBeenCalled();
       expect(propertyChangedCallbackSpy).not.toHaveBeenCalled();
@@ -306,7 +304,9 @@ const testElementDecorator = () => {
     it('makes only one render on multiple property change', () => {
       const attributeChangedCallbackSpy = jasmine.createSpy('onAttributeChange');
 
-      @element(genName())
+      const tag = genName();
+
+      @element(tag)
       class Test extends CustomElement {
         public attributeChangedCallback(...args: Array<unknown>): void {
           attributeChangedCallbackSpy(...args);
@@ -317,11 +317,8 @@ const testElementDecorator = () => {
         }
       }
 
-      const test = new Test();
-      test.connectedCallback();
-
-      const [renderCallback] = schedulerSpy.calls.mostRecent().args;
-      renderCallback();
+      const test = fixtureSync(`<${tag}></${tag}>`) as Test;
+      runRender();
       schedulerSpy.calls.reset();
 
       test.attributeChangedCallback('attr', 'old', 'new');
@@ -334,7 +331,10 @@ const testElementDecorator = () => {
     it('allows to change root element', () => {
       const root = document.createElement('div');
 
-      @element(genName())
+      const tag = genName();
+
+      @element(tag)
+      // @ts-ignore
       class Test extends CustomElement {
         public [createRoot](): Element | DocumentFragment {
           return root;
@@ -345,11 +345,8 @@ const testElementDecorator = () => {
         }
       }
 
-      const test = new Test();
-      test.connectedCallback();
-
-      const [renderCallback] = schedulerSpy.calls.mostRecent().args;
-      renderCallback();
+      fixtureSync(`<${tag}></${tag}>`);
+      runRender();
 
       expect(rendererSpy).toHaveBeenCalledWith('render', root, jasmine.any(Object));
     });
@@ -374,33 +371,6 @@ const testElementDecorator = () => {
           }
         }
       }).not.toThrow();
-    });
-
-    it('executes connectedCallback on real DOM', async () => {
-      const connectedCallbackSpy = jasmine.createSpy('connectedCallback');
-
-      const [promise, resolve] = createTestingPromise();
-
-      @element(genName())
-      class Test extends HTMLElement {
-        public connectedCallback(): void {
-          connectedCallbackSpy();
-          resolve();
-        }
-
-        public [render](): null {
-          return null;
-        }
-      }
-
-      const test = new Test();
-
-      document.body.appendChild(test);
-      await promise;
-
-      expect(connectedCallbackSpy).toHaveBeenCalled();
-      expect(schedulerSpy).toHaveBeenCalled();
-      document.body.innerHTML = ''; // tslint:disable-line:no-inner-html
     });
 
     describe('elements extending', () => {
@@ -440,7 +410,10 @@ const testElementDecorator = () => {
           }
         }
 
-        @element(genName())
+        const tag = genName();
+
+        @element(tag)
+        // @ts-ignore
         class Child extends Parent {
           public connectedCallback(): void {
             super.connectedCallback();
@@ -453,8 +426,7 @@ const testElementDecorator = () => {
           }
         }
 
-        const child = new Child();
-        child.connectedCallback();
+        fixtureSync(`<${tag}></${tag}>`);
 
         await promise;
 
@@ -478,8 +450,9 @@ const testElementDecorator = () => {
           }
         }
 
-        @element(genName())
-        // @ts-ignore
+        const tag = genName();
+
+        @element(tag)
         class Child extends Parent {
           public [createRoot](): HTMLElement {
             return childContainer;
@@ -490,8 +463,7 @@ const testElementDecorator = () => {
           }
         }
 
-        const child = new Child();
-        child.connectedCallback();
+        const child = fixtureSync(`<${tag}></${tag}>`) as Child;
 
         const [renderCallback] = schedulerSpy.calls.mostRecent().args;
         renderCallback();
@@ -510,15 +482,21 @@ const testElementDecorator = () => {
         expect(customElements.define).toHaveBeenCalledWith(name, Test, {extends: 'a'});
       });
 
-      it('does not re-render', () => {
-        (customElements.define as jasmine.Spy).and.callThrough();
+      it('does not re-render', async () => {
+        const tag = genName();
+        const [promise, resolve] = createTestingPromise();
 
-        @element(genName(), {extends: 'a'})
-        class Test extends HTMLAnchorElement {}
+        @element(tag, {extends: 'a'})
+        // @ts-ignore
+        class Test extends HTMLAnchorElement {
+          public connectedCallback(): void {
+            resolve();
+          }
+        }
 
-        const test = new Test();
+        fixtureSync(`<a is="${tag}"></a>`);
 
-        (test as any).connectedCallback();
+        await promise;
 
         expect(schedulerSpy).not.toHaveBeenCalled();
       });

@@ -2,12 +2,13 @@ import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/as
 import getSupers from '@corpuscule/utils/lib/getSupers';
 import {field, hook, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
 import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
-import {getValue} from '@corpuscule/utils/lib/propertyUtils';
+import {getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
 import {checkValue, filter} from './utils';
 
 const createProvider = (
   {consumers, eventName, providers, value},
   [connectedCallbackKey, disconnectedCallbackKey],
+  defaultValue,
 ) => descriptor => {
   assertKind('provider', Kind.Class, descriptor);
 
@@ -83,6 +84,14 @@ const createProvider = (
         start() {
           providers.add(this);
           consumers.set(this, $$consumers);
+        },
+      }),
+      hook({
+        placement: 'own',
+        start() {
+          if (getValue(this, $value) === undefined) {
+            setValue(this, $value, defaultValue);
+          }
         },
       }),
     ],
