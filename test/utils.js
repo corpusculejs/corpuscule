@@ -1,4 +1,6 @@
 /* eslint-disable class-methods-use-this, no-empty-function */
+import {defineCE, fixture} from '@open-wc/testing-helpers';
+
 export class CustomElement extends HTMLElement {
   attributeChangedCallback() {}
 
@@ -21,4 +23,17 @@ export const createTestingPromise = () => {
   });
 
   return [promise, resolve];
+};
+
+export const createSimpleContext = async (Provider, Consumer) => {
+  const providerTag = defineCE(Provider);
+  const consumerTag = defineCE(Consumer);
+
+  const providerElement = await fixture(`
+    <${providerTag}>
+      <${consumerTag}></${consumerTag}>
+    </${providerTag}>
+  `);
+
+  return [providerElement, providerElement.children[0]];
 };
