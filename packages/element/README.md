@@ -139,10 +139,11 @@ Everything starts with the creation of the custom element class.
 **Hook Type**: Corpuscule
 
 This method creates a root container that will be used in rendering method. By default it has
-following implementation and just creates Shadow Root.
+following implementation and just creates Shadow Root (or Light DOM for elements that are unable
+to have Shadow Root).
 ```typescript
 [createRoot](): Element | ShadowRoot {
-  return this.attachShadow({mode: 'open'});
+  return isShadow ? this.attachShadow({mode: 'open'}) : this;
 }  
 ```
 You can override it to, e.g., use element itself as a container (aka Light DOM) or to use as a
@@ -224,6 +225,8 @@ Render function returns desired result in the format component renderer could wo
 receives nothing and could return anything which then will be send directly to the renderer
 function.
 
+If you don't specify `[render]` function, re-rendering won't ever happen on your element.
+
 ## Features
 ### Inheritable
 Basically, `@element` doesn't restrict working with JS OOP in any way. You can create any hierarchy
@@ -251,8 +254,11 @@ Using the `@corpuscule/element` you are allowed to create not only regular Custo
 as well. 
 
 Customized Built-In Elements differs from regular Custom Elements in many ways. E.g., many native
-elements cannot be extended by creating Shadow Root on them. It also means that for Customized
-Built-In Elements it is not necessary to specify `[render]` hook in class.
+elements cannot be extended by creating Shadow Root on them; by default for these element LightDOM
+will be created.
+
+You can avoid any change in elements that are unable to have Shadow Root by omitting `[render]`
+function on them.
 
 To create Customized Built-In Element you have to:
 * Specify `extends` option in the decorator
