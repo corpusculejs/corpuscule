@@ -402,6 +402,48 @@ class MySquareInfo extends HTMLElement {
 }
 ```
 
+#### `@query`
+Decorator that allows to transform property to a getter that performs `querySelector` action on
+the Custom Element's root: `ShadowRoot` or `this` depending on what kind of DOM was chosen.
+
+#### Example
+```javascript
+@element('my-element')
+class MyElement extends HTMLElement {
+  @query('#target') target;
+  
+  [render]() {
+    return html`
+      <div class="wrapper">
+        <span id="target"></span>
+      </div>
+    `;
+  }
+}
+```
+
+#### `@queryAll`
+Decorator that allows to transform property to a getter that performs `querySelectorAll` action on
+the Custom Element's root: `ShadowRoot` or `this` depending on what kind of DOM was chosen.
+
+#### Example
+```javascript
+@element('my-element')
+class MyElement extends HTMLElement {
+  @queryAll('.target') targets;
+  
+  [render]() {
+    return html`
+      <div class="wrapper">
+        <span class="target"></span>
+        <span class="target"></span>
+        <span class="target"></span>
+      </div>
+    `;
+  }
+}
+```
+
 #### `createComputingPair(): ComputingPair`
 Function creates an object that contains a pair of bound decorators, `@observer` and `@computer`
 that could be used to create computed properties.
