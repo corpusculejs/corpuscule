@@ -13,18 +13,23 @@ const babelPlugin = babel({
   ],
 });
 
-module.exports = Object.entries(packages).reduce((acc, [pack, entries]) => {
-  for (const file of entries) {
-    acc.push({
-      external: ['.', ...(pack === 'utils' ? entries.map(e => `./${e}`) : [])],
-      input: `packages/${pack}/src/${file}.js`,
+module.exports = pack => {
+  const entries = packages[pack];
+  const files = new Array(entries.length);
+
+  for (let i = 0; i < files.length; i++) {
+    files[i] = {
+      input: {
+        external: ['.', ...(pack === 'utils' ? entries.map(e => `./${e}`) : [])],
+        input: `src/${entries[i]}.js`,
+        plugins: [babelPlugin],
+      },
       output: {
-        file: `packages/${pack}/lib/${file}.js`,
+        file: `lib/${entries[i]}.js`,
         format: 'es',
       },
-      plugins: [babelPlugin],
-    });
+    };
   }
 
-  return acc;
-}, []);
+  return files;
+};
