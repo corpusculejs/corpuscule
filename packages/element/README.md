@@ -135,20 +135,6 @@ separate from others.
 
 Everything starts with the creation of the custom element class.
 
-#### `[createRoot](): Element | ShadowRoot`
-**Hook Type**: Corpuscule
-
-This method creates a root container that will be used in the rendering method. By default, it has
-following implementation and just creates Shadow Root (or Light DOM for elements that are unable
-to have Shadow Root).
-```typescript
-[createRoot](): Element | ShadowRoot {
-  return isShadow ? this.attachShadow({mode: 'open'}) : this;
-}  
-```
-You can override it to, e.g., use element itself as a container (aka Light DOM) or to use as a
-container specific element inside Shadow Root.
-
 ### Connecting
 Element is considered connected when it appears in the current page DOM. **Note**: single element
 could be connected multiple times.
@@ -304,6 +290,9 @@ Creator function returns an `@element` decorator function that receives followin
 * `params: ElementDecoratorParams`. Object consists of following elements:
   * `extends?: keyof HTMLElementTagNameMap`. This parameter allows to create a
   [Customized Built-In Element](#customized-builtin-element) instead of a regular Custom Element.
+  * `lightDOM: boolean`. This parameter allows to create Light DOM instead of Shadow DOM.
+  Basically, all the data `render` returns will be rendered to the element itself (`this` instead
+  of `this.shadowRoot`).
 
 **Note**: `@element` decorator should go **ON TOP** of all other decorators. Otherwise, you could expect strange errors
 happening.

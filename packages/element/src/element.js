@@ -5,7 +5,6 @@ import getSupers from '@corpuscule/utils/lib/getSupers';
 import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
 import {
-  createRoot as $createRoot,
   updatedCallback as $updatedCallback,
   propertyChangedCallback as $propertyChangedCallback,
   render as $render,
@@ -23,14 +22,14 @@ const filteringNames = ['is', 'observedAttributes'];
 
 const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
   name,
-  {extends: builtin} = {},
+  {extends: builtin, lightDOM = false} = {},
 ) => descriptor => {
   assertKind('element', Kind.Class, descriptor);
 
   const {elements, kind} = descriptor;
 
   const hasRender = elements.some(({key}) => key === $render);
-  const isShadow = !builtin || shadowElements.includes(builtin);
+  const isLight = lightDOM || (builtin && !shadowElements.includes(builtin));
 
   let constructor;
   const getConstructor = () => constructor;
@@ -43,7 +42,6 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
   const [supers, prepareSupers] = getSupers(elements, [
     attributeChangedCallbackKey,
     connectedCallbackKey,
-    $createRoot,
     $internalChangedCallback,
     $propertyChangedCallback,
     $updatedCallback,
@@ -104,13 +102,6 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
 
       // Protected
       method({
-        key: $createRoot,
-        method() {
-          return supers[$createRoot].call(this);
-        },
-        placement: 'own',
-      }),
-      method({
         key: $internalChangedCallback,
         async method(internalName, oldValue, newValue) {
           if (!this[$$connected]) {
@@ -150,7 +141,11 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
       field({
         initializer() {
           // Inheritance workaround. If class is inherited, it will do nothing
-          return this.constructor === constructor ? this[$createRoot]() : null;
+          return this.constructor === constructor
+            ? isLight
+              ? this
+              : this.attachShadow({mode: 'open'})
+            : null;
         },
         key: $$root,
       }),
@@ -184,11 +179,7 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
       }),
     ],
     finisher(target) {
-      prepareSupers(target, {
-        [$createRoot]() {
-          return isShadow ? this.attachShadow({mode: 'open'}) : this;
-        },
-      });
+      prepareSupers(target);
 
       constructor = target;
 

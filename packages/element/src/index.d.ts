@@ -15,9 +15,10 @@ export interface ElementDecoratorOptions {
 
 export interface ElementDecoratorParams {
   readonly extends?: keyof HTMLElementTagNameMap;
+  readonly lightDOM?: boolean;
 }
 
-export type ElementDecorator = (name: string, params: ElementDecoratorParams) => ClassDecorator;
+export type ElementDecorator = (name: string, params?: ElementDecoratorParams) => ClassDecorator;
 
 export type AttributeGuard = BooleanConstructor | NumberConstructor | StringConstructor;
 export type PropertyGuard = (value: unknown) => boolean;
@@ -31,7 +32,6 @@ export const property: (guard?: PropertyGuard) => PropertyDecorator;
 
 export const createComputingPair: () => ComputingPair;
 
-export const createRoot: unique symbol;
 export const internalChangedCallback: unique symbol;
 export const propertyChangedCallback: unique symbol;
 export const render: unique symbol;
