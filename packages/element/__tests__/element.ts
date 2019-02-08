@@ -3,7 +3,7 @@ import {fixtureSync} from '@open-wc/testing-helpers';
 import {createTestingPromise, CustomElement, genName} from '../../../test/utils';
 import {
   createElementDecorator,
-  createRoot,
+  ElementDecorator,
   internalChangedCallback,
   propertyChangedCallback,
   render,
@@ -13,7 +13,7 @@ import {
 const testElementDecorator = () => {
   describe('@element', () => {
     let define: jasmine.Spy;
-    let element: (name: string, params?: {extends?: keyof HTMLElementTagNameMap}) => ClassDecorator;
+    let element: ElementDecorator;
     let rendererSpy: jasmine.Spy;
     let schedulerSpy: jasmine.Spy;
 
@@ -339,27 +339,21 @@ const testElementDecorator = () => {
       expect(schedulerSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('allows to change root element', () => {
-      const root = document.createElement('div');
-
+    it('allows to use light DOM', () => {
       const tag = genName();
 
-      @element(tag)
+      @element(tag, {lightDOM: true})
       // @ts-ignore
       class Test extends CustomElement {
-        public [createRoot](): Element | DocumentFragment {
-          return root;
-        }
-
         public [render](): string {
           return 'render';
         }
       }
 
-      fixtureSync(`<${tag}></${tag}>`);
+      const test = fixtureSync(`<${tag}></${tag}>`);
       runRender();
 
-      expect(rendererSpy).toHaveBeenCalledWith('render', root, jasmine.any(Object));
+      expect(rendererSpy).toHaveBeenCalledWith('render', test, jasmine.any(Object));
     });
 
     it('does not throw an error if class already have own lifecycle element', () => {
@@ -444,42 +438,6 @@ const testElementDecorator = () => {
         expect(schedulerSpy).toHaveBeenCalledTimes(1);
         expect(connectedSpyChild).toHaveBeenCalled();
         expect(connectedSpyParent).toHaveBeenCalled();
-      });
-
-      it('allows to override [createRoot] method', () => {
-        const parentContainer = document.createElement('div');
-        const childContainer = document.createElement('div');
-
-        @element(genName())
-        class Parent extends CustomElement {
-          public [createRoot](): HTMLElement {
-            return parentContainer;
-          }
-
-          public [render](): null {
-            return null;
-          }
-        }
-
-        const tag = genName();
-
-        @element(tag)
-        class Child extends Parent {
-          public [createRoot](): HTMLElement {
-            return childContainer;
-          }
-
-          public [render](): null {
-            return null;
-          }
-        }
-
-        const child = fixtureSync(`<${tag}></${tag}>`) as Child;
-
-        const [renderCallback] = schedulerSpy.calls.mostRecent().args;
-        renderCallback();
-
-        expect(rendererSpy).toHaveBeenCalledWith(null, childContainer, child);
       });
     });
 

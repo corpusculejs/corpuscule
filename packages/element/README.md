@@ -135,20 +135,6 @@ separate from others.
 
 Everything starts with the creation of the custom element class.
 
-#### `[createRoot](): Element | ShadowRoot`
-**Hook Type**: Corpuscule
-
-This method creates a root container that will be used in the rendering method. By default, it has
-following implementation and just creates Shadow Root (or Light DOM for elements that are unable
-to have Shadow Root).
-```typescript
-[createRoot](): Element | ShadowRoot {
-  return isShadow ? this.attachShadow({mode: 'open'}) : this;
-}  
-```
-You can override it to, e.g., use element itself as a container (aka Light DOM) or to use as a
-container specific element inside Shadow Root.
-
 ### Connecting
 Element is considered connected when it appears in the current page DOM. **Note**: single element
 could be connected multiple times.
@@ -243,8 +229,8 @@ Here:
 * `result: R` is a value returned by [`[render]`](#render-unknown) method. It is send to render
 method directly, without any changes.
 * `container: Element | DocumentFragment` is a html element where renderer should render `result`.
-It is a value returned by [`[createRoot]`](#createroot-element--shadowroot) function, the root of
-the element.
+It is otherwise element shadow root (`this.shadowRoot`) or element itself, depending on chosen DOM
+type: light or shadow.
 * `context: C` is an element instance. It could be used for different options, e.g. bining event
 context in `lit-html`, or just omitted.
 
@@ -304,6 +290,9 @@ Creator function returns an `@element` decorator function that receives followin
 * `params: ElementDecoratorParams`. Object consists of following elements:
   * `extends?: keyof HTMLElementTagNameMap`. This parameter allows to create a
   [Customized Built-In Element](#customized-builtin-element) instead of a regular Custom Element.
+  * `lightDOM: boolean`. This parameter allows to create Light DOM instead of Shadow DOM.
+  Basically, all the data `render` returns will be rendered to the element itself (`this` instead
+  of `this.shadowRoot`).
 
 **Note**: `@element` decorator should go **ON TOP** of all other decorators. Otherwise, you could expect strange errors
 happening.
@@ -316,6 +305,20 @@ import renderer from '@coruscule/lit-html-renderer';
 const element = createElementDecorator({renderer}); 
 
 @element('my-component')
+class MyComponent extends HTMLElement {
+  [render]() {
+    return html`<div>Hello, World!</div>`
+  }
+}
+```
+To create element with LightDOM you should do following:
+```javascript
+import {createElementDecorator, render} from '@corpuscule/element';
+import renderer from '@coruscule/lit-html-renderer';
+
+const element = createElementDecorator({renderer}); 
+
+@element('my-component', {lightDOM: true})
 class MyComponent extends HTMLElement {
   [render]() {
     return html`<div>Hello, World!</div>`
