@@ -4,3 +4,4 @@ export {default as createElementDecorator} from './element';
 export {default as internal} from './internal';
 export {default as property} from './property';
 export * from './tokens/lifecycle';
+export * from './query';

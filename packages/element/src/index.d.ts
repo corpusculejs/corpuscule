@@ -32,6 +32,9 @@ export const property: (guard?: PropertyGuard) => PropertyDecorator;
 
 export const createComputingPair: () => ComputingPair;
 
+export const query: (selector: string) => PropertyDecorator;
+export const queryAll: (selector: string) => PropertyDecorator;
+
 export const internalChangedCallback: unique symbol;
 export const propertyChangedCallback: unique symbol;
 export const render: unique symbol;
