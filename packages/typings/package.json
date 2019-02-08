@@ -1,6 +1,6 @@
 {
   "name": "@corpuscule/typings",
-  "version": "0.8.1",
+  "version": "0.9.0",
   "description": "Common types for Corpuscule",
   "types": "src/index.d.ts",
   "author": "Vlad Rindevich <rindevich.vs@gmail.com> (https://github.com/Lodin)",
