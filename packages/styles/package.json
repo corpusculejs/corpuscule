@@ -5,6 +5,9 @@
   "main": "lib/index.js",
   "module": "lib/index.js",
   "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "node ../../scripts/build.js"
+  },
   "author": "Vlad Rindevich <rindevich.vs@gmail.com> (https://github.com/Lodin)",
   "bugs": {
     "url": "https://github.com/corpusculejs/corpuscule/issues"

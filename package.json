@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "bootstrap": "lerna bootstrap",
-    "build": "node scripts/build.js",
+    "build": "lerna run build --parallel",
     "lint": "run-p lint:es lint:ts",
     "lint-staged": "lint-staged",
     "lint:es": "eslint packages/**/*.js",

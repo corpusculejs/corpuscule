@@ -2,6 +2,9 @@
   "name": "@corpuscule/utils",
   "version": "0.8.2",
   "description": "Common utils for Corpuscule",
+  "scripts": {
+    "build": "node ../../scripts/build.js"
+  },
   "author": "Vlad Rindevich <rindevich.vs@gmail.com> (https://github.com/Lodin)",
   "bugs": {
     "url": "https://github.com/corpusculejs/corpuscule/issues"
