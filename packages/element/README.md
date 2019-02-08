@@ -229,8 +229,8 @@ Here:
 * `result: R` is a value returned by [`[render]`](#render-unknown) method. It is send to render
 method directly, without any changes.
 * `container: Element | DocumentFragment` is a html element where renderer should render `result`.
-It is a value returned by [`[createRoot]`](#createroot-element--shadowroot) function, the root of
-the element.
+It is otherwise element shadow root (`this.shadowRoot`) or element itself, depending on chosen DOM
+type: light or shadow.
 * `context: C` is an element instance. It could be used for different options, e.g. bining event
 context in `lit-html`, or just omitted.
 
@@ -305,6 +305,20 @@ import renderer from '@coruscule/lit-html-renderer';
 const element = createElementDecorator({renderer}); 
 
 @element('my-component')
+class MyComponent extends HTMLElement {
+  [render]() {
+    return html`<div>Hello, World!</div>`
+  }
+}
+```
+To create element with LightDOM you should do following:
+```javascript
+import {createElementDecorator, render} from '@corpuscule/element';
+import renderer from '@coruscule/lit-html-renderer';
+
+const element = createElementDecorator({renderer}); 
+
+@element('my-component', {lightDOM: true})
 class MyComponent extends HTMLElement {
   [render]() {
     return html`<div>Hello, World!</div>`
