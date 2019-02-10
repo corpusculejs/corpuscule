@@ -5,10 +5,10 @@ import getSupers from '@corpuscule/utils/lib/getSupers';
 import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
 import {
-  updatedCallback as $updatedCallback,
+  internalChangedCallback as $internalChangedCallback,
   propertyChangedCallback as $propertyChangedCallback,
   render as $render,
-  internalChangedCallback as $internalChangedCallback,
+  updatedCallback as $updatedCallback,
 } from './tokens/lifecycle';
 import {shadowElements} from './utils';
 
@@ -78,6 +78,7 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
           key: connectedCallbackKey,
           async method() {
             await this[$$invalidate]();
+            this[$$connected] = true;
             supers[connectedCallbackKey].call(this);
           },
         },
@@ -163,15 +164,12 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
 
               this[$$valid] = false;
 
-              const isConnecting = !this[$$connected];
-
               await scheduler(() => {
                 renderer(this[$render](), this[$$root], this);
-                this[$$connected] = true;
                 this[$$valid] = true;
               });
 
-              if (!isConnecting) {
+              if (this[$$connected]) {
                 this[$updatedCallback]();
               }
             }

@@ -10,7 +10,7 @@ import {
   updatedCallback,
 } from '../src';
 
-const fixtureMixin = <T extends Constructor<{}>>(base: T) =>
+const fixtureMixin = <T extends Constructor<Element>>(base: T) =>
   class extends base {
     public updateComplete: Promise<void>; // tslint:disable-line:readonly-keyword
     private resolve: () => void; // tslint:disable-line:readonly-keyword
@@ -42,7 +42,7 @@ const testElementDecorator = () => {
       rendererSpy = jasmine.createSpy('onTemplateRender');
       schedulerSpy = jasmine.createSpy('onSchedule');
 
-      schedulerSpy.and.callFake(renderCallback => renderCallback());
+      schedulerSpy.and.callFake((renderCallback: () => void) => renderCallback());
 
       define = spyOn(customElements, 'define');
       define.and.callThrough();
@@ -490,6 +490,27 @@ const testElementDecorator = () => {
         await test.updateComplete;
 
         expect(test.shadowRoot).toBeNull();
+      });
+
+      it('defines that element is connected for light DOM elements', async () => {
+        const attributeChangedCallbackSpy = jasmine.createSpy('attributeChangedCallback');
+        const tag = genName();
+
+        @element(tag, {extends: 'a'})
+        class Test extends fixtureMixin(HTMLAnchorElement) {
+          public attributeChangedCallback(...args: any[]): void {
+            attributeChangedCallbackSpy(...args);
+          }
+        }
+
+        const test = fixtureSync(`<a is="${tag}"></a>`) as Test;
+        await test.updateComplete;
+
+        test.attributeChangedCallback('test', '1', '2');
+
+        // This test allows to understand was the user-defined attributeChangedCallback
+        // was called by the system one.
+        expect(attributeChangedCallbackSpy).toHaveBeenCalledWith('test', '1', '2');
       });
     });
   });
