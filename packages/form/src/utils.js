@@ -11,7 +11,7 @@ export const fieldOptions = [
   'format',
   'formatOnBlur',
   'isEqual',
-  'name',
+  'fieldName',
   'parse',
   'subscription',
   'validate',

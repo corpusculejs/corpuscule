@@ -167,7 +167,7 @@ will be called on every update. Defaults to `false`.
 ##### `isEqual?: (a: any, b: any) => boolean`
 [See the 🏁 Final Form docs on `isEqual`](https://github.com/final-form/final-form#isequal-a-any-b-any--boolean).
 
-##### `name: string`
+##### `fieldName: string`
 The name of your field. Field values may be deeply nested using dot-and-bracket syntax.
 [Learn more about Field Names](https://github.com/final-form/final-form#field-names).
 
@@ -242,7 +242,7 @@ is used by default.
   @field
   class Field extends HTMLElement {
     @api form;
-    @option name = 'my-field';
+    @option fieldName = 'my-field';
     
     #input;
     #meta;
@@ -287,7 +287,7 @@ is used by default.
   customElements.define('x-field', Field);
 </script>
 <x-form>
-  <x-field name="some-text">
+  <x-field>
     <input type="text"/>
   </x-field>
   <button type="submit">Submit</button>

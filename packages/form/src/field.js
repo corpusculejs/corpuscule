@@ -21,10 +21,10 @@ const createField = (
   let $input;
   let $meta;
 
+  let $fieldName;
   let $format;
   let $formatOnBlur;
   let $isEqual;
-  let $name;
   let $parse;
   let $subscription;
   let $validate;
@@ -144,7 +144,7 @@ const createField = (
             };
 
             this[$$unsubscribe] = getValue(this, $api).registerField(
-              getValue(this, $name),
+              getValue(this, $fieldName),
               listener,
               ($subscription && getValue(this, $subscription)) || all,
               {
@@ -214,13 +214,13 @@ const createField = (
       $format = options.format.get(target);
       $formatOnBlur = options.formatOnBlur.get(target);
       $isEqual = options.isEqual.get(target);
-      $name = options.name.get(target);
+      $fieldName = options.fieldName.get(target);
       $parse = options.parse.get(target);
       $subscription = options.subscription.get(target);
       $validate = options.validate.get(target);
       $validateFields = options.validateFields.get(target);
 
-      assertRequiredProperty('field', 'option', 'name', $name);
+      assertRequiredProperty('field', 'option', 'fieldName', $fieldName);
     },
     kind,
   };

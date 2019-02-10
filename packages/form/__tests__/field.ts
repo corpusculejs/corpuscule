@@ -85,7 +85,7 @@ const testField = () => {
         @api public readonly input!: FieldInputProps<string>;
         @api public readonly meta!: FieldMetaProps;
 
-        @option public readonly name: string = 'test';
+        @option public readonly fieldName: string = 'test';
       }
 
       const [, fieldElement] = await createSimpleContext(Form, Field);
@@ -111,7 +111,7 @@ const testField = () => {
         @api public readonly input!: FieldInputProps<string>;
         @api public readonly meta!: FieldMetaProps;
 
-        @option public readonly name: string = 'test';
+        @option public readonly fieldName: string = 'test';
 
         @option
         public isEqual(): boolean {
@@ -157,7 +157,7 @@ const testField = () => {
         @api public readonly input!: FieldInputProps<object>;
         @api public readonly meta!: FieldMetaProps;
 
-        @option public readonly name: string = 'test';
+        @option public readonly fieldName: string = 'test';
       }
 
       const [, fieldElement] = await createSimpleContext(Form, Field);
@@ -189,7 +189,7 @@ const testField = () => {
         @api public readonly input!: FieldInputProps<object>;
         @api public readonly meta!: FieldMetaProps;
 
-        @option public readonly name: string = 'test';
+        @option public readonly fieldName: string = 'test';
 
         @option
         public formatOnBlur: boolean = false;
@@ -226,7 +226,7 @@ const testField = () => {
         @api public readonly input!: FieldInputProps<object>;
         @api public readonly meta!: FieldMetaProps;
 
-        @option public readonly name: string = 'test';
+        @option public readonly fieldName: string = 'test';
       }
 
       const [, fieldElement] = await createSimpleContext(Form, Field);
@@ -256,7 +256,7 @@ const testField = () => {
         @api public readonly input!: FieldInputProps<object>;
         @api public readonly meta!: FieldMetaProps;
 
-        @option public readonly name: string = 'test';
+        @option public readonly fieldName: string = 'test';
       }
 
       const [, fieldElement] = await createSimpleContext(Form, Field);
@@ -282,7 +282,7 @@ const testField = () => {
         @api public readonly input!: FieldInputProps<object>;
         @api public readonly meta!: FieldMetaProps;
 
-        @option public readonly name: string = 'test';
+        @option public readonly fieldName: string = 'test';
       }
 
       const [, fieldElement] = await createSimpleContext(Form, Field);
@@ -309,7 +309,7 @@ const testField = () => {
         @api public readonly input!: FieldInputProps<object>;
         @api public readonly meta!: FieldMetaProps;
 
-        @option public readonly name: string = 'test';
+        @option public readonly fieldName: string = 'test';
       }
 
       const [, fieldElement] = await createSimpleContext(Form, Field);
@@ -336,14 +336,13 @@ const testField = () => {
           @api public readonly input!: FieldInputProps<object>;
           @api public readonly meta!: FieldMetaProps;
 
-          @option
-          public name: string = 'test1';
+          @option public fieldName: string = 'test1';
         }
 
         const [, fieldElement] = await createSimpleContext(Form, Field);
         subscribeField(fieldElement);
 
-        fieldElement.name = 'test2';
+        fieldElement.fieldName = 'test2';
 
         expect(scheduler).toHaveBeenCalledTimes(2);
       });
@@ -364,13 +363,13 @@ const testField = () => {
           @api public readonly input!: FieldInputProps<object>;
           @api public readonly meta!: FieldMetaProps;
 
-          @option public name: string = 'test1';
+          @option public fieldName: string = 'test1';
         }
 
         const [, fieldElement] = await createSimpleContext(Form, Field);
         subscribeField(fieldElement);
 
-        fieldElement.name = 'test1';
+        fieldElement.fieldName = 'test1';
 
         expect(scheduler).toHaveBeenCalledTimes(1);
       });
@@ -391,7 +390,7 @@ const testField = () => {
           @api public readonly input!: FieldInputProps<object>;
           @api public readonly meta!: FieldMetaProps;
 
-          @option public name: string = 'test';
+          @option public readonly fieldName: string = 'test';
           @option public subscription: Record<string, boolean> = all;
         }
 
@@ -419,7 +418,7 @@ const testField = () => {
           @api public readonly input!: FieldInputProps<object>;
           @api public readonly meta!: FieldMetaProps;
 
-          @option public name: string = 'test';
+          @option public readonly fieldName: string = 'test';
           @option public subscription: Record<string, boolean> = all;
         }
 
@@ -447,7 +446,7 @@ const testField = () => {
           @api public readonly input!: FieldInputProps<object>;
           @api public readonly meta!: FieldMetaProps;
 
-          @option public readonly name: string = 'test';
+          @option public readonly fieldName: string = 'test';
 
           @option
           public value: string = 'test';
@@ -479,7 +478,7 @@ const testField = () => {
           @api public readonly input!: FieldInputProps<object>;
           @api public readonly meta!: FieldMetaProps;
 
-          @option public readonly name: string = 'test';
+          @option public readonly fieldName: string = 'test';
 
           @option
           public value: string = 'test';
@@ -504,7 +503,7 @@ const testField = () => {
             @api public readonly input!: FieldInputProps<object>;
             @api public readonly meta!: FieldMetaProps;
 
-            @option public readonly name: string = 'test';
+            @option public readonly fieldName: string = 'test';
 
             @option
             public test: string = 'test';
@@ -523,7 +522,7 @@ const testField = () => {
             @api public readonly input!: FieldInputProps<object>;
             @api public readonly meta!: FieldMetaProps;
           }
-        }).toThrowError('@field requires name property marked with @option');
+        }).toThrowError('@field requires fieldName property marked with @option');
       });
     });
 
@@ -579,7 +578,7 @@ const testField = () => {
           @api public readonly input!: FieldInputProps<object>;
           @api public readonly meta!: FieldMetaProps;
 
-          @option public readonly name: string = 'test';
+          @option public readonly fieldName: string = 'test';
         }
 
         const [, fieldElement] = await createSimpleContext(Form, Field);
@@ -630,7 +629,7 @@ const testField = () => {
             @api public readonly input!: FieldInputProps<object>;
             @api public readonly meta!: FieldMetaProps;
 
-            @option public readonly name: string = 'test';
+            @option public readonly fieldName: string = 'test';
           }
 
           const [, fieldElement] = await createSimpleContext(Form, Field);
@@ -658,7 +657,7 @@ const testField = () => {
             @api public readonly input!: FieldInputProps<object>;
             @api public readonly meta!: FieldMetaProps;
 
-            @option public readonly name: string = 'test';
+            @option public readonly fieldName: string = 'test';
 
             @option
             public formatOnBlur: boolean = true;
@@ -698,7 +697,7 @@ const testField = () => {
             @api public readonly input!: FieldInputProps<object>;
             @api public readonly meta!: FieldMetaProps;
 
-            @option public readonly name: string = 'test';
+            @option public readonly fieldName: string = 'test';
           }
 
           const [, fieldElement] = await createSimpleContext(Form, Field);
@@ -728,7 +727,7 @@ const testField = () => {
             @api public readonly input!: FieldInputProps<object>;
             @api public readonly meta!: FieldMetaProps;
 
-            @option public readonly name: string = 'test';
+            @option public readonly fieldName: string = 'test';
 
             @option
             public parse(value: string): object {
@@ -766,7 +765,7 @@ const testField = () => {
             @api public readonly input!: FieldInputProps<object>;
             @api public readonly meta!: FieldMetaProps;
 
-            @option public readonly name: string = 'test';
+            @option public readonly fieldName: string = 'test';
           }
 
           const [, fieldElement] = await createSimpleContext(Form, Field);
@@ -800,7 +799,7 @@ const testField = () => {
           @api public readonly input!: FieldInputProps<object>;
           @api public readonly meta!: FieldMetaProps;
 
-          @option public readonly name: string = 'test';
+          @option public readonly fieldName: string = 'test';
         }
 
         formTag = defineCE(Form);
@@ -980,7 +979,7 @@ const testField = () => {
             @api public readonly input!: FieldInputProps<string>;
             @api public readonly meta!: FieldMetaProps;
 
-            @option public readonly name: string = 'test';
+            @option public readonly fieldName: string = 'test';
 
             public constructor() {
               super();
