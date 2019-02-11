@@ -3,7 +3,7 @@ import getSupers from '@corpuscule/utils/lib/getSupers';
 import {field, hook, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
 import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
 import {getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
-import {checkValue, filter} from './utils';
+import {filter} from './utils';
 
 const createProvider = (
   {consumers, eventName, providers, value},
@@ -96,7 +96,6 @@ const createProvider = (
       }),
     ],
     finisher(target) {
-      checkValue(value, target);
       prepareSupers(target);
       constructor = target;
 

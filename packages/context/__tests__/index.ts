@@ -289,13 +289,13 @@ describe('@corpuscule/context', () => {
         @provider
         // @ts-ignore
         class Provider extends CustomElement {}
-      }).toThrowError('No Provider field is marked with @value');
+      }).toThrowError('@provider requires any property marked with @value');
 
       expect(() => {
         @consumer
         // @ts-ignore
         class Consumer extends CustomElement {}
-      }).toThrowError('No Consumer field is marked with @value');
+      }).toThrowError('@consumer requires any property marked with @value');
     });
 
     it('does not throw an error if class already have own lifecycle element', () => {

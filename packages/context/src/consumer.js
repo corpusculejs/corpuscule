@@ -3,7 +3,7 @@ import getSupers from '@corpuscule/utils/lib/getSupers';
 import {lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
 import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
 import {setValue} from '@corpuscule/utils/lib/propertyUtils';
-import {checkValue, filter} from './utils';
+import {filter} from './utils';
 
 const createConsumer = (
   {eventName, value},
@@ -78,8 +78,6 @@ const createConsumer = (
       }),
     ],
     finisher(target) {
-      checkValue(value, target);
-
       constructor = target;
       $value = value.get(target);
 
