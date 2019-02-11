@@ -3,7 +3,7 @@ import getSupers from '@corpuscule/utils/lib/getSupers';
 import {lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
 import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
 import {setValue} from '@corpuscule/utils/lib/propertyUtils';
-import {filter} from './utils';
+import {filter, noop} from './utils';
 
 const createConsumer = (
   {eventName, value},
@@ -11,7 +11,7 @@ const createConsumer = (
 ) => descriptor => {
   assertKind('consumer', Kind.Class, descriptor);
 
-  const {elements, kind} = descriptor;
+  const {elements, finisher = noop, kind} = descriptor;
 
   let constructor;
   let $value;
@@ -25,8 +25,6 @@ const createConsumer = (
 
   return {
     elements: [
-      ...filter(elements),
-
       // Public
       ...lifecycleMethod(
         {
@@ -76,11 +74,14 @@ const createConsumer = (
           setValue(this, $value, v);
         },
       }),
+
+      ...filter(elements),
     ],
     finisher(target) {
+      finisher(target);
       constructor = target;
-      $value = value.get(target);
 
+      $value = value.get(target);
       assertRequiredProperty('consumer', 'value', $value);
 
       prepareSupers(target);
