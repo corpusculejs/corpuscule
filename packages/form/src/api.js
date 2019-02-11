@@ -7,7 +7,7 @@ const createApiDecorator = ({value}, {api}, {input, meta}, {state}) => descripto
   assertKind('api', Kind.Field | Kind.Accessor, descriptor);
   assertPlacement('api', Placement.Own | Placement.Prototype, descriptor);
 
-  const {key} = descriptor;
+  const {extras = [], key} = descriptor;
   const name = getName(key);
 
   const isFormApi = name === 'form';
@@ -16,12 +16,9 @@ const createApiDecorator = ({value}, {api}, {input, meta}, {state}) => descripto
     throw new TypeError(`Property name ${name} is not allowed`);
   }
 
-  const {extras = [], ...finalDescriptor} = isFormApi ? value(descriptor) : descriptor;
-
-  return {
-    ...finalDescriptor,
+  const finalDescriptor = {
+    ...descriptor,
     extras: [
-      ...extras,
       hook({
         start() {
           if (isFormApi) {
@@ -32,8 +29,11 @@ const createApiDecorator = ({value}, {api}, {input, meta}, {state}) => descripto
           }
         },
       }),
+      ...extras,
     ],
   };
+
+  return isFormApi ? value(finalDescriptor) : finalDescriptor;
 };
 
 export default createApiDecorator;

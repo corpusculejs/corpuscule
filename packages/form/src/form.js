@@ -4,7 +4,7 @@ import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescript
 import getSupers from '@corpuscule/utils/lib/getSupers';
 import {getName, getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
 import {createForm} from 'final-form';
-import {all, filter} from './utils';
+import {all, filter, noop} from './utils';
 
 const [connectedCallbackKey, disconnectedCallbackKey] = lifecycleKeys;
 
@@ -13,6 +13,8 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
   subscription = all,
 } = {}) => descriptor => {
   assertKind('form', Kind.Class, descriptor);
+
+  const {elements, finisher = noop, kind} = descriptor;
 
   let $api;
   let constructor;
@@ -24,14 +26,10 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
   const $$submit = Symbol();
   const $$unsubscriptions = Symbol();
 
-  const {elements, finisher: providerFinisher, kind} = provider(descriptor);
-
   const [supers, prepareSupers] = getSupers(elements, lifecycleKeys);
 
-  return {
+  return provider({
     elements: [
-      ...filter(elements),
-
       // Public
       ...lifecycleMethod(
         {
@@ -94,7 +92,17 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
         },
       }),
 
-      // Hooks
+      // Static Hooks
+      hook({
+        start() {
+          configInitializers.set(this, []);
+        },
+      }),
+
+      // Basic elements
+      ...filter(elements),
+
+      // Own Hooks
       hook({
         placement: 'own',
         start() {
@@ -111,15 +119,9 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
           );
         },
       }),
-      hook({
-        start() {
-          configInitializers.set(this, []);
-        },
-      }),
     ],
     finisher(target) {
-      prepareSupers(target);
-
+      finisher(target);
       constructor = target;
 
       $api = api.get(target);
@@ -127,8 +129,6 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
 
       assertRequiredProperty('form', 'api', 'form', $api);
       assertRequiredProperty('form', 'api', 'state', $state);
-
-      providerFinisher(target);
 
       initializers = configInitializers.get(target);
 
@@ -138,9 +138,11 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
         'onSubmit',
         initializers.find(([key]) => getName(key) === 'onSubmit'),
       );
+
+      prepareSupers(target);
     },
     kind,
-  };
+  });
 };
 
 export default createFormDecorator;
