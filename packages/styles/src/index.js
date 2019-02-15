@@ -5,6 +5,9 @@ import getSupers from '@corpuscule/utils/lib/getSupers';
 
 const observerConfig = {childList: true};
 
+// eslint-disable-next-line no-empty-function
+const noop = () => {};
+
 const attachShadowKey = 'attachShadow';
 
 export const stylesAttachedCallback = Symbol();
@@ -14,7 +17,7 @@ export const createStylesDecorator = ({shadyCSS, adoptedStyleSheets}) => (
 ) => descriptor => {
   assertKind('styles', Kind.Class, descriptor);
 
-  const {elements, kind} = descriptor;
+  const {elements, finisher = noop, kind} = descriptor;
 
   const template = document.createElement('template');
   const constructableStyles = [];
@@ -46,12 +49,10 @@ export const createStylesDecorator = ({shadyCSS, adoptedStyleSheets}) => (
     }
   }
 
-  const [supers, finisher] = getSupers(elements, [attachShadowKey, stylesAttachedCallback]);
+  const [supers, prepareSupers] = getSupers(elements, [attachShadowKey, stylesAttachedCallback]);
 
   return {
     elements: [
-      ...elements.filter(({key, placement}) => !(key === attachShadowKey && placement === 'own')),
-
       method({
         key: attachShadowKey,
         method(options) {
@@ -83,8 +84,14 @@ export const createStylesDecorator = ({shadyCSS, adoptedStyleSheets}) => (
         },
         placement: 'own',
       }),
+
+      // Original elements
+      ...elements.filter(({key, placement}) => !(key === attachShadowKey && placement === 'own')),
     ],
-    finisher,
+    finisher(target) {
+      finisher(target);
+      prepareSupers(target);
+    },
     kind,
   };
 };
