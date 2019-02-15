@@ -4,12 +4,15 @@ import getSupers from '@corpuscule/utils/lib/getSupers';
 import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
 import {getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
 
+// eslint-disable-next-line no-empty-function
+const noop = () => {};
+
 const [, disconnectedCallbackKey] = lifecycleKeys;
 
 export const createReduxDecorator = ({consumer, value}, {units}, {store}) => descriptor => {
   assertKind('connect', Kind.Class, descriptor);
 
-  const {elements, finisher: consumerFinisher, kind} = consumer(descriptor);
+  const {elements, finisher = noop, kind} = descriptor;
 
   let constructor;
   let unitMap;
@@ -21,17 +24,13 @@ export const createReduxDecorator = ({consumer, value}, {units}, {store}) => des
   const $$unsubscribe = Symbol();
   const $$update = Symbol();
 
-  const [supers, finish] = getSupers(elements, [disconnectedCallbackKey]);
+  const [supers, prepareSupers] = getSupers(elements, [disconnectedCallbackKey]);
   const {descriptor: contextDescriptor, extras, finisher: finishContext, ...contextValue} = value(
     field({key: $$api}),
   );
 
-  return {
+  return consumer({
     elements: [
-      ...elements.filter(
-        ({key, placement}) => !(key === disconnectedCallbackKey && placement === 'prototype'),
-      ),
-
       // Public
       ...lifecycleMethod(
         {
@@ -47,25 +46,6 @@ export const createReduxDecorator = ({consumer, value}, {units}, {store}) => des
         supers,
         getConstructor,
       ),
-
-      // Context
-      accessor({
-        adjust: ({get: originalGet, set: originalSet}) => ({
-          get: originalGet,
-          set(v) {
-            originalSet.call(this, v);
-
-            if (this[$$unsubscribe]) {
-              this[$$unsubscribe]();
-            }
-
-            this[$$subscribe]();
-          },
-        }),
-        ...contextDescriptor,
-        ...contextValue,
-      }),
-      ...extras,
 
       // Private
       method({
@@ -98,21 +78,45 @@ export const createReduxDecorator = ({consumer, value}, {units}, {store}) => des
         },
       }),
 
-      // Hooks
+      // Static Hooks
       hook({
         start() {
           store.set(this, $$api);
           units.set(this, new Map());
         },
       }),
+
+      // Context
+      ...extras,
+      accessor({
+        adjust: ({get: originalGet, set: originalSet}) => ({
+          get: originalGet,
+          set(v) {
+            originalSet.call(this, v);
+
+            if (this[$$unsubscribe]) {
+              this[$$unsubscribe]();
+            }
+
+            this[$$subscribe]();
+          },
+        }),
+        ...contextDescriptor,
+        ...contextValue,
+      }),
+
+      // Original elements
+      ...elements.filter(
+        ({key, placement}) => !(key === disconnectedCallbackKey && placement === 'prototype'),
+      ),
     ],
     finisher(target) {
-      consumerFinisher(target);
+      finisher(target);
       constructor = target;
       unitMap = units.get(target);
-      finish(target);
+      prepareSupers(target);
       finishContext(target);
     },
     kind,
-  };
+  });
 };

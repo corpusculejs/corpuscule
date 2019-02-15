@@ -1,4 +1,5 @@
-import {defineCE, fixture, html, unsafeStatic} from '@open-wc/testing-helpers';
+// tslint:disable:no-unbound-method
+import {defineCE, fixture, fixtureSync, html, unsafeStatic} from '@open-wc/testing-helpers';
 import {FormApi, FormState} from 'final-form';
 import {createForm, formSpyObject, unsubscribe} from '../../../test/mocks/finalForm';
 import {CustomElement} from '../../../test/utils';
@@ -337,7 +338,7 @@ const testForm = () => {
       expect(unsubscribe).toHaveBeenCalled();
     });
 
-    it('sets submit callback on form submit listener on connection and removes it on disconnection', () => {
+    it('catches submit event', () => {
       @form()
       class Test extends CustomElement {
         @api public readonly form!: FormApi;
@@ -347,29 +348,18 @@ const testForm = () => {
         public onSubmit(): void {}
       }
 
-      defineCE(Test);
+      const tag = defineCE(Test);
+      const test = fixtureSync(`<${tag}></${tag}>`) as Test;
 
-      const test = new Test();
-      const addEventListener = spyOn(test, 'addEventListener');
-      const removeEventListener = spyOn(test, 'removeEventListener');
+      const submitEvent = new Event('submit');
+      spyOn(submitEvent, 'preventDefault').and.callThrough();
+      spyOn(submitEvent, 'stopPropagation').and.callThrough();
 
-      test.connectedCallback();
-      expect(addEventListener).toHaveBeenCalledWith('submit', jasmine.any(Function));
-
-      const submitEvent = jasmine.createSpyObj('submitEvent', [
-        'preventDefault',
-        'stopPropagation',
-      ]);
-
-      const [, fn] = addEventListener.calls.first().args;
-      fn(submitEvent);
+      test.dispatchEvent(submitEvent);
 
       expect(submitEvent.preventDefault).toHaveBeenCalled();
       expect(submitEvent.stopPropagation).toHaveBeenCalled();
       expect(formSpyObject.submit).toHaveBeenCalled();
-
-      test.disconnectedCallback();
-      expect(removeEventListener).toHaveBeenCalledWith('submit', fn);
     });
 
     describe('@api', () => {

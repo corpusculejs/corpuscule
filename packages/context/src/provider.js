@@ -3,7 +3,7 @@ import getSupers from '@corpuscule/utils/lib/getSupers';
 import {field, hook, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
 import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
 import {getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
-import {checkValue, filter} from './utils';
+import {filter, noop} from './utils';
 
 const createProvider = (
   {consumers, eventName, providers, value},
@@ -12,7 +12,7 @@ const createProvider = (
 ) => descriptor => {
   assertKind('provider', Kind.Class, descriptor);
 
-  const {elements, kind} = descriptor;
+  const {elements, finisher = noop, kind} = descriptor;
 
   let constructor;
   let $value;
@@ -27,8 +27,6 @@ const createProvider = (
 
   return {
     elements: [
-      ...filter(elements),
-
       // Public
       ...lifecycleMethod(
         {
@@ -79,6 +77,9 @@ const createProvider = (
         },
       }),
 
+      // Original elements
+      ...filter(elements),
+
       // Hooks
       hook({
         start() {
@@ -96,13 +97,13 @@ const createProvider = (
       }),
     ],
     finisher(target) {
-      checkValue(value, target);
-      prepareSupers(target);
+      finisher(target);
       constructor = target;
 
       $value = value.get(target);
-
       assertRequiredProperty('provider', 'value', $value);
+
+      prepareSupers(target);
     },
     kind,
   };

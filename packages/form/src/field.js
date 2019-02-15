@@ -14,6 +14,8 @@ const createField = (
 ) => descriptor => {
   assertKind('field', Kind.Class, descriptor);
 
+  const {elements, finisher = noop, kind} = descriptor;
+
   let constructor;
   const getConstructor = () => constructor;
 
@@ -40,13 +42,10 @@ const createField = (
   const $$update = Symbol();
   const $$updatingValid = Symbol();
 
-  const {elements, finisher: consumerFinisher, kind} = consumer(descriptor);
   const [supers, prepareSupers] = getSupers(elements, $.lifecycleKeys);
 
-  return {
+  return consumer({
     elements: [
-      ...filter(elements),
-
       // Public
       ...lifecycleMethod(
         {
@@ -188,17 +187,19 @@ const createField = (
         },
       }),
 
-      // Hooks
+      // Static Hooks
       $.hook({
         start() {
           subscribe.set(this, $$subscribe);
           update.set(this, $$update);
         },
       }),
+
+      // Original elements
+      ...filter(elements),
     ],
     finisher(target) {
-      prepareSupers(target);
-
+      finisher(target);
       constructor = target;
 
       $api = api.get(target);
@@ -208,8 +209,6 @@ const createField = (
       assertRequiredProperty('field', 'api', 'form', $api);
       assertRequiredProperty('field', 'api', 'input', $input);
       assertRequiredProperty('field', 'api', 'meta', $meta);
-
-      consumerFinisher(target);
 
       $format = options.format.get(target);
       $formatOnBlur = options.formatOnBlur.get(target);
@@ -221,9 +220,10 @@ const createField = (
       $validateFields = options.validateFields.get(target);
 
       assertRequiredProperty('field', 'option', 'name', $name);
+      prepareSupers(target);
     },
     kind,
-  };
+  });
 };
 
 export default createField;

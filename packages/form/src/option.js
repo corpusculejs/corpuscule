@@ -2,6 +2,7 @@ import {assertKind, assertPlacement, Kind, Placement} from '@corpuscule/utils/li
 import {getName, getValue} from '@corpuscule/utils/lib/propertyUtils';
 import shallowEqual from '@corpuscule/utils/lib/shallowEqual';
 import {accessor, hook, method} from '@corpuscule/utils/lib/descriptors';
+import {noop} from '../../element/src/utils';
 import {fieldOptions, formOptions} from './utils';
 
 const createOptionDecorator = (
@@ -12,7 +13,15 @@ const createOptionDecorator = (
   assertKind('option', Kind.Field | Kind.Method | Kind.Accessor, descriptor);
   assertPlacement('option', Placement.Own | Placement.Prototype, descriptor);
 
-  const {descriptor: d, initializer, key, kind, placement} = descriptor;
+  const {
+    descriptor: d,
+    extras = [],
+    finisher: originalFinisher = noop,
+    initializer,
+    key,
+    kind,
+    placement,
+  } = descriptor;
   const {get, set, value} = d;
 
   const name = getName(key);
@@ -26,7 +35,9 @@ const createOptionDecorator = (
             compare.set(this, key);
           },
         }),
+        ...extras,
       ],
+      finisher: originalFinisher,
     };
   }
 
@@ -45,6 +56,7 @@ const createOptionDecorator = (
     let $update;
 
     const finisher = target => {
+      originalFinisher(target);
       options[name].set(target, key);
       $subscribe = subscribe.get(target);
       $update = update.get(target);
@@ -89,6 +101,7 @@ const createOptionDecorator = (
   } else {
     methodPart = {
       finisher(target) {
+        originalFinisher(target);
         configInitializers.get(target).push([
           key,
           function() {
@@ -130,6 +143,7 @@ const createOptionDecorator = (
         };
       },
       finisher(target) {
+        originalFinisher(target);
         $api = api.get(target);
         $compareInitialValues = compare.get(target);
 

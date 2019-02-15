@@ -5,6 +5,9 @@ import {setValue} from '@corpuscule/utils/lib/propertyUtils';
 import {resolve} from './tokens/lifecycle';
 import getSupers from '@corpuscule/utils/lib/getSupers';
 
+// eslint-disable-next-line no-empty-function
+const noop = () => {};
+
 const methods = [...lifecycleKeys, resolve];
 
 const [connectedCallbackKey, disconnectedCallbackKey] = lifecycleKeys;
@@ -12,7 +15,7 @@ const [connectedCallbackKey, disconnectedCallbackKey] = lifecycleKeys;
 const createOutletDecorator = ({consumer, value}, {api}) => routes => descriptor => {
   assertKind('outlet', Kind.Class, descriptor);
 
-  const {elements, finisher: consumerFinisher, kind} = consumer(descriptor);
+  const {elements, finisher = noop, kind} = descriptor;
 
   let constructor;
   let $api;
@@ -22,17 +25,13 @@ const createOutletDecorator = ({consumer, value}, {api}) => routes => descriptor
   const $$contextValue = Symbol();
   const $$updateRoute = Symbol();
 
-  const [supers, finish] = getSupers(elements, methods);
+  const [supers, prepareSupers] = getSupers(elements, methods);
   const {extras, finisher: contextValueFinisher, ...contextValueDescriptor} = value(
     field({key: $$contextValue}),
   );
 
-  return {
+  return consumer({
     elements: [
-      ...elements.filter(
-        ({key, placement}) => !(lifecycleKeys.includes(key) && placement === 'prototype'),
-      ),
-
       // Public
       ...lifecycleMethod(
         {
@@ -68,9 +67,6 @@ const createOutletDecorator = ({consumer, value}, {api}) => routes => descriptor
       }),
 
       // Private
-      ...extras,
-      contextValueDescriptor,
-
       method({
         bound: true,
         key: $$updateRoute,
@@ -92,15 +88,24 @@ const createOutletDecorator = ({consumer, value}, {api}) => routes => descriptor
           }
         },
       }),
+
+      // Context
+      ...extras,
+      contextValueDescriptor,
+
+      // Original elements
+      ...elements.filter(
+        ({key, placement}) => !(lifecycleKeys.includes(key) && placement === 'prototype'),
+      ),
     ],
     finisher(target) {
-      consumerFinisher(target);
+      finisher(target);
 
       constructor = target;
       $api = api.get(target);
       assertRequiredProperty('outlet', 'api', $api);
 
-      finish(target, {
+      prepareSupers(target, {
         *[resolve](path) {
           return yield path;
         },
@@ -109,7 +114,7 @@ const createOutletDecorator = ({consumer, value}, {api}) => routes => descriptor
       contextValueFinisher(target);
     },
     kind,
-  };
+  });
 };
 
 export default createOutletDecorator;

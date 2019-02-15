@@ -95,6 +95,36 @@ const testField = () => {
       expect(scheduler).toHaveBeenCalledWith(jasmine.any(Function));
     });
 
+    it('receives form before user-defined connectedCallback is run', async () => {
+      const connectedCallbackSpy = jasmine.createSpy('connectedCallback');
+
+      @form()
+      class Form extends CustomElement {
+        @api public readonly form!: FormApi;
+        @api public readonly state!: FormState;
+
+        @option
+        public onSubmit(): void {}
+      }
+
+      @field
+      class Field extends CustomElement {
+        @api public readonly form!: FormApi;
+        @api public readonly input!: FieldInputProps<string>;
+        @api public readonly meta!: FieldMetaProps;
+
+        @option public readonly name: string = 'test';
+
+        public connectedCallback(): void {
+          connectedCallbackSpy(this.form);
+        }
+      }
+
+      await createSimpleContext(Form, Field);
+
+      expect(connectedCallbackSpy).toHaveBeenCalledWith(formSpyObject);
+    });
+
     it('subscribes to form with defined options', async () => {
       @form()
       class Form extends CustomElement {

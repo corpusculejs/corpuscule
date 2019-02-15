@@ -1,12 +1,14 @@
 import {accessor} from '@corpuscule/utils/lib/descriptors';
 import {internalChangedCallback as $internalChangedCallback} from './tokens/lifecycle';
-import {assertElementProperty} from './utils';
+import {assertElementProperty, noop} from './utils';
 
 const internal = descriptor => {
   assertElementProperty('internal', descriptor);
 
   const {
     descriptor: {get, set},
+    extras,
+    finisher = noop,
     initializer,
     key,
   } = descriptor;
@@ -19,6 +21,8 @@ const internal = descriptor => {
         originalSet.call(this, value);
       },
     }),
+    extras,
+    finisher,
     get,
     initializer,
     key,
