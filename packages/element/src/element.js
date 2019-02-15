@@ -10,13 +10,10 @@ import {
   render as $render,
   updatedCallback as $updatedCallback,
 } from './tokens/lifecycle';
-import {shadowElements} from './utils';
+import {noop, shadowElements} from './utils';
 
 const attributeChangedCallbackKey = 'attributeChangedCallback';
 const [connectedCallbackKey] = lifecycleKeys;
-
-// eslint-disable-next-line no-empty-function
-const noop = () => {};
 
 const filteringNames = ['is', 'observedAttributes'];
 
@@ -26,7 +23,7 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
 ) => descriptor => {
   assertKind('element', Kind.Class, descriptor);
 
-  const {elements, kind} = descriptor;
+  const {elements, finisher = noop, kind} = descriptor;
 
   const hasRender = elements.some(({key}) => key === $render);
   const isLight = lightDOM || (builtin && !shadowElements.includes(builtin));
@@ -49,15 +46,6 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
 
   return {
     elements: [
-      ...elements.filter(
-        ({key, placement}) =>
-          !(
-            (filteringNames.includes(key) && placement === 'static') ||
-            ((key === connectedCallbackKey || key === attributeChangedCallbackKey) &&
-              placement === 'prototype')
-          ),
-      ),
-
       // Static
       field({
         initializer: () => name,
@@ -175,8 +163,19 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
             }
           : noop,
       }),
+
+      // Original elements
+      ...elements.filter(
+        ({key, placement}) =>
+          !(
+            (filteringNames.includes(key) && placement === 'static') ||
+            ((key === connectedCallbackKey || key === attributeChangedCallbackKey) &&
+              placement === 'prototype')
+          ),
+      ),
     ],
     finisher(target) {
+      finisher(target);
       prepareSupers(target);
 
       constructor = target;

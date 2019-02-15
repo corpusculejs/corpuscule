@@ -1,5 +1,6 @@
 import {assertKind, assertPlacement, Kind, Placement} from '@corpuscule/utils/lib/asserts';
 import {accessor} from '@corpuscule/utils/lib/descriptors';
+import {noop} from './utils';
 
 const attribute = (name, guard) => descriptor => {
   assertKind('attribute', Kind.Field, descriptor);
@@ -9,11 +10,13 @@ const attribute = (name, guard) => descriptor => {
     throw new TypeError('Guard for @attribute should be either Number, Boolean or String');
   }
 
-  const {key} = descriptor;
+  const {extras, finisher = noop, key} = descriptor;
   const guardType = typeof guard(null);
 
   return accessor({
+    extras,
     finisher(target) {
+      finisher(target);
       target.observedAttributes.push(name);
     },
     get() {

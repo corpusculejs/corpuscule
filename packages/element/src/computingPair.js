@@ -1,6 +1,6 @@
 import {assertKind, assertPlacement, Kind, Placement} from '@corpuscule/utils/lib/asserts';
 import {accessor, field} from '@corpuscule/utils/lib/descriptors';
-import {assertElementProperty} from './utils';
+import {assertElementProperty, noop} from './utils';
 
 const createComputingPair = () => {
   const registry = new WeakMap();
@@ -11,6 +11,8 @@ const createComputingPair = () => {
 
     const {
       descriptor: {get},
+      extras = [],
+      finisher = noop,
       key,
     } = descriptor;
 
@@ -26,8 +28,11 @@ const createComputingPair = () => {
           initializer: () => false,
           key: correct,
         }),
+        ...extras,
       ],
       finisher(target) {
+        finisher(target);
+
         if (registry.has(target)) {
           registry.get(target).push(correct);
         } else {
@@ -51,6 +56,8 @@ const createComputingPair = () => {
 
     const {
       descriptor: {get, set},
+      extras,
+      finisher = noop,
       initializer,
       key,
     } = descriptor;
@@ -68,6 +75,8 @@ const createComputingPair = () => {
           },
         };
       },
+      extras,
+      finisher,
       get,
       initializer,
       key,
