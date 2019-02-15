@@ -75,6 +75,7 @@ const createConsumer = (
         },
       }),
 
+      // Original elements
       ...filter(elements),
     ],
     finisher(target) {

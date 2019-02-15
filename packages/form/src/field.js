@@ -195,7 +195,7 @@ const createField = (
         },
       }),
 
-      // Basic elements
+      // Original elements
       ...filter(elements),
     ],
     finisher(target) {

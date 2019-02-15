@@ -99,7 +99,7 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
         },
       }),
 
-      // Basic elements
+      // Original elements
       ...filter(elements),
 
       // Own Hooks
