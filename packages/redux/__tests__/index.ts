@@ -82,6 +82,29 @@ describe('@corpuscule/redux', () => {
       expect(reduxStore.getState).not.toHaveBeenCalled();
     });
 
+    it('receives store before user-defined connectedCallback is run', async () => {
+      const connectedCallbackSpy = jasmine.createSpy('connectedCallback');
+
+      @provider
+      class Provider extends CustomElement {
+        @api public store: Store = reduxStore;
+      }
+
+      @redux
+      class Connected extends CustomElement {
+        @unit((state: typeof reduxState) => state.test)
+        public test?: number;
+
+        public connectedCallback(): void {
+          connectedCallbackSpy(this.test);
+        }
+      }
+
+      await createSimpleContext(Provider, Connected);
+
+      expect(connectedCallbackSpy).toHaveBeenCalledWith(10);
+    });
+
     it('does not throw an error if class already have own lifecycle element', () => {
       expect(() => {
         @redux
