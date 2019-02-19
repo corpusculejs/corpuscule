@@ -9,18 +9,20 @@ import {fieldOptions} from './utils';
 export const createFormContext = ({scheduler = defaultScheduler} = {}) => {
   const context = createContext();
 
-  const commonShared = {
-    api: new WeakMap(),
-  };
-
-  const fieldShared = {
+  const apiShared = {
+    form: new WeakMap(),
     input: new WeakMap(),
     meta: new WeakMap(),
-    options: fieldOptions.reduce((map, option) => {
-      map[option] = new WeakMap();
+    state: new WeakMap(),
+  };
 
-      return map;
-    }, {}),
+  const optionShared = fieldOptions.reduce((map, option) => {
+    map[option] = new WeakMap();
+
+    return map;
+  }, {});
+
+  const fieldShared = {
     scheduler,
     subscribe: new WeakMap(),
     update: new WeakMap(),
@@ -29,13 +31,12 @@ export const createFormContext = ({scheduler = defaultScheduler} = {}) => {
   const formShared = {
     compare: new WeakMap(),
     configInitializers: new WeakMap(),
-    state: new WeakMap(),
   };
 
-  const api = createApiDecorator(context, commonShared, fieldShared, formShared);
-  const field = createFieldDecorator(context, commonShared, fieldShared);
-  const form = createFormDecorator(context, commonShared, formShared);
-  const option = createOptionDecorator(commonShared, fieldShared, formShared);
+  const api = createApiDecorator(context, apiShared);
+  const field = createFieldDecorator(context, apiShared, optionShared, fieldShared);
+  const form = createFormDecorator(context, apiShared, formShared);
+  const option = createOptionDecorator(apiShared, optionShared, fieldShared, formShared);
 
   return {
     api,
