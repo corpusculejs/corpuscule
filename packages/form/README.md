@@ -23,21 +23,23 @@ $ yarn add final-form @corpuscule/form
 
 ## API
 ### Common
-#### `@api: PropertyDecorator`
-Class fields marked with this decorators become part of the 🏁 FinalForm API. It works with
+#### `@api(name?: string): PropertyDecorator`
+Class fields marked with this decorator become part of the 🏁 FinalForm API. It works with the
 following rules:
-* Any kind of property can be marked with `@api` decorator: string, symbolic or private. 
-* Property should have the same name as the API element it implements.
-  * String property should just have the API element name, e.g. `form`.
+* Any property can be marked with `@api` decorator: string, symbolic or private.
+* If `name` parameter is specified, it should be the same as the API element it implements.
+The property name is not considered in that case.   
+* Otherwise, the property should have the same name as the API element it implements.
+  * String property should have the API element name, e.g. `form`.
   * Symbolic property should have description identical to the API element name, e.g. `const form =
   Symbol('form')`.
-  * Private property should have description identical to the API element name, e.g. `#form` or
+  * Private property should have description identical to the API element name, e.g., `#form` or
   `new PrivateName('form')`.
 * Only one property is allowed for each API element.
 
 `@api` decorator works differently for [`@form` class](#form-api-decorator) and [`@field` class](#field-api-decorator).
 
-#### `@option: PropertyDecorator`
+#### `@option(name?: string): PropertyDecorator`
 Class fields marked with this decorators can contain Form and Field options that has ability to
 change during the class lifetime. It works with the same rules as [`@api`](#api-propertydecorator)
 decorator.
