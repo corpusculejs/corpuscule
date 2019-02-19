@@ -3,14 +3,14 @@ import {defineCE, fixture, fixtureSync, html, unsafeStatic} from '@open-wc/testi
 import {FormApi, FormState} from 'final-form';
 import {createForm, formSpyObject, unsubscribe} from '../../../test/mocks/finalForm';
 import {CustomElement} from '../../../test/utils';
-import {createFormContext, FormDecorator} from '../src';
+import {AliasDecorator, createFormContext, FormDecorator} from '../src';
 import {all} from '../src/utils';
 
 const testForm = () => {
   describe('@form', () => {
-    let api: PropertyDecorator;
+    let api: AliasDecorator;
     let form: FormDecorator;
-    let option: PropertyDecorator;
+    let option: AliasDecorator;
 
     beforeEach(() => {
       ({api, form, option} = createFormContext());
@@ -28,13 +28,12 @@ const testForm = () => {
     it('allows to declare form configuration with decorator', async () => {
       @form()
       class Test extends CustomElement {
-        @api public readonly form!: FormApi;
-        @api public readonly state!: FormState;
+        @api() public readonly form!: FormApi;
+        @api() public readonly state!: FormState;
 
-        @option
-        public debug: boolean = true;
+        @option() public debug: boolean = true;
 
-        @option
+        @option()
         public onSubmit(): void {}
       }
 
@@ -52,14 +51,14 @@ const testForm = () => {
 
       @form()
       class Test extends CustomElement {
-        @api public readonly form!: FormApi;
-        @api public readonly state!: FormState;
+        @api() public readonly form!: FormApi;
+        @api() public readonly state!: FormState;
 
         public call(): void {
           submitSpy();
         }
 
-        @option
+        @option()
         public onSubmit(): void {
           this.call();
         }
@@ -81,12 +80,12 @@ const testForm = () => {
     it('allows to declare configuration on full accessor', async () => {
       @form()
       class Test extends CustomElement {
-        @api public readonly form!: FormApi;
-        @api public readonly state!: FormState;
+        @api() public readonly form!: FormApi;
+        @api() public readonly state!: FormState;
 
         public secret: boolean = true;
 
-        @option
+        @option()
         public get debug(): boolean {
           return this.secret;
         }
@@ -95,7 +94,7 @@ const testForm = () => {
           this.secret = v;
         }
 
-        @option
+        @option()
         public onSubmit(): void {}
       }
 
@@ -111,13 +110,13 @@ const testForm = () => {
     it('allows to update form data with defined properties', async () => {
       @form()
       class Test extends CustomElement {
-        @api public readonly form!: FormApi;
-        @api public readonly state!: FormState;
+        @api() public readonly form!: FormApi;
+        @api() public readonly state!: FormState;
 
-        @option
+        @option()
         public debug: boolean = true;
 
-        @option
+        @option()
         public onSubmit(): void {}
       }
 
@@ -132,13 +131,13 @@ const testForm = () => {
     it('does not update property if it is the same', async () => {
       @form()
       class Test extends CustomElement {
-        @api public readonly form!: FormApi;
-        @api public readonly state!: FormState;
+        @api() public readonly form!: FormApi;
+        @api() public readonly state!: FormState;
 
-        @option
+        @option()
         public debug: boolean = true;
 
-        @option
+        @option()
         public onSubmit(): void {}
       }
 
@@ -155,13 +154,13 @@ const testForm = () => {
         @form()
         // @ts-ignore
         class Test extends CustomElement {
-          @api public readonly form!: FormApi;
-          @api public readonly state!: FormState;
+          @api() public readonly form!: FormApi;
+          @api() public readonly state!: FormState;
 
-          @option
+          @option()
           public test: boolean = true;
 
-          @option
+          @option()
           public onSubmit(): void {}
         }
       }).toThrow(new TypeError('"test" is not one of the Final Form or Field configuration keys'));
@@ -170,16 +169,16 @@ const testForm = () => {
     it('initializes form if new "initialValues" are set', async () => {
       @form()
       class Test extends CustomElement {
-        @api public readonly form!: FormApi;
-        @api public readonly state!: FormState;
+        @api() public readonly form!: FormApi;
+        @api() public readonly state!: FormState;
 
-        @option
+        @option()
         public initialValues: object = {
           bar: 2,
           foo: 1,
         };
 
-        @option
+        @option()
         public onSubmit(): void {}
       }
 
@@ -200,16 +199,16 @@ const testForm = () => {
     it('checks shallow equality by default for initialValues', async () => {
       @form()
       class Test extends CustomElement {
-        @api public readonly form!: FormApi;
-        @api public readonly state!: FormState;
+        @api() public readonly form!: FormApi;
+        @api() public readonly state!: FormState;
 
-        @option
+        @option()
         public initialValues: object = {
           bar: 2,
           foo: 1,
         };
 
-        @option
+        @option()
         public onSubmit(): void {}
       }
 
@@ -224,28 +223,28 @@ const testForm = () => {
       expect(formSpyObject.initialize).not.toHaveBeenCalled();
     });
 
-    it('uses @option compareInitialValues to check initial values equality if set', async () => {
+    it('uses @option() compareInitialValues to check initial values equality if set', async () => {
       const compareInitialValuesSpy = jasmine.createSpy('compareInitialValues');
 
       @form()
       class Test extends CustomElement {
-        @api public readonly form!: FormApi;
-        @api public readonly state!: FormState;
+        @api() public readonly form!: FormApi;
+        @api() public readonly state!: FormState;
 
-        @option
+        @option()
         public initialValues: object = {
           bar: 2,
           foo: 1,
         };
 
-        @option
+        @option()
         public compareInitialValues<T extends {foo: number}>(a: T, b: T): boolean {
           compareInitialValuesSpy();
 
           return a.foo === b.foo;
         }
 
-        @option
+        @option()
         public onSubmit(): void {}
       }
 
@@ -269,13 +268,13 @@ const testForm = () => {
     it('sets default undefined if option exists but not set', async () => {
       @form()
       class Test extends CustomElement {
-        @api public readonly form!: FormApi;
-        @api public readonly state!: FormState;
+        @api() public readonly form!: FormApi;
+        @api() public readonly state!: FormState;
 
-        @option
+        @option()
         public debug?: boolean;
 
-        @option
+        @option()
         public onSubmit(): void {}
       }
 
@@ -296,10 +295,10 @@ const testForm = () => {
         decorators: [decorate],
       })
       class Test extends CustomElement {
-        @api public readonly form!: FormApi;
-        @api public readonly state!: FormState;
+        @api() public readonly form!: FormApi;
+        @api() public readonly state!: FormState;
 
-        @option
+        @option()
         public onSubmit(): void {}
       }
 
@@ -315,10 +314,10 @@ const testForm = () => {
     it('subscribes to the form on connection, unsubscribes on disconnection and sets form state', async () => {
       @form()
       class Test extends CustomElement {
-        @api public readonly form!: FormApi;
-        @api public readonly state!: FormState;
+        @api() public readonly form!: FormApi;
+        @api() public readonly state!: FormState;
 
-        @option
+        @option()
         public onSubmit(): void {}
       }
 
@@ -341,10 +340,10 @@ const testForm = () => {
     it('catches submit event', () => {
       @form()
       class Test extends CustomElement {
-        @api public readonly form!: FormApi;
-        @api public readonly state!: FormState;
+        @api() public readonly form!: FormApi;
+        @api() public readonly state!: FormState;
 
-        @option
+        @option()
         public onSubmit(): void {}
       }
 
@@ -374,7 +373,7 @@ const testForm = () => {
           @form()
           // @ts-ignore
           class FormField extends CustomElement {
-            @api public readonly form!: FormApi;
+            @api() public readonly form!: FormApi;
           }
         }).toThrowError('@form requires state property marked with @api');
       });
@@ -386,8 +385,8 @@ const testForm = () => {
           @form()
           // @ts-ignore
           class FormField extends CustomElement {
-            @api public readonly form!: FormApi;
-            @api public readonly state!: FormState;
+            @api() public readonly form!: FormApi;
+            @api() public readonly state!: FormState;
           }
         }).toThrowError('@form requires onSubmit property marked with @option');
       });
@@ -398,8 +397,8 @@ const testForm = () => {
         @form()
         // @ts-ignore
         class Test extends CustomElement {
-          @api public readonly form!: FormApi;
-          @api public readonly state!: FormState;
+          @api() public readonly form!: FormApi;
+          @api() public readonly state!: FormState;
 
           public constructor() {
             super();
@@ -411,7 +410,7 @@ const testForm = () => {
 
           public disconnectedCallback(): void {}
 
-          @option
+          @option()
           public onSubmit(): void {}
         }
       }).not.toThrow();
