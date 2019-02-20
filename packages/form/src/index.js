@@ -22,21 +22,21 @@ export const createFormContext = ({scheduler = defaultScheduler} = {}) => {
     return map;
   }, {});
 
-  const fieldShared = {
+  const propsShared = {
+    // @form properties
+    compare: new WeakMap(),
+    configInitializers: new WeakMap(),
+
+    // @field properties
     scheduler,
     subscribe: new WeakMap(),
     update: new WeakMap(),
   };
 
-  const formShared = {
-    compare: new WeakMap(),
-    configInitializers: new WeakMap(),
-  };
-
   const api = createApiDecorator(context, apiShared);
-  const field = createFieldDecorator(context, apiShared, optionShared, fieldShared);
-  const form = createFormDecorator(context, apiShared, formShared);
-  const option = createOptionDecorator(apiShared, optionShared, fieldShared, formShared);
+  const field = createFieldDecorator(context, apiShared, optionShared, propsShared);
+  const form = createFormDecorator(context, apiShared, propsShared);
+  const option = createOptionDecorator(apiShared, optionShared, propsShared);
 
   return {
     api,

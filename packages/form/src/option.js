@@ -8,8 +8,7 @@ import {fieldOptions, formOptions} from './utils';
 const createOptionDecorator = (
   {form: formApi},
   options,
-  {subscribe, update},
-  {compare, configInitializers},
+  {compare, configInitializers, subscribe, update},
 ) => descriptor => {
   assertKind('option', Kind.Field | Kind.Method | Kind.Accessor, descriptor);
   assertPlacement('option', Placement.Own | Placement.Prototype, descriptor);
