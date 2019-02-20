@@ -1,5 +1,5 @@
 import createContext from '@corpuscule/context';
-import {CustomElement} from '@corpuscule/typings';
+import {ControlDecorator, CustomElement} from '@corpuscule/typings';
 import UniversalRouter, {Options, Route} from 'universal-router';
 
 export const layout: unique symbol;
@@ -22,12 +22,12 @@ export const push: (path: string, title?: string) => void;
 
 export type OutletDecorator = (routes: ReadonlyArray<Route>) => ClassDecorator;
 
-export const api: PropertyDecorator;
+export const api: ControlDecorator;
 export const outlet: OutletDecorator;
 export const provider: ClassDecorator;
 
 export interface RouterContext {
-  readonly api: PropertyDecorator;
+  readonly api: ControlDecorator;
   readonly outlet: OutletDecorator;
   readonly provider: ClassDecorator;
 }

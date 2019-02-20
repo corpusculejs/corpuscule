@@ -54,7 +54,7 @@ const outletTest = () => {
     it('creates router outlet that fills layout on popstate event', async () => {
       @provider
       class Provider extends CustomElement {
-        @api public readonly router: UniversalRouter = appRouter;
+        @api() public readonly router: UniversalRouter = appRouter;
       }
 
       @outlet(routes)
@@ -62,7 +62,7 @@ const outletTest = () => {
         public initial: boolean = true;
         public storage: string = '';
 
-        @api
+        @api()
         public get layout(): string {
           return this.storage;
         }
@@ -105,7 +105,7 @@ const outletTest = () => {
 
       @provider
       class Provider extends CustomElement {
-        @api public readonly router: UniversalRouter = appRouter;
+        @api() public readonly router: UniversalRouter = appRouter;
       }
 
       @outlet(routes)
@@ -113,7 +113,7 @@ const outletTest = () => {
         public initial: boolean = true;
         public storage: string = '';
 
-        @api
+        @api()
         public get layout(): string {
           return this.storage;
         }
@@ -154,7 +154,7 @@ const outletTest = () => {
 
       @provider
       class Provider extends CustomElement {
-        @api public readonly router: UniversalRouter = appRouter;
+        @api() public readonly router: UniversalRouter = appRouter;
       }
 
       @outlet(routes)
@@ -162,7 +162,7 @@ const outletTest = () => {
         public initial: boolean = true;
         public storage: string = '';
 
-        @api
+        @api()
         public get layout(): string {
           return this.storage;
         }
@@ -200,12 +200,12 @@ const outletTest = () => {
 
       @provider
       class Provider extends CustomElement {
-        @api public readonly router: UniversalRouter = appRouter;
+        @api() public readonly router: UniversalRouter = appRouter;
       }
 
       @outlet(routes)
       class Outlet extends CustomElement {
-        @api public readonly layout?: string;
+        @api() public readonly layout?: string;
 
         public connectedCallback(): void {
           connectedSpy();
@@ -230,7 +230,7 @@ const outletTest = () => {
         @outlet(routes)
         // @ts-ignore
         class Outlet extends CustomElement {
-          @api public readonly layout?: string;
+          @api() public readonly layout?: string;
 
           public constructor() {
             super();
