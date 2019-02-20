@@ -6,9 +6,9 @@ import {noop} from '../../element/src/utils';
 import {fieldOptions, formOptions} from './utils';
 
 const createOptionDecorator = (
-  {api},
-  {options, subscribe, update},
-  {compare, configInitializers},
+  {form: formApi},
+  options,
+  {compare, configInitializers, subscribe, update},
 ) => descriptor => {
   assertKind('option', Kind.Field | Kind.Method | Kind.Accessor, descriptor);
   assertPlacement('option', Placement.Own | Placement.Prototype, descriptor);
@@ -112,7 +112,7 @@ const createOptionDecorator = (
     };
 
     let $compareInitialValues;
-    let $api;
+    let $formApi;
 
     const updateForm =
       name === 'initialValues'
@@ -123,12 +123,12 @@ const createOptionDecorator = (
                 shallowEqual
               ).call(this, getValue(this, key), initialValues)
             ) {
-              getValue(this, $api).initialize(initialValues);
+              getValue(this, $formApi).initialize(initialValues);
             }
           }
         : function(v) {
             if (this[key] !== v) {
-              getValue(this, $api).setConfig(name, v);
+              getValue(this, $formApi).setConfig(name, v);
             }
           };
 
@@ -144,7 +144,7 @@ const createOptionDecorator = (
       },
       finisher(target) {
         originalFinisher(target);
-        $api = api.get(target);
+        $formApi = formApi.get(target);
         $compareInitialValues = compare.get(target);
 
         configInitializers.get(target).push([

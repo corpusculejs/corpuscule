@@ -9,8 +9,9 @@ const [connectedCallbackKey, disconnectedCallbackKey] = $.lifecycleKeys;
 
 const createField = (
   {consumer},
-  {api},
-  {input, meta, options, scheduler, subscribe, update},
+  {form: formApi, input, meta},
+  options,
+  {scheduler, subscribe, update},
 ) => descriptor => {
   assertKind('field', Kind.Class, descriptor);
 
@@ -19,7 +20,7 @@ const createField = (
   let constructor;
   const getConstructor = () => constructor;
 
-  let $api;
+  let $formApi;
   let $input;
   let $meta;
 
@@ -142,7 +143,7 @@ const createField = (
               this[$$update]();
             };
 
-            this[$$unsubscribe] = getValue(this, $api).registerField(
+            this[$$unsubscribe] = getValue(this, $formApi).registerField(
               getValue(this, $name),
               listener,
               ($subscription && getValue(this, $subscription)) || all,
@@ -202,11 +203,11 @@ const createField = (
       finisher(target);
       constructor = target;
 
-      $api = api.get(target);
+      $formApi = formApi.get(target);
       $input = input.get(target);
       $meta = meta.get(target);
 
-      assertRequiredProperty('field', 'api', 'form', $api);
+      assertRequiredProperty('field', 'api', 'form', $formApi);
       assertRequiredProperty('field', 'api', 'input', $input);
       assertRequiredProperty('field', 'api', 'meta', $meta);
 

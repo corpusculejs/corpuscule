@@ -8,7 +8,7 @@ import {all, filter, noop} from './utils';
 
 const [connectedCallbackKey, disconnectedCallbackKey] = lifecycleKeys;
 
-const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => ({
+const createFormDecorator = ({provider}, {form: formApi, state}, {configInitializers}) => ({
   decorators,
   subscription = all,
 } = {}) => descriptor => {
@@ -16,7 +16,7 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
 
   const {elements, finisher = noop, kind} = descriptor;
 
-  let $api;
+  let $formApi;
   let constructor;
   let $state;
   let initializers;
@@ -35,7 +35,7 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
         {
           key: connectedCallbackKey,
           method() {
-            const instance = getValue(this, $api);
+            const instance = getValue(this, $formApi);
 
             if (decorators) {
               for (const decorate of decorators) {
@@ -88,7 +88,7 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
           e.preventDefault();
           e.stopPropagation();
 
-          getValue(this, $api).submit();
+          getValue(this, $formApi).submit();
         },
       }),
 
@@ -108,7 +108,7 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
         start() {
           setValue(
             this,
-            $api,
+            $formApi,
             createForm(
               initializers.reduce((acc, [key, initializer]) => {
                 acc[key] = initializer ? initializer.call(this) : undefined;
@@ -124,10 +124,10 @@ const createFormDecorator = ({provider}, {api}, {configInitializers, state}) => 
       finisher(target);
       constructor = target;
 
-      $api = api.get(target);
+      $formApi = formApi.get(target);
       $state = state.get(target);
 
-      assertRequiredProperty('form', 'api', 'form', $api);
+      assertRequiredProperty('form', 'api', 'form', $formApi);
       assertRequiredProperty('form', 'api', 'state', $state);
 
       initializers = configInitializers.get(target);

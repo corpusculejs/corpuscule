@@ -6,21 +6,18 @@ import {createUnitDecorator} from './unit';
 export const createReduxContext = () => {
   const context = createContext();
 
-  const dispathcerShared = {
+  const shared = {
     store: new WeakMap(),
-  };
-
-  const unitShared = {
     units: new WeakMap(),
   };
 
   return {
     api: context.value,
-    dispatcher: createDispatcherDecorator(dispathcerShared),
+    dispatcher: createDispatcherDecorator(shared),
     isProvider: context.isProvider,
     provider: context.provider,
-    redux: createReduxDecorator(context, unitShared, dispathcerShared),
-    unit: createUnitDecorator(unitShared),
+    redux: createReduxDecorator(context, shared),
+    unit: createUnitDecorator(shared),
   };
 };
 

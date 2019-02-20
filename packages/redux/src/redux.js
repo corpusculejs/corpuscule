@@ -9,7 +9,7 @@ const noop = () => {};
 
 const [, disconnectedCallbackKey] = lifecycleKeys;
 
-export const createReduxDecorator = ({consumer, value}, {units}, {store}) => descriptor => {
+export const createReduxDecorator = ({consumer, value}, {store, units}) => descriptor => {
   assertKind('connect', Kind.Class, descriptor);
 
   const {elements, finisher = noop, kind} = descriptor;
