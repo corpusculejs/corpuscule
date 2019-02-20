@@ -2,6 +2,8 @@
 
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
+export type ControlDecorator = (control?: string) => PropertyDecorator;
+
 export interface CustomElement extends HTMLElement {
   attributeChangedCallback?(attrName: string, oldVal: string, newVal: string): void;
   connectedCallback?(): void;

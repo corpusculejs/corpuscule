@@ -10,7 +10,7 @@ const createOptionDecorator = (
   options,
   {subscribe, update},
   {compare, configInitializers},
-) => name => descriptor => {
+) => control => descriptor => {
   assertKind('option', Kind.Field | Kind.Method | Kind.Accessor, descriptor);
   assertPlacement('option', Placement.Own | Placement.Prototype, descriptor);
 
@@ -25,9 +25,9 @@ const createOptionDecorator = (
   } = descriptor;
   const {get, set, value} = d;
 
-  const finalName = name || getName(key);
+  const name = control || getName(key);
 
-  if (finalName === 'compareInitialValues') {
+  if (name === 'compareInitialValues') {
     return {
       ...descriptor,
       extras: [
@@ -42,11 +42,11 @@ const createOptionDecorator = (
     };
   }
 
-  const isForm = formOptions.includes(finalName);
-  const isField = fieldOptions.includes(finalName);
+  const isForm = formOptions.includes(name);
+  const isField = fieldOptions.includes(name);
 
   if (!isForm && !isField) {
-    throw new TypeError(`"${finalName}" is not one of the Final Form or Field configuration keys`);
+    throw new TypeError(`"${name}" is not one of the Final Form or Field configuration keys`);
   }
 
   let methodPart;
@@ -58,7 +58,7 @@ const createOptionDecorator = (
 
     const finisher = target => {
       originalFinisher(target);
-      options[finalName].set(target, key);
+      options[name].set(target, key);
       $subscribe = subscribe.get(target);
       $update = update.get(target);
     };
@@ -79,12 +79,12 @@ const createOptionDecorator = (
         return {
           get: originalGet,
           set:
-            finalName === 'name' || finalName === 'subscription'
+            name === 'name' || name === 'subscription'
               ? function(v) {
                   const oldValue = originalGet.call(this);
                   originalSet.call(this, v);
 
-                  if (finalName === 'name' ? v !== oldValue : !shallowEqual(v, oldValue)) {
+                  if (name === 'name' ? v !== oldValue : !shallowEqual(v, oldValue)) {
                     this[$subscribe]();
                   }
                 }
@@ -116,7 +116,7 @@ const createOptionDecorator = (
     let $formApi;
 
     const updateForm =
-      finalName === 'initialValues'
+      name === 'initialValues'
         ? function(initialValues) {
             if (
               !(
@@ -129,7 +129,7 @@ const createOptionDecorator = (
           }
         : function(v) {
             if (this[key] !== v) {
-              getValue(this, $formApi).setConfig(finalName, v);
+              getValue(this, $formApi).setConfig(name, v);
             }
           };
 

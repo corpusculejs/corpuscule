@@ -1,15 +1,10 @@
 // tslint:disable:no-unbound-method
+import {ControlDecorator} from '@corpuscule/typings';
 import {defineCE, fixture} from '@open-wc/testing-helpers';
 import {FieldState, FieldValidator, FormApi, FormState} from 'final-form';
 import {formSpyObject, unsubscribe} from '../../../test/mocks/finalForm';
 import {createSimpleContext, CustomElement} from '../../../test/utils';
-import {
-  AliasDecorator,
-  createFormContext,
-  FieldInputProps,
-  FieldMetaProps,
-  FormDecorator,
-} from '../src';
+import {createFormContext, FieldInputProps, FieldMetaProps, FormDecorator} from '../src';
 import {all} from '../src/utils';
 
 const testField = () => {
@@ -19,10 +14,10 @@ const testField = () => {
     let fieldValue: object;
     let metaObject: FieldMetaProps;
 
-    let api: AliasDecorator;
+    let api: ControlDecorator;
     let form: FormDecorator;
     let field: ClassDecorator;
-    let option: AliasDecorator;
+    let option: ControlDecorator;
 
     const subscribeField = <T>(fieldElement: T): [(state: FieldState) => void, FieldValidator] => {
       const [subscribe] = scheduler.calls.mostRecent().args;

@@ -1,5 +1,5 @@
 import createContext from '@corpuscule/context';
-import {Omit} from '@corpuscule/typings';
+import {ControlDecorator, Omit} from '@corpuscule/typings';
 import {Decorator, FieldState, FormApi, FormSubscription} from 'final-form';
 
 export {FormApi};
@@ -10,7 +10,6 @@ export interface FormDecoratorParams {
 }
 
 export type FormDecorator = (params?: FormDecoratorParams) => ClassDecorator;
-export type AliasDecorator = (name?: string) => PropertyDecorator;
 
 export interface FieldInputProps<T> {
   readonly name: string;
@@ -26,18 +25,18 @@ export interface FormContextOptions {
   readonly scheduler?: (callback: () => void) => Promise<void>;
 }
 
-export const api: AliasDecorator;
+export const api: ControlDecorator;
 export const form: FormDecorator;
 export const field: ClassDecorator;
 export const isForm: ReturnType<typeof createContext>['isProvider'];
-export const option: AliasDecorator;
+export const option: ControlDecorator;
 
 export interface FormContext {
-  readonly api: AliasDecorator;
+  readonly api: ControlDecorator;
   readonly form: FormDecorator;
   readonly field: ClassDecorator;
   readonly isForm: ReturnType<typeof createContext>['isProvider'];
-  readonly option: AliasDecorator;
+  readonly option: ControlDecorator;
 }
 
 export const createFormContext: (options?: FormContextOptions) => FormContext;

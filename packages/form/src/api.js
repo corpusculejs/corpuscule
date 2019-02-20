@@ -3,15 +3,15 @@ import {hook} from '@corpuscule/utils/lib/descriptors';
 import {getName} from '@corpuscule/utils/lib/propertyUtils';
 import {apis} from './utils';
 
-const createApiDecorator = ({value}, shared) => name => descriptor => {
+const createApiDecorator = ({value}, shared) => control => descriptor => {
   assertKind('api', Kind.Field | Kind.Accessor, descriptor);
   assertPlacement('api', Placement.Own | Placement.Prototype, descriptor);
 
   const {extras = [], key} = descriptor;
-  const apiName = name || getName(key);
+  const name = control || getName(key);
 
-  if (!apis.includes(apiName)) {
-    throw new TypeError(`Property name ${apiName} is not allowed`);
+  if (!apis.includes(name)) {
+    throw new TypeError(`Property name ${name} is not allowed`);
   }
 
   const finalDescriptor = {
@@ -19,14 +19,14 @@ const createApiDecorator = ({value}, shared) => name => descriptor => {
     extras: [
       hook({
         start() {
-          shared[apiName].set(this, key);
+          shared[name].set(this, key);
         },
       }),
       ...extras,
     ],
   };
 
-  return apiName === 'form' ? value(finalDescriptor) : finalDescriptor;
+  return name === 'form' ? value(finalDescriptor) : finalDescriptor;
 };
 
 export default createApiDecorator;

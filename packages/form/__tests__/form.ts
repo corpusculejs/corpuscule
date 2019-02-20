@@ -1,16 +1,17 @@
 // tslint:disable:no-unbound-method
+import {ControlDecorator} from '@corpuscule/typings';
 import {defineCE, fixture, fixtureSync, html, unsafeStatic} from '@open-wc/testing-helpers';
 import {FormApi, FormState} from 'final-form';
 import {createForm, formSpyObject, unsubscribe} from '../../../test/mocks/finalForm';
 import {CustomElement} from '../../../test/utils';
-import {AliasDecorator, createFormContext, FormDecorator} from '../src';
+import {createFormContext, FormDecorator} from '../src';
 import {all} from '../src/utils';
 
 const testForm = () => {
   describe('@form', () => {
-    let api: AliasDecorator;
+    let api: ControlDecorator;
     let form: FormDecorator;
-    let option: AliasDecorator;
+    let option: ControlDecorator;
 
     beforeEach(() => {
       ({api, form, option} = createFormContext());
