@@ -9,7 +9,13 @@ export interface FormDecoratorParams {
   readonly subscription?: FormSubscription;
 }
 
+export interface FieldDecoratorParams {
+  readonly auto?: boolean;
+  readonly selector?: string;
+}
+
 export type FormDecorator = (params?: FormDecoratorParams) => ClassDecorator;
+export type FieldDecorator = (params?: FieldDecoratorParams) => ClassDecorator;
 
 export interface FieldInputProps<T> {
   readonly name: string;
@@ -27,14 +33,14 @@ export interface FormContextOptions {
 
 export const api: PropertyDecorator;
 export const form: FormDecorator;
-export const field: ClassDecorator;
+export const field: FieldDecorator;
 export const isForm: ReturnType<typeof createContext>['isProvider'];
 export const option: PropertyDecorator;
 
 export interface FormContext {
   readonly api: PropertyDecorator;
   readonly form: FormDecorator;
-  readonly field: ClassDecorator;
+  readonly field: FieldDecorator;
   readonly isForm: ReturnType<typeof createContext>['isProvider'];
   readonly option: PropertyDecorator;
 }

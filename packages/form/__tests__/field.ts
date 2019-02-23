@@ -3,7 +3,13 @@ import {defineCE, fixture} from '@open-wc/testing-helpers';
 import {FieldState, FieldValidator, FormApi, FormState} from 'final-form';
 import {formSpyObject, unsubscribe} from '../../../test/mocks/finalForm';
 import {createSimpleContext, CustomElement} from '../../../test/utils';
-import {createFormContext, FieldInputProps, FieldMetaProps, FormDecorator} from '../src';
+import {
+  createFormContext,
+  FieldDecorator,
+  FieldInputProps,
+  FieldMetaProps,
+  FormDecorator,
+} from '../src';
 import {all} from '../src/utils';
 
 const testField = () => {
@@ -15,7 +21,7 @@ const testField = () => {
 
     let api: PropertyDecorator;
     let form: FormDecorator;
-    let field: ClassDecorator;
+    let field: FieldDecorator;
     let option: PropertyDecorator;
 
     const subscribeField = <T>(fieldElement: T): [(state: FieldState) => void, FieldValidator] => {
@@ -79,7 +85,7 @@ const testField = () => {
         public onSubmit(): void {}
       }
 
-      @field
+      @field()
       class Field extends CustomElement {
         @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<string>;
@@ -107,7 +113,7 @@ const testField = () => {
         public onSubmit(): void {}
       }
 
-      @field
+      @field()
       class Field extends CustomElement {
         @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<string>;
@@ -135,7 +141,7 @@ const testField = () => {
         public onSubmit(): void {}
       }
 
-      @field
+      @field()
       class Field extends CustomElement {
         @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<string>;
@@ -181,7 +187,7 @@ const testField = () => {
         public onSubmit(): void {}
       }
 
-      @field
+      @field()
       class Field extends CustomElement {
         @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<object>;
@@ -213,7 +219,7 @@ const testField = () => {
         public onSubmit(): void {}
       }
 
-      @field
+      @field()
       class Field extends CustomElement {
         @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<object>;
@@ -250,7 +256,7 @@ const testField = () => {
         public onSubmit(): void {}
       }
 
-      @field
+      @field()
       class Field extends CustomElement {
         @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<object>;
@@ -280,7 +286,7 @@ const testField = () => {
         public onSubmit(): void {}
       }
 
-      @field
+      @field()
       class Field extends CustomElement {
         @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<object>;
@@ -306,7 +312,7 @@ const testField = () => {
         public onSubmit(): void {}
       }
 
-      @field
+      @field()
       class Field extends CustomElement {
         @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<object>;
@@ -333,7 +339,7 @@ const testField = () => {
         public onSubmit(): void {}
       }
 
-      @field
+      @field()
       class Field extends CustomElement {
         @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<object>;
@@ -360,7 +366,7 @@ const testField = () => {
           public onSubmit(): void {}
         }
 
-        @field
+        @field()
         class Field extends CustomElement {
           @api public readonly formApi!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
@@ -388,7 +394,7 @@ const testField = () => {
           public onSubmit(): void {}
         }
 
-        @field
+        @field()
         class Field extends CustomElement {
           @api public readonly formApi!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
@@ -415,7 +421,7 @@ const testField = () => {
           public onSubmit(): void {}
         }
 
-        @field
+        @field()
         class Field extends CustomElement {
           @api public readonly formApi!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
@@ -443,7 +449,7 @@ const testField = () => {
           public onSubmit(): void {}
         }
 
-        @field
+        @field()
         class Field extends CustomElement {
           @api public readonly formApi!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
@@ -471,7 +477,7 @@ const testField = () => {
           public onSubmit(): void {}
         }
 
-        @field
+        @field()
         class Field extends CustomElement {
           @api public readonly formApi!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
@@ -503,7 +509,7 @@ const testField = () => {
           public onSubmit(): void {}
         }
 
-        @field
+        @field()
         class Field extends CustomElement {
           @api public readonly formApi!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
@@ -527,7 +533,7 @@ const testField = () => {
 
       it('throws an error if option name is not one of Field config keys', () => {
         expect(() => {
-          @field
+          @field()
           // @ts-ignore
           class Field extends CustomElement {
             @api public readonly formApi!: FormApi;
@@ -546,41 +552,41 @@ const testField = () => {
 
       it('requires name field defined', () => {
         expect(() => {
-          @field
+          @field()
           // @ts-ignore
           class Field extends CustomElement {
             @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
             @api public readonly meta!: FieldMetaProps;
           }
-        }).toThrowError('@field requires name property marked with @option');
+        }).toThrowError('@field() requires name property marked with @option');
       });
     });
 
     describe('@api', () => {
       it('requires form, input and meta fields defined', () => {
         expect(() => {
-          @field
+          @field()
           // @ts-ignore
           class Field extends CustomElement {}
-        }).toThrowError('@field requires form property marked with @api');
+        }).toThrowError('@field() requires form property marked with @api');
 
         expect(() => {
-          @field
+          @field()
           // @ts-ignore
           class Field extends CustomElement {
             @api public readonly formApi!: FormApi;
           }
-        }).toThrowError('@field requires input property marked with @api');
+        }).toThrowError('@field() requires input property marked with @api');
 
         expect(() => {
-          @field
+          @field()
           // @ts-ignore
           class Field extends CustomElement {
             @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
           }
-        }).toThrowError('@field requires meta property marked with @api');
+        }).toThrowError('@field() requires meta property marked with @api');
       });
 
       it('allows using accessors for all api elements', async () => {
@@ -593,7 +599,7 @@ const testField = () => {
           public onSubmit(): void {}
         }
 
-        @field
+        @field()
         class Field extends CustomElement {
           public storage!: FormApi;
 
@@ -632,7 +638,7 @@ const testField = () => {
         }).toThrow(new TypeError('Property name notForm is not allowed'));
 
         expect(() => {
-          @field
+          @field()
           // @ts-ignore
           class Field extends CustomElement {
             @api public readonly notInput!: FieldInputProps<object>;
@@ -654,7 +660,7 @@ const testField = () => {
             public onSubmit(): void {}
           }
 
-          @field
+          @field()
           class Field extends CustomElement {
             @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
@@ -682,7 +688,7 @@ const testField = () => {
             public onSubmit(): void {}
           }
 
-          @field
+          @field()
           class Field extends CustomElement {
             @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
@@ -722,7 +728,7 @@ const testField = () => {
             public onSubmit(): void {}
           }
 
-          @field
+          @field()
           class Field extends CustomElement {
             @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
@@ -752,7 +758,7 @@ const testField = () => {
             public onSubmit(): void {}
           }
 
-          @field
+          @field()
           class Field extends CustomElement {
             @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
@@ -790,7 +796,7 @@ const testField = () => {
             public onSubmit(): void {}
           }
 
-          @field
+          @field()
           class Field extends CustomElement {
             @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
@@ -824,7 +830,7 @@ const testField = () => {
           public onSubmit(): void {}
         }
 
-        @field
+        @field()
         class Field extends CustomElement {
           @api public readonly formApi!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
@@ -1003,7 +1009,7 @@ const testField = () => {
 
       it('does not throw an error if class already have own lifecycle element', () => {
         expect(() => {
-          @field
+          @field()
           // @ts-ignore
           class Field extends CustomElement {
             @api public readonly formApi!: FormApi;

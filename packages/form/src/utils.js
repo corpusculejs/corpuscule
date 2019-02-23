@@ -58,6 +58,36 @@ export const getTargetValue = (
   }
 };
 
+export const setTargetValues = (targets, formValue) => {
+  const isFormValueArray = Array.isArray(formValue);
+
+  for (const target of targets) {
+    switch (target.type) {
+      case 'checkbox':
+        if (target.value === undefined) {
+          target.checked = !!formValue;
+        } else {
+          target.checked = isFormValueArray && formValue.includes(target.value);
+        }
+        break;
+      case 'radio':
+        target.checked = formValue === target.value;
+        break;
+      case 'select':
+        target.value = formValue;
+        break;
+      case 'select-multiple':
+        for (let i = 0; i < target.options; i++) {
+          target.options[i].selected =
+            isFormValueArray && formValue.includes(target.options[i].value);
+        }
+        break;
+      default:
+        break;
+    }
+  }
+};
+
 export const filter = elements =>
   elements.filter(
     ({key, placement}) => !(lifecycleKeys.includes(key) && placement === 'prototype'),

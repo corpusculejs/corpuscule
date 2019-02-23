@@ -2,7 +2,7 @@ import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/as
 import * as $ from '@corpuscule/utils/lib/descriptors';
 import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
 import {getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
-import {all, filter, getTargetValue, noop} from './utils';
+import {all, filter, getTargetValue, noop, setTargetValues} from './utils';
 import getSupers from '@corpuscule/utils/lib/getSupers';
 
 const [connectedCallbackKey, disconnectedCallbackKey] = $.lifecycleKeys;
@@ -11,14 +11,16 @@ const createField = (
   {consumer},
   {formApi, input, meta},
   options,
-  {scheduler, subscribe, update},
-) => descriptor => {
+  {ref, scheduler, subscribe, update},
+) => ({auto = false, selector = 'input, select, textarea'}) => descriptor => {
   assertKind('field', Kind.Class, descriptor);
 
   const {elements, finisher = noop, kind} = descriptor;
 
   let constructor;
   const getConstructor = () => constructor;
+
+  let getRef = noop;
 
   let $formApi;
   let $input;
@@ -37,6 +39,8 @@ const createField = (
   const $$onBlur = Symbol();
   const $$onChange = Symbol();
   const $$onFocus = Symbol();
+  const $$ref = Symbol();
+  const $$selfChange = Symbol();
   const $$subscribe = Symbol();
   const $$subscribingValid = Symbol();
   const $$unsubscribe = Symbol();
@@ -81,6 +85,10 @@ const createField = (
 
       // Private
       $.field({
+        initializer: () => false,
+        key: $$selfChange,
+      }),
+      $.field({
         initializer: () => true,
         key: $$subscribingValid,
       }),
@@ -91,6 +99,12 @@ const createField = (
       $.field({
         initializer: () => true,
         key: $$updatingValid,
+      }),
+      $.accessor({
+        get() {
+          return getRef(this);
+        },
+        key: $$ref,
       }),
       $.method({
         bound: true,
@@ -117,6 +131,7 @@ const createField = (
           const changeValue = detail || getTargetValue(target, value);
 
           change(parse ? parse(changeValue, name) : changeValue);
+          this[$$selfChange] = true;
         },
       }),
       $.method({
@@ -174,15 +189,23 @@ const createField = (
               $$formState
             ];
 
+            const finalValue =
+              !($formatOnBlur && getValue(this, $formatOnBlur)) && format
+                ? format(value, name)
+                : value;
+
             setValue(this, $input, {
               name,
-              value:
-                !($formatOnBlur && getValue(this, $formatOnBlur)) && format
-                  ? format(value, name)
-                  : value,
+              value: finalValue,
             });
 
             setValue(this, $meta, metadata);
+
+            if (!this[$$selfChange]) {
+              setTargetValues(this[$$ref], finalValue);
+              this[$$selfChange] = false;
+            }
+
             this[$$updatingValid] = true;
           });
         },
@@ -191,6 +214,7 @@ const createField = (
       // Static Hooks
       $.hook({
         start() {
+          ref.set(this, $$ref);
           subscribe.set(this, $$subscribe);
           update.set(this, $$update);
         },
@@ -206,6 +230,13 @@ const createField = (
       $formApi = formApi.get(target);
       $input = input.get(target);
       $meta = meta.get(target);
+
+      if (auto) {
+        getRef =
+          Object.getPrototypeOf(target.prototype) === HTMLElement
+            ? self => self.querySelectorAll(selector)
+            : self => self;
+      }
 
       assertRequiredProperty('field', 'api', 'form', $formApi);
       assertRequiredProperty('field', 'api', 'input', $input);
