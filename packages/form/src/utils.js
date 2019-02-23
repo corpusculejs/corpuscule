@@ -73,17 +73,15 @@ export const setTargetValues = (targets, formValue) => {
       case 'radio':
         target.checked = formValue === target.value;
         break;
-      case 'select':
-        target.value = formValue;
-        break;
       case 'select-multiple':
         for (let i = 0; i < target.options; i++) {
           target.options[i].selected =
             isFormValueArray && formValue.includes(target.options[i].value);
         }
         break;
+      case 'select':
       default:
-        break;
+        target.value = formValue;
     }
   }
 };
