@@ -808,7 +808,7 @@ const testField = () => {
       });
     });
 
-    describe('default fields', () => {
+    describe('auto fields', () => {
       let formTag: string;
       let fieldTag: string;
 
@@ -822,7 +822,7 @@ const testField = () => {
           public onSubmit(): void {}
         }
 
-        @field()
+        @field({auto: true})
         class Field extends CustomElement {
           @api public readonly formApi!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
@@ -833,24 +833,78 @@ const testField = () => {
 
         formTag = defineCE(Form);
         fieldTag = defineCE(Field);
+
+        state.value = undefined;
       });
 
-      it('property updates form on input change event', async () => {
-        const formElement = await fixture(`
-          <${formTag}>
-            <${fieldTag}>
-              <input type="text"/>         
-            </${fieldTag}>
-          </${formTag}>
-        `);
+      describe('text', () => {
+        it('updates form property on input change event', async () => {
+          const formElement = await fixture(`
+            <${formTag}>
+              <${fieldTag}>
+                <input type="text"/>         
+              </${fieldTag}>
+            </${formTag}>
+          `);
 
-        const fieldElement = formElement.querySelector(fieldTag)!;
-        const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
-        subscribeAndUpdateField(fieldElement);
+          const fieldElement = formElement.querySelector(fieldTag)!;
+          const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
+          subscribeAndUpdateField(fieldElement);
 
-        inputElement.value = 'test';
-        inputElement.dispatchEvent(new Event('change', {bubbles: true}));
-        expect(state.change).toHaveBeenCalledWith('test');
+          inputElement.value = 'test';
+          inputElement.dispatchEvent(new Event('change', {bubbles: true}));
+          expect(state.change).toHaveBeenCalledWith('test');
+        });
+
+        it('updates input value on form change', async () => {
+          state.value = 'a1';
+
+          const formElement = await fixture(`
+            <${formTag}>
+              <${fieldTag}>
+                <input type="text" value="a1"/>         
+              </${fieldTag}>
+            </${formTag}>
+          `);
+
+          const fieldElement = formElement.querySelector(fieldTag)!;
+          const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
+          const listener = subscribeAndUpdateField(fieldElement);
+
+          listener({...state, value: 'a2'});
+          updateField(fieldElement);
+
+          expect(inputElement.value).toBe('a2');
+        });
+
+        it('does not update input value if input is changed by user', async () => {
+          state.value = 'a1';
+
+          const formElement = await fixture(`
+            <${formTag}>
+              <${fieldTag}>
+                <input type="text" value="a1"/>         
+              </${fieldTag}>
+            </${formTag}>
+          `);
+
+          const fieldElement = formElement.querySelector(fieldTag)!;
+          const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
+          const listener = subscribeAndUpdateField(fieldElement);
+
+          // user changes text to a2
+          inputElement.value = 'a2';
+          inputElement.dispatchEvent(new Event('change', {bubbles: true}));
+
+          const inputSet = spyOnProperty(inputElement, 'value', 'set');
+
+          // form sends update for a field
+          listener({...state, value: 'a2'});
+          updateField(fieldElement);
+
+          // expecting field to ignore this update
+          expect(inputSet).not.toHaveBeenCalled();
+        });
       });
 
       describe('checkbox', () => {
