@@ -49,6 +49,16 @@ module.exports = {
               plugins: [
                 [require('@babel/plugin-proposal-decorators'), {decoratorsBeforeExport: false}],
                 require('@babel/plugin-proposal-class-properties'),
+                [
+                  require('@babel/plugin-transform-runtime'),
+                  {
+                    corejs: false,
+                    helpers: true,
+                    regenerator: false,
+                    useESModules: true,
+                    version: '7.2.2',
+                  },
+                ],
               ],
               presets: [require('@babel/preset-typescript')],
             },
