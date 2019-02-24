@@ -558,7 +558,7 @@ const testField = () => {
             @api public readonly input!: FieldInputProps<object>;
             @api public readonly meta!: FieldMetaProps;
           }
-        }).toThrowError('@field() requires name property marked with @option');
+        }).toThrowError('@field requires name property marked with @option');
       });
     });
 
@@ -568,7 +568,7 @@ const testField = () => {
           @field()
           // @ts-ignore
           class Field extends CustomElement {}
-        }).toThrowError('@field() requires form property marked with @api');
+        }).toThrowError('@field requires form property marked with @api');
 
         expect(() => {
           @field()
@@ -576,7 +576,7 @@ const testField = () => {
           class Field extends CustomElement {
             @api public readonly formApi!: FormApi;
           }
-        }).toThrowError('@field() requires input property marked with @api');
+        }).toThrowError('@field requires input property marked with @api');
 
         expect(() => {
           @field()
@@ -585,7 +585,7 @@ const testField = () => {
             @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
           }
-        }).toThrowError('@field() requires meta property marked with @api');
+        }).toThrowError('@field requires meta property marked with @api');
       });
 
       it('allows using accessors for all api elements', async () => {
