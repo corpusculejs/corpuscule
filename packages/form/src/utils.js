@@ -64,11 +64,7 @@ export const setTargetValues = (targets, formValue) => {
   for (const target of targets) {
     switch (target.type) {
       case 'checkbox':
-        if (target.value === undefined) {
-          target.checked = !!formValue;
-        } else {
-          target.checked = isFormValueArray && formValue.includes(target.value);
-        }
+        target.checked = isFormValueArray ? formValue.includes(target.value) : !!formValue;
         break;
       case 'radio':
         target.checked = formValue === target.value;
@@ -79,7 +75,6 @@ export const setTargetValues = (targets, formValue) => {
             isFormValueArray && formValue.includes(target.options[i].value);
         }
         break;
-      case 'select':
       default:
         target.value = formValue;
     }

@@ -12,7 +12,7 @@ const createField = (
   {formApi, input, meta},
   options,
   {ref, scheduler, subscribe, update},
-) => ({auto = false, selector = 'input, select, textarea'}) => descriptor => {
+) => ({auto = false, selector = 'input, select, textarea'} = {}) => descriptor => {
   assertKind('field', Kind.Class, descriptor);
 
   const {elements, finisher = noop, kind} = descriptor;
@@ -35,7 +35,7 @@ const createField = (
   let $validate;
   let $validateFields;
 
-  const $$formState = Symbol();
+  const $$state = Symbol();
   const $$onBlur = Symbol();
   const $$onChange = Symbol();
   const $$onFocus = Symbol();
@@ -112,7 +112,7 @@ const createField = (
         method() {
           const format = $format && getValue(this, $format);
 
-          const {blur, change, name, value} = this[$$formState];
+          const {blur, change, name, value} = this[$$state];
 
           blur();
 
@@ -124,21 +124,27 @@ const createField = (
       $.method({
         bound: true,
         key: $$onChange,
-        method({detail, target}) {
+        method(event) {
           const parse = $parse && getValue(this, $parse);
-          const {change, name, value} = this[$$formState];
+          const {change, name, value} = this[$$state];
 
-          const changeValue = detail || getTargetValue(target, value);
+          let changeValue;
+
+          if (event instanceof CustomEvent) {
+            changeValue = event.detail;
+          } else if (auto) {
+            changeValue = getTargetValue(event.target, value);
+            this[$$selfChange] = true;
+          }
 
           change(parse ? parse(changeValue, name) : changeValue);
-          this[$$selfChange] = true;
         },
       }),
       $.method({
         bound: true,
         key: $$onFocus,
         method() {
-          this[$$formState].focus();
+          this[$$state].focus();
         },
       }),
       $.method({
@@ -154,7 +160,7 @@ const createField = (
             this[$$unsubscribe]();
 
             const listener = state => {
-              this[$$formState] = state;
+              this[$$state] = state;
               this[$$update]();
             };
 
@@ -186,7 +192,7 @@ const createField = (
             const format = $format && getValue(this, $format);
 
             const {blur: _b, change: _c, focus: _f, name, length: _l, value, ...metadata} = this[
-              $$formState
+              $$state
             ];
 
             const finalValue =
@@ -201,11 +207,11 @@ const createField = (
 
             setValue(this, $meta, metadata);
 
-            if (!this[$$selfChange]) {
+            if (auto && !this[$$selfChange]) {
               setTargetValues(this[$$ref], finalValue);
-              this[$$selfChange] = false;
             }
 
+            this[$$selfChange] = false;
             this[$$updatingValid] = true;
           });
         },
@@ -233,9 +239,11 @@ const createField = (
 
       if (auto) {
         getRef =
-          Object.getPrototypeOf(target.prototype) === HTMLElement
-            ? self => self.querySelectorAll(selector)
-            : self => self;
+          target.prototype instanceof HTMLInputElement ||
+          target.prototype instanceof HTMLSelectElement ||
+          target.prototype instanceof HTMLTextAreaElement
+            ? self => self
+            : self => self.querySelectorAll(selector);
       }
 
       assertRequiredProperty('field', 'api', 'form', $formApi);
