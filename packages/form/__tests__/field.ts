@@ -33,16 +33,17 @@ const testField = () => {
       return [listener, getValidator()];
     };
 
-    const updateField = <T>(fieldElement: T, listener: (state: FieldState) => void) => {
-      listener(state);
-
+    const updateField = <T>(fieldElement: T) => {
       const [update] = scheduler.calls.mostRecent().args;
       update.call(fieldElement);
     };
 
-    const subscribeAndUpdateField = <T>(fieldElement: T): void => {
+    const subscribeAndUpdateField = <T>(fieldElement: T): ((state: FieldState) => void) => {
       const [listener] = subscribeField(fieldElement);
-      updateField(fieldElement, listener);
+      listener(state);
+      updateField(fieldElement);
+
+      return listener;
     };
 
     beforeEach(() => {
@@ -197,8 +198,7 @@ const testField = () => {
       }
 
       const [, fieldElement] = await createSimpleContext(Form, Field);
-      const [listener] = subscribeField(fieldElement);
-      updateField(fieldElement, listener);
+      subscribeAndUpdateField(fieldElement);
 
       expect(scheduler).toHaveBeenCalledTimes(2);
       expect(fieldElement.input).toEqual({
@@ -240,8 +240,7 @@ const testField = () => {
 
       spyOn(fieldElement, 'format').and.callThrough();
 
-      const [listener] = subscribeField(fieldElement);
-      updateField(fieldElement, listener);
+      subscribeAndUpdateField(fieldElement);
 
       expect(fieldElement.format).toHaveBeenCalledWith(fieldValue, 'test');
     });
@@ -619,8 +618,7 @@ const testField = () => {
         }
 
         const [, fieldElement] = await createSimpleContext(Form, Field);
-        const [listener] = subscribeField(fieldElement);
-        updateField(fieldElement, listener);
+        subscribeAndUpdateField(fieldElement);
 
         expect(fieldElement.storage).toBe(formSpyObject);
       });
@@ -670,8 +668,7 @@ const testField = () => {
           }
 
           const [, fieldElement] = await createSimpleContext(Form, Field);
-          const [listener] = subscribeField(fieldElement);
-          updateField(fieldElement, listener);
+          subscribeAndUpdateField(fieldElement);
 
           fieldElement.dispatchEvent(new Event('blur'));
 
@@ -708,9 +705,7 @@ const testField = () => {
           const [, fieldElement] = await createSimpleContext(Form, Field);
 
           spyOn(fieldElement, 'format').and.callThrough();
-
-          const [listener] = subscribeField(fieldElement);
-          updateField(fieldElement, listener);
+          subscribeAndUpdateField(fieldElement);
 
           fieldElement.dispatchEvent(new Event('blur'));
 
@@ -738,8 +733,7 @@ const testField = () => {
           }
 
           const [, fieldElement] = await createSimpleContext(Form, Field);
-          const [listener] = subscribeField(fieldElement);
-          updateField(fieldElement, listener);
+          subscribeAndUpdateField(fieldElement);
 
           const newFieldValue: object = {};
 
@@ -773,8 +767,7 @@ const testField = () => {
           }
 
           const [, fieldElement] = await createSimpleContext(Form, Field);
-          const [listener] = subscribeField(fieldElement);
-          updateField(fieldElement, listener);
+          subscribeAndUpdateField(fieldElement);
 
           spyOn(fieldElement, 'parse').and.callThrough();
 
@@ -806,8 +799,7 @@ const testField = () => {
           }
 
           const [, fieldElement] = await createSimpleContext(Form, Field);
-          const [listener] = subscribeField(fieldElement);
-          updateField(fieldElement, listener);
+          subscribeAndUpdateField(fieldElement);
 
           fieldElement.dispatchEvent(new Event('focus'));
 
