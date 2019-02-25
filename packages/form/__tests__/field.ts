@@ -2,7 +2,7 @@
 import {defineCE, fixture} from '@open-wc/testing-helpers';
 import {FieldState, FieldValidator, FormApi, FormState} from 'final-form';
 import {formSpyObject, unsubscribe} from '../../../test/mocks/finalForm';
-import {createSimpleContext, CustomElement} from '../../../test/utils';
+import {createSimpleContext, CustomElement, genName} from '../../../test/utils';
 import {
   createFormContext,
   FieldDecorator,
@@ -483,9 +483,7 @@ const testField = () => {
           @api public readonly meta!: FieldMetaProps;
 
           @option public readonly name: string = 'test';
-
-          @option
-          public value: string = 'test';
+          @option public value: string = 'test';
         }
 
         const [, fieldElement] = await createSimpleContext(Form, Field);
@@ -856,7 +854,7 @@ const testField = () => {
           expect(state.change).toHaveBeenCalledWith('test');
         });
 
-        it('updates input value on form change', async () => {
+        it('updates input value on a form change', async () => {
           state.value = 'a1';
 
           const formElement = await fixture(`
@@ -904,6 +902,95 @@ const testField = () => {
 
           // expecting field to ignore this update
           expect(inputSet).not.toHaveBeenCalled();
+        });
+
+        it('allows HTMLInputElement to update form value', async () => {
+          @field({auto: true})
+          class Field extends HTMLInputElement {
+            @api public readonly formApi!: FormApi;
+            @api public readonly input!: FieldInputProps<object>;
+            @api public readonly meta!: FieldMetaProps;
+
+            @option public readonly name: string = 'test';
+          }
+
+          const nativeFieldTag = genName();
+          customElements.define(nativeFieldTag, Field, {extends: 'input'});
+
+          const formElement = await fixture(`
+            <${formTag}>
+              <input is="${nativeFieldTag}" type="text" value="a1">
+            </${formTag}>
+          `);
+
+          const fieldElement = formElement.querySelector<Field>('input')!;
+          subscribeAndUpdateField(fieldElement);
+
+          fieldElement.value = 'a2';
+          fieldElement.dispatchEvent(new Event('change', {bubbles: true}));
+
+          expect(state.change).toHaveBeenCalledWith('a2');
+        });
+
+        it('allows HTMLInputElement updating on form change', async () => {
+          @field({auto: true})
+          class Field extends HTMLInputElement {
+            @api public readonly formApi!: FormApi;
+            @api public readonly input!: FieldInputProps<object>;
+            @api public readonly meta!: FieldMetaProps;
+
+            @option public readonly name: string = 'test';
+          }
+
+          const nativeFieldTag = genName();
+          customElements.define(nativeFieldTag, Field, {extends: 'input'});
+
+          const formElement = await fixture(`
+            <${formTag}>
+              <input is="${nativeFieldTag}" type="text" value="a1">
+            </${formTag}>
+          `);
+
+          const fieldElement = formElement.querySelector<Field>('input')!;
+          const listener = subscribeAndUpdateField(fieldElement);
+
+          listener({...state, value: 'a2'});
+          updateField(fieldElement);
+
+          expect(fieldElement.value).toBe('a2');
+        });
+
+        it('does not updates two times if @option value is set', async () => {
+          @field({auto: true})
+          class Field extends HTMLInputElement {
+            @api public readonly formApi!: FormApi;
+            @api public readonly input!: FieldInputProps<object>;
+            @api public readonly meta!: FieldMetaProps;
+
+            @option public readonly name: string = 'test';
+            @option public value: string = 'a1';
+          }
+
+          const nativeFieldTag = genName();
+          customElements.define(nativeFieldTag, Field, {extends: 'input'});
+
+          const formElement = await fixture(`
+            <${formTag}>
+              <input is="${nativeFieldTag}" type="text">
+            </${formTag}>
+          `);
+
+          const fieldElement = formElement.querySelector<Field>('input')!;
+          subscribeAndUpdateField(fieldElement);
+
+          scheduler.calls.reset();
+
+          fieldElement.value = 'a2';
+          fieldElement.dispatchEvent(new Event('change', {bubbles: true}));
+
+          expect(state.change).toHaveBeenCalledWith('a2');
+          expect(state.change).toHaveBeenCalledTimes(1);
+          expect(scheduler).toHaveBeenCalledTimes(1);
         });
       });
 
@@ -984,7 +1071,7 @@ const testField = () => {
           expect(state.change).toHaveBeenCalledWith([]);
         });
 
-        it('does nothing if form value is not an array', async () => {
+        it('does nothing if form value is not an array and checkbox is unchecked', async () => {
           state.value = undefined;
 
           const formElement = await fixture(`
@@ -1003,6 +1090,192 @@ const testField = () => {
           inputElement.dispatchEvent(new Event('change', {bubbles: true}));
           expect(state.change).toHaveBeenCalledWith(undefined);
         });
+
+        it('updates boolean value on a form change', async () => {
+          state.value = false;
+
+          const formElement = await fixture(`
+            <${formTag}>
+              <${fieldTag}>
+                <input type="checkbox"/>         
+              </${fieldTag}>
+            </${formTag}>
+          `);
+
+          const fieldElement = formElement.querySelector(fieldTag)!;
+          const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
+          const listener = subscribeAndUpdateField(fieldElement);
+
+          expect(inputElement.checked).not.toBeTruthy();
+
+          listener({...state, value: true});
+          updateField(fieldElement);
+
+          expect(inputElement.checked).toBeTruthy();
+
+          listener({...state, value: false});
+          updateField(fieldElement);
+
+          expect(inputElement.checked).not.toBeTruthy();
+        });
+
+        it('updates array value on a form change', async () => {
+          state.value = [];
+
+          const formElement = await fixture(`
+            <${formTag}>
+              <${fieldTag}>
+                <input type="checkbox" value="foo"/>         
+                <input type="checkbox" value="bar"/>         
+              </${fieldTag}>
+            </${formTag}>
+          `);
+
+          const fieldElement = formElement.querySelector(fieldTag)!;
+          const inputElementFoo = formElement.querySelector<HTMLInputElement>('input[value=foo]')!;
+          const inputElementBar = formElement.querySelector<HTMLInputElement>('input[value=bar]')!;
+          const listener = subscribeAndUpdateField(fieldElement);
+
+          expect(inputElementFoo.checked).not.toBeTruthy();
+          expect(inputElementBar.checked).not.toBeTruthy();
+
+          listener({...state, value: ['foo']});
+          updateField(fieldElement);
+
+          expect(inputElementFoo.checked).toBeTruthy();
+          expect(inputElementBar.checked).not.toBeTruthy();
+
+          listener({...state, value: ['foo', 'bar']});
+          updateField(fieldElement);
+
+          expect(inputElementFoo.checked).toBeTruthy();
+          expect(inputElementBar.checked).toBeTruthy();
+
+          listener({...state, value: ['bar']});
+          updateField(fieldElement);
+
+          expect(inputElementFoo.checked).not.toBeTruthy();
+          expect(inputElementBar.checked).toBeTruthy();
+        });
+
+        it('allows HTMLInputElement to update form value', async () => {
+          @field({auto: true})
+          class Field extends HTMLInputElement {
+            @api public readonly formApi!: FormApi;
+            @api public readonly input!: FieldInputProps<object>;
+            @api public readonly meta!: FieldMetaProps;
+
+            @option public readonly name: string = 'test';
+          }
+
+          const nativeFieldTag = genName();
+          customElements.define(nativeFieldTag, Field, {extends: 'input'});
+
+          const formElement = await fixture(`
+            <${formTag}>
+              <input is="${nativeFieldTag}" type="checkbox">
+            </${formTag}>
+          `);
+
+          const fieldElement = formElement.querySelector<Field>('input')!;
+          subscribeAndUpdateField(fieldElement);
+
+          fieldElement.checked = true;
+          fieldElement.dispatchEvent(new Event('change', {bubbles: true}));
+          expect(state.change).toHaveBeenCalledWith(true);
+        });
+
+        it('allows HTMLInputElement updating on form change', async () => {
+          @field({auto: true})
+          class Field extends HTMLInputElement {
+            @api public readonly formApi!: FormApi;
+            @api public readonly input!: FieldInputProps<object>;
+            @api public readonly meta!: FieldMetaProps;
+
+            @option public readonly name: string = 'test';
+          }
+
+          const nativeFieldTag = genName();
+          customElements.define(nativeFieldTag, Field, {extends: 'input'});
+
+          const formElement = await fixture(`
+            <${formTag}>
+              <input is="${nativeFieldTag}" type="checkbox">
+            </${formTag}>
+          `);
+
+          const fieldElement = formElement.querySelector<Field>('input')!;
+          const listener = subscribeAndUpdateField(fieldElement);
+
+          expect(fieldElement.checked).not.toBeTruthy();
+
+          listener({...state, value: true});
+          updateField(fieldElement);
+
+          expect(fieldElement.checked).toBeTruthy();
+
+          listener({...state, value: false});
+          updateField(fieldElement);
+
+          expect(fieldElement.checked).not.toBeTruthy();
+        });
+      });
+
+      describe('radio', () => {
+        it('changes form value on click', async () => {
+          const formElement = await fixture(`
+            <${formTag}>
+              <${fieldTag}>
+                <input type="radio" value="foo"/>         
+                <input type="radio" value="bar"/>         
+              </${fieldTag}>
+            </${formTag}>
+          `);
+
+          const fieldElement = formElement.querySelector(fieldTag)!;
+          const inputElementFoo = formElement.querySelector<HTMLInputElement>('input[value=foo]')!;
+          const inputElementBar = formElement.querySelector<HTMLInputElement>('input[value=bar]')!;
+          subscribeAndUpdateField(fieldElement);
+
+          inputElementFoo.checked = true;
+          inputElementFoo.dispatchEvent(new Event('change', {bubbles: true}));
+          expect(state.change).toHaveBeenCalledWith('foo');
+
+          inputElementBar.checked = true;
+          inputElementBar.dispatchEvent(new Event('change', {bubbles: true}));
+          expect(state.change).toHaveBeenCalledWith('bar');
+        });
+
+        it('updates input value on form change', async () => {
+          const formElement = await fixture(`
+            <${formTag}>
+              <${fieldTag}>
+                <input type="radio" value="foo"/>         
+                <input type="radio" value="bar"/>         
+              </${fieldTag}>
+            </${formTag}>
+          `);
+
+          const fieldElement = formElement.querySelector(fieldTag)!;
+          const inputElementFoo = formElement.querySelector<HTMLInputElement>('input[value=foo]')!;
+          const inputElementBar = formElement.querySelector<HTMLInputElement>('input[value=bar]')!;
+          const listener = subscribeAndUpdateField(fieldElement);
+
+          expect(inputElementFoo.checked).not.toBeTruthy();
+          expect(inputElementBar.checked).not.toBeTruthy();
+
+          listener({...state, value: 'foo'});
+          updateField(fieldElement);
+
+          expect(inputElementFoo.checked).toBeTruthy();
+          expect(inputElementBar.checked).not.toBeTruthy();
+
+          listener({...state, value: 'bar'});
+          updateField(fieldElement);
+
+          expect(inputElementFoo.checked).not.toBeTruthy();
+          expect(inputElementBar.checked).toBeTruthy();
+        });
       });
 
       describe('select', () => {
@@ -1010,6 +1283,12 @@ const testField = () => {
         let selectElement: HTMLSelectElement;
         let option1: HTMLOptionElement;
         let option2: HTMLOptionElement;
+
+        const enableMultiple = () => {
+          selectElement.multiple = true;
+          option1.selected = false;
+          option2.selected = false;
+        };
 
         beforeEach(async () => {
           const formElement = await fixture(`
@@ -1040,7 +1319,7 @@ const testField = () => {
         });
 
         it('sets the form value to the array of selected option if selection is multiple', () => {
-          selectElement.multiple = true;
+          enableMultiple();
 
           subscribeAndUpdateField(fieldElement);
 
@@ -1050,6 +1329,46 @@ const testField = () => {
           selectElement.dispatchEvent(new Event('change', {bubbles: true}));
 
           expect(state.change).toHaveBeenCalledWith(['1', '2']);
+        });
+
+        it('updates select value on form change if selection is single', () => {
+          const listener = subscribeAndUpdateField(fieldElement);
+
+          expect(option1.selected).not.toBeTruthy();
+          expect(option2.selected).not.toBeTruthy();
+
+          listener({...state, value: '1'});
+          updateField(fieldElement);
+
+          expect(option1.selected).toBeTruthy();
+          expect(option2.selected).not.toBeTruthy();
+
+          listener({...state, value: '2'});
+          updateField(fieldElement);
+
+          expect(option1.selected).not.toBeTruthy();
+          expect(option2.selected).toBeTruthy();
+        });
+
+        it('updates select values on form change if selection is multiple', () => {
+          enableMultiple();
+
+          const listener = subscribeAndUpdateField(fieldElement);
+
+          expect(option1.selected).not.toBeTruthy();
+          expect(option2.selected).not.toBeTruthy();
+
+          listener({...state, value: ['1', '2']});
+          updateField(fieldElement);
+
+          expect(option1.selected).toBeTruthy();
+          expect(option2.selected).toBeTruthy();
+
+          listener({...state, value: ['2']});
+          updateField(fieldElement);
+
+          expect(option1.selected).not.toBeTruthy();
+          expect(option2.selected).toBeTruthy();
         });
       });
 
