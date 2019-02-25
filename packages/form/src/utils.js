@@ -29,17 +29,19 @@ export const getTargetValue = (
   {checked, defaultValue, selectedOptions, type, value},
   formValue,
 ) => {
+  const isFormValueArray = Array.isArray(formValue);
+
   switch (type) {
     case 'checkbox': {
       // Form maintains an array, not just a boolean
       if (defaultValue) {
         // Add value to formValue array
         if (checked) {
-          return Array.isArray(formValue) ? formValue.concat(value) : [value];
+          return isFormValueArray ? [...formValue, value] : [value];
         }
 
         // Remove value from formValue array
-        if (!Array.isArray(formValue)) {
+        if (!isFormValueArray) {
           return formValue;
         }
 
@@ -54,30 +56,36 @@ export const getTargetValue = (
     case 'select-multiple':
       return Array.from(selectedOptions, option => option.value);
     default:
+      // Element input[type=radio] is also here
       return value;
   }
 };
 
-export const setTargetValues = (targets, formValue) => {
-  const isFormValueArray = Array.isArray(formValue);
+const setSingleValue = (target, formValue) => {
+  switch (target.type) {
+    case 'checkbox':
+      target.checked = Array.isArray(formValue) ? formValue.includes(target.value) : !!formValue;
+      break;
+    case 'radio':
+      target.checked = formValue === target.value;
+      break;
+    case 'select-multiple':
+      for (const option of target.options) {
+        option.selected = Array.isArray(formValue) && formValue.includes(option.value);
+      }
+      break;
+    default:
+      target.value = formValue;
+  }
+};
 
-  for (const target of targets) {
-    switch (target.type) {
-      case 'checkbox':
-        target.checked = isFormValueArray ? formValue.includes(target.value) : !!formValue;
-        break;
-      case 'radio':
-        target.checked = formValue === target.value;
-        break;
-      case 'select-multiple':
-        for (let i = 0; i < target.options; i++) {
-          target.options[i].selected =
-            isFormValueArray && formValue.includes(target.options[i].value);
-        }
-        break;
-      default:
-        target.value = formValue;
+export const setTargetValues = (targets, formValue) => {
+  if (targets instanceof NodeList) {
+    for (const target of targets) {
+      setSingleValue(target, formValue);
     }
+  } else {
+    setSingleValue(targets, formValue);
   }
 };
 
