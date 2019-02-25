@@ -26,7 +26,7 @@ const createApiDecorator = ({value}, shared) => descriptor => {
     ],
   };
 
-  return name === 'form' ? value(finalDescriptor) : finalDescriptor;
+  return name === 'formApi' ? value(finalDescriptor) : finalDescriptor;
 };
 
 export default createApiDecorator;

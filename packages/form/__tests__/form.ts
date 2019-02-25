@@ -28,7 +28,7 @@ const testForm = () => {
     it('allows to declare form configuration with decorator', async () => {
       @form()
       class Test extends CustomElement {
-        @api public readonly form!: FormApi;
+        @api public readonly formApi!: FormApi;
         @api public readonly state!: FormState;
 
         @option
@@ -52,7 +52,7 @@ const testForm = () => {
 
       @form()
       class Test extends CustomElement {
-        @api public readonly form!: FormApi;
+        @api public readonly formApi!: FormApi;
         @api public readonly state!: FormState;
 
         public call(): void {
@@ -81,7 +81,7 @@ const testForm = () => {
     it('allows to declare configuration on full accessor', async () => {
       @form()
       class Test extends CustomElement {
-        @api public readonly form!: FormApi;
+        @api public readonly formApi!: FormApi;
         @api public readonly state!: FormState;
 
         public secret: boolean = true;
@@ -111,7 +111,7 @@ const testForm = () => {
     it('allows to update form data with defined properties', async () => {
       @form()
       class Test extends CustomElement {
-        @api public readonly form!: FormApi;
+        @api public readonly formApi!: FormApi;
         @api public readonly state!: FormState;
 
         @option
@@ -132,7 +132,7 @@ const testForm = () => {
     it('does not update property if it is the same', async () => {
       @form()
       class Test extends CustomElement {
-        @api public readonly form!: FormApi;
+        @api public readonly formApi!: FormApi;
         @api public readonly state!: FormState;
 
         @option
@@ -155,7 +155,7 @@ const testForm = () => {
         @form()
         // @ts-ignore
         class Test extends CustomElement {
-          @api public readonly form!: FormApi;
+          @api public readonly formApi!: FormApi;
           @api public readonly state!: FormState;
 
           @option
@@ -170,7 +170,7 @@ const testForm = () => {
     it('initializes form if new "initialValues" are set', async () => {
       @form()
       class Test extends CustomElement {
-        @api public readonly form!: FormApi;
+        @api public readonly formApi!: FormApi;
         @api public readonly state!: FormState;
 
         @option
@@ -200,7 +200,7 @@ const testForm = () => {
     it('checks shallow equality by default for initialValues', async () => {
       @form()
       class Test extends CustomElement {
-        @api public readonly form!: FormApi;
+        @api public readonly formApi!: FormApi;
         @api public readonly state!: FormState;
 
         @option
@@ -229,7 +229,7 @@ const testForm = () => {
 
       @form()
       class Test extends CustomElement {
-        @api public readonly form!: FormApi;
+        @api public readonly formApi!: FormApi;
         @api public readonly state!: FormState;
 
         @option
@@ -269,7 +269,7 @@ const testForm = () => {
     it('sets default undefined if option exists but not set', async () => {
       @form()
       class Test extends CustomElement {
-        @api public readonly form!: FormApi;
+        @api public readonly formApi!: FormApi;
         @api public readonly state!: FormState;
 
         @option
@@ -296,7 +296,7 @@ const testForm = () => {
         decorators: [decorate],
       })
       class Test extends CustomElement {
-        @api public readonly form!: FormApi;
+        @api public readonly formApi!: FormApi;
         @api public readonly state!: FormState;
 
         @option
@@ -315,7 +315,7 @@ const testForm = () => {
     it('subscribes to the form on connection, unsubscribes on disconnection and sets form state', async () => {
       @form()
       class Test extends CustomElement {
-        @api public readonly form!: FormApi;
+        @api public readonly formApi!: FormApi;
         @api public readonly state!: FormState;
 
         @option
@@ -341,7 +341,7 @@ const testForm = () => {
     it('catches submit event', () => {
       @form()
       class Test extends CustomElement {
-        @api public readonly form!: FormApi;
+        @api public readonly formApi!: FormApi;
         @api public readonly state!: FormState;
 
         @option
@@ -374,7 +374,7 @@ const testForm = () => {
           @form()
           // @ts-ignore
           class FormField extends CustomElement {
-            @api public readonly form!: FormApi;
+            @api public readonly formApi!: FormApi;
           }
         }).toThrowError('@form requires state property marked with @api');
       });
@@ -386,7 +386,7 @@ const testForm = () => {
           @form()
           // @ts-ignore
           class FormField extends CustomElement {
-            @api public readonly form!: FormApi;
+            @api public readonly formApi!: FormApi;
             @api public readonly state!: FormState;
           }
         }).toThrowError('@form requires onSubmit property marked with @option');
@@ -398,7 +398,7 @@ const testForm = () => {
         @form()
         // @ts-ignore
         class Test extends CustomElement {
-          @api public readonly form!: FormApi;
+          @api public readonly formApi!: FormApi;
           @api public readonly state!: FormState;
 
           public constructor() {
