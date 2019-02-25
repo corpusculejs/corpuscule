@@ -9,7 +9,7 @@ const [connectedCallbackKey, disconnectedCallbackKey] = $.lifecycleKeys;
 
 const createField = (
   {consumer},
-  {form: formApi, input, meta},
+  {formApi, input, meta},
   options,
   {scheduler, subscribe, update},
 ) => descriptor => {

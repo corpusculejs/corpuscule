@@ -8,7 +8,7 @@ import {all, filter, noop} from './utils';
 
 const [connectedCallbackKey, disconnectedCallbackKey] = lifecycleKeys;
 
-const createFormDecorator = ({provider}, {form: formApi, state}, {configInitializers}) => ({
+const createFormDecorator = ({provider}, {formApi, state}, {configInitializers}) => ({
   decorators,
   subscription = all,
 } = {}) => descriptor => {

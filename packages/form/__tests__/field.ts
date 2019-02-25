@@ -72,7 +72,7 @@ const testField = () => {
     it('creates field that receives form', async () => {
       @form()
       class Form extends CustomElement {
-        @api public readonly form!: FormApi;
+        @api public readonly formApi!: FormApi;
         @api public readonly state!: FormState;
 
         @option
@@ -81,7 +81,7 @@ const testField = () => {
 
       @field
       class Field extends CustomElement {
-        @api public readonly form!: FormApi;
+        @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<string>;
         @api public readonly meta!: FieldMetaProps;
 
@@ -90,7 +90,7 @@ const testField = () => {
 
       const [, fieldElement] = await createSimpleContext(Form, Field);
 
-      expect(fieldElement.form).toBe(formSpyObject);
+      expect(fieldElement.formApi).toBe(formSpyObject);
       expect(formSpyObject.subscribe).toHaveBeenCalled();
       expect(scheduler).toHaveBeenCalledWith(jasmine.any(Function));
     });
@@ -100,7 +100,7 @@ const testField = () => {
 
       @form()
       class Form extends CustomElement {
-        @api public readonly form!: FormApi;
+        @api public readonly formApi!: FormApi;
         @api public readonly state!: FormState;
 
         @option
@@ -109,14 +109,14 @@ const testField = () => {
 
       @field
       class Field extends CustomElement {
-        @api public readonly form!: FormApi;
+        @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<string>;
         @api public readonly meta!: FieldMetaProps;
 
         @option public readonly name: string = 'test';
 
         public connectedCallback(): void {
-          connectedCallbackSpy(this.form);
+          connectedCallbackSpy(this.formApi);
         }
       }
 
@@ -128,7 +128,7 @@ const testField = () => {
     it('subscribes to form with defined options', async () => {
       @form()
       class Form extends CustomElement {
-        @api public readonly form!: FormApi;
+        @api public readonly formApi!: FormApi;
         @api public readonly state!: FormState;
 
         @option
@@ -137,7 +137,7 @@ const testField = () => {
 
       @field
       class Field extends CustomElement {
-        @api public readonly form!: FormApi;
+        @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<string>;
         @api public readonly meta!: FieldMetaProps;
 
@@ -174,7 +174,7 @@ const testField = () => {
     it('creates new input and meta objects on each form update', async () => {
       @form()
       class Form extends CustomElement {
-        @api public readonly form!: FormApi;
+        @api public readonly formApi!: FormApi;
         @api public readonly state!: FormState;
 
         @option
@@ -183,7 +183,7 @@ const testField = () => {
 
       @field
       class Field extends CustomElement {
-        @api public readonly form!: FormApi;
+        @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<object>;
         @api public readonly meta!: FieldMetaProps;
 
@@ -206,7 +206,7 @@ const testField = () => {
     it('formats value for input if format option is set and formatOnBlur is disabled', async () => {
       @form()
       class Form extends CustomElement {
-        @api public readonly form!: FormApi;
+        @api public readonly formApi!: FormApi;
         @api public readonly state!: FormState;
 
         @option
@@ -215,7 +215,7 @@ const testField = () => {
 
       @field
       class Field extends CustomElement {
-        @api public readonly form!: FormApi;
+        @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<object>;
         @api public readonly meta!: FieldMetaProps;
 
@@ -243,7 +243,7 @@ const testField = () => {
     it('avoids unnecessary scheduling if update called many times', async () => {
       @form()
       class Form extends CustomElement {
-        @api public readonly form!: FormApi;
+        @api public readonly formApi!: FormApi;
         @api public readonly state!: FormState;
 
         @option
@@ -252,7 +252,7 @@ const testField = () => {
 
       @field
       class Field extends CustomElement {
-        @api public readonly form!: FormApi;
+        @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<object>;
         @api public readonly meta!: FieldMetaProps;
 
@@ -273,7 +273,7 @@ const testField = () => {
     it('avoids unnecessary scheduling if subscribe called many times', async () => {
       @form()
       class Form extends CustomElement {
-        @api public readonly form!: FormApi;
+        @api public readonly formApi!: FormApi;
         @api public readonly state!: FormState;
 
         @option
@@ -282,7 +282,7 @@ const testField = () => {
 
       @field
       class Field extends CustomElement {
-        @api public readonly form!: FormApi;
+        @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<object>;
         @api public readonly meta!: FieldMetaProps;
 
@@ -299,7 +299,7 @@ const testField = () => {
     it('unsubscribes on disconnectedCallback', async () => {
       @form()
       class Form extends CustomElement {
-        @api public readonly form!: FormApi;
+        @api public readonly formApi!: FormApi;
         @api public readonly state!: FormState;
 
         @option
@@ -308,7 +308,7 @@ const testField = () => {
 
       @field
       class Field extends CustomElement {
-        @api public readonly form!: FormApi;
+        @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<object>;
         @api public readonly meta!: FieldMetaProps;
 
@@ -326,7 +326,7 @@ const testField = () => {
     it('unsubscribes on new subscription', async () => {
       @form()
       class Form extends CustomElement {
-        @api public readonly form!: FormApi;
+        @api public readonly formApi!: FormApi;
         @api public readonly state!: FormState;
 
         @option
@@ -335,7 +335,7 @@ const testField = () => {
 
       @field
       class Field extends CustomElement {
-        @api public readonly form!: FormApi;
+        @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<object>;
         @api public readonly meta!: FieldMetaProps;
 
@@ -353,7 +353,7 @@ const testField = () => {
       it('resubscribes on name value change', async () => {
         @form()
         class Form extends CustomElement {
-          @api public readonly form!: FormApi;
+          @api public readonly formApi!: FormApi;
           @api public readonly state!: FormState;
 
           @option
@@ -362,7 +362,7 @@ const testField = () => {
 
         @field
         class Field extends CustomElement {
-          @api public readonly form!: FormApi;
+          @api public readonly formApi!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
           @api public readonly meta!: FieldMetaProps;
 
@@ -381,7 +381,7 @@ const testField = () => {
       it('does not resubscribe on name change if option values are equal', async () => {
         @form()
         class Form extends CustomElement {
-          @api public readonly form!: FormApi;
+          @api public readonly formApi!: FormApi;
           @api public readonly state!: FormState;
 
           @option
@@ -390,7 +390,7 @@ const testField = () => {
 
         @field
         class Field extends CustomElement {
-          @api public readonly form!: FormApi;
+          @api public readonly formApi!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
           @api public readonly meta!: FieldMetaProps;
 
@@ -408,7 +408,7 @@ const testField = () => {
       it('resubscribes on subscription value change', async () => {
         @form()
         class Form extends CustomElement {
-          @api public readonly form!: FormApi;
+          @api public readonly formApi!: FormApi;
           @api public readonly state!: FormState;
 
           @option
@@ -417,7 +417,7 @@ const testField = () => {
 
         @field
         class Field extends CustomElement {
-          @api public readonly form!: FormApi;
+          @api public readonly formApi!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
           @api public readonly meta!: FieldMetaProps;
 
@@ -436,7 +436,7 @@ const testField = () => {
       it('does not resubscribe on subscription change if option values are equal', async () => {
         @form()
         class Form extends CustomElement {
-          @api public readonly form!: FormApi;
+          @api public readonly formApi!: FormApi;
           @api public readonly state!: FormState;
 
           @option
@@ -445,7 +445,7 @@ const testField = () => {
 
         @field
         class Field extends CustomElement {
-          @api public readonly form!: FormApi;
+          @api public readonly formApi!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
           @api public readonly meta!: FieldMetaProps;
 
@@ -464,7 +464,7 @@ const testField = () => {
       it('updates field if option value is changed', async () => {
         @form()
         class Form extends CustomElement {
-          @api public readonly form!: FormApi;
+          @api public readonly formApi!: FormApi;
           @api public readonly state!: FormState;
 
           @option
@@ -473,7 +473,7 @@ const testField = () => {
 
         @field
         class Field extends CustomElement {
-          @api public readonly form!: FormApi;
+          @api public readonly formApi!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
           @api public readonly meta!: FieldMetaProps;
 
@@ -496,7 +496,7 @@ const testField = () => {
       it('does not update field if it option values are equal', async () => {
         @form()
         class Form extends CustomElement {
-          @api public readonly form!: FormApi;
+          @api public readonly formApi!: FormApi;
           @api public readonly state!: FormState;
 
           @option
@@ -505,7 +505,7 @@ const testField = () => {
 
         @field
         class Field extends CustomElement {
-          @api public readonly form!: FormApi;
+          @api public readonly formApi!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
           @api public readonly meta!: FieldMetaProps;
 
@@ -530,7 +530,7 @@ const testField = () => {
           @field
           // @ts-ignore
           class Field extends CustomElement {
-            @api public readonly form!: FormApi;
+            @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
             @api public readonly meta!: FieldMetaProps;
 
@@ -549,7 +549,7 @@ const testField = () => {
           @field
           // @ts-ignore
           class Field extends CustomElement {
-            @api public readonly form!: FormApi;
+            @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
             @api public readonly meta!: FieldMetaProps;
           }
@@ -569,7 +569,7 @@ const testField = () => {
           @field
           // @ts-ignore
           class Field extends CustomElement {
-            @api public readonly form!: FormApi;
+            @api public readonly formApi!: FormApi;
           }
         }).toThrowError('@field requires input property marked with @api');
 
@@ -577,7 +577,7 @@ const testField = () => {
           @field
           // @ts-ignore
           class Field extends CustomElement {
-            @api public readonly form!: FormApi;
+            @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
           }
         }).toThrowError('@field requires meta property marked with @api');
@@ -586,7 +586,7 @@ const testField = () => {
       it('allows using accessors for all api elements', async () => {
         @form()
         class Form extends CustomElement {
-          @api public readonly form!: FormApi;
+          @api public readonly formApi!: FormApi;
           @api public readonly state!: FormState;
 
           @option
@@ -598,11 +598,11 @@ const testField = () => {
           public storage!: FormApi;
 
           @api
-          public get form(): FormApi {
+          public get formApi(): FormApi {
             return this.storage;
           }
 
-          public set form(v: FormApi) {
+          public set formApi(v: FormApi) {
             this.storage = v;
           }
 
@@ -647,7 +647,7 @@ const testField = () => {
         it('calls blur() method of field state if input.onBlur() is called', async () => {
           @form()
           class Form extends CustomElement {
-            @api public readonly form!: FormApi;
+            @api public readonly formApi!: FormApi;
             @api public readonly state!: FormState;
 
             @option
@@ -656,7 +656,7 @@ const testField = () => {
 
           @field
           class Field extends CustomElement {
-            @api public readonly form!: FormApi;
+            @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
             @api public readonly meta!: FieldMetaProps;
 
@@ -675,7 +675,7 @@ const testField = () => {
         it('formats and sets value on blur if appropriate options are set', async () => {
           @form()
           class Form extends CustomElement {
-            @api public readonly form!: FormApi;
+            @api public readonly formApi!: FormApi;
             @api public readonly state!: FormState;
 
             @option
@@ -684,7 +684,7 @@ const testField = () => {
 
           @field
           class Field extends CustomElement {
-            @api public readonly form!: FormApi;
+            @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
             @api public readonly meta!: FieldMetaProps;
 
@@ -715,7 +715,7 @@ const testField = () => {
         it('calls change() method of field state when new "change" event is fired', async () => {
           @form()
           class Form extends CustomElement {
-            @api public readonly form!: FormApi;
+            @api public readonly formApi!: FormApi;
             @api public readonly state!: FormState;
 
             @option
@@ -724,7 +724,7 @@ const testField = () => {
 
           @field
           class Field extends CustomElement {
-            @api public readonly form!: FormApi;
+            @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
             @api public readonly meta!: FieldMetaProps;
 
@@ -745,7 +745,7 @@ const testField = () => {
         it('parses value if parse option is defined', async () => {
           @form()
           class Form extends CustomElement {
-            @api public readonly form!: FormApi;
+            @api public readonly formApi!: FormApi;
             @api public readonly state!: FormState;
 
             @option
@@ -754,7 +754,7 @@ const testField = () => {
 
           @field
           class Field extends CustomElement {
-            @api public readonly form!: FormApi;
+            @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
             @api public readonly meta!: FieldMetaProps;
 
@@ -783,7 +783,7 @@ const testField = () => {
         it('calls focus() method of field stat if input.onFocus() method is called', async () => {
           @form()
           class Form extends CustomElement {
-            @api public readonly form!: FormApi;
+            @api public readonly formApi!: FormApi;
             @api public readonly state!: FormState;
 
             @option
@@ -792,7 +792,7 @@ const testField = () => {
 
           @field
           class Field extends CustomElement {
-            @api public readonly form!: FormApi;
+            @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
             @api public readonly meta!: FieldMetaProps;
 
@@ -817,7 +817,7 @@ const testField = () => {
       beforeEach(() => {
         @form()
         class Form extends CustomElement {
-          @api public readonly form!: FormApi;
+          @api public readonly formApi!: FormApi;
           @api public readonly state!: FormState;
 
           @option
@@ -826,7 +826,7 @@ const testField = () => {
 
         @field
         class Field extends CustomElement {
-          @api public readonly form!: FormApi;
+          @api public readonly formApi!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
           @api public readonly meta!: FieldMetaProps;
 
@@ -1006,7 +1006,7 @@ const testField = () => {
           @field
           // @ts-ignore
           class Field extends CustomElement {
-            @api public readonly form!: FormApi;
+            @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<string>;
             @api public readonly meta!: FieldMetaProps;
 

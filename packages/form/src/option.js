@@ -6,7 +6,7 @@ import {noop} from '../../element/src/utils';
 import {fieldOptions, formOptions} from './utils';
 
 const createOptionDecorator = (
-  {form: formApi},
+  {formApi},
   options,
   {compare, configInitializers, subscribe, update},
 ) => descriptor => {

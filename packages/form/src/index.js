@@ -10,7 +10,7 @@ export const createFormContext = ({scheduler = defaultScheduler} = {}) => {
   const context = createContext();
 
   const apiShared = {
-    form: new WeakMap(),
+    formApi: new WeakMap(),
     input: new WeakMap(),
     meta: new WeakMap(),
     state: new WeakMap(),
