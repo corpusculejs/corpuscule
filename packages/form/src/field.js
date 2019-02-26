@@ -20,6 +20,7 @@ const createField = (
   let constructor;
   const getConstructor = () => constructor;
 
+  let isNativeField;
   let getRef = noop;
 
   let $formApi;
@@ -59,6 +60,12 @@ const createField = (
             this.addEventListener('blur', this[$$onBlur]);
             this.addEventListener('change', this[$$onChange]);
             this.addEventListener('focus', this[$$onFocus]);
+
+            if (auto && !isNativeField) {
+              for (const element of this[$$ref]) {
+                element.name = getValue(this, $name);
+              }
+            }
 
             supers[connectedCallbackKey].call(this);
             this[$$subscribe]();
@@ -232,18 +239,17 @@ const createField = (
     finisher(target) {
       finisher(target);
       constructor = target;
+      isNativeField =
+        target.prototype instanceof HTMLInputElement ||
+        target.prototype instanceof HTMLSelectElement ||
+        target.prototype instanceof HTMLTextAreaElement;
 
       $formApi = formApi.get(target);
       $input = input.get(target);
       $meta = meta.get(target);
 
       if (auto) {
-        getRef =
-          target.prototype instanceof HTMLInputElement ||
-          target.prototype instanceof HTMLSelectElement ||
-          target.prototype instanceof HTMLTextAreaElement
-            ? self => self
-            : self => self.querySelectorAll(selector);
+        getRef = isNativeField ? self => self : self => self.querySelectorAll(selector);
       }
 
       assertRequiredProperty('field', 'api', 'form', $formApi);

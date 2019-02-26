@@ -1195,6 +1195,23 @@ const testField = () => {
           callListener(listener, {...state, value: false});
           expect(fieldElement.checked).not.toBeTruthy();
         });
+
+        it('sets field name to all inner elements (if container)', async () => {
+          const formElement = await fixture(`
+            <${formTag}>
+              <${fieldTag}>
+                <input type="checkbox" value="foo"/>         
+                <input type="checkbox" value="bar"/>
+              </${fieldTag}>
+            </${formTag}>
+          `);
+
+          const inputElementFoo = formElement.querySelector<HTMLInputElement>('input[value=foo]')!;
+          const inputElementBar = formElement.querySelector<HTMLInputElement>('input[value=bar]')!;
+
+          expect(inputElementFoo.name).toBe('test');
+          expect(inputElementBar.name).toBe('test');
+        });
       });
 
       describe('radio', () => {
