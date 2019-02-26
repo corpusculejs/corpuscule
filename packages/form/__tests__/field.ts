@@ -1293,36 +1293,44 @@ const testField = () => {
 
           const formElement = await fixture(`
             <${formTag}>
-              <input is="${nativeFieldTag}" type="checkbox">
+              <input is="${nativeFieldTag}" type="radio" value="foo">
+              <input is="${nativeFieldTag}" type="radio" value="bar">
             </${formTag}>
           `);
 
-          const fieldElement = formElement.querySelector<Field>('input')!;
-          const [listener] = subscriptionInfo.listeners;
+          const fieldElementFoo = formElement.querySelector<Field>('input[value=foo]')!;
+          const fieldElementBar = formElement.querySelector<Field>('input[value=bar]')!;
+          const [fooListener, barListener] = subscriptionInfo.listeners;
 
-          expect(fieldElement.checked).not.toBeTruthy();
+          expect(fieldElementFoo.checked).not.toBeTruthy();
+          expect(fieldElementBar.checked).not.toBeTruthy();
 
-          callListener(listener, {...state, value: true});
-          expect(fieldElement.checked).toBeTruthy();
+          callListener(fooListener, {...state, value: 'foo'});
+          callListener(barListener, {...state, value: 'foo'});
+          expect(fieldElementFoo.checked).toBeTruthy();
+          expect(fieldElementBar.checked).not.toBeTruthy();
 
-          callListener(listener, {...state, value: false});
-          expect(fieldElement.checked).not.toBeTruthy();
+          callListener(fooListener, {...state, value: 'bar'});
+          callListener(barListener, {...state, value: 'bar'});
+          expect(fieldElementFoo.checked).not.toBeTruthy();
+          expect(fieldElementBar.checked).toBeTruthy();
         });
       });
 
       describe('select', () => {
-        let selectElement: HTMLSelectElement;
-        let option1: HTMLOptionElement;
-        let option2: HTMLOptionElement;
+        describe('container', () => {
+          let selectElement: HTMLSelectElement;
+          let option1: HTMLOptionElement;
+          let option2: HTMLOptionElement;
 
-        const enableMultiple = () => {
-          selectElement.multiple = true;
-          option1.selected = false;
-          option2.selected = false;
-        };
+          const enableMultiple = () => {
+            selectElement.multiple = true;
+            option1.selected = false;
+            option2.selected = false;
+          };
 
-        beforeEach(async () => {
-          const formElement = await fixture(`
+          beforeEach(async () => {
+            const formElement = await fixture(`
             <${formTag}>
               <${fieldTag}>
                 <select>
@@ -1333,60 +1341,117 @@ const testField = () => {
             </${formTag}>
           `);
 
-          selectElement = formElement.querySelector('select')!;
-          [option1, option2] = Array.from<HTMLOptionElement>(
-            formElement.querySelectorAll('option'),
-          );
+            selectElement = formElement.querySelector('select')!;
+            [option1, option2] = Array.from<HTMLOptionElement>(
+              formElement.querySelectorAll('option'),
+            );
+          });
+
+          it('sets the form value to the selected option if selection is single', () => {
+            option2.selected = true;
+            selectElement.dispatchEvent(new Event('change', {bubbles: true}));
+
+            expect(state.change).toHaveBeenCalledWith('2');
+          });
+
+          it('sets the form value to the array of selected option if selection is multiple', () => {
+            enableMultiple();
+
+            option1.selected = true;
+            option2.selected = true;
+
+            selectElement.dispatchEvent(new Event('change', {bubbles: true}));
+
+            expect(state.change).toHaveBeenCalledWith(['1', '2']);
+          });
+
+          it('updates select value on form change if selection is single', () => {
+            const [listener] = subscriptionInfo.listeners;
+
+            expect(option1.selected).not.toBeTruthy();
+            expect(option2.selected).not.toBeTruthy();
+
+            callListener(listener, {...state, value: '1'});
+            expect(option1.selected).toBeTruthy();
+            expect(option2.selected).not.toBeTruthy();
+
+            callListener(listener, {...state, value: '2'});
+            expect(option1.selected).not.toBeTruthy();
+            expect(option2.selected).toBeTruthy();
+          });
+
+          it('updates select values on form change if selection is multiple', () => {
+            enableMultiple();
+
+            const [listener] = subscriptionInfo.listeners;
+
+            expect(option1.selected).not.toBeTruthy();
+            expect(option2.selected).not.toBeTruthy();
+
+            callListener(listener, {...state, value: ['1', '2']});
+            expect(option1.selected).toBeTruthy();
+            expect(option2.selected).toBeTruthy();
+
+            callListener(listener, {...state, value: ['2']});
+            expect(option1.selected).not.toBeTruthy();
+            expect(option2.selected).toBeTruthy();
+          });
         });
 
-        it('sets the form value to the selected option if selection is single', () => {
-          option2.selected = true;
-          selectElement.dispatchEvent(new Event('change', {bubbles: true}));
+        describe('HTMLSelectElement', () => {
+          let selectElement: HTMLSelectElement;
+          let option1: HTMLOptionElement;
+          let option2: HTMLOptionElement;
 
-          expect(state.change).toHaveBeenCalledWith('2');
-        });
+          beforeEach(async () => {
+            @field({auto: true})
+            class Field extends HTMLSelectElement {
+              @api public readonly formApi!: FormApi;
+              @api public readonly input!: FieldInputProps<object>;
+              @api public readonly meta!: FieldMetaProps;
 
-        it('sets the form value to the array of selected option if selection is multiple', () => {
-          enableMultiple();
+              @option public readonly name: string = 'test';
+            }
 
-          option1.selected = true;
-          option2.selected = true;
+            const nativeFieldTag = genName();
+            customElements.define(nativeFieldTag, Field, {extends: 'select'});
 
-          selectElement.dispatchEvent(new Event('change', {bubbles: true}));
+            const formElement = (await fixture(`
+              <${formTag}>
+                <select is="${nativeFieldTag}">
+                  <option value="1">One</option>
+                  <option value="2">Two</option>
+                </select>
+              </${formTag}>
+            `)) as HTMLSelectElement;
 
-          expect(state.change).toHaveBeenCalledWith(['1', '2']);
-        });
+            selectElement = formElement.querySelector('select')!;
+            [option1, option2] = Array.from<HTMLOptionElement>(
+              formElement.querySelectorAll('option'),
+            );
+          });
 
-        it('updates select value on form change if selection is single', () => {
-          const [listener] = subscriptionInfo.listeners;
+          it('allows to update form value', () => {
+            option2.selected = true;
+            selectElement.dispatchEvent(new Event('change', {bubbles: true}));
 
-          expect(option1.selected).not.toBeTruthy();
-          expect(option2.selected).not.toBeTruthy();
+            expect(state.change).toHaveBeenCalledWith('2');
+          });
 
-          callListener(listener, {...state, value: '1'});
-          expect(option1.selected).toBeTruthy();
-          expect(option2.selected).not.toBeTruthy();
+          it('allows to update select value on form change', () => {
+            const [listener] = subscriptionInfo.listeners;
 
-          callListener(listener, {...state, value: '2'});
-          expect(option1.selected).not.toBeTruthy();
-          expect(option2.selected).toBeTruthy();
-        });
+            expect(option1.selected).not.toBeTruthy();
+            expect(option2.selected).not.toBeTruthy();
 
-        it('updates select values on form change if selection is multiple', () => {
-          enableMultiple();
+            callListener(listener, {...state, value: '1'});
+            expect(option1.selected).toBeTruthy();
+            expect(option2.selected).not.toBeTruthy();
 
-          const [listener] = subscriptionInfo.listeners;
-
-          expect(option1.selected).not.toBeTruthy();
-          expect(option2.selected).not.toBeTruthy();
-
-          callListener(listener, {...state, value: ['1', '2']});
-          expect(option1.selected).toBeTruthy();
-          expect(option2.selected).toBeTruthy();
-
-          callListener(listener, {...state, value: ['2']});
-          expect(option1.selected).not.toBeTruthy();
-          expect(option2.selected).toBeTruthy();
+            callListener(listener, {...state, value: '2'});
+            expect(option1.selected).not.toBeTruthy();
+            expect(option2.selected).toBeTruthy();
+          });
         });
       });
 
