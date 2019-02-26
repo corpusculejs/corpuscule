@@ -9,6 +9,7 @@
     "no-unused-variable": false,
     "no-unnecessary-class": false,
     "prettier": [true, ".prettierrc"],
+    "naming-convention": false,
     "ter-padded-blocks": false
   }
 }
