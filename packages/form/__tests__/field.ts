@@ -847,6 +847,65 @@ const testField = () => {
         state.value = undefined;
       });
 
+      it('does not updates two times if @option value is set', async () => {
+        @field({auto: true})
+        class Field extends HTMLInputElement {
+          @api public readonly formApi!: FormApi;
+          @api public readonly input!: FieldInputProps<object>;
+          @api public readonly meta!: FieldMetaProps;
+
+          @option public readonly name: string = 'test';
+          @option public value: string = 'a1';
+        }
+
+        const nativeFieldTag = genName();
+        customElements.define(nativeFieldTag, Field, {extends: 'input'});
+
+        const formElement = await fixture(`
+            <${formTag}>
+              <input is="${nativeFieldTag}" type="text">
+            </${formTag}>
+          `);
+
+        const fieldElement = formElement.querySelector<Field>('input')!;
+
+        scheduler.calls.reset();
+
+        fieldElement.value = 'a2';
+        fieldElement.dispatchEvent(new Event('change', {bubbles: true}));
+
+        expect(state.change).toHaveBeenCalledWith('a2');
+        expect(state.change).toHaveBeenCalledTimes(1);
+        expect(scheduler).toHaveBeenCalledTimes(SINGLE_FIELD_UPDATE);
+      });
+
+      it('allows to define ref property for container', async () => {
+        @field({auto: true})
+        class Field extends CustomElement {
+          @api public readonly formApi!: FormApi;
+          @api public readonly input!: FieldInputProps<object>;
+          @api public readonly meta!: FieldMetaProps;
+          @api public readonly refs!: NodeListOf<HTMLInputElement>;
+
+          @option public readonly name: string = 'test';
+        }
+
+        const tag = defineCE(Field);
+
+        const formElement = await fixture(`
+            <${formTag}>
+              <${tag}>
+                <input type="text">
+              </${tag}>
+            </${formTag}>
+          `);
+
+        const fieldElement = formElement.querySelector<Field>(tag)!;
+        const inputElement = formElement.querySelector('input')!;
+
+        expect(fieldElement.refs[0]).toBe(inputElement);
+      });
+
       describe('text', () => {
         it('updates form property on input change event', async () => {
           const formElement = await fixture(`
@@ -962,38 +1021,6 @@ const testField = () => {
           callListener(listener, {...state, value: 'a2'});
 
           expect(fieldElement.value).toBe('a2');
-        });
-
-        it('does not updates two times if @option value is set', async () => {
-          @field({auto: true})
-          class Field extends HTMLInputElement {
-            @api public readonly formApi!: FormApi;
-            @api public readonly input!: FieldInputProps<object>;
-            @api public readonly meta!: FieldMetaProps;
-
-            @option public readonly name: string = 'test';
-            @option public value: string = 'a1';
-          }
-
-          const nativeFieldTag = genName();
-          customElements.define(nativeFieldTag, Field, {extends: 'input'});
-
-          const formElement = await fixture(`
-            <${formTag}>
-              <input is="${nativeFieldTag}" type="text">
-            </${formTag}>
-          `);
-
-          const fieldElement = formElement.querySelector<Field>('input')!;
-
-          scheduler.calls.reset();
-
-          fieldElement.value = 'a2';
-          fieldElement.dispatchEvent(new Event('change', {bubbles: true}));
-
-          expect(state.change).toHaveBeenCalledWith('a2');
-          expect(state.change).toHaveBeenCalledTimes(1);
-          expect(scheduler).toHaveBeenCalledTimes(SINGLE_FIELD_UPDATE);
         });
       });
 
