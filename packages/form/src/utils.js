@@ -5,7 +5,7 @@ export const noop = () => {}; // eslint-disable-line no-empty-function
 
 export const formOptions = [...configOptions, 'compareInitialValues'];
 
-export const apis = ['formApi', 'input', 'meta', 'state'];
+export const apis = ['formApi', 'input', 'meta', 'refs', 'state'];
 
 export const fieldOptions = [
   'format',

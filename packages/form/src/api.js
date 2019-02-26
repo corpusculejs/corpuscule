@@ -14,7 +14,7 @@ const createApiDecorator = ({value}, shared, {ref}) => descriptor => {
     throw new TypeError(`Property name ${name} is not allowed`);
   }
 
-  if (name === 'ref') {
+  if (name === 'refs') {
     let $$ref;
 
     return accessor({
