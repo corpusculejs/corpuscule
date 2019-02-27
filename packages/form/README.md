@@ -21,6 +21,63 @@ or
 $ yarn add final-form @corpuscule/form
 ```
 
+## Concepts
+### Auto Field
+Auto fields are allowed not only to receive data comes up from native form elements with change 
+events but also to change these elements values by form updates. It happens automatically and does
+not require specific actions from the user.  
+
+To create an auto field add `{auto: true}` as a parameter for `@field` decorator creator. It will
+allow the field to receive changes from native form elements and update them on form change. Second
+parameter key, `selector`, can be used to make `querySelectorAll` request more specific. By default,
+it is `input, select, textarea`. You can make it wider by adding custom elements, like `input,
+select, textarea, my-element`, or make it more specific by removing or replacing native elements.
+
+Now, each change of native form element will change the corresponding form field, and each form
+update will change the value of native elements. The field also sets `name` properties of all
+selected elements to its name, so it is useless to set names manually.
+```html
+<script>
+  @field({auto: true, selector: 'input'})
+  class Field extends HTMLElement {
+    @api formApi;
+    @api input;
+    @api meta;
+
+    @option name;
+  }
+  
+  customElements.define('x-field', Field);
+</script>
+<x-form>
+  <x-field name="foo-bar">
+    <input type="radio" value="foo">
+    <input type="radio" value="bar">
+  </x-field>
+</x-form>
+```
+#### Customized Built-In Element
+You can also do the same with customized built-in elements. The only difference is that CB elements
+will change themselves instead of searching native elements.
+```html
+<script>
+  @field({auto: true})
+  class Field extends HTMLSelectElement {
+    @api formApi;
+    @api input;
+    @api meta;
+
+    @option name = 'foo-bar';
+  }
+  
+  customElements.define('x-field', Field, {extends: 'input'});
+</script>
+<x-form>
+  <input is="x-field" type="radio" value="foo">
+  <input is="x-field" type="radio" value="bar">
+</x-form>
+```
+
 ## API
 ### Common
 #### `@api: PropertyDecorator`
@@ -47,10 +104,10 @@ decorator.
 
 ### Form
 #### `@form(params?: FormDecoratorParams): ClassDecorator`
-Form decorator makes element a 🏁 FinalForm provider via [`@corpsucule/context`](../context) with
-form instance as a context value. 
+Form decorator makes the element a 🏁 FinalForm provider via [`@corpsucule/context`](../context)
+with form instance as a context value. 
 
-Decorator can receive `FormDecoratorParams` object which contains:
+The decorator can receive `FormDecoratorParams` object which contains:
 * `decorators?: Decorator[]` - a list of [🏁 FinalForm decorators](https://github.com/final-form/final-form#decorator-form-formapi--unsubscribe)
 to apply to the form.
 * `subscription?: FormSubscription` - a [`FormSubscription`](https://github.com/final-form/final-form#formsubscription--string-boolean-)
@@ -86,9 +143,14 @@ section.
 This function is used to compare new initial values that are received by `initialValues` form
 option. By default simple checking of shallow equality is performed.
 
-#### `@field: ClassDecorator`
-Field decorator makes element a 🏁 FinalForm field, a consumer via [`@corpsucule/context`](../context)
+#### `@field(params?: FieldDecoratorParams): ClassDecorator`
+Field decorator makes the element a 🏁 FinalForm field, a consumer via [`@corpsucule/context`](../context)
 with form instance as a context value.
+
+The decorator can receive `FieldDecoratorParams` object which contains:
+* `auto?: boolean` - a property that creates [Auto Field](#autofield) from a simple `Field`.
+* `selector?: string` - Auto Field uses this selector to search native form elements in the light
+DOM. More details [here](#autofield).  
 
 #### Field `@api` decorator
 Field `@api` decorator has following property names it can be applied to:
