@@ -2,7 +2,7 @@ import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/as
 import * as $ from '@corpuscule/utils/lib/descriptors';
 import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
 import {getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
-import {all, filter, getTargetValue, noop} from './utils';
+import {all, filter, getTargetValue, noop, setTargetValues} from './utils';
 import getSupers from '@corpuscule/utils/lib/getSupers';
 
 const [connectedCallbackKey, disconnectedCallbackKey] = $.lifecycleKeys;
@@ -11,14 +11,17 @@ const createField = (
   {consumer},
   {formApi, input, meta},
   options,
-  {scheduler, subscribe, update},
-) => descriptor => {
+  {ref, scheduler, subscribe, update},
+) => ({auto = false, selector = 'input, select, textarea'} = {}) => descriptor => {
   assertKind('field', Kind.Class, descriptor);
 
   const {elements, finisher = noop, kind} = descriptor;
 
   let constructor;
   const getConstructor = () => constructor;
+
+  let isNativeField;
+  let getRef = noop;
 
   let $formApi;
   let $input;
@@ -33,10 +36,12 @@ const createField = (
   let $validate;
   let $validateFields;
 
-  const $$formState = Symbol();
+  const $$state = Symbol();
   const $$onBlur = Symbol();
   const $$onChange = Symbol();
   const $$onFocus = Symbol();
+  const $$ref = Symbol();
+  const $$selfChange = Symbol();
   const $$subscribe = Symbol();
   const $$subscribingValid = Symbol();
   const $$unsubscribe = Symbol();
@@ -56,8 +61,17 @@ const createField = (
             this.addEventListener('change', this[$$onChange]);
             this.addEventListener('focus', this[$$onFocus]);
 
+            if (auto && !isNativeField) {
+              for (const element of this[$$ref]) {
+                element.name = getValue(this, $name);
+              }
+            }
+
             supers[connectedCallbackKey].call(this);
-            this[$$subscribe]();
+
+            if (getValue(this, $name)) {
+              this[$$subscribe]();
+            }
           },
         },
         supers,
@@ -81,6 +95,10 @@ const createField = (
 
       // Private
       $.field({
+        initializer: () => false,
+        key: $$selfChange,
+      }),
+      $.field({
         initializer: () => true,
         key: $$subscribingValid,
       }),
@@ -92,13 +110,19 @@ const createField = (
         initializer: () => true,
         key: $$updatingValid,
       }),
+      $.accessor({
+        get() {
+          return getRef(this);
+        },
+        key: $$ref,
+      }),
       $.method({
         bound: true,
         key: $$onBlur,
         method() {
           const format = $format && getValue(this, $format);
 
-          const {blur, change, name, value} = this[$$formState];
+          const {blur, change, name, value} = this[$$state];
 
           blur();
 
@@ -110,20 +134,26 @@ const createField = (
       $.method({
         bound: true,
         key: $$onChange,
-        method({detail, target}) {
+        method(event) {
+          const isCustomEvent = event instanceof CustomEvent;
           const parse = $parse && getValue(this, $parse);
-          const {change, name, value} = this[$$formState];
+          const {change, name, value} = this[$$state];
 
-          const changeValue = detail || getTargetValue(target, value);
+          // We should update form only if it is an auto field or event is custom.
+          // By default field does not receive native change events.
+          if (isCustomEvent || auto) {
+            const changed = isCustomEvent ? event.detail : getTargetValue(event.target, value);
+            change(parse ? parse(changed, name) : changed);
 
-          change(parse ? parse(changeValue, name) : changeValue);
+            this[$$selfChange] = !isCustomEvent;
+          }
         },
       }),
       $.method({
         bound: true,
         key: $$onFocus,
         method() {
-          this[$$formState].focus();
+          this[$$state].focus();
         },
       }),
       $.method({
@@ -139,7 +169,7 @@ const createField = (
             this[$$unsubscribe]();
 
             const listener = state => {
-              this[$$formState] = state;
+              this[$$state] = state;
               this[$$update]();
             };
 
@@ -171,18 +201,26 @@ const createField = (
             const format = $format && getValue(this, $format);
 
             const {blur: _b, change: _c, focus: _f, name, length: _l, value, ...metadata} = this[
-              $$formState
+              $$state
             ];
+
+            const finalValue =
+              !($formatOnBlur && getValue(this, $formatOnBlur)) && format
+                ? format(value, name)
+                : value;
 
             setValue(this, $input, {
               name,
-              value:
-                !($formatOnBlur && getValue(this, $formatOnBlur)) && format
-                  ? format(value, name)
-                  : value,
+              value: finalValue,
             });
 
             setValue(this, $meta, metadata);
+
+            if (auto && !this[$$selfChange]) {
+              setTargetValues(this[$$ref], finalValue);
+            }
+
+            this[$$selfChange] = false;
             this[$$updatingValid] = true;
           });
         },
@@ -191,6 +229,7 @@ const createField = (
       // Static Hooks
       $.hook({
         start() {
+          ref.set(this, $$ref);
           subscribe.set(this, $$subscribe);
           update.set(this, $$update);
         },
@@ -202,10 +241,18 @@ const createField = (
     finisher(target) {
       finisher(target);
       constructor = target;
+      isNativeField =
+        target.prototype instanceof HTMLInputElement ||
+        target.prototype instanceof HTMLSelectElement ||
+        target.prototype instanceof HTMLTextAreaElement;
 
       $formApi = formApi.get(target);
       $input = input.get(target);
       $meta = meta.get(target);
+
+      if (auto) {
+        getRef = isNativeField ? self => self : self => self.querySelectorAll(selector);
+      }
 
       assertRequiredProperty('field', 'api', 'form', $formApi);
       assertRequiredProperty('field', 'api', 'input', $input);

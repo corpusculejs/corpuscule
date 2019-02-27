@@ -28,12 +28,13 @@ export const createFormContext = ({scheduler = defaultScheduler} = {}) => {
     configInitializers: new WeakMap(),
 
     // @field properties
+    ref: new WeakMap(),
     scheduler,
     subscribe: new WeakMap(),
     update: new WeakMap(),
   };
 
-  const api = createApiDecorator(context, apiShared);
+  const api = createApiDecorator(context, apiShared, propsShared);
   const field = createFieldDecorator(context, apiShared, optionShared, propsShared);
   const form = createFormDecorator(context, apiShared, propsShared);
   const option = createOptionDecorator(apiShared, optionShared, propsShared);

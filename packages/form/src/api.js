@@ -1,9 +1,9 @@
 import {assertKind, assertPlacement, Kind, Placement} from '@corpuscule/utils/lib/asserts';
-import {hook} from '@corpuscule/utils/lib/descriptors';
+import {accessor, hook} from '@corpuscule/utils/lib/descriptors';
 import {getName} from '@corpuscule/utils/lib/propertyUtils';
 import {apis} from './utils';
 
-const createApiDecorator = ({value}, shared) => descriptor => {
+const createApiDecorator = ({value}, shared, {ref}) => descriptor => {
   assertKind('api', Kind.Field | Kind.Accessor, descriptor);
   assertPlacement('api', Placement.Own | Placement.Prototype, descriptor);
 
@@ -12,6 +12,20 @@ const createApiDecorator = ({value}, shared) => descriptor => {
 
   if (!apis.includes(name)) {
     throw new TypeError(`Property name ${name} is not allowed`);
+  }
+
+  if (name === 'refs') {
+    let $$ref;
+
+    return accessor({
+      finisher(target) {
+        $$ref = ref.get(target);
+      },
+      get() {
+        return this[$$ref];
+      },
+      key,
+    });
   }
 
   const finalDescriptor = {

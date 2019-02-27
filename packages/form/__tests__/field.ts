@@ -2,45 +2,73 @@
 import {defineCE, fixture} from '@open-wc/testing-helpers';
 import {FieldState, FieldValidator, FormApi, FormState} from 'final-form';
 import {formSpyObject, unsubscribe} from '../../../test/mocks/finalForm';
-import {createSimpleContext, CustomElement} from '../../../test/utils';
-import {createFormContext, FieldInputProps, FieldMetaProps, FormDecorator} from '../src';
+import {createSimpleContext, CustomElement, genName} from '../../../test/utils';
+import {
+  createFormContext,
+  FieldDecorator,
+  FieldInputProps,
+  FieldMetaProps,
+  FormDecorator,
+} from '../src';
 import {all} from '../src/utils';
 
 const testField = () => {
   describe('@field', () => {
     let scheduler: jasmine.Spy;
+    let isScheduledUpdate: boolean;
     let state: jasmine.SpyObj<FieldState>;
     let fieldValue: object;
     let metaObject: FieldMetaProps;
+    let subscriptionInfo: {
+      listeners: Array<(state: FieldState) => void>;
+      subscribers: Array<() => void>;
+      updaters: Array<() => void>;
+      validators: FieldValidator[];
+    };
 
     let api: PropertyDecorator;
     let form: FormDecorator;
-    let field: ClassDecorator;
+    let field: FieldDecorator;
     let option: PropertyDecorator;
 
-    const subscribeField = <T>(fieldElement: T): [(state: FieldState) => void, FieldValidator] => {
-      const [subscribe] = scheduler.calls.mostRecent().args;
-      subscribe.call(fieldElement);
-
-      const [, listener, , {getValidator}] = formSpyObject.registerField.calls.mostRecent().args;
-
-      return [listener, getValidator()];
+    const callListener = (listener: (state: FieldState) => void, s: FieldState) => {
+      isScheduledUpdate = true;
+      listener(s);
     };
 
-    const updateField = <T>(fieldElement: T, listener: (state: FieldState) => void) => {
-      listener(state);
-
-      const [update] = scheduler.calls.mostRecent().args;
-      update.call(fieldElement);
-    };
-
-    const subscribeAndUpdateField = <T>(fieldElement: T): void => {
-      const [listener] = subscribeField(fieldElement);
-      updateField(fieldElement, listener);
-    };
+    const SINGLE_FIELD_UPDATE = 2;
 
     beforeEach(() => {
-      scheduler = jasmine.createSpy('scheduler');
+      isScheduledUpdate = false;
+      subscriptionInfo = {
+        listeners: [],
+        subscribers: [],
+        updaters: [],
+        validators: [],
+      };
+      scheduler = jasmine.createSpy('scheduler').and.callFake((fn: () => void) => {
+        fn();
+
+        if (!isScheduledUpdate) {
+          isScheduledUpdate = true;
+
+          const [
+            ,
+            listener,
+            ,
+            {getValidator},
+          ] = formSpyObject.registerField.calls.mostRecent().args;
+
+          subscriptionInfo.listeners.push(listener);
+          subscriptionInfo.subscribers.push(fn);
+          subscriptionInfo.validators.push(getValidator());
+
+          callListener(listener, state);
+        } else {
+          isScheduledUpdate = false;
+          subscriptionInfo.updaters.push(fn);
+        }
+      });
 
       ({api, field, form, option} = createFormContext({scheduler}));
 
@@ -79,7 +107,7 @@ const testField = () => {
         public onSubmit(): void {}
       }
 
-      @field
+      @field()
       class Field extends CustomElement {
         @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<string>;
@@ -107,7 +135,7 @@ const testField = () => {
         public onSubmit(): void {}
       }
 
-      @field
+      @field()
       class Field extends CustomElement {
         @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<string>;
@@ -135,7 +163,7 @@ const testField = () => {
         public onSubmit(): void {}
       }
 
-      @field
+      @field()
       class Field extends CustomElement {
         @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<string>;
@@ -160,7 +188,8 @@ const testField = () => {
       }
 
       const [, fieldElement] = await createSimpleContext(Form, Field);
-      const [listener, validate] = subscribeField(fieldElement);
+      const [listener] = subscriptionInfo.listeners;
+      const [validate] = subscriptionInfo.validators;
 
       expect(formSpyObject.registerField).toHaveBeenCalledWith('test', listener, all, {
         getValidator: jasmine.any(Function),
@@ -181,7 +210,7 @@ const testField = () => {
         public onSubmit(): void {}
       }
 
-      @field
+      @field()
       class Field extends CustomElement {
         @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<object>;
@@ -191,8 +220,6 @@ const testField = () => {
       }
 
       const [, fieldElement] = await createSimpleContext(Form, Field);
-      const [listener] = subscribeField(fieldElement);
-      updateField(fieldElement, listener);
 
       expect(scheduler).toHaveBeenCalledTimes(2);
       expect(fieldElement.input).toEqual({
@@ -204,6 +231,8 @@ const testField = () => {
     });
 
     it('formats value for input if format option is set and formatOnBlur is disabled', async () => {
+      const formatSpy = jasmine.createSpy('Field.format');
+
       @form()
       class Form extends CustomElement {
         @api public readonly formApi!: FormApi;
@@ -213,7 +242,7 @@ const testField = () => {
         public onSubmit(): void {}
       }
 
-      @field
+      @field()
       class Field extends CustomElement {
         @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<object>;
@@ -225,19 +254,16 @@ const testField = () => {
         public formatOnBlur: boolean = false;
 
         @option
-        public format(value: unknown): unknown {
+        public format(value: unknown, name: string): unknown {
+          formatSpy(value, name);
+
           return value;
         }
       }
 
-      const [, fieldElement] = await createSimpleContext(Form, Field);
+      await createSimpleContext(Form, Field);
 
-      spyOn(fieldElement, 'format').and.callThrough();
-
-      const [listener] = subscribeField(fieldElement);
-      updateField(fieldElement, listener);
-
-      expect(fieldElement.format).toHaveBeenCalledWith(fieldValue, 'test');
+      expect(formatSpy).toHaveBeenCalledWith(fieldValue, 'test');
     });
 
     it('avoids unnecessary scheduling if update called many times', async () => {
@@ -250,7 +276,7 @@ const testField = () => {
         public onSubmit(): void {}
       }
 
-      @field
+      @field()
       class Field extends CustomElement {
         @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<object>;
@@ -259,18 +285,20 @@ const testField = () => {
         @option public readonly name: string = 'test';
       }
 
-      const [, fieldElement] = await createSimpleContext(Form, Field);
-      const [listener] = subscribeField(fieldElement);
+      await createSimpleContext(Form, Field);
+      const [listener] = subscriptionInfo.listeners;
 
       scheduler.calls.reset();
 
-      listener(state);
-      listener(state);
+      callListener(listener, state);
+      callListener(listener, state);
 
-      expect(scheduler).toHaveBeenCalledTimes(1);
+      expect(scheduler).toHaveBeenCalledTimes(SINGLE_FIELD_UPDATE);
     });
 
     it('avoids unnecessary scheduling if subscribe called many times', async () => {
+      scheduler.and.stub();
+
       @form()
       class Form extends CustomElement {
         @api public readonly formApi!: FormApi;
@@ -280,7 +308,7 @@ const testField = () => {
         public onSubmit(): void {}
       }
 
-      @field
+      @field()
       class Field extends CustomElement {
         @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<object>;
@@ -293,6 +321,7 @@ const testField = () => {
       fieldElement.connectedCallback();
       fieldElement.connectedCallback();
 
+      // Number of scheduler calls without calling $$update
       expect(scheduler).toHaveBeenCalledTimes(1);
     });
 
@@ -306,7 +335,7 @@ const testField = () => {
         public onSubmit(): void {}
       }
 
-      @field
+      @field()
       class Field extends CustomElement {
         @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<object>;
@@ -316,7 +345,6 @@ const testField = () => {
       }
 
       const [, fieldElement] = await createSimpleContext(Form, Field);
-      subscribeField(fieldElement);
 
       fieldElement.disconnectedCallback();
 
@@ -333,7 +361,7 @@ const testField = () => {
         public onSubmit(): void {}
       }
 
-      @field
+      @field()
       class Field extends CustomElement {
         @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<object>;
@@ -342,11 +370,50 @@ const testField = () => {
         @option public readonly name: string = 'test';
       }
 
-      const [, fieldElement] = await createSimpleContext(Form, Field);
-      subscribeField(fieldElement);
-      subscribeField(fieldElement);
+      await createSimpleContext(Form, Field);
+      const [subscribe] = subscriptionInfo.subscribers;
+
+      subscribe();
 
       expect(unsubscribe).toHaveBeenCalled();
+    });
+
+    it('does not change form value if event is not custom and field is not auto', async () => {
+      @form()
+      class Form extends CustomElement {
+        @api public readonly formApi!: FormApi;
+        @api public readonly state!: FormState;
+
+        @option
+        public onSubmit(): void {}
+      }
+
+      @field()
+      class Field extends CustomElement {
+        @api public readonly formApi!: FormApi;
+        @api public readonly input!: FieldInputProps<string>;
+        @api public readonly meta!: FieldMetaProps;
+
+        @option public readonly name: string = 'test';
+      }
+
+      const formTag = defineCE(Form);
+      const fieldTag = defineCE(Field);
+
+      const formElement = await fixture(`
+        <${formTag}>
+          <${fieldTag}>
+            <input type="text">
+          </${fieldTag}>
+        </${formTag}>
+      `);
+
+      const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
+
+      inputElement.value = 'test';
+      inputElement.dispatchEvent(new Event('change', {bubbles: true}));
+
+      expect(state.change).not.toHaveBeenCalled();
     });
 
     describe('@option', () => {
@@ -360,7 +427,7 @@ const testField = () => {
           public onSubmit(): void {}
         }
 
-        @field
+        @field()
         class Field extends CustomElement {
           @api public readonly formApi!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
@@ -371,11 +438,10 @@ const testField = () => {
         }
 
         const [, fieldElement] = await createSimpleContext(Form, Field);
-        subscribeField(fieldElement);
 
         fieldElement.name = 'test2';
 
-        expect(scheduler).toHaveBeenCalledTimes(2);
+        expect(scheduler).toHaveBeenCalledTimes(SINGLE_FIELD_UPDATE * 2);
       });
 
       it('does not resubscribe on name change if option values are equal', async () => {
@@ -388,7 +454,7 @@ const testField = () => {
           public onSubmit(): void {}
         }
 
-        @field
+        @field()
         class Field extends CustomElement {
           @api public readonly formApi!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
@@ -398,11 +464,10 @@ const testField = () => {
         }
 
         const [, fieldElement] = await createSimpleContext(Form, Field);
-        subscribeField(fieldElement);
 
         fieldElement.name = 'test1';
 
-        expect(scheduler).toHaveBeenCalledTimes(1);
+        expect(scheduler).toHaveBeenCalledTimes(SINGLE_FIELD_UPDATE);
       });
 
       it('resubscribes on subscription value change', async () => {
@@ -415,7 +480,7 @@ const testField = () => {
           public onSubmit(): void {}
         }
 
-        @field
+        @field()
         class Field extends CustomElement {
           @api public readonly formApi!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
@@ -426,11 +491,10 @@ const testField = () => {
         }
 
         const [, fieldElement] = await createSimpleContext(Form, Field);
-        subscribeField(fieldElement);
 
         fieldElement.subscription = {active: true};
 
-        expect(scheduler).toHaveBeenCalledTimes(2);
+        expect(scheduler).toHaveBeenCalledTimes(SINGLE_FIELD_UPDATE * 2);
       });
 
       it('does not resubscribe on subscription change if option values are equal', async () => {
@@ -443,7 +507,7 @@ const testField = () => {
           public onSubmit(): void {}
         }
 
-        @field
+        @field()
         class Field extends CustomElement {
           @api public readonly formApi!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
@@ -454,11 +518,10 @@ const testField = () => {
         }
 
         const [, fieldElement] = await createSimpleContext(Form, Field);
-        subscribeField(fieldElement);
 
         fieldElement.subscription = all;
 
-        expect(scheduler).toHaveBeenCalledTimes(1);
+        expect(scheduler).toHaveBeenCalledTimes(SINGLE_FIELD_UPDATE);
       });
 
       it('updates field if option value is changed', async () => {
@@ -471,20 +534,17 @@ const testField = () => {
           public onSubmit(): void {}
         }
 
-        @field
+        @field()
         class Field extends CustomElement {
           @api public readonly formApi!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
           @api public readonly meta!: FieldMetaProps;
 
           @option public readonly name: string = 'test';
-
-          @option
-          public value: string = 'test';
+          @option public value: string = 'test';
         }
 
         const [, fieldElement] = await createSimpleContext(Form, Field);
-        subscribeField(fieldElement);
 
         scheduler.calls.reset();
 
@@ -503,7 +563,7 @@ const testField = () => {
           public onSubmit(): void {}
         }
 
-        @field
+        @field()
         class Field extends CustomElement {
           @api public readonly formApi!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
@@ -516,7 +576,6 @@ const testField = () => {
         }
 
         const [, fieldElement] = await createSimpleContext(Form, Field);
-        subscribeField(fieldElement);
 
         scheduler.calls.reset();
 
@@ -527,7 +586,7 @@ const testField = () => {
 
       it('throws an error if option name is not one of Field config keys', () => {
         expect(() => {
-          @field
+          @field()
           // @ts-ignore
           class Field extends CustomElement {
             @api public readonly formApi!: FormApi;
@@ -546,7 +605,7 @@ const testField = () => {
 
       it('requires name field defined', () => {
         expect(() => {
-          @field
+          @field()
           // @ts-ignore
           class Field extends CustomElement {
             @api public readonly formApi!: FormApi;
@@ -555,18 +614,49 @@ const testField = () => {
           }
         }).toThrowError('@field requires name property marked with @option');
       });
+
+      it('does not run registerField on connection if name has no value', async () => {
+        @form()
+        class Form extends CustomElement {
+          @api public readonly formApi!: FormApi;
+          @api public readonly state!: FormState;
+
+          @option
+          public onSubmit(): void {}
+        }
+
+        @field()
+        class Field extends CustomElement {
+          @api public readonly formApi!: FormApi;
+          @api public readonly input!: FieldInputProps<string>;
+          @api public readonly meta!: FieldMetaProps;
+
+          @option public readonly name?: string;
+        }
+
+        const formTag = defineCE(Form);
+        const fieldTag = defineCE(Field);
+
+        await fixture(`
+        <${formTag}>
+          <${fieldTag}></${fieldTag}>
+        </${formTag}>
+      `);
+
+        expect(formSpyObject.registerField).not.toHaveBeenCalled();
+      });
     });
 
     describe('@api', () => {
       it('requires form, input and meta fields defined', () => {
         expect(() => {
-          @field
+          @field()
           // @ts-ignore
           class Field extends CustomElement {}
         }).toThrowError('@field requires form property marked with @api');
 
         expect(() => {
-          @field
+          @field()
           // @ts-ignore
           class Field extends CustomElement {
             @api public readonly formApi!: FormApi;
@@ -574,7 +664,7 @@ const testField = () => {
         }).toThrowError('@field requires input property marked with @api');
 
         expect(() => {
-          @field
+          @field()
           // @ts-ignore
           class Field extends CustomElement {
             @api public readonly formApi!: FormApi;
@@ -593,7 +683,7 @@ const testField = () => {
           public onSubmit(): void {}
         }
 
-        @field
+        @field()
         class Field extends CustomElement {
           public storage!: FormApi;
 
@@ -613,8 +703,6 @@ const testField = () => {
         }
 
         const [, fieldElement] = await createSimpleContext(Form, Field);
-        const [listener] = subscribeField(fieldElement);
-        updateField(fieldElement, listener);
 
         expect(fieldElement.storage).toBe(formSpyObject);
       });
@@ -632,7 +720,7 @@ const testField = () => {
         }).toThrow(new TypeError('Property name notForm is not allowed'));
 
         expect(() => {
-          @field
+          @field()
           // @ts-ignore
           class Field extends CustomElement {
             @api public readonly notInput!: FieldInputProps<object>;
@@ -654,7 +742,7 @@ const testField = () => {
             public onSubmit(): void {}
           }
 
-          @field
+          @field()
           class Field extends CustomElement {
             @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
@@ -664,8 +752,6 @@ const testField = () => {
           }
 
           const [, fieldElement] = await createSimpleContext(Form, Field);
-          const [listener] = subscribeField(fieldElement);
-          updateField(fieldElement, listener);
 
           fieldElement.dispatchEvent(new Event('blur'));
 
@@ -682,7 +768,7 @@ const testField = () => {
             public onSubmit(): void {}
           }
 
-          @field
+          @field()
           class Field extends CustomElement {
             @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
@@ -703,9 +789,6 @@ const testField = () => {
 
           spyOn(fieldElement, 'format').and.callThrough();
 
-          const [listener] = subscribeField(fieldElement);
-          updateField(fieldElement, listener);
-
           fieldElement.dispatchEvent(new Event('blur'));
 
           expect(fieldElement.format).toHaveBeenCalledWith(fieldValue, 'test');
@@ -722,7 +805,7 @@ const testField = () => {
             public onSubmit(): void {}
           }
 
-          @field
+          @field()
           class Field extends CustomElement {
             @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
@@ -732,8 +815,6 @@ const testField = () => {
           }
 
           const [, fieldElement] = await createSimpleContext(Form, Field);
-          const [listener] = subscribeField(fieldElement);
-          updateField(fieldElement, listener);
 
           const newFieldValue: object = {};
 
@@ -752,7 +833,7 @@ const testField = () => {
             public onSubmit(): void {}
           }
 
-          @field
+          @field()
           class Field extends CustomElement {
             @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
@@ -767,8 +848,6 @@ const testField = () => {
           }
 
           const [, fieldElement] = await createSimpleContext(Form, Field);
-          const [listener] = subscribeField(fieldElement);
-          updateField(fieldElement, listener);
 
           spyOn(fieldElement, 'parse').and.callThrough();
 
@@ -790,7 +869,7 @@ const testField = () => {
             public onSubmit(): void {}
           }
 
-          @field
+          @field()
           class Field extends CustomElement {
             @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
@@ -800,8 +879,6 @@ const testField = () => {
           }
 
           const [, fieldElement] = await createSimpleContext(Form, Field);
-          const [listener] = subscribeField(fieldElement);
-          updateField(fieldElement, listener);
 
           fieldElement.dispatchEvent(new Event('focus'));
 
@@ -810,7 +887,7 @@ const testField = () => {
       });
     });
 
-    describe('default fields', () => {
+    describe('auto fields', () => {
       let formTag: string;
       let fieldTag: string;
 
@@ -824,7 +901,7 @@ const testField = () => {
           public onSubmit(): void {}
         }
 
-        @field
+        @field({auto: true})
         class Field extends CustomElement {
           @api public readonly formApi!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
@@ -835,24 +912,185 @@ const testField = () => {
 
         formTag = defineCE(Form);
         fieldTag = defineCE(Field);
+
+        state.value = undefined;
       });
 
-      it('property updates form on input change event', async () => {
+      it('does not updates two times if @option value is set', async () => {
+        @field({auto: true})
+        class Field extends HTMLInputElement {
+          @api public readonly formApi!: FormApi;
+          @api public readonly input!: FieldInputProps<object>;
+          @api public readonly meta!: FieldMetaProps;
+
+          @option public readonly name: string = 'test';
+          @option public value: string = 'a1';
+        }
+
+        const nativeFieldTag = genName();
+        customElements.define(nativeFieldTag, Field, {extends: 'input'});
+
         const formElement = await fixture(`
-          <${formTag}>
-            <${fieldTag}>
-              <input type="text"/>         
-            </${fieldTag}>
-          </${formTag}>
-        `);
+            <${formTag}>
+              <input is="${nativeFieldTag}" type="text">
+            </${formTag}>
+          `);
 
-        const fieldElement = formElement.querySelector(fieldTag)!;
-        const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
-        subscribeAndUpdateField(fieldElement);
+        const fieldElement = formElement.querySelector<Field>('input')!;
 
-        inputElement.value = 'test';
-        inputElement.dispatchEvent(new Event('change', {bubbles: true}));
-        expect(state.change).toHaveBeenCalledWith('test');
+        scheduler.calls.reset();
+
+        fieldElement.value = 'a2';
+        fieldElement.dispatchEvent(new Event('change', {bubbles: true}));
+
+        expect(state.change).toHaveBeenCalledWith('a2');
+        expect(state.change).toHaveBeenCalledTimes(1);
+        expect(scheduler).toHaveBeenCalledTimes(SINGLE_FIELD_UPDATE);
+      });
+
+      it('allows to define ref property for container', async () => {
+        @field({auto: true})
+        class Field extends CustomElement {
+          @api public readonly formApi!: FormApi;
+          @api public readonly input!: FieldInputProps<object>;
+          @api public readonly meta!: FieldMetaProps;
+          @api public readonly refs!: NodeListOf<HTMLInputElement>;
+
+          @option public readonly name: string = 'test';
+        }
+
+        const tag = defineCE(Field);
+
+        const formElement = await fixture(`
+            <${formTag}>
+              <${tag}>
+                <input type="text">
+              </${tag}>
+            </${formTag}>
+          `);
+
+        const fieldElement = formElement.querySelector<Field>(tag)!;
+        const inputElement = formElement.querySelector('input')!;
+
+        expect(fieldElement.refs[0]).toBe(inputElement);
+      });
+
+      describe('text', () => {
+        it('updates form property on input change event', async () => {
+          const formElement = await fixture(`
+            <${formTag}>
+              <${fieldTag}>
+                <input type="text"/>         
+              </${fieldTag}>
+            </${formTag}>
+          `);
+
+          const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
+
+          inputElement.value = 'test';
+          inputElement.dispatchEvent(new Event('change', {bubbles: true}));
+          expect(state.change).toHaveBeenCalledWith('test');
+        });
+
+        it('updates input value on a form change', async () => {
+          state.value = 'a1';
+
+          const formElement = await fixture(`
+            <${formTag}>
+              <${fieldTag}>
+                <input type="text" value="a1"/>         
+              </${fieldTag}>
+            </${formTag}>
+          `);
+
+          const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
+          const [listener] = subscriptionInfo.listeners;
+
+          callListener(listener, {...state, value: 'a2'});
+
+          expect(inputElement.value).toBe('a2');
+        });
+
+        it('does not update input value if input is changed by user', async () => {
+          state.value = 'a1';
+
+          const formElement = await fixture(`
+            <${formTag}>
+              <${fieldTag}>
+                <input type="text" value="a1"/>         
+              </${fieldTag}>
+            </${formTag}>
+          `);
+
+          const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
+          const [listener] = subscriptionInfo.listeners;
+
+          // user changes text to a2
+          inputElement.value = 'a2';
+          inputElement.dispatchEvent(new Event('change', {bubbles: true}));
+
+          const inputSet = spyOnProperty(inputElement, 'value', 'set');
+
+          // form sends update for a field
+          callListener(listener, {...state, value: 'a2'});
+
+          // expecting field to ignore this update
+          expect(inputSet).not.toHaveBeenCalled();
+        });
+
+        it('allows HTMLInputElement to update form value', async () => {
+          @field({auto: true})
+          class Field extends HTMLInputElement {
+            @api public readonly formApi!: FormApi;
+            @api public readonly input!: FieldInputProps<object>;
+            @api public readonly meta!: FieldMetaProps;
+
+            @option public readonly name: string = 'test';
+          }
+
+          const nativeFieldTag = genName();
+          customElements.define(nativeFieldTag, Field, {extends: 'input'});
+
+          const formElement = await fixture(`
+            <${formTag}>
+              <input is="${nativeFieldTag}" type="text" value="a1">
+            </${formTag}>
+          `);
+
+          const fieldElement = formElement.querySelector<Field>('input')!;
+
+          fieldElement.value = 'a2';
+          fieldElement.dispatchEvent(new Event('change', {bubbles: true}));
+
+          expect(state.change).toHaveBeenCalledWith('a2');
+        });
+
+        it('allows HTMLInputElement updating on form change', async () => {
+          @field({auto: true})
+          class Field extends HTMLInputElement {
+            @api public readonly formApi!: FormApi;
+            @api public readonly input!: FieldInputProps<object>;
+            @api public readonly meta!: FieldMetaProps;
+
+            @option public readonly name: string = 'test';
+          }
+
+          const nativeFieldTag = genName();
+          customElements.define(nativeFieldTag, Field, {extends: 'input'});
+
+          const formElement = await fixture(`
+            <${formTag}>
+              <input is="${nativeFieldTag}" type="text" value="a1">
+            </${formTag}>
+          `);
+
+          const fieldElement = formElement.querySelector<Field>('input')!;
+          const [listener] = subscriptionInfo.listeners;
+
+          callListener(listener, {...state, value: 'a2'});
+
+          expect(fieldElement.value).toBe('a2');
+        });
       });
 
       describe('checkbox', () => {
@@ -865,9 +1103,7 @@ const testField = () => {
             </${formTag}>
           `);
 
-          const fieldElement = formElement.querySelector(fieldTag)!;
           const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
-          subscribeAndUpdateField(fieldElement);
 
           inputElement.checked = true;
           inputElement.dispatchEvent(new Event('change', {bubbles: true}));
@@ -883,9 +1119,7 @@ const testField = () => {
             </${formTag}>
           `);
 
-          const fieldElement = formElement.querySelector(fieldTag)!;
           const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
-          subscribeAndUpdateField(fieldElement);
 
           inputElement.checked = true;
           inputElement.dispatchEvent(new Event('change', {bubbles: true}));
@@ -903,9 +1137,7 @@ const testField = () => {
             </${formTag}>
           `);
 
-          const fieldElement = formElement.querySelector(fieldTag)!;
           const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
-          subscribeAndUpdateField(fieldElement);
 
           inputElement.checked = true;
           inputElement.dispatchEvent(new Event('change', {bubbles: true}));
@@ -923,16 +1155,14 @@ const testField = () => {
             </${formTag}>
           `);
 
-          const fieldElement = formElement.querySelector(fieldTag)!;
           const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
-          subscribeAndUpdateField(fieldElement);
 
           inputElement.checked = false;
           inputElement.dispatchEvent(new Event('change', {bubbles: true}));
           expect(state.change).toHaveBeenCalledWith([]);
         });
 
-        it('does nothing if form value is not an array', async () => {
+        it('does nothing if form value is not an array and checkbox is unchecked', async () => {
           state.value = undefined;
 
           const formElement = await fixture(`
@@ -943,24 +1173,277 @@ const testField = () => {
             </${formTag}>
           `);
 
-          const fieldElement = formElement.querySelector(fieldTag)!;
           const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
-          subscribeAndUpdateField(fieldElement);
 
           inputElement.checked = false;
           inputElement.dispatchEvent(new Event('change', {bubbles: true}));
           expect(state.change).toHaveBeenCalledWith(undefined);
         });
+
+        it('updates boolean value on a form change', async () => {
+          state.value = false;
+
+          const formElement = await fixture(`
+            <${formTag}>
+              <${fieldTag}>
+                <input type="checkbox"/>         
+              </${fieldTag}>
+            </${formTag}>
+          `);
+
+          const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
+          const [listener] = subscriptionInfo.listeners;
+
+          expect(inputElement.checked).not.toBeTruthy();
+
+          callListener(listener, {...state, value: true});
+          expect(inputElement.checked).toBeTruthy();
+
+          callListener(listener, {...state, value: false});
+          expect(inputElement.checked).not.toBeTruthy();
+        });
+
+        it('updates array value on a form change', async () => {
+          state.value = [];
+
+          const formElement = await fixture(`
+            <${formTag}>
+              <${fieldTag}>
+                <input type="checkbox" value="foo"/>         
+                <input type="checkbox" value="bar"/>         
+              </${fieldTag}>
+            </${formTag}>
+          `);
+
+          const inputElementFoo = formElement.querySelector<HTMLInputElement>('input[value=foo]')!;
+          const inputElementBar = formElement.querySelector<HTMLInputElement>('input[value=bar]')!;
+          const [listener] = subscriptionInfo.listeners;
+
+          expect(inputElementFoo.checked).not.toBeTruthy();
+          expect(inputElementBar.checked).not.toBeTruthy();
+
+          callListener(listener, {...state, value: ['foo']});
+          expect(inputElementFoo.checked).toBeTruthy();
+          expect(inputElementBar.checked).not.toBeTruthy();
+
+          callListener(listener, {...state, value: ['foo', 'bar']});
+          expect(inputElementFoo.checked).toBeTruthy();
+          expect(inputElementBar.checked).toBeTruthy();
+
+          callListener(listener, {...state, value: ['bar']});
+          expect(inputElementFoo.checked).not.toBeTruthy();
+          expect(inputElementBar.checked).toBeTruthy();
+        });
+
+        it('allows HTMLInputElement to update form value', async () => {
+          @field({auto: true})
+          class Field extends HTMLInputElement {
+            @api public readonly formApi!: FormApi;
+            @api public readonly input!: FieldInputProps<object>;
+            @api public readonly meta!: FieldMetaProps;
+
+            @option public readonly name: string = 'test';
+          }
+
+          const nativeFieldTag = genName();
+          customElements.define(nativeFieldTag, Field, {extends: 'input'});
+
+          const formElement = await fixture(`
+            <${formTag}>
+              <input is="${nativeFieldTag}" type="checkbox">
+            </${formTag}>
+          `);
+
+          const fieldElement = formElement.querySelector<Field>('input')!;
+
+          fieldElement.checked = true;
+          fieldElement.dispatchEvent(new Event('change', {bubbles: true}));
+          expect(state.change).toHaveBeenCalledWith(true);
+        });
+
+        it('allows HTMLInputElement updating on form change', async () => {
+          @field({auto: true})
+          class Field extends HTMLInputElement {
+            @api public readonly formApi!: FormApi;
+            @api public readonly input!: FieldInputProps<object>;
+            @api public readonly meta!: FieldMetaProps;
+
+            @option public readonly name: string = 'test';
+          }
+
+          const nativeFieldTag = genName();
+          customElements.define(nativeFieldTag, Field, {extends: 'input'});
+
+          const formElement = await fixture(`
+            <${formTag}>
+              <input is="${nativeFieldTag}" type="checkbox">
+            </${formTag}>
+          `);
+
+          const fieldElement = formElement.querySelector<Field>('input')!;
+          const [listener] = subscriptionInfo.listeners;
+
+          expect(fieldElement.checked).not.toBeTruthy();
+
+          callListener(listener, {...state, value: true});
+          expect(fieldElement.checked).toBeTruthy();
+
+          callListener(listener, {...state, value: false});
+          expect(fieldElement.checked).not.toBeTruthy();
+        });
+
+        it('sets field name to all inner elements (if container)', async () => {
+          const formElement = await fixture(`
+            <${formTag}>
+              <${fieldTag}>
+                <input type="checkbox" value="foo"/>         
+                <input type="checkbox" value="bar"/>
+              </${fieldTag}>
+            </${formTag}>
+          `);
+
+          const inputElementFoo = formElement.querySelector<HTMLInputElement>('input[value=foo]')!;
+          const inputElementBar = formElement.querySelector<HTMLInputElement>('input[value=bar]')!;
+
+          expect(inputElementFoo.name).toBe('test');
+          expect(inputElementBar.name).toBe('test');
+        });
+      });
+
+      describe('radio', () => {
+        it('changes form value on click', async () => {
+          const formElement = await fixture(`
+            <${formTag}>
+              <${fieldTag}>
+                <input type="radio" value="foo"/>         
+                <input type="radio" value="bar"/>         
+              </${fieldTag}>
+            </${formTag}>
+          `);
+
+          const inputElementFoo = formElement.querySelector<HTMLInputElement>('input[value=foo]')!;
+          const inputElementBar = formElement.querySelector<HTMLInputElement>('input[value=bar]')!;
+
+          inputElementFoo.checked = true;
+          inputElementFoo.dispatchEvent(new Event('change', {bubbles: true}));
+          expect(state.change).toHaveBeenCalledWith('foo');
+
+          inputElementBar.checked = true;
+          inputElementBar.dispatchEvent(new Event('change', {bubbles: true}));
+          expect(state.change).toHaveBeenCalledWith('bar');
+        });
+
+        it('updates input value on form change', async () => {
+          const formElement = await fixture(`
+            <${formTag}>
+              <${fieldTag}>
+                <input type="radio" value="foo"/>         
+                <input type="radio" value="bar"/>         
+              </${fieldTag}>
+            </${formTag}>
+          `);
+
+          const inputElementFoo = formElement.querySelector<HTMLInputElement>('input[value=foo]')!;
+          const inputElementBar = formElement.querySelector<HTMLInputElement>('input[value=bar]')!;
+          const [listener] = subscriptionInfo.listeners;
+
+          expect(inputElementFoo.checked).not.toBeTruthy();
+          expect(inputElementBar.checked).not.toBeTruthy();
+
+          callListener(listener, {...state, value: 'foo'});
+          expect(inputElementFoo.checked).toBeTruthy();
+          expect(inputElementBar.checked).not.toBeTruthy();
+
+          callListener(listener, {...state, value: 'bar'});
+          expect(inputElementFoo.checked).not.toBeTruthy();
+          expect(inputElementBar.checked).toBeTruthy();
+        });
+
+        it('allows HTMLInputElement to update form value', async () => {
+          @field({auto: true})
+          class Field extends HTMLInputElement {
+            @api public readonly formApi!: FormApi;
+            @api public readonly input!: FieldInputProps<object>;
+            @api public readonly meta!: FieldMetaProps;
+
+            @option public readonly name: string = 'test';
+          }
+
+          const nativeFieldTag = genName();
+          customElements.define(nativeFieldTag, Field, {extends: 'input'});
+
+          const formElement = await fixture(`
+            <${formTag}>
+              <input is="${nativeFieldTag}" type="radio" value="foo">
+              <input is="${nativeFieldTag}" type="radio" value="bar">
+            </${formTag}>
+          `);
+
+          const fieldElementFoo = formElement.querySelector<Field>('input[value=foo]')!;
+          const fieldElementBar = formElement.querySelector<Field>('input[value=bar]')!;
+
+          fieldElementFoo.checked = true;
+          fieldElementFoo.dispatchEvent(new Event('change', {bubbles: true}));
+          expect(state.change).toHaveBeenCalledWith('foo');
+
+          fieldElementBar.checked = true;
+          fieldElementBar.dispatchEvent(new Event('change', {bubbles: true}));
+          expect(state.change).toHaveBeenCalledWith('bar');
+        });
+
+        it('allows HTMLInputElement updating on form change', async () => {
+          @field({auto: true})
+          class Field extends HTMLInputElement {
+            @api public readonly formApi!: FormApi;
+            @api public readonly input!: FieldInputProps<object>;
+            @api public readonly meta!: FieldMetaProps;
+
+            @option public readonly name: string = 'test';
+          }
+
+          const nativeFieldTag = genName();
+          customElements.define(nativeFieldTag, Field, {extends: 'input'});
+
+          const formElement = await fixture(`
+            <${formTag}>
+              <input is="${nativeFieldTag}" type="radio" value="foo">
+              <input is="${nativeFieldTag}" type="radio" value="bar">
+            </${formTag}>
+          `);
+
+          const fieldElementFoo = formElement.querySelector<Field>('input[value=foo]')!;
+          const fieldElementBar = formElement.querySelector<Field>('input[value=bar]')!;
+          const [fooListener, barListener] = subscriptionInfo.listeners;
+
+          expect(fieldElementFoo.checked).not.toBeTruthy();
+          expect(fieldElementBar.checked).not.toBeTruthy();
+
+          callListener(fooListener, {...state, value: 'foo'});
+          callListener(barListener, {...state, value: 'foo'});
+          expect(fieldElementFoo.checked).toBeTruthy();
+          expect(fieldElementBar.checked).not.toBeTruthy();
+
+          callListener(fooListener, {...state, value: 'bar'});
+          callListener(barListener, {...state, value: 'bar'});
+          expect(fieldElementFoo.checked).not.toBeTruthy();
+          expect(fieldElementBar.checked).toBeTruthy();
+        });
       });
 
       describe('select', () => {
-        let fieldElement: Element;
-        let selectElement: HTMLSelectElement;
-        let option1: HTMLOptionElement;
-        let option2: HTMLOptionElement;
+        describe('container', () => {
+          let selectElement: HTMLSelectElement;
+          let option1: HTMLOptionElement;
+          let option2: HTMLOptionElement;
 
-        beforeEach(async () => {
-          const formElement = await fixture(`
+          const enableMultiple = () => {
+            selectElement.multiple = true;
+            option1.selected = false;
+            option2.selected = false;
+          };
+
+          beforeEach(async () => {
+            const formElement = await fixture(`
             <${formTag}>
               <${fieldTag}>
                 <select>
@@ -971,39 +1454,123 @@ const testField = () => {
             </${formTag}>
           `);
 
-          fieldElement = formElement.querySelector(fieldTag)!;
-          selectElement = formElement.querySelector('select')!;
-          [option1, option2] = Array.from<HTMLOptionElement>(
-            formElement.querySelectorAll('option'),
-          );
+            selectElement = formElement.querySelector('select')!;
+            [option1, option2] = Array.from<HTMLOptionElement>(
+              formElement.querySelectorAll('option'),
+            );
+          });
+
+          it('sets the form value to the selected option if selection is single', () => {
+            option2.selected = true;
+            selectElement.dispatchEvent(new Event('change', {bubbles: true}));
+
+            expect(state.change).toHaveBeenCalledWith('2');
+          });
+
+          it('sets the form value to the array of selected option if selection is multiple', () => {
+            enableMultiple();
+
+            option1.selected = true;
+            option2.selected = true;
+
+            selectElement.dispatchEvent(new Event('change', {bubbles: true}));
+
+            expect(state.change).toHaveBeenCalledWith(['1', '2']);
+          });
+
+          it('updates select value on form change if selection is single', () => {
+            const [listener] = subscriptionInfo.listeners;
+
+            expect(option1.selected).not.toBeTruthy();
+            expect(option2.selected).not.toBeTruthy();
+
+            callListener(listener, {...state, value: '1'});
+            expect(option1.selected).toBeTruthy();
+            expect(option2.selected).not.toBeTruthy();
+
+            callListener(listener, {...state, value: '2'});
+            expect(option1.selected).not.toBeTruthy();
+            expect(option2.selected).toBeTruthy();
+          });
+
+          it('updates select values on form change if selection is multiple', () => {
+            enableMultiple();
+
+            const [listener] = subscriptionInfo.listeners;
+
+            expect(option1.selected).not.toBeTruthy();
+            expect(option2.selected).not.toBeTruthy();
+
+            callListener(listener, {...state, value: ['1', '2']});
+            expect(option1.selected).toBeTruthy();
+            expect(option2.selected).toBeTruthy();
+
+            callListener(listener, {...state, value: ['2']});
+            expect(option1.selected).not.toBeTruthy();
+            expect(option2.selected).toBeTruthy();
+          });
         });
 
-        it('sets the form value to the selected option if selection is single', () => {
-          subscribeAndUpdateField(fieldElement);
+        describe('HTMLSelectElement', () => {
+          let selectElement: HTMLSelectElement;
+          let option1: HTMLOptionElement;
+          let option2: HTMLOptionElement;
 
-          option2.selected = true;
-          selectElement.dispatchEvent(new Event('change', {bubbles: true}));
+          beforeEach(async () => {
+            @field({auto: true})
+            class Field extends HTMLSelectElement {
+              @api public readonly formApi!: FormApi;
+              @api public readonly input!: FieldInputProps<object>;
+              @api public readonly meta!: FieldMetaProps;
 
-          expect(state.change).toHaveBeenCalledWith('2');
-        });
+              @option public readonly name: string = 'test';
+            }
 
-        it('sets the form value to the array of selected option if selection is multiple', () => {
-          selectElement.multiple = true;
+            const nativeFieldTag = genName();
+            customElements.define(nativeFieldTag, Field, {extends: 'select'});
 
-          subscribeAndUpdateField(fieldElement);
+            const formElement = (await fixture(`
+              <${formTag}>
+                <select is="${nativeFieldTag}">
+                  <option value="1">One</option>
+                  <option value="2">Two</option>
+                </select>
+              </${formTag}>
+            `)) as HTMLSelectElement;
 
-          option1.selected = true;
-          option2.selected = true;
+            selectElement = formElement.querySelector('select')!;
+            [option1, option2] = Array.from<HTMLOptionElement>(
+              formElement.querySelectorAll('option'),
+            );
+          });
 
-          selectElement.dispatchEvent(new Event('change', {bubbles: true}));
+          it('allows to update form value', () => {
+            option2.selected = true;
+            selectElement.dispatchEvent(new Event('change', {bubbles: true}));
 
-          expect(state.change).toHaveBeenCalledWith(['1', '2']);
+            expect(state.change).toHaveBeenCalledWith('2');
+          });
+
+          it('allows to update select value on form change', () => {
+            const [listener] = subscriptionInfo.listeners;
+
+            expect(option1.selected).not.toBeTruthy();
+            expect(option2.selected).not.toBeTruthy();
+
+            callListener(listener, {...state, value: '1'});
+            expect(option1.selected).toBeTruthy();
+            expect(option2.selected).not.toBeTruthy();
+
+            callListener(listener, {...state, value: '2'});
+            expect(option1.selected).not.toBeTruthy();
+            expect(option2.selected).toBeTruthy();
+          });
         });
       });
 
       it('does not throw an error if class already have own lifecycle element', () => {
         expect(() => {
-          @field
+          @field()
           // @ts-ignore
           class Field extends CustomElement {
             @api public readonly formApi!: FormApi;
