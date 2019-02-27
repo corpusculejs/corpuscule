@@ -68,7 +68,10 @@ const createField = (
             }
 
             supers[connectedCallbackKey].call(this);
-            this[$$subscribe]();
+
+            if (getValue(this, $name)) {
+              this[$$subscribe]();
+            }
           },
         },
         supers,

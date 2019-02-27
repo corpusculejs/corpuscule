@@ -614,6 +614,37 @@ const testField = () => {
           }
         }).toThrowError('@field requires name property marked with @option');
       });
+
+      it('does not run registerField on connection if name has no value', async () => {
+        @form()
+        class Form extends CustomElement {
+          @api public readonly formApi!: FormApi;
+          @api public readonly state!: FormState;
+
+          @option
+          public onSubmit(): void {}
+        }
+
+        @field()
+        class Field extends CustomElement {
+          @api public readonly formApi!: FormApi;
+          @api public readonly input!: FieldInputProps<string>;
+          @api public readonly meta!: FieldMetaProps;
+
+          @option public readonly name?: string;
+        }
+
+        const formTag = defineCE(Form);
+        const fieldTag = defineCE(Field);
+
+        await fixture(`
+        <${formTag}>
+          <${fieldTag}></${fieldTag}>
+        </${formTag}>
+      `);
+
+        expect(formSpyObject.registerField).not.toHaveBeenCalled();
+      });
     });
 
     describe('@api', () => {
