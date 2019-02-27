@@ -132,19 +132,18 @@ const createField = (
         bound: true,
         key: $$onChange,
         method(event) {
+          const isCustomEvent = event instanceof CustomEvent;
           const parse = $parse && getValue(this, $parse);
           const {change, name, value} = this[$$state];
 
-          let changeValue;
+          // We should update form only if it is an auto field or event is custom.
+          // By default field does not receive native change events.
+          if (isCustomEvent || auto) {
+            const changed = isCustomEvent ? event.detail : getTargetValue(event.target, value);
+            change(parse ? parse(changed, name) : changed);
 
-          if (event instanceof CustomEvent) {
-            changeValue = event.detail;
-          } else if (auto) {
-            changeValue = getTargetValue(event.target, value);
-            this[$$selfChange] = true;
+            this[$$selfChange] = !isCustomEvent;
           }
-
-          change(parse ? parse(changeValue, name) : changeValue);
         },
       }),
       $.method({
