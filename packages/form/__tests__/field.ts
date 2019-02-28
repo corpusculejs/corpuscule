@@ -10,7 +10,7 @@ import {
   FieldMetaProps,
   FormDecorator,
 } from '../src';
-import {all} from '../src/utils';
+import {all} from '../src/field';
 
 const testField = () => {
   describe('@field', () => {

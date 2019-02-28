@@ -3,10 +3,16 @@ import {field, hook, lifecycleKeys, method} from '@corpuscule/utils/lib/descript
 import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
 import getSupers from '@corpuscule/utils/lib/getSupers';
 import {getName, getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
-import {createForm} from 'final-form';
-import {all, filter, noop} from './utils';
+import {createForm, formSubscriptionItems} from 'final-form';
+import {filter, noop} from './utils';
 
 const [connectedCallbackKey, disconnectedCallbackKey] = lifecycleKeys;
+
+export const all = formSubscriptionItems.reduce((result, key) => {
+  result[key] = true;
+
+  return result;
+}, {});
 
 const createFormDecorator = ({provider}, {formApi, state}, {configOptions}) => ({
   decorators,

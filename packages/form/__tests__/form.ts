@@ -4,7 +4,7 @@ import {FormApi, FormState} from 'final-form';
 import {createForm, formSpyObject, unsubscribe} from '../../../test/mocks/finalForm';
 import {CustomElement} from '../../../test/utils';
 import {createFormContext, FormDecorator} from '../src';
-import {all} from '../src/utils';
+import {all} from '../src/form';
 
 const testForm = () => {
   describe('@form', () => {

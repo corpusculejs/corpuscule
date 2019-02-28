@@ -1,11 +1,18 @@
 import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/asserts';
 import * as $ from '@corpuscule/utils/lib/descriptors';
+import getSupers from '@corpuscule/utils/lib/getSupers';
 import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
 import {getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
-import {all, filter, getTargetValue, isNativeElement, noop, setTargetValues} from './utils';
-import getSupers from '@corpuscule/utils/lib/getSupers';
+import {fieldSubscriptionItems} from 'final-form';
+import {filter, getTargetValue, isNativeElement, noop, setTargetValues} from './utils';
 
 const [connectedCallbackKey, disconnectedCallbackKey] = $.lifecycleKeys;
+
+export const all = fieldSubscriptionItems.reduce((result, key) => {
+  result[key] = true;
+
+  return result;
+}, {});
 
 const createField = (
   {consumer},

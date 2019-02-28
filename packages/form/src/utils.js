@@ -1,5 +1,5 @@
 import {lifecycleKeys} from '@corpuscule/utils/lib/descriptors';
-import {configOptions, formSubscriptionItems} from 'final-form';
+import {configOptions} from 'final-form';
 
 export const noop = () => {}; // eslint-disable-line no-empty-function
 
@@ -18,12 +18,6 @@ export const fieldOptions = [
   'validateFields',
   'value',
 ];
-
-export const all = formSubscriptionItems.reduce((result, key) => {
-  result[key] = true;
-
-  return result;
-}, {});
 
 export const isNativeElement = element =>
   element instanceof HTMLInputElement ||
