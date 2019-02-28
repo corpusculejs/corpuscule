@@ -1,7 +1,9 @@
 // @ts-ignore
-import {configOptions, formSubscriptionItems} from 'final-form/dist/final-form.es'; // tslint:disable-line:no-implicit-dependencies
-
-export {configOptions, formSubscriptionItems};
+export {
+  configOptions,
+  fieldSubscriptionItems,
+  formSubscriptionItems,
+} from 'final-form/dist/final-form.es'; // tslint:disable-line:no-implicit-dependencies
 
 export const unsubscribe = jasmine.createSpy('unsubscribe');
 
