@@ -2,7 +2,7 @@ import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/as
 import * as $ from '@corpuscule/utils/lib/descriptors';
 import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
 import {getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
-import {all, filter, getTargetValue, noop, setTargetValues} from './utils';
+import {all, filter, getTargetValue, isNativeElement, noop, setTargetValues} from './utils';
 import getSupers from '@corpuscule/utils/lib/getSupers';
 
 const [connectedCallbackKey, disconnectedCallbackKey] = $.lifecycleKeys;
@@ -241,10 +241,7 @@ const createField = (
     finisher(target) {
       finisher(target);
       constructor = target;
-      isNativeField =
-        target.prototype instanceof HTMLInputElement ||
-        target.prototype instanceof HTMLSelectElement ||
-        target.prototype instanceof HTMLTextAreaElement;
+      isNativeField = isNativeElement(target.prototype);
 
       $formApi = formApi.get(target);
       $input = input.get(target);
