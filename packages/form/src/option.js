@@ -8,7 +8,7 @@ import {fieldOptions, formOptions} from './utils';
 const createOptionDecorator = (
   {formApi},
   options,
-  {compare, configInitializers, subscribe, update},
+  {compare, configOptions, subscribe, update},
 ) => descriptor => {
   assertKind('option', Kind.Field | Kind.Method | Kind.Accessor, descriptor);
   assertPlacement('option', Placement.Own | Placement.Prototype, descriptor);
@@ -102,12 +102,7 @@ const createOptionDecorator = (
     methodPart = {
       finisher(target) {
         originalFinisher(target);
-        configInitializers.get(target).push([
-          key,
-          function() {
-            return value.bind(this);
-          },
-        ]);
+        configOptions.get(target).push(key);
       },
     };
 
@@ -146,15 +141,7 @@ const createOptionDecorator = (
         originalFinisher(target);
         $formApi = formApi.get(target);
         $compareInitialValues = compare.get(target);
-
-        configInitializers.get(target).push([
-          key,
-          get
-            ? function() {
-                return get.call(this);
-              }
-            : initializer,
-        ]);
+        configOptions.get(target).push(key);
       },
     };
   }

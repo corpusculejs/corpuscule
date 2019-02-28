@@ -25,7 +25,7 @@ export const createFormContext = ({scheduler = defaultScheduler} = {}) => {
   const propsShared = {
     // @form properties
     compare: new WeakMap(),
-    configInitializers: new WeakMap(),
+    configOptions: new WeakMap(),
 
     // @field properties
     ref: new WeakMap(),

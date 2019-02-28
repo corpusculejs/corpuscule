@@ -8,7 +8,7 @@ import {all, filter, noop} from './utils';
 
 const [connectedCallbackKey, disconnectedCallbackKey] = lifecycleKeys;
 
-const createFormDecorator = ({provider}, {formApi, state}, {configInitializers}) => ({
+const createFormDecorator = ({provider}, {formApi, state}, {configOptions}) => ({
   decorators,
   subscription = all,
 } = {}) => descriptor => {
@@ -19,7 +19,7 @@ const createFormDecorator = ({provider}, {formApi, state}, {configInitializers})
   let $formApi;
   let constructor;
   let $state;
-  let initializers;
+  let configs;
 
   const getConstructor = () => constructor;
 
@@ -95,7 +95,7 @@ const createFormDecorator = ({provider}, {formApi, state}, {configInitializers})
       // Static Hooks
       hook({
         start() {
-          configInitializers.set(this, []);
+          configOptions.set(this, []);
         },
       }),
 
@@ -110,8 +110,9 @@ const createFormDecorator = ({provider}, {formApi, state}, {configInitializers})
             this,
             $formApi,
             createForm(
-              initializers.reduce((acc, [key, initializer]) => {
-                acc[key] = initializer ? initializer.call(this) : undefined;
+              configs.reduce((acc, key) => {
+                const configValue = this[key];
+                acc[key] = typeof configValue === 'function' ? configValue.bind(this) : configValue;
 
                 return acc;
               }, {}),
@@ -130,13 +131,13 @@ const createFormDecorator = ({provider}, {formApi, state}, {configInitializers})
       assertRequiredProperty('form', 'api', 'form', $formApi);
       assertRequiredProperty('form', 'api', 'state', $state);
 
-      initializers = configInitializers.get(target);
+      configs = configOptions.get(target);
 
       assertRequiredProperty(
         'form',
         'option',
         'onSubmit',
-        initializers.find(([key]) => getName(key) === 'onSubmit'),
+        configs.find(key => getName(key) === 'onSubmit'),
       );
 
       prepareSupers(target);
