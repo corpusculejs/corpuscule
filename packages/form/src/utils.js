@@ -25,6 +25,11 @@ export const all = formSubscriptionItems.reduce((result, key) => {
   return result;
 }, {});
 
+export const isNativeElement = element =>
+  element instanceof HTMLInputElement ||
+  element instanceof HTMLSelectElement ||
+  element instanceof HTMLTextAreaElement;
+
 export const getTargetValue = (
   {checked, defaultValue, selectedOptions, type, value},
   formValue,
@@ -75,7 +80,8 @@ const setSingleValue = (target, formValue) => {
       }
       break;
     default:
-      target.value = formValue;
+      target.value =
+        isNativeElement && (formValue === null || formValue === undefined) ? '' : formValue;
   }
 };
 

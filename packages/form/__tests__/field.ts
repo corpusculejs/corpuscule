@@ -1091,6 +1091,29 @@ const testField = () => {
 
           expect(fieldElement.value).toBe('a2');
         });
+
+        it('will convert undefined and null into an empty string on form update', async () => {
+          state.value = 'a1';
+
+          const formElement = await fixture(`
+            <${formTag}>
+              <${fieldTag}>
+                <input type="text" value="a1"/>         
+              </${fieldTag}>
+            </${formTag}>
+          `);
+
+          const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
+          const [listener] = subscriptionInfo.listeners;
+
+          callListener(listener, {...state, value: undefined});
+
+          expect(inputElement.value).toBe('');
+
+          callListener(listener, {...state, value: null});
+
+          expect(inputElement.value).toBe('');
+        });
       });
 
       describe('checkbox', () => {
