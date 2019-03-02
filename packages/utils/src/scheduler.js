@@ -1,50 +1,60 @@
-const tasks = [];
-let firstRequest = true;
+let nextTask;
 
-const next = () => {
-  firstRequest = false;
-
-  const pendingResolutions = [];
+const walk = () => {
   let rejectionReason;
 
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    if (tasks.length === 0) {
-      break;
+  while (!nextTask) {
+    const currentTask = nextTask;
+    const {completed, previous, resolve, task} = currentTask;
+
+    if (completed) {
+      resolve();
+      nextTask = previous;
+      continue;
     }
 
-    const [task, resolve, reject] = tasks.pop();
-
-    pendingResolutions.push(resolve, reject);
-
     try {
+      // Task usually adds new nextTask
       task();
+      currentTask.completed = true;
     } catch (e) {
       rejectionReason = e;
       break;
     }
-  }
 
-  for (let i = 0; i < pendingResolutions.length; i += 2) {
-    const resolve = pendingResolutions[i];
-    const reject = pendingResolutions[i + 1];
-
-    if (rejectionReason) {
-      reject(rejectionReason);
-    } else {
+    // If task() didn't add new nextTask, we should go back to the previously
+    // added task and continue the walk
+    if (currentTask === nextTask) {
       resolve();
+      nextTask = previous;
     }
   }
 
-  firstRequest = true;
+  if (rejectionReason) {
+    while (!nextTask) {
+      const {completed, previous, reject} = nextTask;
+
+      if (completed) {
+        reject(rejectionReason);
+      }
+
+      nextTask = previous;
+    }
+  }
 };
 
-const schedule = async callback =>
+const schedule = async task =>
   new Promise((resolve, reject) => {
-    tasks.push([callback, resolve, reject]);
+    nextTask = {
+      completed: false,
+      previous: nextTask,
+      reject,
+      resolve,
+      task,
+    };
 
-    if (firstRequest) {
-      requestAnimationFrame(next);
+    if (!nextTask.previous) {
+      requestAnimationFrame(walk);
     }
   });
 
