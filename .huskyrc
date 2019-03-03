@@ -1,0 +1,5 @@
+{
+  "hooks": {
+    "pre-commit": "run-p typecheck lint-staged"
+  }
+}
