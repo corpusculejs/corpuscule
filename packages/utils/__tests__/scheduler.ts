@@ -1,63 +1,86 @@
 // tslint:disable:no-floating-promises
-
+import {createTestingPromise} from '../../../test/utils';
 import schedule from '../src/scheduler';
+
+interface TaskObject {
+  readonly children: ReadonlyArray<TaskObject>;
+  readonly task: () => void;
+}
 
 const testSchedule = () => {
   describe('schedule', () => {
-    it('uses single requestAnimationFrame for all nested tasks', () => {
-      const taskSpy = jasmine.createSpy('task');
+    let raf: jasmine.Spy;
+    let taskSpy: jasmine.Spy;
 
-      const raf = spyOn(window, 'requestAnimationFrame').and.callFake((callback: () => void) => {
+    const createTaskObject = (task: () => void): TaskObject => ({
+      children: [
+        {
+          children: [],
+          task,
+        },
+        {
+          children: [
+            {
+              children: [],
+              task,
+            },
+            {
+              children: [],
+              task,
+            },
+          ],
+          task,
+        },
+      ],
+      task,
+    });
+
+    beforeEach(() => {
+      raf = spyOn(window, 'requestAnimationFrame').and.callFake((callback: () => void) => {
         callback();
       });
 
-      let nesting = 0;
+      taskSpy = jasmine.createSpy('task');
+    });
 
-      const task = () => {
+    it('uses single requestAnimationFrame for all nested tasks', async () => {
+      const tree = createTaskObject(function task(this: TaskObject): void {
         taskSpy();
-
-        if (nesting === 2) {
-          return;
+        for (const child of this.children) {
+          schedule(child.task.bind(child));
         }
+      });
 
-        schedule(task);
-        nesting += 1;
-      };
+      await schedule(tree.task.bind(tree));
 
-      schedule(task);
-
-      expect(taskSpy).toHaveBeenCalledTimes(3);
+      expect(taskSpy).toHaveBeenCalledTimes(5);
       expect(raf).toHaveBeenCalledTimes(1);
     });
 
     it('consistently rejects rendering promises until the top one', async () => {
-      const rejectSpy = jasmine.createSpy('onCatch');
+      const rejectSpy = jasmine.createSpy('reject');
+      const [promise, resolve] = createTestingPromise();
 
-      let resolve: Function;
-      const promise = new Promise<void>(r => {
-        resolve = r;
-      });
-
-      let nesting = 0;
-
-      const task = () => {
-        if (nesting === 2) {
+      const tree = createTaskObject(function task(this: TaskObject): void {
+        if (this.children.length === 0) {
           throw new Error('foo');
         }
 
-        schedule(task).catch(() => {
-          rejectSpy();
-          nesting -= 1;
+        for (const child of this.children) {
+          schedule(child.task.bind(child)).catch(() => {
+            rejectSpy();
 
-          if (nesting === 0) {
-            resolve();
-          }
-        });
+            if (this === tree) {
+              resolve();
+            }
+          });
+        }
+      });
 
-        nesting += 1;
-      };
-
-      return Promise.all([schedule(task), promise]).catch(e => {
+      // The testing promise is necessary here because otherwise this catch
+      // will be considered as first. It leads to test failure because spies
+      // aren't executed yet.
+      return Promise.all([schedule(tree.task.bind(tree)), promise]).catch(e => {
         expect(e.message).toBe('foo');
         expect(rejectSpy).toHaveBeenCalledTimes(2);
       });
