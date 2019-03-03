@@ -4,12 +4,15 @@ using it in production. API is not ready yet and can receive large changes.
 
 # @corpuscule/router
 [![Latest Stable Version](https://img.shields.io/npm/v/@corpuscule/router.svg)](https://www.npmjs.com/package/@corpuscule/router)
+[![Package size](https://badgen.net/bundlephobia/minzip/@corpuscule/router)](https://bundlephobia.com/result?p=@corpuscule/router)
 
 Lightweight set of decorators and components for providing routing for web components. Built on top
 of [Universal Router](https://github.com/kriasoft/universal-router).
 
 ## Features
-* **Small**. Only [2.8Kb gzipped](https://bundlephobia.com/result?p=@corpuscule/router@0.7.0)
+* **Small**. According to [Bundlephobia](https://bundlephobia.com), it has following sizes:
+  * [![Package size](https://badgen.net/bundlephobia/min/@corpuscule/router)](https://bundlephobia.com/result?p=@corpuscule/router)
+  * [![Package size](https://badgen.net/bundlephobia/minzip/@corpuscule/router)](https://bundlephobia.com/result?p=@corpuscule/router)
 * **Typed**. [Typescript](http://www.typescriptlang.org/) typings are included.
 
 ## Installation

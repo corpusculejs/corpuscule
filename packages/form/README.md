@@ -4,12 +4,15 @@ using it in production. API is not ready yet and can receive large changes.
 
 # `@corpuscule/form`
 [![Latest Stable Version](https://img.shields.io/npm/v/@corpuscule/form.svg)](https://www.npmjs.com/package/@corpuscule/form)
+[![Package size](https://badgen.net/bundlephobia/minzip/@corpuscule/form)](https://bundlephobia.com/result?p=@corpuscule/form)
 
 Lightweight set of decorators for providing solid form experience for web components. Works as a
 connector to [🏁 Final Form](https://github.com/final-form/final-form).
 
 ## Features
-* **Small**. Only [4.2Kb gzipped](https://bundlephobia.com/result?p=@corpuscule/form@0.7.0)
+* **Small**. According to [Bundlephobia](https://bundlephobia.com), it has following sizes:
+  * [![Package size](https://badgen.net/bundlephobia/min/@corpuscule/form)](https://bundlephobia.com/result?p=@corpuscule/form)
+  * [![Package size](https://badgen.net/bundlephobia/minzip/@corpuscule/form)](https://bundlephobia.com/result?p=@corpuscule/form)
 * **Typed**. [Typescript](http://www.typescriptlang.org/) typings are included.
 
 ## Installation
