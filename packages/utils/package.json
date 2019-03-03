@@ -1,6 +1,6 @@
 {
   "name": "@corpuscule/utils",
-  "version": "0.10.0",
+  "version": "0.10.2",
   "description": "Common utils for Corpuscule",
   "scripts": {
     "build": "node ../../scripts/build.js"
