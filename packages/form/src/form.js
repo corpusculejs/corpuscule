@@ -29,6 +29,7 @@ const createFormDecorator = ({provider}, {formApi, state}, {configOptions}) => (
 
   const getConstructor = () => constructor;
 
+  const $$reset = Symbol();
   const $$submit = Symbol();
   const $$unsubscriptions = Symbol();
 
@@ -56,6 +57,7 @@ const createFormDecorator = ({provider}, {formApi, state}, {configOptions}) => (
             );
 
             this.addEventListener('submit', this[$$submit]);
+            this.addEventListener('reset', this[$$reset]);
 
             supers[connectedCallbackKey].call(this);
           },
@@ -74,6 +76,7 @@ const createFormDecorator = ({provider}, {formApi, state}, {configOptions}) => (
             this[$$unsubscriptions] = [];
 
             this.removeEventListener('submit', this[$$submit]);
+            this.removeEventListener('reset', this[$$reset]);
 
             supers[disconnectedCallbackKey].call(this);
           },
@@ -86,6 +89,16 @@ const createFormDecorator = ({provider}, {formApi, state}, {configOptions}) => (
       field({
         initializer: () => [],
         key: $$unsubscriptions,
+      }),
+      method({
+        bound: true,
+        key: $$reset,
+        method(e) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          getValue(this, $formApi).reset();
+        },
       }),
       method({
         bound: true,

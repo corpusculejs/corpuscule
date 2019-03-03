@@ -11,6 +11,7 @@ export const formSpyObject = jasmine.createSpyObj('finalForm', [
   'get',
   'initialize',
   'registerField',
+  'reset',
   'setConfig',
   'submit',
   'subscribe',

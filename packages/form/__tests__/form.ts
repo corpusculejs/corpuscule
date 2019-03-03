@@ -1,5 +1,5 @@
 // tslint:disable:no-unbound-method
-import {defineCE, fixture, fixtureSync, html, unsafeStatic} from '@open-wc/testing-helpers';
+import {defineCE, fixture, html, unsafeStatic} from '@open-wc/testing-helpers';
 import {FormApi, FormState} from 'final-form';
 import {createForm, formSpyObject, unsubscribe} from '../../../test/mocks/finalForm';
 import {CustomElement} from '../../../test/utils';
@@ -20,6 +20,7 @@ const testForm = () => {
 
       formSpyObject.get.calls.reset();
       formSpyObject.initialize.calls.reset();
+      formSpyObject.reset.calls.reset();
       formSpyObject.setConfig.calls.reset();
       formSpyObject.submit.calls.reset();
       formSpyObject.subscribe.calls.reset();
@@ -338,7 +339,7 @@ const testForm = () => {
       expect(unsubscribe).toHaveBeenCalled();
     });
 
-    it('catches submit event', () => {
+    it('catches submit event', async () => {
       @form()
       class Test extends CustomElement {
         @api public readonly formApi!: FormApi;
@@ -349,7 +350,7 @@ const testForm = () => {
       }
 
       const tag = defineCE(Test);
-      const test = fixtureSync(`<${tag}></${tag}>`) as Test;
+      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
 
       const submitEvent = new Event('submit');
       spyOn(submitEvent, 'preventDefault').and.callThrough();
@@ -360,6 +361,30 @@ const testForm = () => {
       expect(submitEvent.preventDefault).toHaveBeenCalled();
       expect(submitEvent.stopPropagation).toHaveBeenCalled();
       expect(formSpyObject.submit).toHaveBeenCalled();
+    });
+
+    it('catches reset event', async () => {
+      @form()
+      class Test extends CustomElement {
+        @api public readonly formApi!: FormApi;
+        @api public readonly state!: FormState;
+
+        @option
+        public onSubmit(): void {}
+      }
+
+      const tag = defineCE(Test);
+      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
+
+      const resetEvent = new Event('reset');
+      spyOn(resetEvent, 'preventDefault').and.callThrough();
+      spyOn(resetEvent, 'stopPropagation').and.callThrough();
+
+      test.dispatchEvent(resetEvent);
+
+      expect(resetEvent.preventDefault).toHaveBeenCalled();
+      expect(resetEvent.stopPropagation).toHaveBeenCalled();
+      expect(formSpyObject.reset).toHaveBeenCalled();
     });
 
     describe('@api', () => {
