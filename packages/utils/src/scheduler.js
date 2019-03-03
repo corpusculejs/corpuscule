@@ -4,7 +4,7 @@ let nextTask;
  * The function schedules tree-structured tasks where one task could generate a number of children
  * that should be executed as well. Tasks are connected via a linked list. Tree traversing
  * algorithm is depth-first and stack-oriented, so the latest task will be performed first. When
- * there is no children for the current task, it goes back for one node and checks if the task is
+ * there are no children for the current task, it goes back for one node and checks if the task is
  * already executed. If yes, it goes back one more time - and so on. If it finds an uncompleted
  * task, it runs it and its children until all tasks in the list are completed.
  *
