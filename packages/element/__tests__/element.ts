@@ -1,5 +1,5 @@
 // tslint:disable:no-unbound-method
-import {fixtureSync} from '@open-wc/testing-helpers';
+import {fixture, fixtureSync} from '@open-wc/testing-helpers';
 import {Constructor, createTestingPromise, CustomElement, genName} from '../../../test/utils';
 import {
   createElementDecorator,
@@ -85,8 +85,7 @@ const testElementDecorator = () => {
       // @ts-ignore
       class Test extends fixtureMixin(CustomElement) {}
 
-      const test = fixtureSync(`<${tag}></${tag}>`) as Test;
-      await test.updateComplete;
+      await fixture(`<${tag}></${tag}>`);
 
       expect(schedulerSpy).not.toHaveBeenCalled();
     });
@@ -109,8 +108,7 @@ const testElementDecorator = () => {
         }
       }
 
-      const test = fixtureSync(`<${tag}></${tag}>`) as Test;
-      await test.updateComplete;
+      await fixture(`<${tag}></${tag}>`);
 
       expect(connectedCallbackSpy).toHaveBeenCalled();
       expect(schedulerSpy).toHaveBeenCalled();
@@ -123,7 +121,7 @@ const testElementDecorator = () => {
 
       @element(tag)
       class Test extends fixtureMixin(CustomElement) {
-        public attributeChangedCallback(...args: Array<unknown>): void {
+        public attributeChangedCallback(...args: unknown[]): void {
           attributeChangedCallbackSpy(...args);
         }
 
@@ -132,8 +130,7 @@ const testElementDecorator = () => {
         }
       }
 
-      const test = fixtureSync(`<${tag}></${tag}>`) as Test;
-      await test.updateComplete;
+      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
 
       test.attributeChangedCallback('test', 'old', 'new');
       expect(attributeChangedCallbackSpy).toHaveBeenCalledWith('test', 'old', 'new');
@@ -147,7 +144,7 @@ const testElementDecorator = () => {
 
       @element(tag)
       class Test extends fixtureMixin(CustomElement) {
-        public [propertyChangedCallback](...args: Array<unknown>): void {
+        public [propertyChangedCallback](...args: unknown[]): void {
           propertyChangedCallbackSpy(...args);
         }
 
@@ -156,8 +153,7 @@ const testElementDecorator = () => {
         }
       }
 
-      const test = fixtureSync(`<${tag}></${tag}>`) as Test;
-      await test.updateComplete;
+      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
 
       test[propertyChangedCallback]('test', 'old', 'new');
       expect(propertyChangedCallbackSpy).toHaveBeenCalledWith('test', 'old', 'new');
@@ -171,7 +167,7 @@ const testElementDecorator = () => {
 
       @element(tag)
       class Test extends fixtureMixin(CustomElement) {
-        public [internalChangedCallback](...args: Array<unknown>): void {
+        public [internalChangedCallback](...args: unknown[]): void {
           internalChangedCallbackSpy(...args);
         }
 
@@ -180,8 +176,7 @@ const testElementDecorator = () => {
         }
       }
 
-      const test = fixtureSync(`<${tag}></${tag}>`) as Test;
-      await test.updateComplete;
+      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
 
       test[internalChangedCallback]('test', 'old', 'new');
       expect(internalChangedCallbackSpy).toHaveBeenCalledWith('test', 'old', 'new');
@@ -205,8 +200,7 @@ const testElementDecorator = () => {
         }
       }
 
-      const test = fixtureSync(`<${tag}></${tag}>`) as Test;
-      await test.updateComplete;
+      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
 
       // This commands causes update
       test.attributeChangedCallback('test', '1', '2');
@@ -226,8 +220,7 @@ const testElementDecorator = () => {
         }
       }
 
-      const test = fixtureSync(`<${tag}></${tag}>`) as Test;
-      await test.updateComplete;
+      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
 
       expect(rendererSpy).toHaveBeenCalledWith('rendered string', jasmine.any(Node), test);
     });
@@ -241,15 +234,15 @@ const testElementDecorator = () => {
 
       @element(tag)
       class Test extends fixtureMixin(CustomElement) {
-        public attributeChangedCallback(...args: Array<unknown>): void {
+        public attributeChangedCallback(...args: unknown[]): void {
           attributeChangedCallbackSpy(...args);
         }
 
-        public [propertyChangedCallback](...args: Array<unknown>): void {
+        public [propertyChangedCallback](...args: unknown[]): void {
           propertyChangedCallbackSpy(...args);
         }
 
-        public [internalChangedCallback](...args: Array<unknown>): void {
+        public [internalChangedCallback](...args: unknown[]): void {
           internalChangedCallbackSpy(...args);
         }
 
@@ -258,8 +251,7 @@ const testElementDecorator = () => {
         }
       }
 
-      const test = fixtureSync(`<${tag}></${tag}>`) as Test;
-      await test.updateComplete;
+      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
 
       schedulerSpy.calls.reset();
 
@@ -283,15 +275,15 @@ const testElementDecorator = () => {
 
       @element(tag)
       class Test extends fixtureMixin(CustomElement) {
-        public attributeChangedCallback(...args: Array<unknown>): void {
+        public attributeChangedCallback(...args: unknown[]): void {
           attributeChangedCallbackSpy(...args);
         }
 
-        public [propertyChangedCallback](...args: Array<unknown>): void {
+        public [propertyChangedCallback](...args: unknown[]): void {
           propertyChangedCallbackSpy(...args);
         }
 
-        public [internalChangedCallback](...args: Array<unknown>): void {
+        public [internalChangedCallback](...args: unknown[]): void {
           internalChangedCallbackSpy(...args);
         }
 
@@ -322,7 +314,7 @@ const testElementDecorator = () => {
 
       @element(tag)
       class Test extends fixtureMixin(CustomElement) {
-        public attributeChangedCallback(...args: Array<unknown>): void {
+        public attributeChangedCallback(...args: unknown[]): void {
           attributeChangedCallbackSpy(...args);
         }
 
@@ -331,8 +323,7 @@ const testElementDecorator = () => {
         }
       }
 
-      const test = fixtureSync(`<${tag}></${tag}>`) as Test;
-      await test.updateComplete;
+      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
       schedulerSpy.calls.reset();
       schedulerSpy.and.stub();
 
@@ -357,8 +348,7 @@ const testElementDecorator = () => {
         }
       }
 
-      const test = fixtureSync(`<${tag}></${tag}>`) as Test;
-      await test.updateComplete;
+      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
 
       expect(rendererSpy).toHaveBeenCalledWith('render', test, jasmine.any(Object));
     });
@@ -436,8 +426,7 @@ const testElementDecorator = () => {
           }
         }
 
-        const test = fixtureSync(`<${tag}></${tag}>`) as Child;
-        await test.updateComplete;
+        await fixture(`<${tag}></${tag}>`);
 
         expect(schedulerSpy).toHaveBeenCalledTimes(1);
         expect(connectedSpyChild).toHaveBeenCalled();
@@ -462,8 +451,7 @@ const testElementDecorator = () => {
         // @ts-ignore
         class Test extends fixtureMixin(HTMLAnchorElement) {}
 
-        const test = fixtureSync(`<a is="${tag}"></a>`) as Test;
-        await test.updateComplete;
+        await fixture(`<a is="${tag}"></a>`);
 
         expect(schedulerSpy).not.toHaveBeenCalled();
       });
@@ -474,8 +462,7 @@ const testElementDecorator = () => {
         @element(tag, {extends: 'span'})
         class Test extends fixtureMixin(HTMLSpanElement) {}
 
-        const test = fixtureSync(`<span is="${tag}"></span>`) as Test;
-        await test.updateComplete;
+        const test = (await fixture(`<span is="${tag}"></span>`)) as Test;
 
         expect(test.shadowRoot).not.toBeUndefined();
       });
@@ -486,8 +473,7 @@ const testElementDecorator = () => {
         @element(tag, {extends: 'a'})
         class Test extends fixtureMixin(HTMLAnchorElement) {}
 
-        const test = fixtureSync(`<a is="${tag}"></a>`) as Test;
-        await test.updateComplete;
+        const test = (await fixture(`<a is="${tag}"></a>`)) as Test;
 
         expect(test.shadowRoot).toBeNull();
       });
@@ -503,8 +489,7 @@ const testElementDecorator = () => {
           }
         }
 
-        const test = fixtureSync(`<a is="${tag}"></a>`) as Test;
-        await test.updateComplete;
+        const test = (await fixture(`<a is="${tag}"></a>`)) as Test;
 
         test.attributeChangedCallback('test', '1', '2');
 

@@ -71,7 +71,7 @@ const testPropertyDecorator = () => {
 
         private storage: string = 'str';
 
-        public [propertyChangedCallback](...args: Array<unknown>): void {
+        public [propertyChangedCallback](...args: unknown[]): void {
           propertyChangedCallbackSpy(...args);
         }
       }
