@@ -4,6 +4,7 @@ using it in production. API is not ready yet and can receive large changes.
 
 # `@corpuscule/element`
 [![Latest Stable Version](https://img.shields.io/npm/v/@corpuscule/element.svg)](https://www.npmjs.com/package/@corpuscule/element)
+[![Package size](https://badgen.net/bundlephobia/minzip/@corpuscule/element)](https://bundlephobia.com/result?p=@corpuscule/element)
 
 A lightweight set of decorators for creating web components. It is a decorator-based analog for
 Polymer's [LitElement](https://github.com/Polymer/lit-element) or a web components based view
@@ -15,7 +16,9 @@ third-party library is used.
 * **Renderer agnostic**. You can use `@corpuscule/element` with any renderer you want: `lit-html`,
 `hyperHTML`, `preact` or even `React`. Just choose an existing renderer or create a new one and send
 it as a decorator option.
-* **Small**. Only [2.5Kb gzipped](https://bundlephobia.com/result?p=@corpuscule/element@0.7.0).
+* **Small**. According to [Bundlephobia](https://bundlephobia.com), it has following sizes:
+  * [![Package size](https://badgen.net/bundlephobia/min/@corpuscule/element)](https://bundlephobia.com/result?p=@corpuscule/element)
+  * [![Package size](https://badgen.net/bundlephobia/minzip/@corpuscule/element)](https://bundlephobia.com/result?p=@corpuscule/element)
 * **Typed**. [Typescript](http://www.typescriptlang.org/) typings are included.
 
 ## Installation
