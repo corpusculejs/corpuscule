@@ -60,7 +60,7 @@ const testInternalDecorator = () => {
 
         private storage: string = 'str';
 
-        public [internalChangedCallback](...args: Array<unknown>): void {
+        public [internalChangedCallback](...args: unknown[]): void {
           internalChangedCallbackSpy(...args);
         }
       }
