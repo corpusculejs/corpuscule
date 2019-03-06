@@ -130,8 +130,7 @@ const createFormDecorator = ({provider}, {formApi, state}, {configOptions}) => (
             $formApi,
             createForm(
               configs.reduce((acc, key) => {
-                const configValue = this[key];
-                acc[key] = typeof configValue === 'function' ? configValue.bind(this) : configValue;
+                acc[key] = this[key];
 
                 return acc;
               }, {}),

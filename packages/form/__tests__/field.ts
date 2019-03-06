@@ -645,6 +645,44 @@ const testField = () => {
 
         expect(formSpyObject.registerField).not.toHaveBeenCalled();
       });
+
+      it('properly sets validate option', async () => {
+        @form()
+        class Form extends CustomElement {
+          @api public readonly formApi!: FormApi;
+          @api public readonly state!: FormState;
+
+          @option
+          public onSubmit(): void {}
+        }
+
+        @field()
+        class Field extends CustomElement {
+          @api public readonly formApi!: FormApi;
+          @api public readonly input!: FieldInputProps<string>;
+          @api public readonly meta!: FieldMetaProps;
+
+          @option public readonly name: string = 'test';
+
+          @option
+          public validate(): void {}
+        }
+
+        const formTag = defineCE(Form);
+        const fieldTag = defineCE(Field);
+
+        const formElement = await fixture(`
+          <${formTag}>
+            <${fieldTag}></${fieldTag}>
+          </${formTag}>
+        `);
+
+        const fieldElement = formElement.querySelector<Field>(fieldTag)!;
+
+        const [, , , {getValidator}] = formSpyObject.registerField.calls.mostRecent().args;
+
+        expect(getValidator()).toBe(fieldElement.validate);
+      });
     });
 
     describe('@api', () => {
@@ -931,10 +969,10 @@ const testField = () => {
         customElements.define(nativeFieldTag, Field, {extends: 'input'});
 
         const formElement = await fixture(`
-            <${formTag}>
-              <input is="${nativeFieldTag}" type="text">
-            </${formTag}>
-          `);
+          <${formTag}>
+            <input is="${nativeFieldTag}" type="text">
+          </${formTag}>
+        `);
 
         const fieldElement = formElement.querySelector<Field>('input')!;
 

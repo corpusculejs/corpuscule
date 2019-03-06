@@ -5,7 +5,10 @@ import {accessor, hook, method} from '@corpuscule/utils/lib/descriptors';
 import {noop} from '../../element/src/utils';
 import {fieldOptions, formOptions} from './utils';
 
+const optionsList = new Set([...fieldOptions, ...formOptions]);
+
 const createOptionDecorator = (
+  {isProvider: isForm},
   {formApi},
   options,
   {compare, configOptions, subscribe, update},
@@ -26,142 +29,118 @@ const createOptionDecorator = (
 
   const name = getName(key);
 
-  if (name === 'compareInitialValues') {
-    return {
-      ...descriptor,
-      extras: [
-        hook({
-          start() {
-            compare.set(this, key);
-          },
-        }),
-        ...extras,
-      ],
-      finisher: originalFinisher,
-    };
-  }
-
-  const isForm = formOptions.includes(name);
-  const isField = fieldOptions.includes(name);
-
-  if (!isForm && !isField) {
+  if (!optionsList.has(name)) {
     throw new TypeError(`"${name}" is not one of the Final Form or Field configuration keys`);
   }
 
-  let methodPart;
-  let accessorPart;
+  const isCompareInitialValues = name === 'compareInitialValues';
 
-  if (isField) {
-    let $subscribe;
-    let $update;
-
-    const finisher = target => {
-      originalFinisher(target);
-      options[name].set(target, key);
-      $subscribe = subscribe.get(target);
-      $update = update.get(target);
-    };
-
-    methodPart = {
-      extras: [
-        method({
-          bound: true,
-          key,
-          method: value,
-        }),
-      ],
-      finisher,
-    };
-
-    accessorPart = {
-      adjust({get: originalGet, set: originalSet}) {
-        return {
-          get: originalGet,
-          set:
-            name === 'name' || name === 'subscription'
-              ? function(v) {
-                  const oldValue = originalGet.call(this);
-                  originalSet.call(this, v);
-
-                  if (name === 'name' ? v !== oldValue : !shallowEqual(v, oldValue)) {
-                    this[$subscribe]();
-                  }
-                }
-              : function(v) {
-                  if (v !== originalGet.call(this)) {
-                    this[$update]();
-                  }
-
-                  originalSet.call(this, v);
-                },
-        };
-      },
-      finisher,
-    };
-  } else {
-    methodPart = {
-      finisher(target) {
+  const finisher = isCompareInitialValues
+    ? originalFinisher
+    : target => {
         originalFinisher(target);
-        configOptions.get(target).push(key);
-      },
-    };
 
-    let $compareInitialValues;
-    let $formApi;
-
-    const updateForm =
-      name === 'initialValues'
-        ? function(initialValues) {
-            if (
-              !(
-                ($compareInitialValues && getValue(this, $compareInitialValues)) ||
-                shallowEqual
-              ).call(this, getValue(this, key), initialValues)
-            ) {
-              getValue(this, $formApi).initialize(initialValues);
-            }
-          }
-        : function(v) {
-            if (this[key] !== v) {
-              getValue(this, $formApi).setConfig(name, v);
-            }
-          };
-
-    accessorPart = {
-      adjust({get: originGet, set: originSet}) {
-        return {
-          get: originGet,
-          set(v) {
-            updateForm.call(this, v);
-            originSet.call(this, v);
-          },
-        };
-      },
-      finisher(target) {
-        originalFinisher(target);
-        $formApi = formApi.get(target);
-        $compareInitialValues = compare.get(target);
-        configOptions.get(target).push(key);
-      },
-    };
-  }
+        // There are different behavior for @form and @field finishers
+        if (isForm(target)) {
+          configOptions.get(target).push(key);
+        } else {
+          options[name].set(target, key);
+        }
+      };
 
   if (kind === 'method' && value) {
     return {
       descriptor: d,
+      extras: isCompareInitialValues
+        ? [
+            hook({
+              start() {
+                compare.set(this, key);
+              },
+            }),
+            ...extras,
+          ]
+        : [
+            method({
+              bound: true,
+              key,
+              method: value,
+            }),
+            ...extras,
+          ],
+      finisher,
       key,
       kind,
       placement,
-      ...methodPart,
     };
   }
 
+  // @field properties
+  let $subscribe;
+  let $update;
+
+  // @form properties
+  let $compareInitialValues;
+  let $formApi;
+  let setter;
+
   return accessor({
+    adjust: ({get: originalGet, set: originalSet}) => ({
+      get: originalGet,
+      set(v) {
+        setter(this, v, originalGet);
+        originalSet.call(this, v);
+      },
+    }),
+    extras,
+    finisher(target) {
+      finisher(target);
+
+      if (isForm(target)) {
+        $formApi = formApi.get(target);
+        $compareInitialValues = compare.get(target);
+
+        setter =
+          name === 'initialValues'
+            ? (self, initialValues) => {
+                if (
+                  !(
+                    ($compareInitialValues && getValue(self, $compareInitialValues)) ||
+                    shallowEqual
+                  ).call(self, getValue(self, key), initialValues)
+                ) {
+                  getValue(self, $formApi).initialize(initialValues);
+                }
+              }
+            : (self, v) => {
+                if (self[key] !== v) {
+                  getValue(self, $formApi).setConfig(name, v);
+                }
+              };
+      } else {
+        $subscribe = subscribe.get(target);
+        $update = update.get(target);
+
+        setter =
+          name === 'name' || name === 'subscription'
+            ? (self, v, originalGet) => {
+                const oldValue = originalGet.call(self);
+
+                if (name === 'name' ? v !== oldValue : !shallowEqual(v, oldValue)) {
+                  self[$subscribe]();
+                }
+              }
+            : (self, v, originalGet) => {
+                if (v !== originalGet.call(self)) {
+                  self[$update]();
+                }
+              };
+      }
+    },
     get,
     initializer,
     key,
     set,
-    ...accessorPart,
   });
 };
 
