@@ -410,11 +410,32 @@ const testForm = () => {
         expect(() => {
           @form()
           // @ts-ignore
-          class FormField extends CustomElement {
+          class Test extends CustomElement {
             @api public readonly formApi!: FormApi;
             @api public readonly state!: FormState;
           }
         }).toThrowError('@form requires onSubmit property marked with @option');
+      });
+
+      it('properly sets validate option', async () => {
+        @form()
+        class Test extends CustomElement {
+          @api public readonly formApi!: FormApi;
+          @api public readonly state!: FormState;
+
+          @option
+          public onSubmit(): void {}
+
+          @option
+          public validate(): void {}
+        }
+
+        const tag = defineCE(Test);
+        const test = (await fixture(`<${tag}></${tag}>`)) as Test;
+
+        const [{validate}] = createForm.calls.mostRecent().args;
+
+        expect(validate).toBe(test.validate);
       });
     });
 

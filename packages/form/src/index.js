@@ -37,7 +37,7 @@ export const createFormContext = ({scheduler = defaultScheduler} = {}) => {
   const api = createApiDecorator(context, apiShared, propsShared);
   const field = createFieldDecorator(context, apiShared, optionShared, propsShared);
   const form = createFormDecorator(context, apiShared, propsShared);
-  const option = createOptionDecorator(apiShared, optionShared, propsShared);
+  const option = createOptionDecorator(context, apiShared, optionShared, propsShared);
 
   return {
     api,
