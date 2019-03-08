@@ -180,7 +180,12 @@ const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
 
       constructor = target;
 
-      customElements.define(name, target, builtin && {extends: builtin});
+      // Deferring custom element definition allows to run it at the end of all
+      // decorators execution which helps to fix many issues connected with
+      // immediate custom element instance creation during definition.
+      Promise.resolve().then(() => {
+        customElements.define(name, target, builtin && {extends: builtin});
+      });
     },
     kind,
   };

@@ -50,7 +50,7 @@ const testElementDecorator = () => {
       element = createElementDecorator({renderer: rendererSpy, scheduler: schedulerSpy});
     });
 
-    it('adds element to a custom elements registry', () => {
+    it('adds element to a custom elements registry', async () => {
       const name = genName();
 
       @element(name)
@@ -59,6 +59,8 @@ const testElementDecorator = () => {
           return null;
         }
       }
+
+      await customElements.whenDefined(name);
 
       expect(define).toHaveBeenCalledWith(name, Test, undefined);
     });
@@ -292,6 +294,8 @@ const testElementDecorator = () => {
         }
       }
 
+      await customElements.whenDefined(tag);
+
       const test = fixtureSync(`<${tag}></${tag}>`) as Test;
 
       test.attributeChangedCallback('attr', 'old', 'new');
@@ -376,21 +380,26 @@ const testElementDecorator = () => {
     });
 
     describe('elements extending', () => {
-      it('allows extending existing element', () => {
-        @element(genName())
+      it('allows extending existing element', async () => {
+        const tag1 = genName();
+        const tag2 = genName();
+
+        @element(tag1)
         class Parent extends fixtureMixin(CustomElement) {
           public [render](): null {
             return null;
           }
         }
 
-        @element(genName())
+        @element(tag2)
         // @ts-ignore
         class Child extends Parent {
           public [render](): null {
             return null;
           }
         }
+
+        await Promise.all([customElements.whenDefined(tag1), customElements.whenDefined(tag2)]);
 
         expect(customElements.define).toHaveBeenCalledTimes(2);
       });
@@ -435,11 +444,13 @@ const testElementDecorator = () => {
     });
 
     describe('customized built-in elements', () => {
-      it('allows to create', () => {
+      it('allows to create', async () => {
         const name = genName();
 
         @element(name, {extends: 'a'})
         class Test extends fixtureMixin(HTMLAnchorElement) {}
+
+        await customElements.whenDefined(name);
 
         expect(customElements.define).toHaveBeenCalledWith(name, Test, {extends: 'a'});
       });
