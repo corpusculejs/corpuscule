@@ -297,9 +297,6 @@ Creator function returns an `@element` decorator function that receives followin
   Basically, all the data `render` returns will be rendered to the element itself (`this` instead
   of `this.shadowRoot`).
 
-**Note**: `@element` decorator should go **ON TOP** of all other decorators. Otherwise, you could expect strange errors
-happening.
-
 ##### Example
 ```javascript
 import {createElementDecorator, render} from '@corpuscule/element';
