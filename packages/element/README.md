@@ -297,8 +297,16 @@ Creator function returns an `@element` decorator function that receives followin
   Basically, all the data `render` returns will be rendered to the element itself (`this` instead
   of `this.shadowRoot`).
 
-**Note**: `@element` decorator should go **ON TOP** of all other decorators. Otherwise, you could expect strange errors
-happening.
+**Note**: new custom element definition with `@element` decorator is an asynchronous operation. You cannot use it
+immediately. If you need to do something with the element right after it is created, use the following approach:
+```javascript
+@element('my-component')
+class MyComponent extends HTMLElement {}
+
+await customElements.whenDefined('my-component');
+
+const myComponent = new MyComponent();
+``` 
 
 ##### Example
 ```javascript
