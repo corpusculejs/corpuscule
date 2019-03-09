@@ -44,9 +44,9 @@ const createField = (
   let $validateFields;
 
   const $$state = Symbol();
-  const $$onBlur = Symbol();
-  const $$onChange = Symbol();
-  const $$onFocus = Symbol();
+  const $$handleFocusOut = Symbol();
+  const $$handleChange = Symbol();
+  const $$handleFocusIn = Symbol();
   const $$ref = Symbol();
   const $$selfChange = Symbol();
   const $$subscribe = Symbol();
@@ -64,9 +64,9 @@ const createField = (
         {
           key: connectedCallbackKey,
           method() {
-            this.addEventListener('blur', this[$$onBlur]);
-            this.addEventListener('change', this[$$onChange]);
-            this.addEventListener('focus', this[$$onFocus]);
+            this.addEventListener('change', this[$$handleChange]);
+            this.addEventListener('focusin', this[$$handleFocusIn]);
+            this.addEventListener('focusout', this[$$handleFocusOut]);
 
             if (auto && !isNativeField) {
               for (const element of this[$$ref]) {
@@ -88,9 +88,9 @@ const createField = (
         {
           key: disconnectedCallbackKey,
           method() {
-            this.removeEventListener('blur', this[$$onBlur]);
-            this.removeEventListener('change', this[$$onChange]);
-            this.removeEventListener('focus', this[$$onFocus]);
+            this.removeEventListener('change', this[$$handleChange]);
+            this.removeEventListener('focusin', this[$$handleFocusIn]);
+            this.removeEventListener('focusout', this[$$handleFocusOut]);
 
             this[$$unsubscribe]();
             supers[disconnectedCallbackKey].call(this);
@@ -125,7 +125,7 @@ const createField = (
       }),
       $.method({
         bound: true,
-        key: $$onBlur,
+        key: $$handleFocusOut,
         method() {
           const format = $format && getValue(this, $format);
 
@@ -140,7 +140,7 @@ const createField = (
       }),
       $.method({
         bound: true,
-        key: $$onChange,
+        key: $$handleChange,
         method(event) {
           const isCustomEvent = event instanceof CustomEvent;
           const parse = $parse && getValue(this, $parse);
@@ -158,7 +158,7 @@ const createField = (
       }),
       $.method({
         bound: true,
-        key: $$onFocus,
+        key: $$handleFocusIn,
         method() {
           this[$$state].focus();
         },
