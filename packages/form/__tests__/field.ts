@@ -770,7 +770,7 @@ const testField = () => {
       });
 
       describe('input', () => {
-        it('calls blur() method of field state if input.onBlur() is called', async () => {
+        it('calls blur() method of field state if the "focusout" event is fired', async () => {
           @form()
           class Form extends CustomElement {
             @api public readonly formApi!: FormApi;
@@ -791,7 +791,7 @@ const testField = () => {
 
           const [, fieldElement] = await createSimpleContext(Form, Field);
 
-          fieldElement.dispatchEvent(new Event('blur'));
+          fieldElement.dispatchEvent(new Event('focusout', {bubbles: true}));
 
           expect(state.blur).toHaveBeenCalled();
         });
@@ -827,7 +827,7 @@ const testField = () => {
 
           spyOn(fieldElement, 'format').and.callThrough();
 
-          fieldElement.dispatchEvent(new Event('blur'));
+          fieldElement.dispatchEvent(new Event('focusout', {bubbles: true}));
 
           expect(fieldElement.format).toHaveBeenCalledWith(fieldValue, 'test');
           expect(state.change).toHaveBeenCalledWith(fieldValue);
@@ -897,7 +897,7 @@ const testField = () => {
           expect(state.change).toHaveBeenCalledWith({});
         });
 
-        it('calls focus() method of field stat if input.onFocus() method is called', async () => {
+        it('calls focus() method of field stat if "focusin" event is fired', async () => {
           @form()
           class Form extends CustomElement {
             @api public readonly formApi!: FormApi;
@@ -918,10 +918,47 @@ const testField = () => {
 
           const [, fieldElement] = await createSimpleContext(Form, Field);
 
-          fieldElement.dispatchEvent(new Event('focus'));
+          fieldElement.dispatchEvent(new Event('focusin', {bubbles: true}));
 
           expect(state.focus).toHaveBeenCalled();
         });
+      });
+
+      it('catches event even if it is fired not in the component itself', async () => {
+        @form()
+        class Form extends CustomElement {
+          @api public readonly formApi!: FormApi;
+          @api public readonly state!: FormState;
+
+          @option
+          public onSubmit(): void {}
+        }
+
+        @field()
+        class Field extends CustomElement {
+          @api public readonly formApi!: FormApi;
+          @api public readonly input!: FieldInputProps<object>;
+          @api public readonly meta!: FieldMetaProps;
+
+          @option public readonly name: string = 'test';
+        }
+
+        const fieldTag = defineCE(Field);
+        const formTag = defineCE(Form);
+
+        const formElement = await fixture(`
+          <${formTag}>
+            <${fieldTag}>
+              <input type="text">
+            </${fieldTag}>
+          </${formTag}>
+        `);
+
+        const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
+
+        inputElement.dispatchEvent(new Event('focusin', {bubbles: true}));
+
+        expect(state.focus).toHaveBeenCalled();
       });
     });
 
@@ -1011,6 +1048,30 @@ const testField = () => {
         const inputElement = formElement.querySelector('input')!;
 
         expect(fieldElement.refs[0]).toBe(inputElement);
+      });
+
+      it('does not throw an error if class already have own lifecycle element', () => {
+        expect(() => {
+          @field()
+          // @ts-ignore
+          class Field extends CustomElement {
+            @api public readonly formApi!: FormApi;
+            @api public readonly input!: FieldInputProps<string>;
+            @api public readonly meta!: FieldMetaProps;
+
+            @option public readonly name: string = 'test';
+
+            public constructor() {
+              super();
+              this.connectedCallback = this.connectedCallback.bind(this);
+              this.disconnectedCallback = this.disconnectedCallback.bind(this);
+            }
+
+            public connectedCallback(): void {}
+
+            public disconnectedCallback(): void {}
+          }
+        }).not.toThrow();
       });
 
       describe('text', () => {
@@ -1627,30 +1688,6 @@ const testField = () => {
             expect(option2.selected).toBeTruthy();
           });
         });
-      });
-
-      it('does not throw an error if class already have own lifecycle element', () => {
-        expect(() => {
-          @field()
-          // @ts-ignore
-          class Field extends CustomElement {
-            @api public readonly formApi!: FormApi;
-            @api public readonly input!: FieldInputProps<string>;
-            @api public readonly meta!: FieldMetaProps;
-
-            @option public readonly name: string = 'test';
-
-            public constructor() {
-              super();
-              this.connectedCallback = this.connectedCallback.bind(this);
-              this.disconnectedCallback = this.disconnectedCallback.bind(this);
-            }
-
-            public connectedCallback(): void {}
-
-            public disconnectedCallback(): void {}
-          }
-        }).not.toThrow();
       });
     });
   });
