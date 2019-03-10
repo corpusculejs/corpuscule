@@ -1,5 +1,5 @@
 // tslint:disable:no-unbound-method
-import {defineCE, fixture} from '@open-wc/testing-helpers';
+import {defineCE, fixture, html, unsafeStatic} from '@open-wc/testing-helpers';
 import {FieldState, FieldValidator, FormApi, FormState} from 'final-form';
 import {formSpyObject, unsubscribe} from '../../../test/mocks/finalForm';
 import {createSimpleContext, CustomElement, genName} from '../../../test/utils';
@@ -414,6 +414,39 @@ const testField = () => {
       inputElement.dispatchEvent(new Event('change', {bubbles: true}));
 
       expect(state.change).not.toHaveBeenCalled();
+    });
+
+    it('does not run update before the first subscription', async () => {
+      @form()
+      class Form extends CustomElement {
+        @api public readonly formApi!: FormApi;
+        @api public readonly state!: FormState;
+
+        @option
+        public onSubmit(): void {}
+      }
+
+      @field()
+      class Field extends CustomElement {
+        @api public readonly formApi!: FormApi;
+        @api public readonly input!: FieldInputProps<string>;
+        @api public readonly meta!: FieldMetaProps;
+
+        @option public readonly name: string = 'test';
+      }
+
+      const formTag = unsafeStatic(defineCE(Form));
+      const fieldTag = unsafeStatic(defineCE(Field));
+
+      const validate = value => (value ? undefined : 'Required');
+
+      await fixture(html`
+        <${formTag}>
+          <${fieldTag} .validate="${validate}"></${fieldTag}>
+        </${formTag}>
+      `);
+
+      expect(scheduler).toHaveBeenCalledTimes(SINGLE_FIELD_UPDATE);
     });
 
     describe('@option', () => {
