@@ -11,7 +11,7 @@ const createOptionDecorator = (
   {isProvider: isForm},
   {formApi},
   options,
-  {compare, configOptions, subscribe, update},
+  {compare, configOptions, mounted, subscribe, update},
 ) => descriptor => {
   assertKind('option', Kind.Field | Kind.Method | Kind.Accessor, descriptor);
   assertPlacement('option', Placement.Own | Placement.Prototype, descriptor);
@@ -76,6 +76,7 @@ const createOptionDecorator = (
   }
 
   // @field properties
+  let $mounted;
   let $subscribe;
   let $update;
 
@@ -118,23 +119,29 @@ const createOptionDecorator = (
                 }
               };
       } else {
+        $mounted = mounted.get(target);
         $subscribe = subscribe.get(target);
         $update = update.get(target);
 
-        setter =
-          name === 'name' || name === 'subscription'
-            ? (self, v, originalGet) => {
-                const oldValue = originalGet.call(self);
+        const areEqual =
+          name === 'subscription'
+            ? (v, oldValue) => shallowEqual(v, oldValue)
+            : (v, oldValue) => v === oldValue;
 
-                if (name === 'name' ? v !== oldValue : !shallowEqual(v, oldValue)) {
-                  self[$subscribe]();
-                }
-              }
-            : (self, v, originalGet) => {
-                if (v !== originalGet.call(self)) {
-                  self[$update]();
-                }
-              };
+        const runUpdate =
+          name === 'name' || name === 'subscription'
+            ? self => self[$subscribe]()
+            : self => self[$update]();
+
+        setter = (self, v, originalGet) => {
+          if (!self[$mounted]) {
+            return;
+          }
+
+          if (!areEqual(v, originalGet.call(self))) {
+            runUpdate(self);
+          }
+        };
       }
     },
     get,
