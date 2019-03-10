@@ -289,11 +289,12 @@ const testField = () => {
       const [listener] = subscriptionInfo.listeners;
 
       scheduler.calls.reset();
+      scheduler.and.stub();
 
       callListener(listener, state);
       callListener(listener, state);
 
-      expect(scheduler).toHaveBeenCalledTimes(SINGLE_FIELD_UPDATE);
+      expect(scheduler).toHaveBeenCalledTimes(1);
     });
 
     it('avoids unnecessary scheduling if subscribe called many times', async () => {
