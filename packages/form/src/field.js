@@ -18,7 +18,7 @@ const createField = (
   {consumer},
   {formApi, input, meta},
   options,
-  {mounted, ref, scheduler, subscribe, update},
+  {ref, scheduler, subscribe, update},
 ) => ({auto = false, selector = 'input, select, textarea'} = {}) => descriptor => {
   assertKind('field', Kind.Class, descriptor);
 
@@ -43,7 +43,7 @@ const createField = (
   let $validate;
   let $validateFields;
 
-  const $$mounted = Symbol();
+  const $$connected = Symbol();
   const $$handleFocusOut = Symbol();
   const $$handleChange = Symbol();
   const $$handleFocusIn = Symbol();
@@ -75,13 +75,13 @@ const createField = (
               }
             }
 
+            this[$$connected] = true;
+
             if (getValue(this, $name)) {
               this[$$subscribe]();
             }
 
             supers[connectedCallbackKey].call(this);
-
-            this[$$mounted] = true;
           },
         },
         supers,
@@ -106,7 +106,7 @@ const createField = (
       // Private
       $.field({
         initializer: () => false,
-        key: $$mounted,
+        key: $$connected,
       }),
       $.field({
         initializer: () => false,
@@ -173,7 +173,7 @@ const createField = (
       $.method({
         key: $$subscribe,
         method() {
-          if (!this[$$subscribingValid]) {
+          if (!this[$$subscribingValid] || !this[$$connected]) {
             return;
           }
 
@@ -205,7 +205,7 @@ const createField = (
       $.method({
         key: $$update,
         method() {
-          if (!this[$$updatingValid]) {
+          if (!this[$$updatingValid] || !this[$$connected]) {
             return;
           }
 
@@ -243,7 +243,6 @@ const createField = (
       // Static Hooks
       $.hook({
         start() {
-          mounted.set(this, $$mounted);
           ref.set(this, $$ref);
           subscribe.set(this, $$subscribe);
           update.set(this, $$update);

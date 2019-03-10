@@ -11,7 +11,7 @@ const createOptionDecorator = (
   {isProvider: isForm},
   {formApi},
   options,
-  {compare, configOptions, mounted, subscribe, update},
+  {compare, configOptions, subscribe, update},
 ) => descriptor => {
   assertKind('option', Kind.Field | Kind.Method | Kind.Accessor, descriptor);
   assertPlacement('option', Placement.Own | Placement.Prototype, descriptor);
@@ -76,7 +76,6 @@ const createOptionDecorator = (
   }
 
   // @field properties
-  let $mounted;
   let $subscribe;
   let $update;
 
@@ -119,7 +118,6 @@ const createOptionDecorator = (
                 }
               };
       } else {
-        $mounted = mounted.get(target);
         $subscribe = subscribe.get(target);
         $update = update.get(target);
 
@@ -134,10 +132,6 @@ const createOptionDecorator = (
             : self => self[$update]();
 
         setter = (self, v, originalGet) => {
-          if (!self[$mounted]) {
-            return;
-          }
-
           if (!areEqual(v, originalGet.call(self))) {
             runUpdate(self);
           }

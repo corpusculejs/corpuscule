@@ -28,7 +28,6 @@ export const createFormContext = ({scheduler = defaultScheduler} = {}) => {
     configOptions: new WeakMap(),
 
     // @field properties
-    mounted: new WeakMap(),
     ref: new WeakMap(),
     scheduler,
     subscribe: new WeakMap(),
