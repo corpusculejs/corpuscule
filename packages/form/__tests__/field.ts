@@ -234,37 +234,6 @@ const testField = () => {
       expect(formatSpy).toHaveBeenCalledWith(fieldValue, 'test');
     });
 
-    it('avoids unnecessary scheduling if update called many times', async () => {
-      @form()
-      class Form extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
-
-        @option
-        public onSubmit(): void {}
-      }
-
-      @field()
-      class Field extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly input!: FieldInputProps<object>;
-        @api public readonly meta!: FieldMetaProps;
-
-        @option public readonly name: string = 'test';
-        @option
-        public validate?: (values: object) => void;
-      }
-
-      const [, fieldElement] = await createSimpleContext(Form, Field);
-
-      scheduler.calls.reset();
-
-      fieldElement.validate = () => {};
-      fieldElement.validate = () => {};
-
-      expect(scheduler).toHaveBeenCalledTimes(1);
-    });
-
     it('avoids unnecessary scheduling if subscribe called many times', async () => {
       scheduler.and.stub();
 
@@ -524,62 +493,6 @@ const testField = () => {
         const [, fieldElement] = await createSimpleContext(Form, Field);
 
         fieldElement.subscription = all;
-
-        expect(scheduler).not.toHaveBeenCalled();
-      });
-
-      it('updates field if option value is changed', async () => {
-        @form()
-        class Form extends CustomElement {
-          @api public readonly formApi!: FormApi;
-          @api public readonly state!: FormState;
-
-          @option
-          public onSubmit(): void {}
-        }
-
-        @field()
-        class Field extends CustomElement {
-          @api public readonly formApi!: FormApi;
-          @api public readonly input!: FieldInputProps<object>;
-          @api public readonly meta!: FieldMetaProps;
-
-          @option public readonly name: string = 'test';
-          @option public value: string = 'test';
-        }
-
-        const [, fieldElement] = await createSimpleContext(Form, Field);
-
-        fieldElement.value = 'newTest';
-
-        expect(scheduler).toHaveBeenCalledTimes(1);
-      });
-
-      it('does not update field if it option values are equal', async () => {
-        @form()
-        class Form extends CustomElement {
-          @api public readonly formApi!: FormApi;
-          @api public readonly state!: FormState;
-
-          @option
-          public onSubmit(): void {}
-        }
-
-        @field()
-        class Field extends CustomElement {
-          @api public readonly formApi!: FormApi;
-          @api public readonly input!: FieldInputProps<object>;
-          @api public readonly meta!: FieldMetaProps;
-
-          @option public readonly name: string = 'test';
-
-          @option
-          public value: string = 'test';
-        }
-
-        const [, fieldElement] = await createSimpleContext(Form, Field);
-
-        fieldElement.value = 'test';
 
         expect(scheduler).not.toHaveBeenCalled();
       });
@@ -989,36 +902,6 @@ const testField = () => {
         fieldTag = defineCE(Field);
 
         state.value = undefined;
-      });
-
-      it('does not update two times if @option value is set', async () => {
-        @field({auto: true})
-        class Field extends HTMLInputElement {
-          @api public readonly formApi!: FormApi;
-          @api public readonly input!: FieldInputProps<object>;
-          @api public readonly meta!: FieldMetaProps;
-
-          @option public readonly name: string = 'test';
-          @option public value: string = 'a1';
-        }
-
-        const nativeFieldTag = genName();
-        customElements.define(nativeFieldTag, Field, {extends: 'input'});
-
-        const formElement = await fixture(`
-          <${formTag}>
-            <input is="${nativeFieldTag}" type="text">
-          </${formTag}>
-        `);
-
-        const fieldElement = formElement.querySelector<Field>('input')!;
-
-        fieldElement.value = 'a2';
-        fieldElement.dispatchEvent(new Event('change', {bubbles: true}));
-
-        expect(state.change).toHaveBeenCalledWith('a2');
-        expect(state.change).toHaveBeenCalledTimes(1);
-        expect(scheduler).toHaveBeenCalledTimes(1);
       });
 
       it('allows to define ref property for container', async () => {

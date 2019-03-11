@@ -76,9 +76,7 @@ const createOptionDecorator = (
   }
 
   // @field properties
-  let $schedule;
-  let $subscribe;
-  let $update;
+  let $scheduleSubscription;
 
   // @form properties
   let $compareInitialValues;
@@ -119,20 +117,21 @@ const createOptionDecorator = (
                 }
               };
       } else {
-        [$schedule, $subscribe, $update] = schedule.get(target);
+        $scheduleSubscription = schedule.get(target);
 
         const areEqual =
           name === 'subscription'
             ? (v, oldValue) => shallowEqual(v, oldValue)
             : (v, oldValue) => v === oldValue;
 
-        const $operation = name === 'name' || name === 'subscription' ? $subscribe : $update;
-
-        setter = (self, v, originalGet) => {
-          if (!areEqual(v, originalGet.call(self))) {
-            self[$schedule]($operation);
-          }
-        };
+        setter =
+          name === 'name' || name === 'subscription'
+            ? (self, v, originalGet) => {
+                if (!areEqual(v, originalGet.call(self))) {
+                  self[$scheduleSubscription]();
+                }
+              }
+            : noop;
       }
     },
     get,
