@@ -5,6 +5,7 @@ import schedule from '../src/scheduler';
 interface TaskObject {
   readonly children: ReadonlyArray<TaskObject>;
   readonly task: () => void;
+  readonly throws?: boolean;
 }
 
 const testSchedule = () => {
@@ -23,6 +24,7 @@ const testSchedule = () => {
             {
               children: [],
               task,
+              throws: true,
             },
             {
               children: [],
@@ -62,7 +64,7 @@ const testSchedule = () => {
       const [promise, resolve] = createTestingPromise();
 
       const tree = createTaskObject(function task(this: TaskObject): void {
-        if (this.children.length === 0) {
+        if (this.throws) {
           throw new Error('foo');
         }
 
