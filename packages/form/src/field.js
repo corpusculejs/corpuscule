@@ -42,12 +42,12 @@ const createField = ({consumer}, {formApi, input, meta}, options, {ref, schedule
   let $validateFields;
 
   const $$connected = Symbol();
-  const $$isScheduled = Symbol();
+  const $$isSubscriptionScheduled = Symbol();
   const $$handleFocusOut = Symbol();
   const $$handleChange = Symbol();
   const $$handleFocusIn = Symbol();
   const $$ref = Symbol();
-  const $$schedule = Symbol();
+  const $$scheduleSubscription = Symbol();
   const $$selfChange = Symbol();
   const $$state = Symbol();
   const $$subscribe = Symbol();
@@ -103,8 +103,8 @@ const createField = ({consumer}, {formApi, input, meta}, options, {ref, schedule
 
       // Private
       $.field({
-        initializer: () => ({[$$schedule]: false, [$$update]: false}),
-        key: $$isScheduled,
+        initializer: () => false,
+        key: $$isSubscriptionScheduled,
       }),
       $.field({
         initializer: () => false,
@@ -165,17 +165,17 @@ const createField = ({consumer}, {formApi, input, meta}, options, {ref, schedule
         },
       }),
       $.method({
-        key: $$schedule,
-        method($operation) {
-          if (this[$$isScheduled][$operation] || !this[$$connected]) {
+        key: $$scheduleSubscription,
+        method() {
+          if (this[$$isSubscriptionScheduled] || !this[$$connected]) {
             return;
           }
 
-          this[$$isScheduled][$operation] = true;
+          this[$$isSubscriptionScheduled] = true;
 
           scheduler(() => {
-            this[$operation]();
-            this[$$isScheduled][$operation] = false;
+            this[$$subscribe]();
+            this[$$isSubscriptionScheduled] = false;
           });
         },
       }),
@@ -184,10 +184,7 @@ const createField = ({consumer}, {formApi, input, meta}, options, {ref, schedule
         method() {
           this[$$unsubscribe]();
 
-          const listener = state => {
-            this[$$state] = state;
-            this[$$update]();
-          };
+          const listener = this[$$update];
 
           this[$$unsubscribe] = getValue(this, $formApi).registerField(
             getValue(this, $name),
@@ -202,13 +199,14 @@ const createField = ({consumer}, {formApi, input, meta}, options, {ref, schedule
         },
       }),
       $.method({
+        bound: true,
         key: $$update,
-        method() {
+        method(state) {
+          this[$$state] = state;
+
           const format = $format && getValue(this, $format);
 
-          const {blur: _b, change: _c, focus: _f, name, length: _l, value, ...metadata} = this[
-            $$state
-          ];
+          const {blur: _b, change: _c, focus: _f, name, length: _l, value, ...metadata} = state;
 
           const finalValue =
             !($formatOnBlur && getValue(this, $formatOnBlur)) && format
@@ -234,7 +232,7 @@ const createField = ({consumer}, {formApi, input, meta}, options, {ref, schedule
       $.hook({
         start() {
           ref.set(this, $$ref);
-          schedule.set(this, [$$schedule, $$subscribe, $$update]);
+          schedule.set(this, $$scheduleSubscription);
         },
       }),
 
