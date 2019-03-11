@@ -11,7 +11,7 @@ const createOptionDecorator = (
   {isProvider: isForm},
   {formApi},
   options,
-  {compare, configOptions, subscribe, update},
+  {compare, configOptions, schedule},
 ) => descriptor => {
   assertKind('option', Kind.Field | Kind.Method | Kind.Accessor, descriptor);
   assertPlacement('option', Placement.Own | Placement.Prototype, descriptor);
@@ -76,6 +76,7 @@ const createOptionDecorator = (
   }
 
   // @field properties
+  let $schedule;
   let $subscribe;
   let $update;
 
@@ -118,22 +119,18 @@ const createOptionDecorator = (
                 }
               };
       } else {
-        $subscribe = subscribe.get(target);
-        $update = update.get(target);
+        [$schedule, $subscribe, $update] = schedule.get(target);
 
         const areEqual =
           name === 'subscription'
             ? (v, oldValue) => shallowEqual(v, oldValue)
             : (v, oldValue) => v === oldValue;
 
-        const runUpdate =
-          name === 'name' || name === 'subscription'
-            ? self => self[$subscribe]()
-            : self => self[$update]();
+        const $operation = name === 'name' || name === 'subscription' ? $subscribe : $update;
 
         setter = (self, v, originalGet) => {
           if (!areEqual(v, originalGet.call(self))) {
-            runUpdate(self);
+            self[$schedule]($operation);
           }
         };
       }

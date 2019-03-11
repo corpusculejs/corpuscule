@@ -29,9 +29,8 @@ export const createFormContext = ({scheduler = defaultScheduler} = {}) => {
 
     // @field properties
     ref: new WeakMap(),
+    schedule: new WeakMap(),
     scheduler,
-    subscribe: new WeakMap(),
-    update: new WeakMap(),
   };
 
   const api = createApiDecorator(context, apiShared, propsShared);
