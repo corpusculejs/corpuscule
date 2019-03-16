@@ -12,7 +12,8 @@ export const createRouterContext = () => {
   const context = createContext();
 
   const shared = {
-    api: new WeakMap(),
+    layout: new WeakMap(),
+    route: new WeakMap(),
   };
 
   return {
