@@ -351,7 +351,7 @@ const testField = () => {
       const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
 
       inputElement.value = 'test';
-      inputElement.dispatchEvent(new Event('change', {bubbles: true}));
+      inputElement.dispatchEvent(new Event('input', {bubbles: true}));
 
       expect(state.change).not.toHaveBeenCalled();
     });
@@ -769,7 +769,7 @@ const testField = () => {
 
           const newFieldValue: object = {};
 
-          fieldElement.dispatchEvent(new CustomEvent('change', {detail: newFieldValue}));
+          fieldElement.dispatchEvent(new CustomEvent('input', {detail: newFieldValue}));
 
           expect(state.change).toHaveBeenCalledWith(newFieldValue);
         });
@@ -804,7 +804,7 @@ const testField = () => {
 
           const newFieldValue = JSON.stringify({});
 
-          fieldElement.dispatchEvent(new CustomEvent('change', {detail: newFieldValue}));
+          fieldElement.dispatchEvent(new CustomEvent('input', {detail: newFieldValue}));
 
           expect(fieldElement.parse).toHaveBeenCalledWith(newFieldValue, 'test');
           expect(state.change).toHaveBeenCalledWith({});
@@ -968,7 +968,7 @@ const testField = () => {
           const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
 
           inputElement.value = 'test';
-          inputElement.dispatchEvent(new Event('change', {bubbles: true}));
+          inputElement.dispatchEvent(new Event('input', {bubbles: true}));
           expect(state.change).toHaveBeenCalledWith('test');
         });
 
@@ -1007,7 +1007,7 @@ const testField = () => {
 
           // user changes text to a2
           inputElement.value = 'a2';
-          inputElement.dispatchEvent(new Event('change', {bubbles: true}));
+          inputElement.dispatchEvent(new Event('input', {bubbles: true}));
 
           const inputSet = spyOnProperty(inputElement, 'value', 'set');
 
@@ -1040,7 +1040,7 @@ const testField = () => {
           const fieldElement = formElement.querySelector<Field>('input')!;
 
           fieldElement.value = 'a2';
-          fieldElement.dispatchEvent(new Event('change', {bubbles: true}));
+          fieldElement.dispatchEvent(new Event('input', {bubbles: true}));
 
           expect(state.change).toHaveBeenCalledWith('a2');
         });
@@ -1109,7 +1109,7 @@ const testField = () => {
           const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
 
           inputElement.checked = true;
-          inputElement.dispatchEvent(new Event('change', {bubbles: true}));
+          inputElement.dispatchEvent(new Event('input', {bubbles: true}));
           expect(state.change).toHaveBeenCalledWith(true);
         });
 
@@ -1125,7 +1125,7 @@ const testField = () => {
           const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
 
           inputElement.checked = true;
-          inputElement.dispatchEvent(new Event('change', {bubbles: true}));
+          inputElement.dispatchEvent(new Event('input', {bubbles: true}));
           expect(state.change).toHaveBeenCalledWith(['foo']);
         });
 
@@ -1143,7 +1143,7 @@ const testField = () => {
           const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
 
           inputElement.checked = true;
-          inputElement.dispatchEvent(new Event('change', {bubbles: true}));
+          inputElement.dispatchEvent(new Event('input', {bubbles: true}));
           expect(state.change).toHaveBeenCalledWith(['bar', 'foo']);
         });
 
@@ -1161,7 +1161,7 @@ const testField = () => {
           const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
 
           inputElement.checked = false;
-          inputElement.dispatchEvent(new Event('change', {bubbles: true}));
+          inputElement.dispatchEvent(new Event('input', {bubbles: true}));
           expect(state.change).toHaveBeenCalledWith([]);
         });
 
@@ -1179,7 +1179,7 @@ const testField = () => {
           const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
 
           inputElement.checked = false;
-          inputElement.dispatchEvent(new Event('change', {bubbles: true}));
+          inputElement.dispatchEvent(new Event('input', {bubbles: true}));
           expect(state.change).toHaveBeenCalledWith(undefined);
         });
 
@@ -1260,7 +1260,7 @@ const testField = () => {
           const fieldElement = formElement.querySelector<Field>('input')!;
 
           fieldElement.checked = true;
-          fieldElement.dispatchEvent(new Event('change', {bubbles: true}));
+          fieldElement.dispatchEvent(new Event('input', {bubbles: true}));
           expect(state.change).toHaveBeenCalledWith(true);
         });
 
@@ -1328,11 +1328,11 @@ const testField = () => {
           const inputElementBar = formElement.querySelector<HTMLInputElement>('input[value=bar]')!;
 
           inputElementFoo.checked = true;
-          inputElementFoo.dispatchEvent(new Event('change', {bubbles: true}));
+          inputElementFoo.dispatchEvent(new Event('input', {bubbles: true}));
           expect(state.change).toHaveBeenCalledWith('foo');
 
           inputElementBar.checked = true;
-          inputElementBar.dispatchEvent(new Event('change', {bubbles: true}));
+          inputElementBar.dispatchEvent(new Event('input', {bubbles: true}));
           expect(state.change).toHaveBeenCalledWith('bar');
         });
 
@@ -1386,11 +1386,11 @@ const testField = () => {
           const fieldElementBar = formElement.querySelector<Field>('input[value=bar]')!;
 
           fieldElementFoo.checked = true;
-          fieldElementFoo.dispatchEvent(new Event('change', {bubbles: true}));
+          fieldElementFoo.dispatchEvent(new Event('input', {bubbles: true}));
           expect(state.change).toHaveBeenCalledWith('foo');
 
           fieldElementBar.checked = true;
-          fieldElementBar.dispatchEvent(new Event('change', {bubbles: true}));
+          fieldElementBar.dispatchEvent(new Event('input', {bubbles: true}));
           expect(state.change).toHaveBeenCalledWith('bar');
         });
 
@@ -1466,7 +1466,7 @@ const testField = () => {
 
           it('sets the form value to the selected option if selection is single', () => {
             option2.selected = true;
-            selectElement.dispatchEvent(new Event('change', {bubbles: true}));
+            selectElement.dispatchEvent(new Event('input', {bubbles: true}));
 
             expect(state.change).toHaveBeenCalledWith('2');
           });
@@ -1477,7 +1477,7 @@ const testField = () => {
             option1.selected = true;
             option2.selected = true;
 
-            selectElement.dispatchEvent(new Event('change', {bubbles: true}));
+            selectElement.dispatchEvent(new Event('input', {bubbles: true}));
 
             expect(state.change).toHaveBeenCalledWith(['1', '2']);
           });
@@ -1550,7 +1550,7 @@ const testField = () => {
 
           it('allows to update form value', () => {
             option2.selected = true;
-            selectElement.dispatchEvent(new Event('change', {bubbles: true}));
+            selectElement.dispatchEvent(new Event('input', {bubbles: true}));
 
             expect(state.change).toHaveBeenCalledWith('2');
           });
