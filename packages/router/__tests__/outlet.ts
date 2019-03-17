@@ -1,5 +1,6 @@
 // tslint:disable:max-classes-per-file
 import UniversalRouter from 'universal-router';
+import {Route} from 'universal-router/sync';
 import {createSimpleContext, createTestingPromise, CustomElement} from '../../../test/utils';
 import {api, outlet, provider} from '../src';
 
@@ -51,7 +52,7 @@ const outletTest = () => {
       [finalPromise, finalResolve] = createTestingPromise();
     });
 
-    it('creates router outlet that fills layout on popstate event', async () => {
+    it('creates router outlet that fills layout & route on popstate event', async () => {
       @provider
       class Provider extends CustomElement {
         @api public readonly router: UniversalRouter = appRouter;
@@ -61,6 +62,8 @@ const outletTest = () => {
       class Outlet extends CustomElement {
         public initial: boolean = true;
         public storage: string = '';
+
+        @api public readonly route!: Route;
 
         @api
         public get layout(): string {
@@ -94,6 +97,7 @@ const outletTest = () => {
       await finalPromise;
 
       expect(outletElement.layout).toBe('Test2');
+      expect(outletElement.route).toBe(routes[1]);
     });
 
     it("ignores path that wasn't in the routes", async () => {
@@ -112,6 +116,8 @@ const outletTest = () => {
       class Outlet extends CustomElement {
         public initial: boolean = true;
         public storage: string = '';
+
+        @api public readonly route!: Route;
 
         @api
         public get layout(): string {
@@ -162,6 +168,8 @@ const outletTest = () => {
         public initial: boolean = true;
         public storage: string = '';
 
+        @api public readonly route!: Route;
+
         @api
         public get layout(): string {
           return this.storage;
@@ -206,6 +214,7 @@ const outletTest = () => {
       @outlet(routes)
       class Outlet extends CustomElement {
         @api public readonly layout?: string;
+        @api public readonly route?: Route;
 
         public connectedCallback(): void {
           connectedSpy();
@@ -231,6 +240,7 @@ const outletTest = () => {
         // @ts-ignore
         class Outlet extends CustomElement {
           @api public readonly layout?: string;
+          @api public readonly route?: Route;
 
           public constructor() {
             super();

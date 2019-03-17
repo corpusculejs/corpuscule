@@ -12,13 +12,14 @@ const methods = [...lifecycleKeys, resolve];
 
 const [connectedCallbackKey, disconnectedCallbackKey] = lifecycleKeys;
 
-const createOutletDecorator = ({consumer, value}, {api}) => routes => descriptor => {
+const createOutletDecorator = ({consumer, value}, {layout, route}) => routes => descriptor => {
   assertKind('outlet', Kind.Class, descriptor);
 
   const {elements, finisher = noop, kind} = descriptor;
 
   let constructor;
-  let $api;
+  let $layout;
+  let $route;
 
   const getConstructor = () => constructor;
 
@@ -81,10 +82,11 @@ const createOutletDecorator = ({consumer, value}, {api}) => routes => descriptor
             return;
           }
 
-          const [result, {route}] = resolved;
+          const [result, {route: currentRoute}] = resolved;
 
-          if (routes.includes(route)) {
-            setValue(this, $api, iter.next(result).value);
+          if (routes.includes(currentRoute)) {
+            setValue(this, $route, currentRoute);
+            setValue(this, $layout, iter.next(result).value);
           }
         },
       }),
@@ -102,8 +104,10 @@ const createOutletDecorator = ({consumer, value}, {api}) => routes => descriptor
       finisher(target);
 
       constructor = target;
-      $api = api.get(target);
-      assertRequiredProperty('outlet', 'api', $api);
+      $layout = layout.get(target);
+      $route = route.get(target);
+      assertRequiredProperty('outlet', 'api', 'layout', $layout);
+      assertRequiredProperty('outlet', 'api', 'route', $route);
 
       prepareSupers(target, {
         *[resolve](path) {
