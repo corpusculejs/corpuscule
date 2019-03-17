@@ -63,7 +63,7 @@ const createField = ({consumer}, {formApi, input, meta}, options, {ref, schedule
         {
           key: connectedCallbackKey,
           method() {
-            this.addEventListener('change', this[$$handleChange]);
+            this.addEventListener('input', this[$$handleChange]);
             this.addEventListener('focusin', this[$$handleFocusIn]);
             this.addEventListener('focusout', this[$$handleFocusOut]);
 
@@ -89,7 +89,7 @@ const createField = ({consumer}, {formApi, input, meta}, options, {ref, schedule
         {
           key: disconnectedCallbackKey,
           method() {
-            this.removeEventListener('change', this[$$handleChange]);
+            this.removeEventListener('input', this[$$handleChange]);
             this.removeEventListener('focusin', this[$$handleFocusIn]);
             this.removeEventListener('focusout', this[$$handleFocusOut]);
 
