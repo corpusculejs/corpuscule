@@ -31,7 +31,7 @@ Routing system has following lifecycle.
 First of all, you have to create `UniversalRouter` instance. To get it working with other parts of
 this package you have to use [`createRouter`](#createrouterroutes-route--readonlyarrayroute-options-options-universalrouter)
 over the `new` operator. [See Universal Router Getting Started section](https://github.com/kriasoft/universal-router/blob/master/docs/getting-started.md)
-to understand how to create router instance.
+to understand how to create a router instance.
 
 If you use [`lit-html`](https://lit-html.polymer-project.org/), it may look like following.
 ```javascript
@@ -48,8 +48,8 @@ export const router = createRouter(routes);
 ```
 
 ### Provide it down the DOM tree
-Router uses [`@corpuscule/context`](../context) under the hood, so to work it requires provider
-component that will sent it to nested components. Use `@provider` and `@api` decorators to
+The router uses [`@corpuscule/context`](../context) under the hood, so to work it requires provider
+component that will send it to nested components. Use `@provider` and `@api` decorators to
 accomplish it.
 ```javascript
 import {provider, value} from '@corpuscule/router';
@@ -62,16 +62,16 @@ class Provider extends HTMLElement {
 ```
 
 ### Create several outlets
-Along with provider component, there should be several consumer components that catches route change
-and performs route's `action` to get result. You can create it using `@outlet` decorator. This
-decorator accepts list of routes (whatever nesting they have) and on route change searches there
-single route that is equal with the route chosen for current path by Universal Router. If matching
-route is found, update for this outlet is performed, otherwise nothing happens.
+Along with the provider component, there should be several consumer components that catch route
+change and performs route's `action` to get a result. You can create it using `@outlet` decorator.
+This decorator accepts the list of routes (whatever nesting they have) and on route change searches
+there single route that is equal with the route chosen for the current path by Universal Router. If
+a matching route is found, update for this outlet is performed; otherwise, nothing happens.
 
-Result of route's `action` is written to the property marked with `@api` decorator.
+The result of route's `action` is written to the property marked with `@api` decorator.
 
-To get more control over the path selection you can override `[resolve]` function that is able to
-adjust both original path and returned component before it comes to the class `@api` property.
+To get more control over the path selection, you can override `[resolve]` function that can adjust
+both the original path and returned component before it comes to the class `@api` property.
 
 ```javascript
 import {outlet, resolve, value} from '@corpuscule/router';
@@ -94,11 +94,12 @@ class Outlet extends HTMLElement {
 ```
 
 ### Change route
-There is two ways to change current route.
-* [`push`](#pushpath-string-title-string-void) function. It is an imperative way to change current
-route.
+There are two ways to change the current route.
+* [`push`](#pushpath-string-title-string-void) function. It is an imperative way to change the
+current route.
 * [`Link`](#link) element. This element overrides the default scenario of `HTMLAnchorElement` and
-changes route using `push` function under the hood. It is a declarative way to change current route. 
+changes route using `push` function under the hood. It is a declarative way to change the current
+route. 
 
 ## API
 #### `createRouter(routes: Route | ReadonlyArray<Route>, options?: Options): UniversalRouter`
@@ -116,17 +117,20 @@ work in `@corpuscule/router` system.
 [See the `@corpuscule/context` docs on `@value` decorator](../context/README.md#value-propertydecorator).
 
 ##### Inside `@outlet` class
-For `@outlet` class it defines property where result of route's `action` method will be written.
-After it, you can use this property wherever it is necessary to display routing outcome.
+For the `@outlet` class it can define two properties.
+* `layout` — this property receives the result of the route's `action` method. You can use this
+property wherever it is necessary to display routing outcome.
+* `route` — this property receives the route itself. It could be useful in different situations:
+from understanding which route is active now up to get static information added to the route. 
 
-It works with following rules:
-* Any kind of property can be marked with `@api` decorator: string, symbolic or private. 
+Rules for setting properties are the following:
+* Any property can be marked with `@api` decorator: string, symbolic or private. 
 * Property should have the same name as the API element it implements.
-  * String property should just have the API element name, e.g. `form`.
-  * Symbolic property should have description identical to the API element name, e.g. `const form =
-  Symbol('form')`.
-  * Private property should have description identical to the API element name, e.g. `#form` or
-  `new PrivateName('form')`.
+  * String property should have the API element name, e.g. `form`.
+  * Symbolic property should have description identical to the API element name, e.g. `const layout
+  = Symbol('layout')`.
+  * Private property should have description identical to the API element name, e.g., `#layout` or
+  `new PrivateName('layout')`.
 * Only one property is allowed for each API element.
 
 ```javascript
@@ -160,16 +164,16 @@ class Outlet extends HTMLElement {
 ```
 
 #### `@outlet(routes: Route[]): ClassDecorator`
-Basically, it is [`@consumer` decorator](../context/README.md#consumer-classdecorator) of
-`@corpuscule/context` that receives router sent by `@provider`. Receives list of
-routes where searches a matching route when route update is performed. If route is found, all
-following lifecycle is performed, otherwise nothing changes. 
+Basically, it is a [`@consumer` decorator](../context/README.md#consumer-classdecorator) of
+`@corpuscule/context` that receives the router sent by `@provider`. Receives a list of routes where
+searches a matching route when route update is performed. If the route is found, all following
+lifecycle is performed; otherwise, nothing changes. 
 
 #### `push(path: string, title?: string): void`
 Changes current browser location and notifies router about it. In general, it is a wrapper over the
 [HTML5 History `pushState`](https://developer.mozilla.org/en-US/docs/Web/API/History_API#The_pushState()_method)
-method. Receives following params:
-* `path: string` - new location URL that browser will go to.
+method. Receives the following params:
+* `path: string` - a new location URL to which browser will go.
 * `title?: string` - optional property for `title` param of `pushState`.
 
 #### Link
