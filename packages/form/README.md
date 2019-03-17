@@ -215,11 +215,6 @@ The current value of the field.
 #### Field `@option` decorator
 Field `@option` decorator has following properties it can be applied to.
 
-##### `control?: HTMLInputElement | HTMLSelectElement`
-Element that should be used to set the value on form change. It should be the same element that
-fires blur/change/focus events. If it is specified, value will be set each time form is updated.
-If not, you can set it manually from `FieldInputProps` object.  
-
 ##### `format?: ((value: any, name: string) => any)`
 A function that takes the value from the form values and the name of the field and formats the
 value to give to the input. Common use cases include converting javascript `Date` values into a
@@ -276,85 +271,13 @@ is used by default.
 [See the @corpuscule/context docs on `isProvider`](../context/README.md#isprovider-target-unknown--boolean).
 
 #### Example
-```html
-<script type="module">
-  import {api, form, field, option} from '@corpuscule/form';
-  
-  @form()
-  class Form extends HTMLElement {
-    @api form;
-    @api state;
-    
-    @option initialValues = {foo: 'bar'};
-   
-    constructor() {
-      super();
-      this.attachShadow({mode: 'open'});
-    }
-    
-    connectedCallback() {
-      this.shadowRoot.innerHTML = '<form><slot></slot></form>';
-    }
-    
-    @option
-    onSubmit(values) {
-      console.log(values);
-    }
-  }
-  customElements.define('x-form', Form);
-  
-  
-  @field
-  class Field extends HTMLElement {
-    @api form;
-    @option name = 'my-field';
-    
-    #input;
-    #meta;
-    
-    @option
-    get control() {
-      return this.shadowRoot.querySelector('slot').assignedNodes()[0];
-    }
-    
-    @api input;
-    
-    @api 
-    get meta() {
-      return this.#meta;
-    };
-    
-    set meta(meta) {
-      this.#meta = meta;
-      
-      if (meta.touched && meta.error) {
-        Object.assign(
-          this.errorElement,
-          {hidden: false, textContent: meta.error},
-        );
-      }
-    }
-    
-    get errorElement() {
-      return this.shadowRoot.querySelector('.error');
-    }
-    
-    constructor() {
-      super();
-      this.attachShadow({mode: 'open'});
-    }
-    
-    connectedCallback() {
-      this.innerHTML = '<slot></slot><div class="error" hidden></div>';
-      this.name = this.getAttribute('name');
-    }
-  }
-  customElements.define('x-field', Field);
-</script>
-<x-form>
-  <x-field name="some-text">
-    <input type="text"/>
-  </x-field>
-  <button type="submit">Submit</button>
-</x-form>
-```
+##### [Simple Form](https://codesandbox.io/s/9j90pjrprw)
+Uses the default inputs: `input`, `select`, and `textarea` to build a form with no validation.
+
+##### [Synchronous Record-Level Validation](https://codesandbox.io/s/ol86m353kq)
+Introduces a whole-record validation function and demonstrates how to use Field component to
+display errors next to fields.
+
+##### [Synchronous Field-Level Validation](https://codesandbox.io/s/wyx5l5vxlw)
+Introduces field-level validation functions and demonstrates how to use Field component to
+display errors next to fields.
