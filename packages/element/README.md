@@ -70,6 +70,28 @@ class Bar {
 <my-element mood="great"></my-element>
 ```
 
+## Decorators order
+Decorators order matters. For this package, there is a simple rule you should follow any time:
+
+**`@corpuscule/element` decorators should be executed first**
+
+What does it mean?
+
+Well, basically, you have to put any `@corpuscule/element` decorators at the bottom — as closer to
+the decorating element as possible.
+```javascript
+@foo
+@bar
+@element('x-baz') // it should be at the bottom
+class Baz extends HTMLElement {
+  @fooProp @barProp @attribute('prop', String) prop; // attribute should go the last
+}
+```
+
+This rule is connected with the order of decorators execution. Since the `@corpuscule/element`
+decorators provide the most basic features, they should change the element first. All other
+decorators should work with the result of their work. 
+
 ## Property Types
 Corpuscule element contains three types of properties that differ in displaying, settings and
 affecting the rendering process. 
