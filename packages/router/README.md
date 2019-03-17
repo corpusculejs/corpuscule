@@ -116,17 +116,20 @@ work in `@corpuscule/router` system.
 [See the `@corpuscule/context` docs on `@value` decorator](../context/README.md#value-propertydecorator).
 
 ##### Inside `@outlet` class
-For `@outlet` class it defines property where result of route's `action` method will be written.
-After it, you can use this property wherever it is necessary to display routing outcome.
+For the `@outlet` class it can define two properties.
+* `layout` — this property receives the result of the route's `action` method. You can use this
+property wherever it is necessary to display routing outcome.
+* `route` — this property receives the route itself. It could be useful in different situations:
+from understanding which route is active now up to get static information added to the route. 
 
-It works with following rules:
-* Any kind of property can be marked with `@api` decorator: string, symbolic or private. 
+Rules for setting properties are the following:
+* Any property can be marked with `@api` decorator: string, symbolic or private. 
 * Property should have the same name as the API element it implements.
-  * String property should just have the API element name, e.g. `form`.
-  * Symbolic property should have description identical to the API element name, e.g. `const form =
-  Symbol('form')`.
-  * Private property should have description identical to the API element name, e.g. `#form` or
-  `new PrivateName('form')`.
+  * String property should have the API element name, e.g. `form`.
+  * Symbolic property should have description identical to the API element name, e.g. `const layout
+  = Symbol('layout')`.
+  * Private property should have description identical to the API element name, e.g., `#layout` or
+  `new PrivateName('layout')`.
 * Only one property is allowed for each API element.
 
 ```javascript
