@@ -1,6 +1,6 @@
 {
   "name": "@corpuscule/form",
-  "version": "0.10.3",
+  "version": "0.11.0",
   "description": "🏁 High performance subscription-based form state management for Corpuscule",
   "main": "lib/index.js",
   "module": "lib/index.js",
@@ -26,9 +26,9 @@
     "validation"
   ],
   "dependencies": {
-    "@corpuscule/context": "^0.10.2",
-    "@corpuscule/typings": "^0.10.0",
-    "@corpuscule/utils": "^0.10.2"
+    "@corpuscule/context": "^0.11.0",
+    "@corpuscule/typings": "^0.11.0",
+    "@corpuscule/utils": "^0.11.0"
   },
   "peerDependencies": {
     "final-form": "^4.11.0"
