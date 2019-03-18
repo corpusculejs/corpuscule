@@ -63,12 +63,12 @@ has support for [Shady DOM](https://www.polymer-project.org/blog/shadydom).
 This function is an extension for the `html` function of `lit-html`. It wraps the `html` processor
 and adds new features to it. There are two basic features: 
 * Static values are allowed. You have to import `unsafeStatic` function from the
-`@corpuscule/lit-html-renderer/withCustomElement` package, wrap a string you want to make unsafe and
+`@corpuscule/lit-html-renderer/lib/withCustomElement` package, wrap a string you want to make unsafe and
 then send it as a regular `lit-html` value to the function produced by `withCustomElement` wrapper.
 * Custom elements are allowed. You can send any custom element as a regular `lit-html` value to the
 function produced by `withCustomElement` wrapper, and they will be replaced with their names. 
 
-To make any custom elements allowed, import `@corpuscule/lit-html-renderer/init` as the first module
+To make any custom elements allowed, import `@corpuscule/lit-html-renderer/lib/init` as the first module
 in the whole project of yours, e.g. somewhere in the root `index.js`.
 
 #### unsafeStatic(value: unknown): UnsafeStatic
@@ -79,7 +79,7 @@ change it after it is applied for the first time.
 ### Example
 ```javascript
 // index.js
-import '@corpuscule/lit-html-renderer/init';
+import '@corpuscule/lit-html-renderer/lib/init';
 import './app.js';
 
 // app.js
