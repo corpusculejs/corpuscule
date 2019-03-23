@@ -1,10 +1,6 @@
-// tslint:disable:max-classes-per-file
-export interface ComputingPair {
-  readonly computer: MethodDecorator;
-  readonly observer: PropertyDecorator;
-}
-
 export interface ElementDecoratorOptions {
+  readonly extends?: keyof HTMLElementTagNameMap;
+  readonly lightDOM?: boolean;
   readonly renderer: (
     result: unknown,
     container: Element | DocumentFragment,
@@ -13,24 +9,19 @@ export interface ElementDecoratorOptions {
   readonly scheduler?: (callback: () => void) => Promise<void>;
 }
 
-export interface ElementDecoratorParams {
-  readonly extends?: keyof HTMLElementTagNameMap;
-  readonly lightDOM?: boolean;
-}
-
-export type ElementDecorator = (name: string, params?: ElementDecoratorParams) => ClassDecorator;
-
 export type AttributeGuard = BooleanConstructor | NumberConstructor | StringConstructor;
 export type PropertyGuard = (value: unknown) => boolean;
 
+export type Token = object;
+
+export const createComputingToken: () => Token;
+
 export const attribute: (attributeName: string, guard: AttributeGuard) => PropertyDecorator;
-
-export const createElementDecorator: (options: ElementDecoratorOptions) => ElementDecorator;
-
+export const computer: (token: Token) => PropertyDecorator;
+export const element: (name: string, options?: ElementDecoratorOptions) => ClassDecorator;
 export const internal: PropertyDecorator;
+export const observer: (token: Token) => PropertyDecorator;
 export const property: (guard?: PropertyGuard) => PropertyDecorator;
-
-export const createComputingPair: () => ComputingPair;
 
 export const query: (selector: string) => PropertyDecorator;
 export const queryAll: (selector: string) => PropertyDecorator;

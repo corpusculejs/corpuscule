@@ -47,8 +47,8 @@ module.exports = {
               cacheDirectory: true,
               cacheCompression: false,
               plugins: [
-                [require('@babel/plugin-proposal-decorators'), {decoratorsBeforeExport: false}],
-                require('@babel/plugin-proposal-class-properties'),
+                [require('@babel/plugin-proposal-decorators'), {legacy: true}],
+                [require('@babel/plugin-proposal-class-properties'), {loose: true}],
                 [
                   require('@babel/plugin-transform-runtime'),
                   {
