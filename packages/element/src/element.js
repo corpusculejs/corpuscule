@@ -8,13 +8,13 @@ import {
   render as $render,
   updatedCallback as $updatedCallback,
 } from './tokens/lifecycle';
-import {applyInitializers, applyRegistrations, noop, shadowElements} from './utils';
+import {noop, shadowElements} from './utils';
 
 const element = (
   name,
   {extends: builtin, lightDOM = false, renderer, scheduler = defaultScheduler} = {},
 ) => target => {
-  const hasRender = $render in target;
+  const hasRender = $render in target.prototype;
   const isLight = lightDOM || (builtin && !shadowElements.includes(builtin));
 
   const $$attributeChangedCallback = Symbol();
@@ -87,7 +87,33 @@ const element = (
     [$updatedCallback]: supers[$updatedCallback],
   });
 
-  applyRegistrations(target.prototype);
+  target.__initializers.push(self => {
+    // Inheritance workaround. If class is inherited, method will work in a different way
+    const isExtended = self.constructor !== target;
+
+    Object.assign(self, {
+      [$$attributeChangedCallback]: isExtended
+        ? supers.attributeChangedCallback
+        : async function(attributeName, oldValue, newValue) {
+            if (oldValue === newValue || !self[$$connected]) {
+              return;
+            }
+
+            supers.attributeChangedCallback.call(self, attributeName, oldValue, newValue);
+            await self[$$invalidate]();
+          },
+      [$$connected]: false,
+      [$$connectedCallback]: isExtended
+        ? supers.connectedCallback
+        : async function() {
+            await self[$$invalidate]();
+            self[$$connected] = true;
+            supers.connectedCallback.call(self);
+          },
+      [$$root]: isExtended ? null : isLight ? self : self.attachShadow({mode: 'open'}),
+      [$$valid]: true,
+    });
+  });
 
   // Deferring custom element definition allows to run it at the end of all
   // decorators execution which helps to fix many issues connected with
@@ -95,39 +121,6 @@ const element = (
   Promise.resolve().then(() => {
     customElements.define(name, target, builtin && {extends: builtin});
   });
-
-  // Extended constructor
-  return function() {
-    const instance = new target();
-
-    // Inheritance workaround. If class is inherited, method will work in other way
-    const isExtended = this.constructor !== target;
-
-    applyInitializers(instance);
-
-    return Object.assign(instance, {
-      [$$attributeChangedCallback]: isExtended
-        ? supers.attributeChangedCallback
-        : async function(attributeName, oldValue, newValue) {
-            if (oldValue === newValue || !this[$$connected]) {
-              return;
-            }
-
-            supers.attributeChangedCallback.call(this, attributeName, oldValue, newValue);
-            await this[$$invalidate]();
-          },
-      [$$connected]: false,
-      [$$connectedCallback]: isExtended
-        ? supers.connectedCallback
-        : async function() {
-            await this[$$invalidate]();
-            this[$$connected] = true;
-            supers.connectedCallback.call(this);
-          },
-      [$$root]: isExtended ? (isLight ? this : this.attachShadow({mode: 'open'})) : null,
-      [$$valid]: true,
-    });
-  };
 };
 
 export default element;

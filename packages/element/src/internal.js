@@ -1,16 +1,16 @@
+import {makeAccessor} from '@corpuscule/utils/lib/descriptorsNew';
 import {internalChangedCallback as $internalChangedCallback} from './tokens/lifecycle';
-import {makeAccessor} from './utils';
 
-const internal = (prototype, key, descriptor) => {
-  const {get: originalGet, set: originalSet} = makeAccessor(prototype, descriptor);
+const internal = ({constructor: target}, key, descriptor) => {
+  const {get, set} = makeAccessor(target, descriptor);
 
   return {
     configurable: true,
     enumerable: true,
-    get: originalGet,
+    get,
     set(value) {
-      this[$internalChangedCallback](key, originalGet.call(this), value);
-      originalSet.call(this, value);
+      this[$internalChangedCallback](key, get.call(this), value);
+      set.call(this, value);
     },
   };
 };
