@@ -1,17 +1,19 @@
 import define from './define';
 
-export const createAccessorMaker = initializer => (prototype, descriptor) => {
-  if (descriptor.get && descriptor.set) {
+export const makeAccessor = (target, descriptor) => {
+  const {get, initializer, set} = descriptor;
+
+  if (get && set) {
     return descriptor;
   }
 
   const storage = Symbol();
 
-  initializer(prototype, function() {
-    define(this, {
-      [storage]: descriptor.initializer(),
-    });
-  });
+  target.__initializers.push(self =>
+    define(self, {
+      [storage]: initializer ? initializer() : undefined,
+    }),
+  );
 
   return {
     get() {
