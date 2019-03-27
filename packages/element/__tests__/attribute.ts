@@ -2,7 +2,7 @@ import {defineCE, fixture} from '@open-wc/testing-helpers';
 import {CustomElement} from '../../../test/utils';
 import {attribute} from '../src';
 
-const testAttributeDecorator = () => {
+describe('@corpuscule/element', () => {
   describe('@attribute', () => {
     it('gets string attribute', async () => {
       class Test extends CustomElement {
@@ -205,6 +205,4 @@ const testAttributeDecorator = () => {
       }).not.toThrow();
     });
   });
-};
-
-export default testAttributeDecorator;
+});

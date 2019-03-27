@@ -11,7 +11,7 @@ class CorpusculeElementMock {
   }
 }
 
-const testPropertyDecorator = () => {
+describe('@corpuscule/element', () => {
   describe('@property', () => {
     it('initializes, gets and sets property', () => {
       class Test extends CorpusculeElementMock {
@@ -77,6 +77,7 @@ const testPropertyDecorator = () => {
       }
 
       const test = new Test();
+
       test.prop = 20;
 
       expect(propertyChangedCallbackSpy).toHaveBeenCalledWith('prop', 10, 20);
@@ -103,6 +104,4 @@ const testPropertyDecorator = () => {
       }).toThrow(new TypeError('Value applied to "prop" has wrong type'));
     });
   });
-};
-
-export default testPropertyDecorator;
+});

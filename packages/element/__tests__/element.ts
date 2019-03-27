@@ -1,9 +1,10 @@
 // tslint:disable:no-unbound-method
 import {fixture, fixtureSync} from '@open-wc/testing-helpers';
 import {Constructor, createTestingPromise, CustomElement, genName} from '../../../test/utils';
+import {Omit} from '../../typings/src';
 import {
-  createElementDecorator,
-  ElementDecorator,
+  element as basicElement,
+  ElementDecoratorOptions,
   internalChangedCallback,
   propertyChangedCallback,
   render,
@@ -31,10 +32,15 @@ const fixtureMixin = <T extends Constructor<Element>>(base: T) =>
     }
   };
 
-const testElementDecorator = () => {
+type SimplifiedElementDecorator = (
+  name: string,
+  options?: Omit<ElementDecoratorOptions, 'renderer' | 'scheduler'>,
+) => ClassDecorator;
+
+describe('@corpuscule/element', () => {
   describe('@element', () => {
     let define: jasmine.Spy;
-    let element: ElementDecorator;
+    let element: SimplifiedElementDecorator;
     let rendererSpy: jasmine.Spy;
     let schedulerSpy: jasmine.Spy;
 
@@ -47,7 +53,8 @@ const testElementDecorator = () => {
       define = spyOn(customElements, 'define');
       define.and.callThrough();
 
-      element = createElementDecorator({renderer: rendererSpy, scheduler: schedulerSpy});
+      element = (name, options) =>
+        basicElement(name, {...options, renderer: rendererSpy, scheduler: schedulerSpy});
     });
 
     it('adds element to a custom elements registry', async () => {
@@ -510,6 +517,4 @@ const testElementDecorator = () => {
       });
     });
   });
-};
-
-export default testElementDecorator;
+});
