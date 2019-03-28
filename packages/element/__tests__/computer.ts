@@ -1,5 +1,5 @@
 import {Token} from '@corpuscule/utils/lib/tokenizer';
-import {computer, createComputingToken, observer} from '../src';
+import {computer as basicComputer, createComputingToken, observer as basicObserver} from '../src';
 
 const repeatGetTenTimes = <C extends object, M extends keyof C, T extends C[M]>(
   instance: C,
@@ -17,23 +17,27 @@ const repeatGetTenTimes = <C extends object, M extends keyof C, T extends C[M]>(
 
 describe('@corpuscule/element', () => {
   describe('createComputingPair', () => {
+    let computer: PropertyDecorator;
+    let observer: PropertyDecorator;
     let token: Token;
 
     beforeEach(() => {
       token = createComputingToken();
+      computer = basicComputer(token);
+      observer = basicObserver(token);
     });
 
     it('memoizes getter result', () => {
       const spy = jasmine.createSpy('onCompute');
 
       class Test {
-        @observer(token)
+        @observer
         public observed1: string = 'str';
 
-        @observer(token)
+        @observer
         public observed2: number = 10;
 
-        @computer(token)
+        @computer
         public get computed(): string {
           spy();
 
@@ -51,13 +55,13 @@ describe('@corpuscule/element', () => {
       const spy = jasmine.createSpy('onCompute');
 
       class Test {
-        @observer(token)
+        @observer
         public observed1: string = 'str';
 
-        @observer(token)
+        @observer
         public observed2: number = 10;
 
-        @computer(token)
+        @computer
         public get computed(): string {
           spy();
 
@@ -79,10 +83,10 @@ describe('@corpuscule/element', () => {
       const spy = jasmine.createSpy('onCompute');
 
       class Test {
-        @observer(token)
+        @observer
         public observed1: string = 'str';
 
-        @observer(token)
+        @observer
         public get observed2(): number {
           return this.secret;
         }
@@ -93,7 +97,7 @@ describe('@corpuscule/element', () => {
 
         private secret: number = 10;
 
-        @computer(token)
+        @computer
         public get computed(): string {
           spy();
 
@@ -116,17 +120,17 @@ describe('@corpuscule/element', () => {
       const spy2 = jasmine.createSpy('onCompute2');
 
       class Test {
-        @observer(token)
+        @observer
         public observed: string = 'str';
 
-        @computer(token)
+        @computer
         public get computed1(): string {
           spy1();
 
           return `foo: ${this.observed}`;
         }
 
-        @computer(token)
+        @computer
         public get computed2(): string {
           spy2();
 
