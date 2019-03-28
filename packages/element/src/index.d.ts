@@ -1,3 +1,5 @@
+import {Token, TokenCreator} from '@corpuscule/utils/lib/tokenizer';
+
 export interface ElementDecoratorOptions {
   readonly extends?: keyof HTMLElementTagNameMap;
   readonly lightDOM?: boolean;
@@ -12,9 +14,7 @@ export interface ElementDecoratorOptions {
 export type AttributeGuard = BooleanConstructor | NumberConstructor | StringConstructor;
 export type PropertyGuard = (value: unknown) => boolean;
 
-export type Token = object;
-
-export const createComputingToken: () => Token;
+export const createComputingToken: TokenCreator;
 
 export const attribute: (attributeName: string, guard: AttributeGuard) => PropertyDecorator;
 export const computer: (token: Token) => PropertyDecorator;

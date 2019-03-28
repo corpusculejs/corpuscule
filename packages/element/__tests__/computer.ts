@@ -1,4 +1,5 @@
-import {computer, createComputingToken, observer, Token} from '../src';
+import {Token} from '@corpuscule/utils/lib/tokenizer';
+import {computer, createComputingToken, observer} from '../src';
 
 const repeatGetTenTimes = <C extends object, M extends keyof C, T extends C[M]>(
   instance: C,
