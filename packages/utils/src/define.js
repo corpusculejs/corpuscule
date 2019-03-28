@@ -1,21 +1,19 @@
-const nothing = {};
+const defaultDescriptor = {
+  configurable: true,
+  enumerable: true,
+};
 
-const define = (target, props, options = nothing) => {
-  Object.defineProperties(
-    target,
-    Reflect.ownKeys(props).reduce((list, name) => {
-      const {configurable = true, enumerable = true, writable = true} = options[name] || nothing;
+const define = (target, props) => {
+  Object.assign(target, props);
+};
 
-      list[name] = {
-        configurable,
-        enumerable,
-        value: props[name],
-        writable,
-      };
-
-      return list;
-    }, {}),
-  );
+define.raw = (target, props) => {
+  Reflect.ownKeys(props).forEach(prop => {
+    Object.defineProperty(target, prop, {
+      ...defaultDescriptor,
+      ...props[prop],
+    });
+  });
 };
 
 export default define;

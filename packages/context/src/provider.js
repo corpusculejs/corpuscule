@@ -40,7 +40,7 @@ const provider = (token, defaultValue = null) => target => {
     // Inheritance workaround. If class is inherited, method will work in a different way
     const isExtended = self.constructor !== target;
 
-    Object.assign(self, {
+    define(self, {
       [$$connectedCallback]: isExtended
         ? supers.connectedCallback
         : () => {

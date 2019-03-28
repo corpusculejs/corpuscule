@@ -32,14 +32,15 @@ const element = (
     $updatedCallback,
   ]);
 
-  const readonly = {writable: false};
-
-  define(target, {
-    is: name,
-    observedAttributes: [],
-  }, {
-    is: readonly,
-    observedAttributes: readonly,
+  define.raw(target, {
+    is: {
+      value: name,
+      writable: false,
+    },
+    observedAttributes: {
+      value: [],
+      writable: false,
+    },
   });
 
   define(target.prototype, {
@@ -91,7 +92,7 @@ const element = (
     // Inheritance workaround. If class is inherited, method will work in a different way
     const isExtended = self.constructor !== target;
 
-    Object.assign(self, {
+    define(self, {
       [$$attributeChangedCallback]: isExtended
         ? supers.attributeChangedCallback
         : async function(attributeName, oldValue, newValue) {
