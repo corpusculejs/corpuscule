@@ -1,12 +1,28 @@
 import {defineCE, fixture} from '@open-wc/testing-helpers';
 import {createSimpleContext, CustomElement} from '../../../test/utils';
-import createContext from '../src';
+import {
+  consumer as basicConsumer,
+  createContextToken,
+  isProvider,
+  provider as basicProvider,
+  value as basicValue,
+} from '../src';
 
 describe('@corpuscule/context', () => {
   describe('createContext', () => {
-    it('creates context', async () => {
-      const {consumer, provider, value} = createContext();
+    let consumer;
+    let provider;
+    let token;
+    let value;
 
+    beforeEach(() => {
+      token = createContextToken();
+      consumer = basicConsumer(token);
+      provider = basicProvider(token);
+      value = basicValue(token);
+    });
+
+    it('creates context', async () => {
       @provider
       class Provider extends CustomElement {
         @value public providingValue: number = 2;
@@ -23,8 +39,6 @@ describe('@corpuscule/context', () => {
     });
 
     it('provides context for all consumers', async () => {
-      const {consumer, provider, value} = createContext();
-
       @provider
       class Provider extends CustomElement {
         @value public providingValue: number = 2;
@@ -54,7 +68,7 @@ describe('@corpuscule/context', () => {
     });
 
     it('allows to use default value for context', async () => {
-      const {consumer, provider, value} = createContext(2);
+      provider = basicProvider(token, 2);
 
       @provider
       class Provider extends CustomElement {
@@ -73,7 +87,7 @@ describe('@corpuscule/context', () => {
     });
 
     it('allows to set value dynamically', async () => {
-      const {consumer, provider, value} = createContext(2);
+      provider = basicProvider(token, 2);
 
       @provider
       class Provider extends CustomElement {
@@ -95,7 +109,6 @@ describe('@corpuscule/context', () => {
     it("calls connectedCallback and disconnectedCallback of user's class", async () => {
       const connectedSpy = jasmine.createSpy('onConnect');
       const disconnectedSpy = jasmine.createSpy('onDisconnect');
-      const {consumer, provider, value} = createContext();
 
       @provider
       class Provider extends CustomElement {
@@ -133,8 +146,6 @@ describe('@corpuscule/context', () => {
     });
 
     it('stops providing value to disconnected consumers', async () => {
-      const {consumer, provider, value} = createContext();
-
       @provider
       class Provider extends CustomElement {
         @value public providingValue: number = 2;
@@ -155,7 +166,6 @@ describe('@corpuscule/context', () => {
     });
 
     it("removes any default consumer's value", async () => {
-      const {consumer, provider, value} = createContext();
       const constructorSpy = jasmine.createSpy('constructor');
 
       @provider
@@ -180,8 +190,6 @@ describe('@corpuscule/context', () => {
     });
 
     it('allows to use accessors for a value', async () => {
-      const {consumer, provider, value} = createContext();
-
       @provider
       class Provider extends CustomElement {
         public storage: number = 10;
@@ -217,7 +225,7 @@ describe('@corpuscule/context', () => {
     });
 
     it('sets default value for provider value with accessors if it is not defined', async () => {
-      const {consumer, provider, value} = createContext(2);
+      provider = basicProvider(token, 2);
 
       @provider
       class Provider extends CustomElement {
@@ -254,19 +262,15 @@ describe('@corpuscule/context', () => {
     });
 
     it('detects provider', () => {
-      const {isProvider, provider, value} = createContext();
-
       @provider
       class Provider extends CustomElement {
         @value public providingValue: number = 2;
       }
 
-      expect(isProvider(Provider)).toBeTruthy();
+      expect(isProvider(token, Provider)).toBeTruthy();
     });
 
     it('throws an error if no provider exists for context', done => {
-      const {consumer, value} = createContext();
-
       @consumer
       class Consumer extends CustomElement {
         @value public contextValue!: number;
@@ -283,8 +287,6 @@ describe('@corpuscule/context', () => {
     });
 
     it('throws an error if no value is marked with @value', () => {
-      const {consumer, provider} = createContext();
-
       expect(() => {
         @provider
         // @ts-ignore
@@ -299,8 +301,6 @@ describe('@corpuscule/context', () => {
     });
 
     it('does not throw an error if class already have own lifecycle element', () => {
-      const {consumer, provider, value} = createContext();
-
       expect(() => {
         @provider
         // @ts-ignore

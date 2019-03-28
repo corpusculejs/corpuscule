@@ -1,55 +1,43 @@
-import {assertKind, assertPlacement, Kind, Placement} from '@corpuscule/utils/lib/asserts';
-import {accessor, hook} from '@corpuscule/utils/lib/descriptors';
-import {noop} from './utils';
+import {makeAccessor} from '@corpuscule/utils/lib/descriptorsNew';
+import {setObject} from '@corpuscule/utils/lib/setters';
+import {registry} from './utils';
 
-const createValue = ({consumers, value, providers}) => descriptor => {
-  assertKind('value', Kind.Field | Kind.Method | Kind.Accessor, descriptor);
-  assertPlacement('value', Placement.Own | Placement.Prototype, descriptor);
-
-  const {
-    descriptor: {get, set},
-    extras = [],
-    finisher = noop,
-    initializer,
-    key,
-  } = descriptor;
-
+const value = token => ({constructor: target}, key, {initializer, ...descriptor}) => {
   let $$consumers;
   let isProvider;
 
-  return accessor({
-    adjust: ({get: originalGet, set: originalSet}) => ({
-      get: originalGet,
-      set(v) {
-        originalSet.call(this, v);
+  const [, values, providers] = registry.get(token);
 
-        if (isProvider) {
-          for (const callback of this[$$consumers]) {
-            callback(v);
-          }
-        }
-      },
-    }),
-    extras: [
-      hook({
-        start() {
-          value.set(this, key);
-        },
-      }),
-      ...extras,
-    ],
-    finisher(target) {
-      isProvider = providers.has(target);
-      $$consumers = consumers.get(target);
-      finisher(target);
-    },
-    get,
+  setObject(values, target, {
+    value: key,
+  });
+
+  target.__registrations.push(() => {
+    ({consumers: $$consumers} = values.get(target));
+    isProvider = providers.has(target);
+  });
+
+  const {get, set} = makeAccessor(target, {
+    ...descriptor,
     initializer() {
       return isProvider && initializer ? initializer.call(this) : undefined;
     },
-    key,
-    set,
   });
+
+  return {
+    configurable: true,
+    enumerable: true,
+    get,
+    set(v) {
+      set.call(this, v);
+
+      if (isProvider) {
+        for (const callback of this[$$consumers]) {
+          callback(v);
+        }
+      }
+    },
+  };
 };
 
-export default createValue;
+export default value;

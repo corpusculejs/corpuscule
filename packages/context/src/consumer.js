@@ -1,94 +1,72 @@
-import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/asserts';
-import getSupers from '@corpuscule/utils/lib/getSupers';
-import {lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
-import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
-import {setValue} from '@corpuscule/utils/lib/propertyUtils';
-import {filter, noop} from './utils';
+import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
+import define from '@corpuscule/utils/lib/define';
+import {getSupers, registry} from './utils';
 
-const createConsumer = (
-  {eventName, value},
-  [connectedCallbackKey, disconnectedCallbackKey],
-) => descriptor => {
-  assertKind('consumer', Kind.Class, descriptor);
-
-  const {elements, finisher = noop, kind} = descriptor;
-
-  let constructor;
+const consumer = token => target => {
   let $value;
 
-  const getConstructor = () => constructor;
-
+  const $$connectedCallback = Symbol();
   const $$consume = Symbol();
+  const $$disconnectedCallback = Symbol();
   const $$unsubscribe = Symbol();
 
-  const [supers, prepareSupers] = getSupers(elements, lifecycleKeys);
+  const supers = getSupers(target);
 
-  return {
-    elements: [
-      // Public
-      ...lifecycleMethod(
-        {
-          key: connectedCallbackKey,
-          method() {
+  const [eventName, values] = registry.get(token);
+
+  target.__registrations.push(() => {
+    ({value: $value} = values.get(target) || {});
+    assertRequiredProperty('consumer', 'value', $value);
+  });
+
+  define(target.prototype, {
+    connectedCallback() {
+      this[$$connectedCallback]();
+    },
+    disconnectedCallback() {
+      this[$$disconnectedCallback]();
+    },
+  });
+
+  target.__initializers.push(self => {
+    // Inheritance workaround. If class is inherited, method will work in a different way
+    const isExtended = self.constructor !== target;
+
+    Object.assign(self, {
+      [$$connectedCallback]: isExtended
+        ? supers.connectedCallback
+        : () => {
             const event = new CustomEvent(eventName, {
               bubbles: true,
               cancelable: true,
               composed: true,
-              detail: {consume: this[$$consume]},
+              detail: {consume: self[$$consume]},
             });
 
-            this.dispatchEvent(event);
+            self.dispatchEvent(event);
 
-            this[$$unsubscribe] = event.detail.unsubscribe;
+            self[$$unsubscribe] = event.detail.unsubscribe;
 
-            if (!this[$$unsubscribe]) {
-              throw new Error(`No provider found for ${this.constructor.name}`);
+            if (!self[$$unsubscribe]) {
+              throw new Error(`No provider found for ${self.constructor.name}`);
             }
 
-            supers[connectedCallbackKey].call(this);
+            supers.connectedCallback.call(self);
           },
-        },
-        supers,
-        getConstructor,
-      ),
-      ...lifecycleMethod(
-        {
-          key: disconnectedCallbackKey,
-          method() {
-            if (this[$$unsubscribe]) {
-              this[$$unsubscribe](this[$$consume]);
+      [$$consume](v) {
+        self[$value] = v;
+      },
+      [$$disconnectedCallback]: isExtended
+        ? supers.disconnectedCallback
+        : () => {
+            if (self[$$unsubscribe]) {
+              self[$$unsubscribe](self[$$consume]);
             }
 
-            supers[disconnectedCallbackKey].call(this);
+            supers.disconnectedCallback.call(self);
           },
-        },
-        supers,
-        getConstructor,
-      ),
-
-      // Private
-      method({
-        bound: true,
-        key: $$consume,
-        method(v) {
-          setValue(this, $value, v);
-        },
-      }),
-
-      // Original elements
-      ...filter(elements),
-    ],
-    finisher(target) {
-      finisher(target);
-      constructor = target;
-
-      $value = value.get(target);
-      assertRequiredProperty('consumer', 'value', $value);
-
-      prepareSupers(target);
-    },
-    kind,
-  };
+    });
+  });
 };
 
-export default createConsumer;
+export default consumer;
