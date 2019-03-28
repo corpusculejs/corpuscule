@@ -5,3 +5,11 @@ export const setArray = (registry, key, value) => {
     registry.set(key, [value]);
   }
 };
+
+export const setObject = (registry, key, object) => {
+  if (registry.has(key)) {
+    Object.assign(registry.get(key), object);
+  } else {
+    registry.set(key, object);
+  }
+};
