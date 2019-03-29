@@ -1,6 +1,6 @@
 import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
 import define from '@corpuscule/utils/lib/define';
-import {getSupers, registry} from './utils';
+import {getSupers, tokenRegistry} from './utils';
 
 const consumer = token => target => {
   let $value;
@@ -12,7 +12,7 @@ const consumer = token => target => {
 
   const supers = getSupers(target);
 
-  const [eventName, values] = registry.get(token);
+  const [eventName, values] = tokenRegistry.get(token);
 
   target.__registrations.push(() => {
     ({value: $value} = values.get(target) || {});

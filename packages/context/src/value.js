@@ -1,12 +1,12 @@
 import {makeAccessor} from '@corpuscule/utils/lib/descriptorsNew';
 import {setObject} from '@corpuscule/utils/lib/setters';
-import {registry} from './utils';
+import {tokenRegistry} from './utils';
 
 const value = token => ({constructor: target}, key, {initializer, ...descriptor}) => {
   let $$consumers;
   let isProvider;
 
-  const [, values, providers] = registry.get(token);
+  const [, values, providers] = tokenRegistry.get(token);
 
   setObject(values, target, {
     value: key,

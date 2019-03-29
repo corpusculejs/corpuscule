@@ -2,7 +2,7 @@ import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
 import define from '@corpuscule/utils/lib/define';
 import {getValue} from '@corpuscule/utils/lib/propertyUtils';
 import {setObject} from '@corpuscule/utils/lib/setters';
-import {getSupers, registry} from './utils';
+import {getSupers, tokenRegistry} from './utils';
 
 const provider = (token, defaultValue = null) => target => {
   let $value;
@@ -14,7 +14,7 @@ const provider = (token, defaultValue = null) => target => {
 
   const supers = getSupers(target);
 
-  const [eventName, values, providers] = registry.get(token);
+  const [eventName, values, providers] = tokenRegistry.get(token);
 
   providers.add(target);
 

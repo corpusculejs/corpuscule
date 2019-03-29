@@ -1,4 +1,4 @@
-import {Token, TokenCreator} from '@corpuscule/utils/lib/tokenizer';
+import {Token, TokenCreator} from '@corpuscule/typings';
 
 export interface ElementDecoratorOptions {
   readonly extends?: keyof HTMLElementTagNameMap;

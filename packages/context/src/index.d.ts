@@ -1,4 +1,4 @@
-import {Token, TokenCreator} from '@corpuscule/utils/lib/tokenizer';
+import {Token, TokenCreator} from '@corpuscule/typings';
 
 export const consumer: (token: Token) => ClassDecorator;
 export const createContextToken: TokenCreator;

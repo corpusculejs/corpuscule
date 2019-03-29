@@ -12,7 +12,6 @@ const utils = [
   'scheduler',
   'setters',
   'shallowEqual',
-  'tokenizer',
 ];
 
 const packages = {
