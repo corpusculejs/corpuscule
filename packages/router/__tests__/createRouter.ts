@@ -2,7 +2,7 @@ import UniversalRouter from 'universal-router';
 import {universalRouterConstructorSpy} from '../../../test/mocks/universalRouter';
 import {createRouter} from '../src';
 
-const createRouterTest = () => {
+describe('@corpuscule/router', () => {
   describe('createRouter', () => {
     const routes = [
       {
@@ -58,6 +58,4 @@ const createRouterTest = () => {
       });
     });
   });
-};
-
-export default createRouterTest;
+});

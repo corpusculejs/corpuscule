@@ -4,7 +4,7 @@ import {Route} from 'universal-router/sync';
 import {createSimpleContext, createTestingPromise, CustomElement} from '../../../test/utils';
 import {api, outlet, provider} from '../src';
 
-const outletTest = () => {
+describe('@corpuscule/router', () => {
   describe('outlet', () => {
     const routes = [
       {
@@ -255,6 +255,4 @@ const outletTest = () => {
       }).not.toThrow();
     });
   });
-};
-
-export default outletTest;
+});
