@@ -1,11 +1,16 @@
 import {Token, TokenCreator} from '@corpuscule/utils/lib/tokenRegistry';
 
-export {isProvider, provider as providerAdvanced, value as apiAdvanced} from '@corpuscule/context';
+export {
+  isProvider as isProviderAdvanced,
+  provider as providerAdvanced,
+  value as apiAdvanced,
+} from '@corpuscule/context';
 
 export type PropertyGetter<S> = (state: S) => any;
 
 export const api: PropertyDecorator;
 export const dispatcher: PropertyDecorator;
+export const isProvider: (target: unknown) => boolean;
 export const provider: ClassDecorator;
 export const redux: ClassDecorator;
 export const unit: <S>(getter: PropertyGetter<S>) => PropertyDecorator;

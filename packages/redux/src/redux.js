@@ -1,5 +1,5 @@
 import {consumer, value} from '@corpuscule/context';
-import define, {defaultDescriptor} from '@corpuscule/utils/lib/define';
+import define from '@corpuscule/utils/lib/define';
 import getSupers from '@corpuscule/utils/lib/getSupersNew';
 import {getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
 import {setObject} from '@corpuscule/utils/lib/setters';
@@ -16,10 +16,7 @@ const redux = token => target => {
 
   const supers = getSupers(target, ['disconnectedCallback']);
 
-  const valueDescriptor = value(token)(target.prototype, $$contextProperty, {
-    ...defaultDescriptor,
-    writable: true,
-  });
+  const valueDescriptor = value(token)(target.prototype, $$contextProperty);
 
   setObject(tokenRegistry.get(token), target, {
     store: $$contextProperty,
@@ -62,6 +59,7 @@ const redux = token => target => {
 
   define.raw(target.prototype, {
     [$$contextProperty]: {
+      ...valueDescriptor,
       get: valueDescriptor.get,
       set(v) {
         valueDescriptor.set.call(this, v);
