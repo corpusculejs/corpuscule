@@ -3,7 +3,11 @@ import {makeAccessor} from '@corpuscule/utils/lib/descriptorsNew';
 import {setObject} from '@corpuscule/utils/lib/setters';
 import {tokenRegistry} from './utils';
 
-const value = token => ({constructor: target}, key, {initializer, ...descriptor}) => {
+const value = token => (
+  {constructor: target},
+  key,
+  {initializer, ...descriptor} = defaultDescriptor,
+) => {
   let $$consumers;
   let isProvider;
 
