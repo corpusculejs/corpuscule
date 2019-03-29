@@ -1,124 +1,89 @@
-import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/asserts';
-import {field, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
-import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
-import {setValue} from '@corpuscule/utils/lib/propertyUtils';
-import {resolve} from './tokens/lifecycle';
-import getSupers from '@corpuscule/utils/lib/getSupers';
+import {consumer, value} from '@corpuscule/context';
+import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
+import define from '@corpuscule/utils/lib/define';
+import {resolve as $resolve} from './tokens/lifecycle';
+import getSupers from '@corpuscule/utils/lib/getSupersNew';
+import {tokenRegistry} from './utils';
 
-// eslint-disable-next-line no-empty-function
-const noop = () => {};
-
-const methods = [...lifecycleKeys, resolve];
-
-const [connectedCallbackKey, disconnectedCallbackKey] = lifecycleKeys;
-
-const createOutletDecorator = ({consumer, value}, {layout, route}) => routes => descriptor => {
-  assertKind('outlet', Kind.Class, descriptor);
-
-  const {elements, finisher = noop, kind} = descriptor;
-
-  let constructor;
+const outlet = (token, routes) => target => {
   let $layout;
   let $route;
 
-  const getConstructor = () => constructor;
-
-  const $$contextValue = Symbol();
+  const $$connectedCallback = Symbol();
+  const $$contextProperty = Symbol();
+  const $$disconnectedCallback = Symbol();
   const $$updateRoute = Symbol();
 
-  const [supers, prepareSupers] = getSupers(elements, methods);
-  const {extras, finisher: contextValueFinisher, ...contextValueDescriptor} = value(
-    field({key: $$contextValue}),
-  );
-
-  return consumer({
-    elements: [
-      // Public
-      ...lifecycleMethod(
-        {
-          key: connectedCallbackKey,
-          method() {
-            window.addEventListener('popstate', this[$$updateRoute]);
-            supers[connectedCallbackKey].call(this);
-
-            this[$$updateRoute](location.pathname);
-          },
-        },
-        supers,
-        getConstructor,
-      ),
-      ...lifecycleMethod(
-        {
-          key: disconnectedCallbackKey,
-          method() {
-            window.removeEventListener('popstate', this[$$updateRoute]);
-            supers[disconnectedCallbackKey].call(this);
-          },
-        },
-        supers,
-        getConstructor,
-      ),
-
-      // Protected
-      method({
-        key: resolve,
-        method(...args) {
-          return supers[resolve].apply(this, args);
-        },
-      }),
-
-      // Private
-      method({
-        bound: true,
-        key: $$updateRoute,
-        async method(pathOrEvent) {
-          const path = typeof pathOrEvent === 'string' ? pathOrEvent : pathOrEvent.state || '';
-
-          const iter = this[resolve](path);
-
-          const resolved = await this[$$contextValue].resolve(iter.next().value);
-
-          if (resolved === undefined) {
-            return;
-          }
-
-          const [result, {route: currentRoute}] = resolved;
-
-          if (routes.includes(currentRoute)) {
-            setValue(this, $route, currentRoute);
-            setValue(this, $layout, iter.next(result).value);
-          }
-        },
-      }),
-
-      // Context
-      ...extras,
-      contextValueDescriptor,
-
-      // Original elements
-      ...elements.filter(
-        ({key, placement}) => !(lifecycleKeys.includes(key) && placement === 'prototype'),
-      ),
-    ],
-    finisher(target) {
-      finisher(target);
-
-      constructor = target;
-      $layout = layout.get(target);
-      $route = route.get(target);
-      assertRequiredProperty('outlet', 'api', 'layout', $layout);
-      assertRequiredProperty('outlet', 'api', 'route', $route);
-
-      prepareSupers(target, {
-        *[resolve](path) {
-          return yield path;
-        },
-      });
-
-      contextValueFinisher(target);
+  const supers = getSupers(target, ['connectedCallback', 'disconnectedCallback', $resolve], {
+    *[$resolve](path) {
+      return yield path;
     },
-    kind,
   });
+
+  const valueDescriptor = value(token)(target.prototype, $$contextProperty);
+
+  target.__registrations.push(() => {
+    ({layout: $layout, route: $route} = tokenRegistry.get(token).get(target));
+    assertRequiredProperty('outlet', 'api', 'layout', $layout);
+    assertRequiredProperty('outlet', 'api', 'route', $route);
+  });
+
+  define(target.prototype, {
+    connectedCallback() {
+      this[$$connectedCallback]();
+    },
+    disconnectedCallback() {
+      this[$$disconnectedCallback]();
+    },
+    // eslint-disable-next-line sort-keys
+    [$resolve]: supers[$resolve],
+  });
+
+  define.raw(target.prototype, {
+    [$$contextProperty]: valueDescriptor,
+  });
+
+  target.__initializers.push(self => {
+    // Inheritance workaround. If class is inherited, method will work in a different way
+    const isExtended = self.constructor !== target;
+
+    define(self, {
+      [$$connectedCallback]: isExtended
+        ? supers.connectedCallback
+        : () => {
+            window.addEventListener('popstate', self[$$updateRoute]);
+            supers.connectedCallback.call(self);
+
+            self[$$updateRoute](location.pathname);
+          },
+      [$$disconnectedCallback]: isExtended
+        ? supers.disconnectedCallback
+        : () => {
+            window.removeEventListener('popstate', self[$$updateRoute]);
+            supers.disconnectedCallback.call(self);
+          },
+      async [$$updateRoute](pathOrEvent) {
+        const path = typeof pathOrEvent === 'string' ? pathOrEvent : pathOrEvent.state || '';
+
+        const iter = self[$resolve](path);
+
+        const resolved = await self[$$contextProperty].resolve(iter.next().value);
+
+        if (resolved === undefined) {
+          return;
+        }
+
+        const [result, {route: currentRoute}] = resolved;
+
+        if (routes.includes(currentRoute)) {
+          self[$route] = currentRoute;
+          self[$layout] = iter.next(result).value;
+        }
+      },
+    });
+  });
+
+  consumer(token)(target);
 };
 
-export default createOutletDecorator;
+export default outlet;
