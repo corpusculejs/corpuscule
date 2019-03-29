@@ -1,52 +1,42 @@
-import {assertKind, assertPlacement, Kind, Placement} from '@corpuscule/utils/lib/asserts';
-import {method} from '@corpuscule/utils/lib/descriptors';
-import {getValue} from '@corpuscule/utils/lib/propertyUtils';
+import define from '@corpuscule/utils/lib/define';
+import {tokenRegistry} from './utils';
 
-export const createDispatcherDecorator = ({store}) => descriptor => {
-  assertKind('dispatcher', Kind.Field | Kind.Method, descriptor);
-  assertPlacement('dispatcher', Placement.Own | Placement.Prototype, descriptor);
-
-  const {
-    descriptor: {value},
-    initializer,
-    key,
-    kind,
-  } = descriptor;
+const dispatcher = token => ({constructor: target}, key, descriptor) => {
+  const {initializer, value} = descriptor;
 
   let $store;
 
-  const finisher = target => {
-    $store = store.get(target);
-  };
+  target.__registrations.push(() => {
+    ({store: $store} = tokenRegistry.get(token).get(target));
+  });
 
-  if (kind === 'field') {
+  if ('initializer' in descriptor) {
     const actionCreator = initializer && initializer();
 
     if (!actionCreator || typeof actionCreator !== 'function') {
       throw new TypeError(`@dispatcher "${key}" should be initialized with a function`);
     }
 
-    return method({
-      finisher,
-      key,
-      method(...args) {
-        getValue(this, $store).dispatch(actionCreator(...args));
-      },
-      placement: 'own',
+    target.__initializers.push(self => {
+      define(self, {
+        [key](...args) {
+          self[$store].dispatch(actionCreator(...args));
+        },
+      });
     });
+
+    return descriptor;
   }
 
-  return {
-    ...descriptor,
-    extras: [
-      method({
-        key,
-        method(...args) {
-          getValue(this, $store).dispatch(value.apply(this, args));
-        },
-        placement: 'own',
-      }),
-    ],
-    finisher,
-  };
+  target.__initializers.push(self => {
+    define(self, {
+      [key](...args) {
+        self[$store].dispatch(value.apply(self, args));
+      },
+    });
+  });
+
+  return descriptor;
 };
+
+export default dispatcher;

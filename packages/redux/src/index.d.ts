@@ -1,21 +1,17 @@
-import createContext from '@corpuscule/context';
+import {Token, TokenCreator} from '@corpuscule/utils/lib/tokenRegistry';
+
+export {isProvider, provider as providerAdvanced, value as apiAdvanced} from '@corpuscule/context';
 
 export type PropertyGetter<S> = (state: S) => any;
 
-export const api: ReturnType<typeof createContext>['value'];
+export const api: PropertyDecorator;
 export const dispatcher: PropertyDecorator;
-export const isProvider: ReturnType<typeof createContext>['isProvider'];
-export const provider: ReturnType<typeof createContext>['provider'];
+export const provider: ClassDecorator;
 export const redux: ClassDecorator;
 export const unit: <S>(getter: PropertyGetter<S>) => PropertyDecorator;
 
-export interface ReduxContext {
-  readonly api: ReturnType<typeof createContext>['value'];
-  readonly dispatcher: PropertyDecorator;
-  readonly isProvider: ReturnType<typeof createContext>['isProvider'];
-  readonly provider: ReturnType<typeof createContext>['provider'];
-  readonly redux: ClassDecorator;
-  readonly unit: <S>(getter: PropertyGetter<S>) => PropertyDecorator;
-}
+export const createReduxToken: TokenCreator;
 
-export const createReduxContext: () => ReduxContext;
+export const dispatcherAdvanced: (token: Token) => PropertyDecorator;
+export const reduxAdvanced: (token: Token) => ClassDecorator;
+export const unitAdvanced: <S>(token: Token, getter: PropertyGetter<S>) => PropertyDecorator;

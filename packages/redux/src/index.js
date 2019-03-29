@@ -1,24 +1,23 @@
-import createContext from '@corpuscule/context';
-import {createDispatcherDecorator} from './dispatcher';
-import {createReduxDecorator} from './redux';
-import {createUnitDecorator} from './unit';
+import {isProvider, provider as providerAdvanced, value as apiAdvanced} from '@corpuscule/context';
+import dispatcherAdvanced from './dispatcher';
+import reduxAdvanced from './redux';
+import unitAdvanced from './unit';
+import {createReduxToken} from './utils';
 
-export const createReduxContext = () => {
-  const context = createContext();
-
-  const shared = {
-    store: new WeakMap(),
-    units: new WeakMap(),
-  };
-
-  return {
-    api: context.value,
-    dispatcher: createDispatcherDecorator(shared),
-    isProvider: context.isProvider,
-    provider: context.provider,
-    redux: createReduxDecorator(context, shared),
-    unit: createUnitDecorator(shared),
-  };
+export {
+  apiAdvanced,
+  createReduxToken,
+  dispatcherAdvanced,
+  isProvider,
+  providerAdvanced,
+  reduxAdvanced,
+  unitAdvanced,
 };
 
-export const {api, dispatcher, isProvider, provider, redux, unit} = createReduxContext();
+const defaultToken = createReduxToken();
+
+export const api = apiAdvanced(defaultToken);
+export const dispatcher = dispatcherAdvanced(defaultToken);
+export const provider = providerAdvanced(defaultToken);
+export const redux = reduxAdvanced(defaultToken);
+export const unit = getter => unitAdvanced(defaultToken, getter);
