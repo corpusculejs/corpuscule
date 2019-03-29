@@ -1,4 +1,4 @@
-const defaultDescriptor = {
+export const defaultDescriptor = {
   configurable: true,
   enumerable: true,
 };
