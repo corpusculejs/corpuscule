@@ -1,24 +1,12 @@
 /* eslint-disable capitalized-comments, no-sync */
-import {assertKind, Kind} from '@corpuscule/utils/lib/asserts';
-import {method} from '@corpuscule/utils/lib/descriptors';
-import getSupers from '@corpuscule/utils/lib/getSupers';
-
-const observerConfig = {childList: true};
-
-// eslint-disable-next-line no-empty-function
-const noop = () => {};
-
-const attachShadowKey = 'attachShadow';
+import define from '@corpuscule/utils/lib/define';
+import getSupers from '@corpuscule/utils/lib/getSupersNew';
 
 export const stylesAttachedCallback = Symbol();
 
-export const createStylesDecorator = ({shadyCSS, adoptedStyleSheets}) => (
-  ...pathsOrStyles
-) => descriptor => {
-  assertKind('styles', Kind.Class, descriptor);
+const observerConfig = {childList: true};
 
-  const {elements, finisher = noop, kind} = descriptor;
-
+export const stylesAdvanced = ({shadyCSS, adoptedStyleSheets}, ...pathsOrStyles) => target => {
   const template = document.createElement('template');
   const constructableStyles = [];
 
@@ -49,56 +37,46 @@ export const createStylesDecorator = ({shadyCSS, adoptedStyleSheets}) => (
     }
   }
 
-  const [supers, prepareSupers] = getSupers(elements, [attachShadowKey, stylesAttachedCallback]);
+  const supers = getSupers(target, ['attachShadow', stylesAttachedCallback]);
 
-  return {
-    elements: [
-      method({
-        key: attachShadowKey,
-        method(options) {
-          const root = supers.attachShadow.call(this, options);
+  target.__initializers.push(self => {
+    define(self, {
+      attachShadow(options) {
+        const root = supers.attachShadow.call(self, options);
 
-          if (constructableStyles.length > 0) {
-            if (shadyCSS) {
-              window.ShadyCSS.prepareAdoptedCssText(constructableStyles, this.localName);
-            } else {
-              root.adoptedStyleSheets = constructableStyles;
-            }
-          }
-
-          if (template.content.hasChildNodes()) {
-            const styleElements = template.content.cloneNode(true);
-
-            const observer = new MutationObserver(() => {
-              root.prepend(styleElements);
-              observer.disconnect();
-              supers[stylesAttachedCallback].call(this);
-            });
-
-            observer.observe(root, observerConfig);
+        if (constructableStyles.length > 0) {
+          if (shadyCSS) {
+            window.ShadyCSS.prepareAdoptedCssText(constructableStyles, self.localName);
           } else {
-            supers[stylesAttachedCallback].call(this);
+            root.adoptedStyleSheets = constructableStyles;
           }
+        }
 
-          return root;
-        },
-        placement: 'own',
-      }),
+        if (template.content.hasChildNodes()) {
+          const styleElements = template.content.cloneNode(true);
 
-      // Original elements
-      ...elements.filter(({key, placement}) => !(key === attachShadowKey && placement === 'own')),
-    ],
-    finisher(target) {
-      finisher(target);
-      prepareSupers(target);
-    },
-    kind,
-  };
+          const observer = new MutationObserver(() => {
+            root.prepend(styleElements);
+            observer.disconnect();
+            supers[stylesAttachedCallback].call(self);
+          });
+
+          observer.observe(root, observerConfig);
+        } else {
+          supers[stylesAttachedCallback].call(self);
+        }
+
+        return root;
+      },
+    });
+  });
 };
 
-const styles = createStylesDecorator({
+const defaultOptions = {
   adoptedStyleSheets: 'adoptedStyleSheets' in Document.prototype,
   shadyCSS: window.ShadyCSS !== undefined && !window.ShadyCSS.nativeShadow,
-});
+};
+
+const styles = (...pathsOrStyles) => stylesAdvanced(defaultOptions, ...pathsOrStyles);
 
 export default styles;

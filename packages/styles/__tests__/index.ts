@@ -1,7 +1,7 @@
 // tslint:disable:max-classes-per-file no-inner-html await-promise
 import {defineCE, fixtureSync} from '@open-wc/testing-helpers';
 import {Constructor, createTestingPromise} from '../../../test/utils';
-import {createStylesDecorator, stylesAttachedCallback, StylesDecorator} from '../src';
+import defaultStyles, {stylesAdvanced, stylesAttachedCallback} from '../src';
 
 const createSimpleElement = <T extends Element>(cls: Constructor<T>): T => {
   const tag = defineCE(cls);
@@ -11,13 +11,14 @@ const createSimpleElement = <T extends Element>(cls: Constructor<T>): T => {
 
 describe('@corpuscule/styles', () => {
   const rawStyles = '.foo{color: red;}';
-  let styles: StylesDecorator;
+  let styles: typeof defaultStyles;
+
+  beforeEach(() => {
+    styles = (...pathsOrStyles) =>
+      stylesAdvanced({adoptedStyleSheets: false, shadyCSS: false}, ...pathsOrStyles);
+  });
 
   describe('file links', () => {
-    beforeEach(() => {
-      styles = createStylesDecorator({adoptedStyleSheets: false, shadyCSS: false});
-    });
-
     it('appends "link" tags for urls with same origin', async () => {
       const [promise, resolve] = createTestingPromise();
 
@@ -81,7 +82,8 @@ describe('@corpuscule/styles', () => {
     let adoptedStyleSheets: jasmine.Spy;
 
     beforeEach(() => {
-      styles = createStylesDecorator({adoptedStyleSheets: true, shadyCSS: false});
+      styles = (...pathsOrStyles) =>
+        stylesAdvanced({adoptedStyleSheets: true, shadyCSS: false}, ...pathsOrStyles);
       sheetSpyObj = jasmine.createSpyObj('CSSStyleSheet', ['replaceSync']);
       sheetSpy = spyOn(window as any, 'CSSStyleSheet').and.returnValue(sheetSpyObj);
 
@@ -129,7 +131,8 @@ describe('@corpuscule/styles', () => {
 
   describe('ShadyCSS', () => {
     beforeEach(() => {
-      styles = createStylesDecorator({adoptedStyleSheets: false, shadyCSS: true});
+      styles = (...pathsOrStyles) =>
+        stylesAdvanced({adoptedStyleSheets: false, shadyCSS: true}, ...pathsOrStyles);
       (window as any).ShadyCSS = jasmine.createSpyObj('ShadyCSS', ['prepareAdoptedCssText']);
     });
 
@@ -164,8 +167,6 @@ describe('@corpuscule/styles', () => {
   });
 
   it('appends raw styles to the shadow root', async () => {
-    styles = createStylesDecorator({adoptedStyleSheets: false, shadyCSS: false});
-
     const [promise, resolve] = createTestingPromise();
 
     @styles(rawStyles)
@@ -192,8 +193,6 @@ describe('@corpuscule/styles', () => {
   });
 
   it('does not throw an error if class already have own lifecycle element', () => {
-    styles = createStylesDecorator({adoptedStyleSheets: false, shadyCSS: false});
-
     expect(() => {
       @styles('')
       class Test extends HTMLElement {
