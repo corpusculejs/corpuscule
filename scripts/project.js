@@ -12,6 +12,7 @@ const utils = [
   'scheduler',
   'setters',
   'shallowEqual',
+  'tokenRegistry',
 ];
 
 const packages = {

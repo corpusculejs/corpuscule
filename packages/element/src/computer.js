@@ -1,15 +1,11 @@
 import define from '@corpuscule/utils/lib/define';
 import {makeAccessor} from '@corpuscule/utils/lib/descriptorsNew';
 import {setArray} from '@corpuscule/utils/lib/setters';
+import createTokenRegistry from '@corpuscule/utils/lib/tokenRegistry';
 
-const tokenRegistry = new WeakMap();
+const [createComputingToken, tokenRegistry] = createTokenRegistry(() => new WeakMap());
 
-export const createComputingToken = () => {
-  const token = {};
-  tokenRegistry.set(token, new WeakMap());
-
-  return token;
-};
+export {createComputingToken};
 
 export const computer = token => ({constructor: target}, _, {get}) => {
   const correct = Symbol();

@@ -9,9 +9,6 @@ export interface CustomElement extends HTMLElement {
   adoptedCallback?(): void;
 }
 
-export type Token = object;
-export type TokenCreator = () => Token;
-
 export interface ExtendedPropertyDescriptor {
   descriptor: PropertyDescriptor;
   extras?: ExtendedPropertyDescriptor[];

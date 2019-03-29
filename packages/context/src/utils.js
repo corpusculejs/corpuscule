@@ -1,6 +1,5 @@
 import basicGetSupers from '@corpuscule/utils/lib/getSupersNew';
-
-export const tokenRegistry = new WeakMap();
+import createTokenRegistry from '@corpuscule/utils/lib/tokenRegistry';
 
 const randomString = () => {
   const arr = new Uint32Array(2);
@@ -9,12 +8,11 @@ const randomString = () => {
   return `${rnd1}${rnd2}`;
 };
 
-export const createContextToken = () => {
-  const token = {};
-  tokenRegistry.set(token, [randomString(), new WeakMap(), new Set()]);
-
-  return token;
-};
+export const [createContextToken, tokenRegistry] = createTokenRegistry(() => [
+  randomString(),
+  new WeakMap(),
+  new Set(),
+]);
 
 export const getSupers = target =>
   basicGetSupers(target, ['connectedCallback', 'disconnectedCallback']);
