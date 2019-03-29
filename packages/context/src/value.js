@@ -1,3 +1,4 @@
+import {defaultDescriptor} from '@corpuscule/utils/lib/define';
 import {makeAccessor} from '@corpuscule/utils/lib/descriptorsNew';
 import {setObject} from '@corpuscule/utils/lib/setters';
 import {tokenRegistry} from './utils';
@@ -25,8 +26,7 @@ const value = token => ({constructor: target}, key, {initializer, ...descriptor}
   });
 
   return {
-    configurable: true,
-    enumerable: true,
+    ...defaultDescriptor,
     get,
     set(v) {
       set.call(this, v);
