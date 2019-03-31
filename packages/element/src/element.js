@@ -1,5 +1,4 @@
 /* eslint-disable no-invalid-this, prefer-arrow-callback */
-import define from '@corpuscule/utils/lib/define';
 import getSupers from '@corpuscule/utils/lib/getSupersNew';
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
 import {
@@ -8,7 +7,12 @@ import {
   render as $render,
   updatedCallback as $updatedCallback,
 } from './tokens/lifecycle';
-import {noop, shadowElements} from './utils';
+import {defaultDescriptor, noop, shadowElements} from './utils';
+
+const readonlyPropertiesDescriptor = {
+  ...defaultDescriptor,
+  writable: false,
+};
 
 const element = (
   name,
@@ -32,18 +36,18 @@ const element = (
     $updatedCallback,
   ]);
 
-  define.raw(target, {
+  Object.defineProperties(target, {
     is: {
+      ...readonlyPropertiesDescriptor,
       value: name,
-      writable: false,
     },
     observedAttributes: {
+      ...readonlyPropertiesDescriptor,
       value: [],
-      writable: false,
     },
   });
 
-  define(target.prototype, {
+  Object.assign(target.prototype, {
     attributeChangedCallback(...args) {
       this[$$attributeChangedCallback](...args);
     },
@@ -92,7 +96,7 @@ const element = (
     // Inheritance workaround. If class is inherited, method will work in a different way
     const isExtended = self.constructor !== target;
 
-    define(self, {
+    Object.assign(self, {
       [$$attributeChangedCallback]: isExtended
         ? supers.attributeChangedCallback
         : async function(attributeName, oldValue, newValue) {

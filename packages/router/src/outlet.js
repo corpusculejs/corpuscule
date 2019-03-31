@@ -1,6 +1,5 @@
 import {consumer, value} from '@corpuscule/context';
 import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
-import define from '@corpuscule/utils/lib/define';
 import {resolve as $resolve} from './tokens/lifecycle';
 import getSupers from '@corpuscule/utils/lib/getSupersNew';
 import {tokenRegistry} from './utils';
@@ -28,7 +27,7 @@ const outlet = (token, routes) => target => {
     assertRequiredProperty('outlet', 'api', 'route', $route);
   });
 
-  define(target.prototype, {
+  Object.assign(target.prototype, {
     connectedCallback() {
       this[$$connectedCallback]();
     },
@@ -39,15 +38,13 @@ const outlet = (token, routes) => target => {
     [$resolve]: supers[$resolve],
   });
 
-  define.raw(target.prototype, {
-    [$$contextProperty]: valueDescriptor,
-  });
+  Object.defineProperty(target.prototype, $$contextProperty, valueDescriptor);
 
   target.__initializers.push(self => {
     // Inheritance workaround. If class is inherited, method will work in a different way
     const isExtended = self.constructor !== target;
 
-    define(self, {
+    Object.assign(self, {
       [$$connectedCallback]: isExtended
         ? supers.connectedCallback
         : () => {

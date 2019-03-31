@@ -2,6 +2,11 @@ import {createContextToken} from '@corpuscule/context';
 import createTokenRegistry from '@corpuscule/utils/lib/tokenRegistry';
 import {configOptions} from 'final-form';
 
+export const defaultDescriptor = {
+  configurable: true,
+  enumerable: true,
+};
+
 export const [createFormToken, tokenRegistry] = createTokenRegistry(
   () => [
     new WeakMap(), // Shared properties list

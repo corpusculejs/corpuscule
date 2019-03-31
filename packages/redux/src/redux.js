@@ -1,5 +1,4 @@
 import {consumer, value} from '@corpuscule/context';
-import define from '@corpuscule/utils/lib/define';
 import getSupers from '@corpuscule/utils/lib/getSupersNew';
 import {getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
 import {setObject} from '@corpuscule/utils/lib/setters';
@@ -27,7 +26,7 @@ const redux = token => target => {
     ({units} = tokenRegistry.get(token).get(target));
   });
 
-  define(target.prototype, {
+  Object.assign(target.prototype, {
     disconnectedCallback() {
       this[$$disconnectedCallback]();
     },
@@ -57,7 +56,7 @@ const redux = token => target => {
     },
   });
 
-  define.raw(target.prototype, {
+  Object.defineProperties(target.prototype, {
     [$$contextProperty]: {
       ...valueDescriptor,
       get: valueDescriptor.get,
@@ -77,7 +76,7 @@ const redux = token => target => {
     // Inheritance workaround. If class is inherited, method will work in a different way
     const isExtended = self.constructor !== target;
 
-    define(self, {
+    Object.assign(self, {
       [$$disconnectedCallback]: isExtended
         ? supers.disconnectedCallback
         : () => {

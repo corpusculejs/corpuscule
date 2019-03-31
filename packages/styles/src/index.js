@@ -1,5 +1,4 @@
 /* eslint-disable capitalized-comments, no-sync */
-import define from '@corpuscule/utils/lib/define';
 import getSupers from '@corpuscule/utils/lib/getSupersNew';
 
 export const stylesAttachedCallback = Symbol();
@@ -40,7 +39,7 @@ export const stylesAdvanced = ({shadyCSS, adoptedStyleSheets}, ...pathsOrStyles)
   const supers = getSupers(target, ['attachShadow', stylesAttachedCallback]);
 
   target.__initializers.push(self => {
-    define(self, {
+    Object.assign(self, {
       attachShadow(options) {
         const root = supers.attachShadow.call(self, options);
 

@@ -1,8 +1,7 @@
 import {value} from '@corpuscule/context';
-import {defaultDescriptor} from '@corpuscule/utils/lib/define';
 import {getName} from '@corpuscule/utils/lib/propertyUtils';
 import {setObject} from '@corpuscule/utils/lib/setters';
-import {apis, tokenRegistry} from './utils';
+import {apis, defaultDescriptor, tokenRegistry} from './utils';
 
 const api = token => (prototype, key, descriptor) => {
   const {constructor: target} = prototype;

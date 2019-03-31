@@ -1,5 +1,4 @@
 import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
-import define from '@corpuscule/utils/lib/define';
 import {getValue} from '@corpuscule/utils/lib/propertyUtils';
 import {setObject} from '@corpuscule/utils/lib/setters';
 import {getSupers, tokenRegistry} from './utils';
@@ -27,7 +26,7 @@ const provider = (token, defaultValue = null) => target => {
     assertRequiredProperty('provider', 'value', $value);
   });
 
-  define(target.prototype, {
+  Object.assign(target.prototype, {
     connectedCallback() {
       this[$$connectedCallback]();
     },
@@ -40,7 +39,7 @@ const provider = (token, defaultValue = null) => target => {
     // Inheritance workaround. If class is inherited, method will work in a different way
     const isExtended = self.constructor !== target;
 
-    define(self, {
+    Object.assign(self, {
       [$$connectedCallback]: isExtended
         ? supers.connectedCallback
         : () => {

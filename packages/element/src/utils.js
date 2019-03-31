@@ -1,5 +1,10 @@
 export const shared = new WeakMap();
 
+export const defaultDescriptor = {
+  configurable: true,
+  enumerable: true,
+};
+
 // eslint-disable-next-line no-empty-function
 export const noop = () => {};
 

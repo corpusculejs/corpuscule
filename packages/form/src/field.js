@@ -1,11 +1,17 @@
 import {consumer} from '@corpuscule/context';
 import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
-import define, {defaultDescriptor} from '@corpuscule/utils/lib/define';
 import getSupers from '@corpuscule/utils/lib/getSupersNew';
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
 import {setObject} from '@corpuscule/utils/lib/setters';
 import {fieldSubscriptionItems} from 'final-form';
-import {getTargetValue, isNativeElement, noop, setTargetValues, tokenRegistry} from './utils';
+import {
+  defaultDescriptor,
+  getTargetValue,
+  isNativeElement,
+  noop,
+  setTargetValues,
+  tokenRegistry,
+} from './utils';
 
 export const all = fieldSubscriptionItems.reduce((result, key) => {
   result[key] = true;
@@ -80,7 +86,7 @@ const field = (
     assertRequiredProperty('field', 'option', 'name', $name);
   });
 
-  define(target.prototype, {
+  Object.assign(target.prototype, {
     connectedCallback() {
       this[$$connectedCallback]();
     },
@@ -117,7 +123,7 @@ const field = (
     },
   });
 
-  define.raw(target.prototype, {
+  Object.defineProperties(target.prototype, {
     [$$ref]: {
       ...defaultDescriptor,
       get: auto
@@ -138,7 +144,7 @@ const field = (
     // Inheritance workaround. If class is inherited, method will work in a different way
     const isExtended = self.constructor !== target;
 
-    define(self, {
+    Object.assign(self, {
       // Properties
       [$$connected]: false,
       [$$isSubscriptionScheduled]: false,

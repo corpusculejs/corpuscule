@@ -1,4 +1,3 @@
-import define from '@corpuscule/utils/lib/define';
 import {tokenRegistry} from './utils';
 
 const dispatcher = token => ({constructor: target}, key, descriptor) => {
@@ -18,22 +17,18 @@ const dispatcher = token => ({constructor: target}, key, descriptor) => {
     }
 
     target.__initializers.push(self => {
-      define(self, {
-        [key](...args) {
-          self[$store].dispatch(actionCreator(...args));
-        },
-      });
+      self[key] = (...args) => {
+        self[$store].dispatch(actionCreator(...args));
+      };
     });
 
     return descriptor;
   }
 
   target.__initializers.push(self => {
-    define(self, {
-      [key](...args) {
-        self[$store].dispatch(value.apply(self, args));
-      },
-    });
+    self[key] = (...args) => {
+      self[$store].dispatch(value.apply(self, args));
+    };
   });
 
   return descriptor;

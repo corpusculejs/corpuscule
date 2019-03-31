@@ -1,6 +1,5 @@
 import {provider} from '@corpuscule/context';
 import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
-import define from '@corpuscule/utils/lib/define';
 import getSupers from '@corpuscule/utils/lib/getSupersNew';
 import {getName} from '@corpuscule/utils/lib/propertyUtils';
 import {createForm, formSubscriptionItems} from 'final-form';
@@ -40,7 +39,7 @@ const form = (token, {decorators = [], subscription = all} = {}) => target => {
     );
   });
 
-  define(target.prototype, {
+  Object.assign(target.prototype, {
     connectedCallback() {
       this[$$connectedCallback]();
     },
@@ -55,7 +54,7 @@ const form = (token, {decorators = [], subscription = all} = {}) => target => {
     // Inheritance workaround. If class is inherited, method will work in a different way
     const isExtended = self.constructor !== target;
 
-    define(self, {
+    Object.assign(self, {
       // Fields
       [$formApi]: createForm(
         formOptions.reduce((acc, key) => {

@@ -1,5 +1,4 @@
 import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
-import define from '@corpuscule/utils/lib/define';
 import {getSupers, tokenRegistry} from './utils';
 
 const consumer = token => target => {
@@ -19,7 +18,7 @@ const consumer = token => target => {
     assertRequiredProperty('consumer', 'value', $value);
   });
 
-  define(target.prototype, {
+  Object.assign(target.prototype, {
     connectedCallback() {
       this[$$connectedCallback]();
     },
@@ -32,7 +31,7 @@ const consumer = token => target => {
     // Inheritance workaround. If class is inherited, method will work in a different way
     const isExtended = self.constructor !== target;
 
-    define(self, {
+    Object.assign(self, {
       [$$connectedCallback]: isExtended
         ? supers.connectedCallback
         : () => {

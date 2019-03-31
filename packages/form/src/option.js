@@ -1,11 +1,10 @@
 import {isProvider} from '@corpuscule/context';
-import define, {defaultDescriptor} from '@corpuscule/utils/lib/define';
 import {makeAccessor} from '@corpuscule/utils/lib/descriptorsNew';
 import {getName} from '@corpuscule/utils/lib/propertyUtils';
 import {setArray, setObject} from '@corpuscule/utils/lib/setters';
 import shallowEqual from '@corpuscule/utils/lib/shallowEqual';
 import {noop} from '../../element/src/utils';
-import {fieldOptions, formOptions, tokenRegistry} from './utils';
+import {defaultDescriptor, fieldOptions, formOptions, tokenRegistry} from './utils';
 
 const optionsList = new Set([...fieldOptions, ...formOptions]);
 
@@ -95,9 +94,7 @@ const option = token => ({constructor: target}, key, descriptor) => {
   }
 
   target.__initializers.push(self => {
-    define(self, {
-      [key]: descriptor.value.bind(self),
-    });
+    self[key] = descriptor.value.bind(self);
   });
 
   return descriptor;

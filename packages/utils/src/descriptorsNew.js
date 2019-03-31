@@ -1,5 +1,3 @@
-import define from './define';
-
 export const makeAccessor = (target, descriptor) => {
   const {get, initializer, set} = descriptor;
 
@@ -9,11 +7,9 @@ export const makeAccessor = (target, descriptor) => {
 
   const storage = Symbol();
 
-  target.__initializers.push(self =>
-    define(self, {
-      [storage]: initializer ? initializer() : undefined,
-    }),
-  );
+  target.__initializers.push(self => {
+    self[storage] = initializer ? initializer.call(self) : undefined;
+  });
 
   return {
     get() {

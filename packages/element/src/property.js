@@ -1,12 +1,12 @@
 import {makeAccessor} from '@corpuscule/utils/lib/descriptorsNew';
 import {propertyChangedCallback as $propertyChangedCallback} from './tokens/lifecycle';
+import {defaultDescriptor} from './utils';
 
 const property = (guard = null) => ({constructor: target}, key, descriptor) => {
   const {get, set} = makeAccessor(target, descriptor);
 
   return {
-    configurable: true,
-    enumerable: true,
+    ...defaultDescriptor,
     get,
     set(value) {
       if (guard && !guard(value)) {

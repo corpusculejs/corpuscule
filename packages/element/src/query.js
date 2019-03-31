@@ -1,6 +1,7 @@
+import {defaultDescriptor} from './utils';
+
 const executeQuery = callback => ({
-  configurable: true,
-  enumerable: true,
+  ...defaultDescriptor,
   get() {
     return callback(this.shadowRoot || this);
   },
