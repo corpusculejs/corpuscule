@@ -1,12 +1,11 @@
-import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/asserts';
-import * as $ from '@corpuscule/utils/lib/descriptors';
-import getSupers from '@corpuscule/utils/lib/getSupers';
-import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
-import {getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
+import {consumer} from '@corpuscule/context';
+import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
+import define, {defaultDescriptor} from '@corpuscule/utils/lib/define';
+import getSupers from '@corpuscule/utils/lib/getSupersNew';
+import defaultScheduler from '@corpuscule/utils/lib/scheduler';
+import {setObject} from '@corpuscule/utils/lib/setters';
 import {fieldSubscriptionItems} from 'final-form';
-import {filter, getTargetValue, isNativeElement, noop, setTargetValues} from './utils';
-
-const [connectedCallbackKey, disconnectedCallbackKey] = $.lifecycleKeys;
+import {getTargetValue, isNativeElement, noop, setTargetValues, tokenRegistry} from './utils';
 
 export const all = fieldSubscriptionItems.reduce((result, key) => {
   result[key] = true;
@@ -14,20 +13,10 @@ export const all = fieldSubscriptionItems.reduce((result, key) => {
   return result;
 }, {});
 
-const createField = ({consumer}, {formApi, input, meta}, options, {ref, schedule, scheduler}) => ({
-  auto = false,
-  selector = 'input, select, textarea',
-} = {}) => descriptor => {
-  assertKind('field', Kind.Class, descriptor);
-
-  const {elements, finisher = noop, kind} = descriptor;
-
-  let constructor;
-  const getConstructor = () => constructor;
-
-  let isNativeField;
-  let getRef = noop;
-
+const field = (
+  token,
+  {auto = false, scheduler = defaultScheduler, selector = 'input, select, textarea'} = {},
+) => target => {
   let $formApi;
   let $input;
   let $meta;
@@ -41,10 +30,15 @@ const createField = ({consumer}, {formApi, input, meta}, options, {ref, schedule
   let $validate;
   let $validateFields;
 
+  const [sharedPropertiesRegistry] = tokenRegistry.get(token);
+  const isNativeField = isNativeElement(target.prototype);
+
   const $$connected = Symbol();
+  const $$connectedCallback = Symbol();
+  const $$disconnectedCallback = Symbol();
   const $$isSubscriptionScheduled = Symbol();
   const $$handleFocusOut = Symbol();
-  const $$handleChange = Symbol();
+  const $$handleInput = Symbol();
   const $$handleFocusIn = Symbol();
   const $$ref = Symbol();
   const $$scheduleSubscription = Symbol();
@@ -54,222 +48,188 @@ const createField = ({consumer}, {formApi, input, meta}, options, {ref, schedule
   const $$unsubscribe = Symbol();
   const $$update = Symbol();
 
-  const [supers, prepareSupers] = getSupers(elements, $.lifecycleKeys);
+  const supers = getSupers(target, ['connectedCallback', 'disconnectedCallback']);
 
-  return consumer({
-    elements: [
-      // Public
-      ...lifecycleMethod(
+  setObject(sharedPropertiesRegistry, target, {
+    ref: $$ref,
+    schedule: $$scheduleSubscription,
+  });
+
+  target.__registrations.push(() => {
+    ({
+      // @api
+      formApi: $formApi,
+      input: $input,
+      meta: $meta,
+
+      // @options
+      format: $format,
+      formatOnBlur: $formatOnBlur,
+      isEqual: $isEqual,
+      name: $name,
+      parse: $parse,
+      subscription: $subscription,
+      validate: $validate,
+      validateFields: $validateFields,
+    } = sharedPropertiesRegistry.get(target) || {});
+
+    assertRequiredProperty('field', 'api', 'form', $formApi);
+    assertRequiredProperty('field', 'api', 'input', $input);
+    assertRequiredProperty('field', 'api', 'meta', $meta);
+
+    assertRequiredProperty('field', 'option', 'name', $name);
+  });
+
+  define(target.prototype, {
+    connectedCallback() {
+      this[$$connectedCallback]();
+    },
+    disconnectedCallback() {
+      this[$$disconnectedCallback]();
+    },
+
+    // eslint-disable-next-line sort-keys
+    [$$scheduleSubscription]() {
+      if (this[$$isSubscriptionScheduled] || !this[$$connected]) {
+        return;
+      }
+
+      this[$$isSubscriptionScheduled] = true;
+
+      scheduler(() => {
+        this[$$subscribe]();
+        this[$$isSubscriptionScheduled] = false;
+      });
+    },
+    [$$subscribe]() {
+      this[$$unsubscribe]();
+
+      this[$$unsubscribe] = this[$formApi].registerField(
+        this[$name],
+        this[$$update],
+        ($subscription && this[$subscription]) || all,
         {
-          key: connectedCallbackKey,
-          method() {
-            this.addEventListener('input', this[$$handleChange]);
-            this.addEventListener('focusin', this[$$handleFocusIn]);
-            this.addEventListener('focusout', this[$$handleFocusOut]);
+          getValidator: () => $validate && this[$validate],
+          isEqual: $isEqual && this[$isEqual],
+          validateFields: $validateFields && this[$validateFields],
+        },
+      );
+    },
+  });
+
+  define.raw(target.prototype, {
+    [$$ref]: {
+      ...defaultDescriptor,
+      get: auto
+        ? isNativeField
+          ? function() {
+              return this;
+            }
+          : function() {
+              return this.querySelectorAll(selector);
+            }
+        : noop,
+    },
+  });
+
+  consumer(token)(target);
+
+  target.__initializers.push(self => {
+    // Inheritance workaround. If class is inherited, method will work in a different way
+    const isExtended = self.constructor !== target;
+
+    define(self, {
+      // Properties
+      [$$connected]: false,
+      [$$isSubscriptionScheduled]: false,
+      [$$selfChange]: false,
+      [$$unsubscribe]: noop,
+
+      // Methods
+      // eslint-disable-next-line sort-keys
+      [$$connectedCallback]: isExtended
+        ? supers.connectedCallback
+        : () => {
+            self.addEventListener('input', self[$$handleInput]);
+            self.addEventListener('focusin', self[$$handleFocusIn]);
+            self.addEventListener('focusout', self[$$handleFocusOut]);
 
             if (auto && !isNativeField) {
-              for (const element of this[$$ref]) {
-                element.name = getValue(this, $name);
+              for (const element of self[$$ref]) {
+                element.name = self[$name];
               }
             }
 
-            this[$$connected] = true;
+            self[$$connected] = true;
 
-            if (getValue(this, $name)) {
-              this[$$subscribe]();
+            if (self[$name]) {
+              self[$$subscribe]();
             }
 
-            supers[connectedCallbackKey].call(this);
+            supers.connectedCallback.call(self);
           },
-        },
-        supers,
-        getConstructor,
-      ),
-      ...lifecycleMethod(
-        {
-          key: disconnectedCallbackKey,
-          method() {
-            this.removeEventListener('input', this[$$handleChange]);
-            this.removeEventListener('focusin', this[$$handleFocusIn]);
-            this.removeEventListener('focusout', this[$$handleFocusOut]);
+      [$$disconnectedCallback]: isExtended
+        ? supers.disconnectedCallback
+        : () => {
+            self.removeEventListener('input', self[$$handleInput]);
+            self.removeEventListener('focusin', self[$$handleFocusIn]);
+            self.removeEventListener('focusout', self[$$handleFocusOut]);
 
-            this[$$unsubscribe]();
-            supers[disconnectedCallbackKey].call(this);
+            self[$$unsubscribe]();
+            supers.disconnectedCallback.call(self);
           },
-        },
-        supers,
-        getConstructor,
-      ),
+      [$$handleFocusIn]() {
+        this[$$state].focus();
+      },
+      [$$handleFocusOut]() {
+        const format = $format && self[$format];
+        const {blur, change, name, value} = self[$$state];
 
-      // Private
-      $.field({
-        initializer: () => false,
-        key: $$isSubscriptionScheduled,
-      }),
-      $.field({
-        initializer: () => false,
-        key: $$connected,
-      }),
-      $.field({
-        initializer: () => false,
-        key: $$selfChange,
-      }),
-      $.field({
-        initializer: () => noop,
-        key: $$unsubscribe,
-      }),
-      $.accessor({
-        get() {
-          return getRef(this);
-        },
-        key: $$ref,
-      }),
-      $.method({
-        bound: true,
-        key: $$handleFocusOut,
-        method() {
-          const format = $format && getValue(this, $format);
+        blur();
 
-          const {blur, change, name, value} = this[$$state];
+        if (format && $formatOnBlur && self[$formatOnBlur]) {
+          change(format(value, name));
+        }
+      },
+      [$$handleInput](event) {
+        const isCustomEvent = event instanceof CustomEvent;
+        const parse = $parse && self[$parse];
+        const {change, name, value} = self[$$state];
 
-          blur();
+        // We should update form only if it is an auto field or event is custom.
+        // By default field does not receive native change events.
+        if (isCustomEvent || auto) {
+          const changed = isCustomEvent ? event.detail : getTargetValue(event.target, value);
+          change(parse ? parse(changed, name) : changed);
 
-          if (format && $formatOnBlur && getValue(this, $formatOnBlur)) {
-            change(format(value, name));
-          }
-        },
-      }),
-      $.method({
-        bound: true,
-        key: $$handleChange,
-        method(event) {
-          const isCustomEvent = event instanceof CustomEvent;
-          const parse = $parse && getValue(this, $parse);
-          const {change, name, value} = this[$$state];
+          self[$$selfChange] = !isCustomEvent;
+        }
+      },
+      [$$update](state) {
+        self[$$state] = state;
 
-          // We should update form only if it is an auto field or event is custom.
-          // By default field does not receive native change events.
-          if (isCustomEvent || auto) {
-            const changed = isCustomEvent ? event.detail : getTargetValue(event.target, value);
-            change(parse ? parse(changed, name) : changed);
+        const format = $format && self[$format];
 
-            this[$$selfChange] = !isCustomEvent;
-          }
-        },
-      }),
-      $.method({
-        bound: true,
-        key: $$handleFocusIn,
-        method() {
-          this[$$state].focus();
-        },
-      }),
-      $.method({
-        key: $$scheduleSubscription,
-        method() {
-          if (this[$$isSubscriptionScheduled] || !this[$$connected]) {
-            return;
-          }
+        const {blur: _b, change: _c, focus: _f, name, length: _l, value, ...metadata} = state;
 
-          this[$$isSubscriptionScheduled] = true;
+        const finalValue =
+          !($formatOnBlur && self[$formatOnBlur]) && format ? format(value, name) : value;
 
-          scheduler(() => {
-            this[$$subscribe]();
-            this[$$isSubscriptionScheduled] = false;
-          });
-        },
-      }),
-      $.method({
-        key: $$subscribe,
-        method() {
-          this[$$unsubscribe]();
+        self[$input] = {
+          name,
+          value: finalValue,
+        };
 
-          const listener = this[$$update];
+        self[$meta] = metadata;
 
-          this[$$unsubscribe] = getValue(this, $formApi).registerField(
-            getValue(this, $name),
-            listener,
-            ($subscription && getValue(this, $subscription)) || all,
-            {
-              getValidator: () => $validate && getValue(this, $validate),
-              isEqual: $isEqual && getValue(this, $isEqual),
-              validateFields: $validateFields && getValue(this, $validateFields),
-            },
-          );
-        },
-      }),
-      $.method({
-        bound: true,
-        key: $$update,
-        method(state) {
-          this[$$state] = state;
+        if (auto && !self[$$selfChange]) {
+          setTargetValues(self[$$ref], finalValue);
+        }
 
-          const format = $format && getValue(this, $format);
-
-          const {blur: _b, change: _c, focus: _f, name, length: _l, value, ...metadata} = state;
-
-          const finalValue =
-            !($formatOnBlur && getValue(this, $formatOnBlur)) && format
-              ? format(value, name)
-              : value;
-
-          setValue(this, $input, {
-            name,
-            value: finalValue,
-          });
-
-          setValue(this, $meta, metadata);
-
-          if (auto && !this[$$selfChange]) {
-            setTargetValues(this[$$ref], finalValue);
-          }
-
-          this[$$selfChange] = false;
-        },
-      }),
-
-      // Static Hooks
-      $.hook({
-        start() {
-          ref.set(this, $$ref);
-          schedule.set(this, $$scheduleSubscription);
-        },
-      }),
-
-      // Original elements
-      ...filter(elements),
-    ],
-    finisher(target) {
-      finisher(target);
-      constructor = target;
-      isNativeField = isNativeElement(target.prototype);
-
-      $formApi = formApi.get(target);
-      $input = input.get(target);
-      $meta = meta.get(target);
-
-      if (auto) {
-        getRef = isNativeField ? self => self : self => self.querySelectorAll(selector);
-      }
-
-      assertRequiredProperty('field', 'api', 'form', $formApi);
-      assertRequiredProperty('field', 'api', 'input', $input);
-      assertRequiredProperty('field', 'api', 'meta', $meta);
-
-      $format = options.format.get(target);
-      $formatOnBlur = options.formatOnBlur.get(target);
-      $isEqual = options.isEqual.get(target);
-      $name = options.name.get(target);
-      $parse = options.parse.get(target);
-      $subscription = options.subscription.get(target);
-      $validate = options.validate.get(target);
-      $validateFields = options.validateFields.get(target);
-
-      assertRequiredProperty('field', 'option', 'name', $name);
-      prepareSupers(target);
-    },
-    kind,
+        self[$$selfChange] = false;
+      },
+    });
   });
 };
 
-export default createField;
+export default field;
