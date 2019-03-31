@@ -267,7 +267,13 @@ describe('@corpuscule/context', () => {
         @value public providingValue: number = 2;
       }
 
+      @consumer
+      class Consumer extends CustomElement {
+        @value public contextValue!: number;
+      }
+
       expect(isProvider(token, Provider)).toBeTruthy();
+      expect(isProvider(token, Consumer)).not.toBeTruthy();
     });
 
     it('throws an error if no provider exists for context', done => {
