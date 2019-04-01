@@ -2,6 +2,7 @@
   "extends": ["tslint-config-poetez", "tslint-config-prettier"],
   "rulesDirectory": ["tslint-plugin-prettier"],
   "rules": {
+    "ban": false,
     "max-classes-per-file": false,
     "no-implicit-dependencies": false,
     "no-empty": false,
