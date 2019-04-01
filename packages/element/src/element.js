@@ -1,4 +1,5 @@
 /* eslint-disable no-invalid-this, prefer-arrow-callback */
+import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
 import getSupers from '@corpuscule/utils/lib/getSupers';
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
 import {
@@ -22,9 +23,7 @@ const element = (
   const hasRender = $render in prototype;
   const isLight = lightDOM || (builtin && !shadowElements.includes(builtin));
 
-  const $$attributeChangedCallback = Symbol();
   const $$connected = Symbol();
-  const $$connectedCallback = Symbol();
   const $$invalidate = Symbol();
   const $$root = Symbol();
   const $$valid = Symbol();
@@ -48,14 +47,27 @@ const element = (
     },
   });
 
+  defineExtendable(
+    target,
+    {
+      async attributeChangedCallback(attributeName, oldValue, newValue) {
+        if (oldValue === newValue || !this[$$connected]) {
+          return;
+        }
+
+        supers.attributeChangedCallback.call(this, attributeName, oldValue, newValue);
+        await this[$$invalidate]();
+      },
+      async connectedCallback() {
+        await this[$$invalidate]();
+        this[$$connected] = true;
+        supers.connectedCallback.call(this);
+      },
+    },
+    supers,
+  );
+
   Object.assign(prototype, {
-    attributeChangedCallback(...args) {
-      this[$$attributeChangedCallback](...args);
-    },
-    connectedCallback() {
-      this[$$connectedCallback]();
-    },
-    // eslint-disable-next-line sort-keys
     [$$invalidate]: hasRender
       ? async function() {
           if (!this[$$valid]) {
@@ -94,29 +106,10 @@ const element = (
   });
 
   target.__initializers.push(self => {
-    // Inheritance workaround. If class is inherited, method will work in a different way
-    const isExtended = self.constructor !== target;
-
     Object.assign(self, {
-      [$$attributeChangedCallback]: isExtended
-        ? supers.attributeChangedCallback
-        : async function(attributeName, oldValue, newValue) {
-            if (oldValue === newValue || !self[$$connected]) {
-              return;
-            }
-
-            supers.attributeChangedCallback.call(self, attributeName, oldValue, newValue);
-            await self[$$invalidate]();
-          },
       [$$connected]: false,
-      [$$connectedCallback]: isExtended
-        ? supers.connectedCallback
-        : async function() {
-            await self[$$invalidate]();
-            self[$$connected] = true;
-            supers.connectedCallback.call(self);
-          },
-      [$$root]: isExtended ? null : isLight ? self : self.attachShadow({mode: 'open'}),
+      [$$root]:
+        self.constructor !== target ? null : isLight ? self : self.attachShadow({mode: 'open'}),
       [$$valid]: true,
     });
   });

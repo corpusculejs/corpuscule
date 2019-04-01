@@ -1,5 +1,6 @@
 import {consumer} from '@corpuscule/context';
 import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
+import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
 import getSupers from '@corpuscule/utils/lib/getSupers';
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
 import {setObject} from '@corpuscule/utils/lib/setters';
@@ -40,8 +41,6 @@ const field = (
   const isNativeField = isNativeElement(target.prototype);
 
   const $$connected = Symbol();
-  const $$connectedCallback = Symbol();
-  const $$disconnectedCallback = Symbol();
   const $$isSubscriptionScheduled = Symbol();
   const $$handleFocusOut = Symbol();
   const $$handleInput = Symbol();
@@ -86,15 +85,41 @@ const field = (
     assertRequiredProperty('field', 'option', 'name', $name);
   });
 
-  Object.assign(target.prototype, {
-    connectedCallback() {
-      this[$$connectedCallback]();
-    },
-    disconnectedCallback() {
-      this[$$disconnectedCallback]();
-    },
+  defineExtendable(
+    target,
+    {
+      connectedCallback() {
+        this.addEventListener('input', this[$$handleInput]);
+        this.addEventListener('focusin', this[$$handleFocusIn]);
+        this.addEventListener('focusout', this[$$handleFocusOut]);
 
-    // eslint-disable-next-line sort-keys
+        if (auto && !isNativeField) {
+          for (const element of this[$$ref]) {
+            element.name = this[$name];
+          }
+        }
+
+        this[$$connected] = true;
+
+        if (this[$name]) {
+          this[$$subscribe]();
+        }
+
+        supers.connectedCallback.call(this);
+      },
+      disconnectedCallback() {
+        this.removeEventListener('input', this[$$handleInput]);
+        this.removeEventListener('focusin', this[$$handleFocusIn]);
+        this.removeEventListener('focusout', this[$$handleFocusOut]);
+
+        this[$$unsubscribe]();
+        supers.disconnectedCallback.call(this);
+      },
+    },
+    supers,
+  );
+
+  Object.assign(target.prototype, {
     [$$scheduleSubscription]() {
       if (this[$$isSubscriptionScheduled] || !this[$$connected]) {
         return;
@@ -141,9 +166,6 @@ const field = (
   consumer(token)(target);
 
   target.__initializers.push(self => {
-    // Inheritance workaround. If class is inherited, method will work in a different way
-    const isExtended = self.constructor !== target;
-
     Object.assign(self, {
       // Properties
       [$$connected]: false,
@@ -153,37 +175,6 @@ const field = (
 
       // Methods
       // eslint-disable-next-line sort-keys
-      [$$connectedCallback]: isExtended
-        ? supers.connectedCallback
-        : () => {
-            self.addEventListener('input', self[$$handleInput]);
-            self.addEventListener('focusin', self[$$handleFocusIn]);
-            self.addEventListener('focusout', self[$$handleFocusOut]);
-
-            if (auto && !isNativeField) {
-              for (const element of self[$$ref]) {
-                element.name = self[$name];
-              }
-            }
-
-            self[$$connected] = true;
-
-            if (self[$name]) {
-              self[$$subscribe]();
-            }
-
-            supers.connectedCallback.call(self);
-          },
-      [$$disconnectedCallback]: isExtended
-        ? supers.disconnectedCallback
-        : () => {
-            self.removeEventListener('input', self[$$handleInput]);
-            self.removeEventListener('focusin', self[$$handleFocusIn]);
-            self.removeEventListener('focusout', self[$$handleFocusOut]);
-
-            self[$$unsubscribe]();
-            supers.disconnectedCallback.call(self);
-          },
       [$$handleFocusIn]() {
         this[$$state].focus();
       },

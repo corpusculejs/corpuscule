@@ -1,5 +1,6 @@
 import {provider} from '@corpuscule/context';
 import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
+import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
 import getSupers from '@corpuscule/utils/lib/getSupers';
 import {getName} from '@corpuscule/utils/lib/propertyUtils';
 import {createForm, formSubscriptionItems} from 'final-form';
@@ -19,8 +20,6 @@ const form = (token, {decorators = [], subscription = all} = {}) => target => {
   const {prototype} = target;
   const [sharedPropertiesRegistry, formOptionsRegistry] = tokenRegistry.get(token);
 
-  const $$connectedCallback = Symbol();
-  const $$disconnectedCallback = Symbol();
   const $$reset = Symbol();
   const $$submit = Symbol();
   const $$unsubscriptions = Symbol();
@@ -40,21 +39,46 @@ const form = (token, {decorators = [], subscription = all} = {}) => target => {
     );
   });
 
-  Object.assign(prototype, {
-    connectedCallback() {
-      this[$$connectedCallback]();
+  defineExtendable(
+    target,
+    {
+      connectedCallback() {
+        const instance = this[$formApi];
+
+        for (const decorate of decorators) {
+          this[$$unsubscriptions].push(decorate(instance));
+        }
+
+        this[$$unsubscriptions].push(
+          instance.subscribe(newState => {
+            this[$state] = newState;
+          }, subscription),
+        );
+
+        this.addEventListener('submit', this[$$submit]);
+        this.addEventListener('reset', this[$$reset]);
+
+        supers.connectedCallback.call(this);
+      },
+      disconnectedCallback() {
+        for (const unsubscribe of this[$$unsubscriptions]) {
+          unsubscribe();
+        }
+
+        this[$$unsubscriptions] = [];
+
+        this.removeEventListener('submit', this[$$submit]);
+        this.removeEventListener('reset', this[$$reset]);
+
+        supers.disconnectedCallback.call(this);
+      },
     },
-    disconnectedCallback() {
-      this[$$disconnectedCallback]();
-    },
-  });
+    supers,
+  );
 
   provider(token)(target);
 
   target.__initializers.push(self => {
-    // Inheritance workaround. If class is inherited, method will work in a different way
-    const isExtended = self.constructor !== target;
-
     Object.assign(self, {
       // Fields
       [$formApi]: createForm(
@@ -69,40 +93,6 @@ const form = (token, {decorators = [], subscription = all} = {}) => target => {
 
       // Methods
       // eslint-disable-next-line sort-keys
-      [$$connectedCallback]: isExtended
-        ? supers.connectedCallback
-        : () => {
-            const instance = self[$formApi];
-
-            for (const decorate of decorators) {
-              self[$$unsubscriptions].push(decorate(instance));
-            }
-
-            self[$$unsubscriptions].push(
-              instance.subscribe(newState => {
-                self[$state] = newState;
-              }, subscription),
-            );
-
-            self.addEventListener('submit', self[$$submit]);
-            self.addEventListener('reset', self[$$reset]);
-
-            supers.connectedCallback.call(self);
-          },
-      [$$disconnectedCallback]: isExtended
-        ? supers.disconnectedCallback
-        : () => {
-            for (const unsubscribe of self[$$unsubscriptions]) {
-              unsubscribe();
-            }
-
-            self[$$unsubscriptions] = [];
-
-            self.removeEventListener('submit', self[$$submit]);
-            self.removeEventListener('reset', self[$$reset]);
-
-            supers.disconnectedCallback.call(self);
-          },
       [$$reset](event) {
         event.preventDefault();
         event.stopPropagation();

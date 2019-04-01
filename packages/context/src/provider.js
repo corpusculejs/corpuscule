@@ -1,4 +1,5 @@
 import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
+import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
 import {setObject} from '@corpuscule/utils/lib/setters';
 import {getSupers, tokenRegistry} from './utils';
 
@@ -7,9 +8,7 @@ const provider = (token, defaultValue = null) => target => {
 
   const {prototype} = target;
 
-  const $$connectedCallback = Symbol();
   const $$consumers = Symbol();
-  const $$disconnectedCallback = Symbol();
   const $$subscribe = Symbol();
   const $$unsubscribe = Symbol();
 
@@ -28,33 +27,20 @@ const provider = (token, defaultValue = null) => target => {
     assertRequiredProperty('provider', 'value', $value);
   });
 
-  Object.assign(prototype, {
+  defineExtendable(target, {
     connectedCallback() {
-      this[$$connectedCallback]();
+      this.addEventListener(eventName, this[$$subscribe]);
+      supers.connectedCallback.call(this);
     },
     disconnectedCallback() {
-      this[$$disconnectedCallback]();
+      this.removeEventListener(eventName, this[$$subscribe]);
+      supers.disconnectedCallback.call(this);
     },
   });
 
   target.__initializers.push(self => {
-    // Inheritance workaround. If class is inherited, method will work in a different way
-    const isExtended = self.constructor !== target;
-
     Object.assign(self, {
-      [$$connectedCallback]: isExtended
-        ? supers.connectedCallback
-        : () => {
-            self.addEventListener(eventName, self[$$subscribe]);
-            supers.connectedCallback.call(self);
-          },
       [$$consumers]: [],
-      [$$disconnectedCallback]: isExtended
-        ? supers.disconnectedCallback
-        : () => {
-            self.removeEventListener(eventName, self[$$subscribe]);
-            supers.disconnectedCallback.call(self);
-          },
       [$$subscribe](event) {
         const {consume} = event.detail;
 

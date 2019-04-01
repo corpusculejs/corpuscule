@@ -1,5 +1,6 @@
 import {consumer, value} from '@corpuscule/context';
 import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
+import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
 import {resolve as $resolve} from './tokens/lifecycle';
 import getSupers from '@corpuscule/utils/lib/getSupers';
 import {tokenRegistry} from './utils';
@@ -10,9 +11,7 @@ const outlet = (token, routes) => target => {
 
   const {prototype} = target;
 
-  const $$connectedCallback = Symbol();
   const $$contextProperty = Symbol();
-  const $$disconnectedCallback = Symbol();
   const $$updateRoute = Symbol();
 
   const supers = getSupers(prototype, ['connectedCallback', 'disconnectedCallback', $resolve], {
@@ -29,57 +28,46 @@ const outlet = (token, routes) => target => {
     assertRequiredProperty('outlet', 'api', 'route', $route);
   });
 
-  Object.assign(prototype, {
-    connectedCallback() {
-      this[$$connectedCallback]();
+  defineExtendable(
+    target,
+    {
+      connectedCallback() {
+        window.addEventListener('popstate', this[$$updateRoute]);
+        supers.connectedCallback.call(this);
+
+        this[$$updateRoute](location.pathname);
+      },
+      disconnectedCallback() {
+        window.removeEventListener('popstate', this[$$updateRoute]);
+        supers.disconnectedCallback.call(this);
+      },
     },
-    disconnectedCallback() {
-      this[$$disconnectedCallback]();
-    },
-    // eslint-disable-next-line sort-keys
-    [$resolve]: supers[$resolve],
-  });
+    supers,
+  );
+
+  prototype[$resolve] = supers[$resolve];
 
   Object.defineProperty(prototype, $$contextProperty, valueDescriptor);
 
   target.__initializers.push(self => {
-    // Inheritance workaround. If class is inherited, method will work in a different way
-    const isExtended = self.constructor !== target;
+    self[$$updateRoute] = async pathOrEvent => {
+      const path = typeof pathOrEvent === 'string' ? pathOrEvent : pathOrEvent.state || '';
 
-    Object.assign(self, {
-      [$$connectedCallback]: isExtended
-        ? supers.connectedCallback
-        : () => {
-            window.addEventListener('popstate', self[$$updateRoute]);
-            supers.connectedCallback.call(self);
+      const iter = self[$resolve](path);
 
-            self[$$updateRoute](location.pathname);
-          },
-      [$$disconnectedCallback]: isExtended
-        ? supers.disconnectedCallback
-        : () => {
-            window.removeEventListener('popstate', self[$$updateRoute]);
-            supers.disconnectedCallback.call(self);
-          },
-      async [$$updateRoute](pathOrEvent) {
-        const path = typeof pathOrEvent === 'string' ? pathOrEvent : pathOrEvent.state || '';
+      const resolved = await self[$$contextProperty].resolve(iter.next().value);
 
-        const iter = self[$resolve](path);
+      if (resolved === undefined) {
+        return;
+      }
 
-        const resolved = await self[$$contextProperty].resolve(iter.next().value);
+      const [result, {route: currentRoute}] = resolved;
 
-        if (resolved === undefined) {
-          return;
-        }
-
-        const [result, {route: currentRoute}] = resolved;
-
-        if (routes.includes(currentRoute)) {
-          self[$route] = currentRoute;
-          self[$layout] = iter.next(result).value;
-        }
-      },
-    });
+      if (routes.includes(currentRoute)) {
+        self[$route] = currentRoute;
+        self[$layout] = iter.next(result).value;
+      }
+    };
   });
 
   consumer(token)(target);

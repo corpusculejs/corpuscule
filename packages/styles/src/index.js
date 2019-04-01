@@ -40,35 +40,33 @@ export const stylesAdvanced = ({shadyCSS, adoptedStyleSheets}, ...pathsOrStyles)
   const supers = getSupers(prototype, ['attachShadow', stylesAttachedCallback]);
 
   target.__initializers.push(self => {
-    Object.assign(self, {
-      attachShadow(options) {
-        const root = supers.attachShadow.call(self, options);
+    self.attachShadow = options => {
+      const root = supers.attachShadow.call(self, options);
 
-        if (constructableStyles.length > 0) {
-          if (shadyCSS) {
-            window.ShadyCSS.prepareAdoptedCssText(constructableStyles, self.localName);
-          } else {
-            root.adoptedStyleSheets = constructableStyles;
-          }
-        }
-
-        if (template.content.hasChildNodes()) {
-          const styleElements = template.content.cloneNode(true);
-
-          const observer = new MutationObserver(() => {
-            root.prepend(styleElements);
-            observer.disconnect();
-            supers[stylesAttachedCallback].call(self);
-          });
-
-          observer.observe(root, observerConfig);
+      if (constructableStyles.length > 0) {
+        if (shadyCSS) {
+          window.ShadyCSS.prepareAdoptedCssText(constructableStyles, self.localName);
         } else {
-          supers[stylesAttachedCallback].call(self);
+          root.adoptedStyleSheets = constructableStyles;
         }
+      }
 
-        return root;
-      },
-    });
+      if (template.content.hasChildNodes()) {
+        const styleElements = template.content.cloneNode(true);
+
+        const observer = new MutationObserver(() => {
+          root.prepend(styleElements);
+          observer.disconnect();
+          supers[stylesAttachedCallback].call(self);
+        });
+
+        observer.observe(root, observerConfig);
+      } else {
+        supers[stylesAttachedCallback].call(self);
+      }
+
+      return root;
+    };
   });
 };
 

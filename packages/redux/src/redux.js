@@ -1,4 +1,5 @@
 import {consumer, value} from '@corpuscule/context';
+import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
 import getSupers from '@corpuscule/utils/lib/getSupers';
 import {setObject} from '@corpuscule/utils/lib/setters';
 import {tokenRegistry} from './utils';
@@ -9,7 +10,6 @@ const redux = token => target => {
   const {prototype} = target;
 
   const $$contextProperty = Symbol();
-  const $$disconnectedCallback = Symbol();
   const $$subscribe = Symbol();
   const $$unsubscribe = Symbol();
   const $$update = Symbol();
@@ -27,11 +27,21 @@ const redux = token => target => {
     ({units} = tokenRegistry.get(token).get(target));
   });
 
-  Object.assign(prototype, {
-    disconnectedCallback() {
-      this[$$disconnectedCallback]();
+  defineExtendable(
+    target,
+    {
+      disconnectedCallback() {
+        supers.disconnectedCallback.call(this);
+
+        if (this[$$unsubscribe]) {
+          this[$$unsubscribe]();
+        }
+      },
     },
-    // eslint-disable-next-line sort-keys
+    supers,
+  );
+
+  Object.assign(prototype, {
     [$$subscribe]() {
       const context = this[$$contextProperty];
       this[$$update](context);
@@ -71,23 +81,6 @@ const redux = token => target => {
         this[$$subscribe]();
       },
     },
-  });
-
-  target.__initializers.push(self => {
-    // Inheritance workaround. If class is inherited, method will work in a different way
-    const isExtended = self.constructor !== target;
-
-    Object.assign(self, {
-      [$$disconnectedCallback]: isExtended
-        ? supers.disconnectedCallback
-        : () => {
-            supers.disconnectedCallback.call(self);
-
-            if (self[$$unsubscribe]) {
-              self[$$unsubscribe]();
-            }
-          },
-    });
   });
 
   consumer(token)(target);
