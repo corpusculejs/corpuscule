@@ -1,11 +1,12 @@
 import {consumer, value} from '@corpuscule/context';
-import getSupers from '@corpuscule/utils/lib/getSupersNew';
-import {getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
+import getSupers from '@corpuscule/utils/lib/getSupers';
 import {setObject} from '@corpuscule/utils/lib/setters';
 import {tokenRegistry} from './utils';
 
 const redux = token => target => {
   let units;
+
+  const {prototype} = target;
 
   const $$contextProperty = Symbol();
   const $$disconnectedCallback = Symbol();
@@ -13,9 +14,9 @@ const redux = token => target => {
   const $$unsubscribe = Symbol();
   const $$update = Symbol();
 
-  const supers = getSupers(target, ['disconnectedCallback']);
+  const supers = getSupers(prototype, ['disconnectedCallback']);
 
-  const valueDescriptor = value(token)(target.prototype, $$contextProperty);
+  const valueDescriptor = value(token)(prototype, $$contextProperty);
 
   setObject(tokenRegistry.get(token), target, {
     store: $$contextProperty,
@@ -26,7 +27,7 @@ const redux = token => target => {
     ({units} = tokenRegistry.get(token).get(target));
   });
 
-  Object.assign(target.prototype, {
+  Object.assign(prototype, {
     disconnectedCallback() {
       this[$$disconnectedCallback]();
     },
@@ -49,14 +50,14 @@ const redux = token => target => {
       for (const [key, getter] of units) {
         const v = getter(state);
 
-        if (v !== getValue(this, key)) {
-          setValue(this, key, v);
+        if (v !== this[key]) {
+          this[key] = v;
         }
       }
     },
   });
 
-  Object.defineProperties(target.prototype, {
+  Object.defineProperties(prototype, {
     [$$contextProperty]: {
       ...valueDescriptor,
       get: valueDescriptor.get,

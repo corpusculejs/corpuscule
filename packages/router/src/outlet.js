@@ -1,25 +1,27 @@
 import {consumer, value} from '@corpuscule/context';
 import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
 import {resolve as $resolve} from './tokens/lifecycle';
-import getSupers from '@corpuscule/utils/lib/getSupersNew';
+import getSupers from '@corpuscule/utils/lib/getSupers';
 import {tokenRegistry} from './utils';
 
 const outlet = (token, routes) => target => {
   let $layout;
   let $route;
 
+  const {prototype} = target;
+
   const $$connectedCallback = Symbol();
   const $$contextProperty = Symbol();
   const $$disconnectedCallback = Symbol();
   const $$updateRoute = Symbol();
 
-  const supers = getSupers(target, ['connectedCallback', 'disconnectedCallback', $resolve], {
+  const supers = getSupers(prototype, ['connectedCallback', 'disconnectedCallback', $resolve], {
     *[$resolve](path) {
       return yield path;
     },
   });
 
-  const valueDescriptor = value(token)(target.prototype, $$contextProperty);
+  const valueDescriptor = value(token)(prototype, $$contextProperty);
 
   target.__registrations.push(() => {
     ({layout: $layout, route: $route} = tokenRegistry.get(token).get(target));
@@ -27,7 +29,7 @@ const outlet = (token, routes) => target => {
     assertRequiredProperty('outlet', 'api', 'route', $route);
   });
 
-  Object.assign(target.prototype, {
+  Object.assign(prototype, {
     connectedCallback() {
       this[$$connectedCallback]();
     },
@@ -38,7 +40,7 @@ const outlet = (token, routes) => target => {
     [$resolve]: supers[$resolve],
   });
 
-  Object.defineProperty(target.prototype, $$contextProperty, valueDescriptor);
+  Object.defineProperty(prototype, $$contextProperty, valueDescriptor);
 
   target.__initializers.push(self => {
     // Inheritance workaround. If class is inherited, method will work in a different way

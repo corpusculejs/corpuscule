@@ -1,5 +1,5 @@
 import {isProvider} from '@corpuscule/context';
-import {makeAccessor} from '@corpuscule/utils/lib/descriptorsNew';
+import makeAccessor from '@corpuscule/utils/lib/makeAccessor';
 import {getName} from '@corpuscule/utils/lib/propertyUtils';
 import {setArray, setObject} from '@corpuscule/utils/lib/setters';
 import shallowEqual from '@corpuscule/utils/lib/shallowEqual';

@@ -1,17 +1,19 @@
 import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
-import {getValue} from '@corpuscule/utils/lib/propertyUtils';
 import {setObject} from '@corpuscule/utils/lib/setters';
 import {getSupers, tokenRegistry} from './utils';
 
 const provider = (token, defaultValue = null) => target => {
   let $value;
+
+  const {prototype} = target;
+
   const $$connectedCallback = Symbol();
   const $$consumers = Symbol();
   const $$disconnectedCallback = Symbol();
   const $$subscribe = Symbol();
   const $$unsubscribe = Symbol();
 
-  const supers = getSupers(target);
+  const supers = getSupers(prototype);
 
   const [eventName, values, providers] = tokenRegistry.get(token);
 
@@ -26,7 +28,7 @@ const provider = (token, defaultValue = null) => target => {
     assertRequiredProperty('provider', 'value', $value);
   });
 
-  Object.assign(target.prototype, {
+  Object.assign(prototype, {
     connectedCallback() {
       this[$$connectedCallback]();
     },
@@ -57,7 +59,7 @@ const provider = (token, defaultValue = null) => target => {
         const {consume} = event.detail;
 
         self[$$consumers].push(consume);
-        consume(getValue(self, $value));
+        consume(self[$value]);
 
         event.detail.unsubscribe = self[$$unsubscribe];
         event.stopPropagation();

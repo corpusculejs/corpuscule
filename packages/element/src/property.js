@@ -1,4 +1,4 @@
-import {makeAccessor} from '@corpuscule/utils/lib/descriptorsNew';
+import makeAccessor from '@corpuscule/utils/lib/makeAccessor';
 import {propertyChangedCallback as $propertyChangedCallback} from './tokens/lifecycle';
 import {defaultDescriptor} from './utils';
 

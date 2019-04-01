@@ -4,12 +4,14 @@ import {getSupers, tokenRegistry} from './utils';
 const consumer = token => target => {
   let $value;
 
+  const {prototype} = target;
+
   const $$connectedCallback = Symbol();
   const $$consume = Symbol();
   const $$disconnectedCallback = Symbol();
   const $$unsubscribe = Symbol();
 
-  const supers = getSupers(target);
+  const supers = getSupers(prototype);
 
   const [eventName, values] = tokenRegistry.get(token);
 
@@ -18,7 +20,7 @@ const consumer = token => target => {
     assertRequiredProperty('consumer', 'value', $value);
   });
 
-  Object.assign(target.prototype, {
+  Object.assign(prototype, {
     connectedCallback() {
       this[$$connectedCallback]();
     },

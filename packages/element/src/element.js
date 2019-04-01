@@ -1,5 +1,5 @@
 /* eslint-disable no-invalid-this, prefer-arrow-callback */
-import getSupers from '@corpuscule/utils/lib/getSupersNew';
+import getSupers from '@corpuscule/utils/lib/getSupers';
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
 import {
   internalChangedCallback as $internalChangedCallback,
@@ -18,7 +18,8 @@ const element = (
   name,
   {extends: builtin, lightDOM = false, renderer, scheduler = defaultScheduler} = {},
 ) => target => {
-  const hasRender = $render in target.prototype;
+  const {prototype} = target;
+  const hasRender = $render in prototype;
   const isLight = lightDOM || (builtin && !shadowElements.includes(builtin));
 
   const $$attributeChangedCallback = Symbol();
@@ -28,7 +29,7 @@ const element = (
   const $$root = Symbol();
   const $$valid = Symbol();
 
-  const supers = getSupers(target, [
+  const supers = getSupers(prototype, [
     'attributeChangedCallback',
     'connectedCallback',
     $internalChangedCallback,
@@ -47,7 +48,7 @@ const element = (
     },
   });
 
-  Object.assign(target.prototype, {
+  Object.assign(prototype, {
     attributeChangedCallback(...args) {
       this[$$attributeChangedCallback](...args);
     },

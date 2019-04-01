@@ -1,4 +1,4 @@
-import basicGetSupers from '@corpuscule/utils/lib/getSupersNew';
+import basicGetSupers from '@corpuscule/utils/lib/getSupers';
 import createTokenRegistry from '@corpuscule/utils/lib/tokenRegistry';
 
 const randomString = () => {

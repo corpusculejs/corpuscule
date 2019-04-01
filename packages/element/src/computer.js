@@ -1,4 +1,4 @@
-import {makeAccessor} from '@corpuscule/utils/lib/descriptorsNew';
+import makeAccessor from '@corpuscule/utils/lib/makeAccessor';
 import {setArray} from '@corpuscule/utils/lib/setters';
 import createTokenRegistry from '@corpuscule/utils/lib/tokenRegistry';
 

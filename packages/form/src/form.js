@@ -1,6 +1,6 @@
 import {provider} from '@corpuscule/context';
 import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
-import getSupers from '@corpuscule/utils/lib/getSupersNew';
+import getSupers from '@corpuscule/utils/lib/getSupers';
 import {getName} from '@corpuscule/utils/lib/propertyUtils';
 import {createForm, formSubscriptionItems} from 'final-form';
 import {tokenRegistry} from './utils';
@@ -16,6 +16,7 @@ const form = (token, {decorators = [], subscription = all} = {}) => target => {
   let $state;
   let formOptions;
 
+  const {prototype} = target;
   const [sharedPropertiesRegistry, formOptionsRegistry] = tokenRegistry.get(token);
 
   const $$connectedCallback = Symbol();
@@ -24,7 +25,7 @@ const form = (token, {decorators = [], subscription = all} = {}) => target => {
   const $$submit = Symbol();
   const $$unsubscriptions = Symbol();
 
-  const supers = getSupers(target, ['connectedCallback', 'disconnectedCallback']);
+  const supers = getSupers(prototype, ['connectedCallback', 'disconnectedCallback']);
 
   target.__registrations.push(() => {
     ({formApi: $formApi, state: $state} = sharedPropertiesRegistry.get(target) || {});
@@ -39,7 +40,7 @@ const form = (token, {decorators = [], subscription = all} = {}) => target => {
     );
   });
 
-  Object.assign(target.prototype, {
+  Object.assign(prototype, {
     connectedCallback() {
       this[$$connectedCallback]();
     },

@@ -1,4 +1,4 @@
-import {makeAccessor} from '@corpuscule/utils/lib/descriptorsNew';
+import makeAccessor from '@corpuscule/utils/lib/makeAccessor';
 import {internalChangedCallback as $internalChangedCallback} from './tokens/lifecycle';
 import {defaultDescriptor} from './utils';
 

@@ -1,13 +1,8 @@
-import {defaultDescriptor} from '@corpuscule/utils/lib/define';
-import {makeAccessor} from '@corpuscule/utils/lib/descriptorsNew';
+import makeAccessor from '@corpuscule/utils/lib/makeAccessor';
 import {setObject} from '@corpuscule/utils/lib/setters';
 import {tokenRegistry} from './utils';
 
-const value = token => (
-  {constructor: target},
-  key,
-  {initializer, ...descriptor} = defaultDescriptor,
-) => {
+const value = token => ({constructor: target}, key, {initializer, ...descriptor} = {}) => {
   let $$consumers;
   let isProvider;
 
@@ -30,7 +25,7 @@ const value = token => (
   });
 
   return {
-    ...defaultDescriptor,
+    configurable: true,
     get,
     set(v) {
       set.call(this, v);

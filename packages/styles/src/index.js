@@ -1,11 +1,12 @@
 /* eslint-disable capitalized-comments, no-sync */
-import getSupers from '@corpuscule/utils/lib/getSupersNew';
+import getSupers from '@corpuscule/utils/lib/getSupers';
 
 export const stylesAttachedCallback = Symbol();
 
 const observerConfig = {childList: true};
 
 export const stylesAdvanced = ({shadyCSS, adoptedStyleSheets}, ...pathsOrStyles) => target => {
+  const {prototype} = target;
   const template = document.createElement('template');
   const constructableStyles = [];
 
@@ -36,7 +37,7 @@ export const stylesAdvanced = ({shadyCSS, adoptedStyleSheets}, ...pathsOrStyles)
     }
   }
 
-  const supers = getSupers(target, ['attachShadow', stylesAttachedCallback]);
+  const supers = getSupers(prototype, ['attachShadow', stylesAttachedCallback]);
 
   target.__initializers.push(self => {
     Object.assign(self, {
