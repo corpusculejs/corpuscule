@@ -27,7 +27,7 @@
     "packages/**/*"
   ],
   "exclude": [
-    "packages/**/dist",
+    "packages/**/lib",
     "packages/**/node_modules",
     "node_modules"
   ]
