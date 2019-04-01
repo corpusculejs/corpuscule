@@ -1,236 +1,47 @@
-// tslint:disable:max-classes-per-file no-invalid-this no-unnecessary-class
+// tslint:disable:no-unbound-method
 import getSupers from '../src/getSupers';
 
-// @ts-ignore
-const createDecorator = <N extends string>(
-  names: ReadonlyArray<N>,
-  extractSupers: (supers: Record<N, Function>) => void,
-  fallbacks?: Partial<Record<N, Function>>,
-): ClassDecorator =>
-  (({elements, kind}: any) => {
-    const [supers, finisher] = getSupers(elements, names);
-
-    extractSupers(supers);
-
-    return {
-      elements,
-      finisher(target: unknown): void {
-        finisher(target, fallbacks);
-      },
-      kind,
-    };
-  }) as any;
-
-// @ts-ignore
-const makeOwn = (spy: jasmine.Spy): PropertyDecorator => (descriptor: any) => ({
-  ...descriptor,
-  extras: [
-    {
-      ...descriptor,
-      descriptor: {
-        ...descriptor.descriptor,
-        value(): void {
-          descriptor.descriptor.value.call(this);
-          spy(this);
-        },
-      },
-      placement: 'own',
-    },
-  ],
-});
-
-const testGetSupers = () => {
+describe('@corpuscule/utils', () => {
   describe('getSupers', () => {
-    it('calls method if its descriptor exists', () => {
-      const fooSpy = jasmine.createSpy('foo');
-
-      let supers: {readonly [key: string]: Function} = {};
-      const decorator = createDecorator(['foo'], s => {
-        supers = s;
-      });
-
-      @decorator
+    it('creates an object with specified target methods if exist', () => {
       class Test {
-        public foo(): void {
-          fooSpy(this);
-        }
+        public method(): void {}
+
+        public method2(): void {}
+
+        public method3(): void {}
       }
 
-      const test = new Test();
-      supers.foo.call(test);
-
-      expect(fooSpy).toHaveBeenCalledWith(test);
+      expect(getSupers(Test.prototype, ['method', 'method2'])).toEqual({
+        method: Test.prototype.method,
+        method2: Test.prototype.method2,
+      });
     });
 
-    it('prefers bound method if its descriptor exist', () => {
-      const fooSpy = jasmine.createSpy('foo');
-      const boundFooSpy = jasmine.createSpy('bound foo');
-
-      let supers: {readonly [key: string]: Function} = {};
-      const decorator = createDecorator(['foo'], s => {
-        supers = s;
-      });
-
-      @decorator
+    it('uses fallback if specified method does not exist', () => {
       class Test {
-        @makeOwn(boundFooSpy)
-        public foo(): void {
-          fooSpy(this);
-        }
+        public method(): void {}
       }
 
-      const test = new Test();
-      supers.foo.call(test);
+      const fallbackForMethod2 = () => {};
 
-      expect(fooSpy).toHaveBeenCalledWith(test);
-      expect(boundFooSpy).toHaveBeenCalledWith(test);
+      expect(
+        getSupers(Test.prototype, ['method', 'method2'], {method2: fallbackForMethod2}),
+      ).toEqual({
+        method: Test.prototype.method,
+        method2: fallbackForMethod2,
+      });
     });
 
-    it('ignores static methods even with the same name', () => {
-      const staticFooSpy = jasmine.createSpy('staticFoo');
-
-      let supers: {readonly [key: string]: Function} = {};
-      const decorator = createDecorator(['foo'], s => {
-        supers = s;
-      });
-
-      @decorator
+    it('uses empty function if there is no specified method or fallback', () => {
       class Test {
-        public static foo(): void {
-          staticFooSpy(this);
-        }
+        public method(): void {}
       }
 
-      const test = new Test();
-      supers.foo.call(test);
-
-      expect(staticFooSpy).not.toHaveBeenCalled();
-    });
-
-    it('calls super method if exist and there is no descriptors', () => {
-      const fooSpy = jasmine.createSpy('foo');
-
-      let supers: {readonly [key: string]: Function} = {};
-      const decorator = createDecorator(['foo'], s => {
-        supers = s;
+      expect(getSupers(Test.prototype, ['method', 'method2'])).toEqual({
+        method: Test.prototype.method,
+        method2: jasmine.any(Function),
       });
-
-      class Parent {
-        public foo(): void {
-          fooSpy(this);
-        }
-      }
-
-      @decorator
-      class Child extends Parent {}
-
-      const child = new Child();
-      supers.foo.call(child);
-
-      expect(fooSpy).toHaveBeenCalledWith(child);
-    });
-
-    it('calls nothing if no super method available', () => {
-      let supers: {readonly [key: string]: Function} = {};
-      const decorator = createDecorator(['foo'], s => {
-        supers = s;
-      });
-
-      @decorator
-      class Test {}
-
-      const test = new Test();
-
-      expect(() => supers.foo.call(test)).not.toThrow();
-    });
-
-    it('allows to get multiple super methods', () => {
-      const fooSpy = jasmine.createSpy('foo');
-      const barSpy = jasmine.createSpy('bar');
-
-      let supers: {readonly [key: string]: Function} = {};
-      const decorator = createDecorator(['foo', 'bar'], s => {
-        supers = s;
-      });
-
-      @decorator
-      class Test {
-        public foo(): void {
-          fooSpy(this);
-        }
-
-        public bar(): void {
-          barSpy(this);
-        }
-      }
-
-      const test = new Test();
-
-      supers.foo.call(test);
-      supers.bar.call(test);
-
-      expect(fooSpy).toHaveBeenCalledWith(test);
-      expect(barSpy).toHaveBeenCalledWith(test);
-    });
-
-    it('allows to set defaults that will be executed if no super method exists', () => {
-      const fallbackSpy = jasmine.createSpy('foo');
-
-      let supers: {readonly [key: string]: Function} = {};
-      const decorator = createDecorator(
-        ['foo', 'bar'],
-        s => {
-          supers = s;
-        },
-        {
-          foo(): void {
-            fallbackSpy(this);
-          },
-        },
-      );
-
-      @decorator
-      class Test {}
-
-      const test = new Test();
-
-      supers.foo.call(test);
-
-      expect(fallbackSpy).toHaveBeenCalledWith(test);
-    });
-
-    it('works correctly if super method created for several classes in inheritance chain', () => {
-      const fooSpy = jasmine.createSpy('foo');
-
-      let supers: {readonly [key: string]: Function} = {};
-      const decorator = createDecorator(['foo'], s => {
-        supers = s;
-      });
-
-      class GrandParent {
-        public state: number = 1;
-
-        public foo(): void {
-          fooSpy(this.state);
-        }
-      }
-
-      @decorator
-      class Parent extends GrandParent {
-        public state: number = 2;
-      }
-
-      @decorator
-      class Child extends Parent {
-        public state: number = 3;
-      }
-
-      const child = new Child();
-      supers.foo.call(child);
-
-      expect(fooSpy).toHaveBeenCalledWith(3);
     });
   });
-};
-
-export default testGetSupers;
+});
