@@ -1,4 +1,5 @@
 import './asserts';
+import './defineExtendable';
 import './getSupers';
 import './makeAccessor';
 import './propertyUtils';

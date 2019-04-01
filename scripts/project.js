@@ -1,6 +1,7 @@
 const utils = [
   'asserts',
   'compose',
+  'defineExtendable',
   'getSupers',
   'makeAccessor',
   'propertyUtils',
