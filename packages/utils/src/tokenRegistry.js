@@ -1,16 +1,16 @@
 const createTokenRegistry = (newRegistry, newToken = () => ({})) => {
-  const registry = new WeakMap();
+  const tokenRegistry = new WeakMap();
 
   const createToken = () => {
     const token = newToken();
-    const store = newRegistry();
+    const registry = newRegistry();
 
-    registry.set(token, store);
+    tokenRegistry.set(token, registry);
 
     return token;
   };
 
-  return [createToken, registry];
+  return [createToken, tokenRegistry];
 };
 
 export default createTokenRegistry;

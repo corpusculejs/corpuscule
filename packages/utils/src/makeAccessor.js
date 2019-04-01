@@ -1,4 +1,4 @@
-export const makeAccessor = (target, descriptor) => {
+const makeAccessor = (target, descriptor) => {
   const {get, initializer, set} = descriptor;
 
   if (get && set) {
@@ -20,3 +20,5 @@ export const makeAccessor = (target, descriptor) => {
     },
   };
 };
+
+export default makeAccessor;
