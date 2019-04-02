@@ -3,9 +3,12 @@ const attribute = (attributeName, guard) => (prototype, key) => {
     throw new TypeError('Guard for @attribute should be either Number, Boolean or String');
   }
 
+  const {constructor: target} = prototype;
   const guardType = typeof guard(null);
 
-  prototype.constructor.observedAttributes.push(attributeName);
+  target.__registrations.push(() => {
+    target.observedAttributes.push(attributeName);
+  });
 
   return {
     configurable: true,

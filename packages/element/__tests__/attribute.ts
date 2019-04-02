@@ -204,5 +204,14 @@ describe('@corpuscule/element', () => {
         test.a2 = undefined;
       }).not.toThrow();
     });
+
+    it('delays setting observedAttributes to the end of class creation', () => {
+      class Test extends CustomElement {
+        public static readonly observedAttributes: ReadonlyArray<string> = [];
+        @attribute('attr', Boolean) public attribute: boolean = false;
+      }
+
+      expect((Test as any).__registrations).toEqual([jasmine.any(Function)]);
+    });
   });
 });
