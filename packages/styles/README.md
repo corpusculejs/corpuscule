@@ -73,11 +73,11 @@ If nothing above works, decorator will add `<style>` tag as a first child of `Sh
 ## API
 ### External
 #### `@style(...pathsOrStyles: Array<string | URL>): ClassDecorator`
-This decorator applies algorithm described above to the marked class.
+Applies algorithm described above to the marked class.
 
-#### `createStylesDecorator(params: {adoptedStyleSheets: boolean, shadyCSS: boolean}): @style`
-This function can be used to create custom [`@style`](#stylepathsorstyles-arraystring--url-classdecorator).
-With this function you can adjust `adoptedStyleSheets` or `shadyCSS` support. 
+#### `@styleAdvanced(options: {adoptedStyleSheets: boolean, shadyCSS: boolean}, ...pathsOrStyles: Array<string | URL>): ClassDecorator`
+Advanced version of default `@style` which allows adjusting `adoptedStyleSheets` and `shadyCSS`
+support.
 
 ### Internal
 #### `[stylesAttachedCallback](): void`
