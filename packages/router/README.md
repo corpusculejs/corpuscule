@@ -6,8 +6,8 @@ using it in production. API is not ready yet and can receive large changes.
 [![Latest Stable Version](https://img.shields.io/npm/v/@corpuscule/router.svg)](https://www.npmjs.com/package/@corpuscule/router)
 [![Package size](https://badgen.net/bundlephobia/minzip/@corpuscule/router)](https://bundlephobia.com/result?p=@corpuscule/router)
 
-Lightweight set of decorators and components for providing routing for web components. Built on top
-of [Universal Router](https://github.com/kriasoft/universal-router).
+A lightweight set of decorators and components for providing routing for web components. Built on
+top of [Universal Router](https://github.com/kriasoft/universal-router).
 
 ## Features
 * **Small**. According to [Bundlephobia](https://bundlephobia.com), it has following sizes:
@@ -25,7 +25,7 @@ $ yarn add universal-router @corpuscule/router
 ```
 
 ## Routing lifecycle
-Routing system has following lifecycle.
+Routing system has the following lifecycle.
 
 ### Create router
 First of all, you have to create `UniversalRouter` instance. To get it working with other parts of
@@ -102,6 +102,7 @@ changes route using `push` function under the hood. It is a declarative way to c
 route. 
 
 ## API
+### Default
 #### `createRouter(routes: Route | ReadonlyArray<Route>, options?: Options): UniversalRouter`
 Creates instance of `UniversalRouter` which should be sent down the DOM tree in the element marked
 with `@provider` decorator. 
@@ -117,7 +118,7 @@ work in `@corpuscule/router` system.
 [See the `@corpuscule/context` docs on `@value` decorator](../context/README.md#value-propertydecorator).
 
 ##### Inside `@outlet` class
-For the `@outlet` class it can define two properties.
+For the `@outlet` class you should define two properties.
 * `layout` — this property receives the result of the route's `action` method. You can use this
 property wherever it is necessary to display routing outcome.
 * `route` — this property receives the route itself. It could be useful in different situations:
@@ -134,20 +135,20 @@ Rules for setting properties are the following:
 * Only one property is allowed for each API element.
 
 ```javascript
-import {outlet, value} from '@corpuscule/router';
+import {api, outlet} from '@corpuscule/router';
 import {routes} from './router';
 
 @outlet(routes)
 class Outlet extends HTMLElement {
-  #layout;
+  _layout;
   
   @api 
   get layout() {
-    return this.#layout;
+    return this._layout;
   };
   
   set layout(v) {
-    this.#layout = v;
+    this._layout = v;
     
     while (this.shadowRoot.firstChild) {
       this.shadowRoot.removeChild(this.shadowRoot.firstChild);
@@ -176,6 +177,9 @@ method. Receives the following params:
 * `path: string` - a new location URL to which browser will go.
 * `title?: string` - optional property for `title` param of `pushState`.
 
+#### `isProvider(target: unknown): boolean`
+[See the `@corpuscule/context` docs on `isProvider`](../context/README.md#isprovider-token-token-target-unknown--boolean).
+
 #### Link
 This class is a customized built-in `HTMLAnchorElement` that uses [`push`](#pushpath-string-title-string-void)
 under the hood. Since it is just an extended native element, it could be used everywhere native
@@ -183,3 +187,26 @@ under the hood. Since it is just an extended native element, it could be used ev
 ```html
 <a is="corpuscule-link" href="/path/to/route">Click me</a>
 ```
+
+### Advanced
+Using a set of advanced decorators allows creating a new context that is completely independent of
+the default one.
+
+#### How it works
+[See `@copruscule/context` docs](../context/README.md#how-it-works).
+
+#### `createRouterToken(): Token`
+The function creates a token to bind `@provider`, `@outlet`, and `@api` together. To make a
+connection, you have to send a token to all these decorators as an argument.
+
+#### `@providerAdvanced(token: Token): ClassDecorator`
+[See default `@provider` decorator](#provider-classdecorator).
+
+#### `@apiAdvanced(token: Token): PropertyDecorator`
+[See default `@api` decorator](#api-propertydecorator).
+
+#### `@outletAdvanced(token: Token, routes: Route[]): PropertyDecorator`
+[See default `@outlet` decorator](#outletroutes-route-classdecorator).
+
+#### `isProviderAdvanced(token: Token, target: unknown): boolean`
+[See default `isProvider` function](#isprovidertarget-unknown-boolean).
