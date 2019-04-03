@@ -1,5 +1,5 @@
 import {CustomElement} from '@corpuscule/typings';
-import {Token} from '@corpuscule/utils/lib/tokenRegistry';
+import {Token, TokenCreator} from '@corpuscule/utils/lib/tokenRegistry';
 import UniversalRouter, {Options, Route} from 'universal-router';
 
 export {isProvider as isProviderAdvanced, provider as providerAdvanced} from '@corpuscule/context';
@@ -20,6 +20,8 @@ export class Link extends HTMLAnchorElement implements CustomElement {
 }
 
 export const push: (path: string, title?: string) => void;
+
+export const createRouterToken: TokenCreator;
 
 export const api: PropertyDecorator;
 export const isProvider: (target: unknown) => boolean;

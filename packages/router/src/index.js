@@ -3,7 +3,7 @@ import apiAdvanced from './api';
 import outletAdvanced from './outlet';
 import {createRouterToken} from './utils';
 
-export {apiAdvanced, isProviderAdvanced, outletAdvanced, providerAdvanced};
+export {apiAdvanced, createRouterToken, isProviderAdvanced, outletAdvanced, providerAdvanced};
 
 export {default as createUrl} from 'universal-router/generateUrls';
 export {default as createRouter} from './createRouter';
