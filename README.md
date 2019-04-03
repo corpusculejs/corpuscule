@@ -8,8 +8,8 @@ using it in production. API is not ready yet and can receive large changes.
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![Test Coverage](https://img.shields.io/codecov/c/github/corpusculejs/corpuscule/master.svg)](https://codecov.io/gh/corpusculejs/corpuscule)
 
-Corpuscule is a library set built on top of Web Components standard. It provides all necessary tools
-to built whole application from scratch including redux connector, router and form utils.
+Corpuscule is a set of libraries built on top of Web Components standard. It provides all necessary
+tools to built whole application from scratch including redux connector, router and form utils.
 
 ## Principles
 
@@ -22,31 +22,31 @@ hooks. Also, `@corpuscule/element` can use any renderer you want: [lit-html](htt
 [React](https://reactjs.org/).
 
 ### Be small yet powerful
-Bundle size matters. It becomes critical for people with slow internet connection. Corpuscule
-already uses Web Components standard that takes care of component system, so everything it needs is
-to have as many useful features as possible in smallest size as possible. 
+Bundle size matters. It becomes critical for people with a slow internet connection. Corpuscule
+already uses Web Components standard that takes care of the component system, so everything it needs
+is to have as many useful features as possible in smallest size as possible. 
 
 ### Be at the bleeding edge of JavaScript
 Features adding to the JavaScript language simplify developer's life, give new opportunities and
 solve problems like security holes. That's why Corpuscule is trying to be on the bleeding edge of
-language development and use the newest features.
+language development and use the latest features.
 
 ### Separate semantics from logic
 Semantics is a keystone of the web for a long time now. We used to make our markup as meaningful as
 possible. We use `<article>` instead of `<div>` to wrap our articles because `<article>` makes way
-more sense than a simple `<div>`. We have `<header>`, `<section>` and `<footer>` tags to properly
-split our layout to parts.
+more sense than a simple `<div>`. We have `<header>`, `<section>` and `<footer>` tags to split our
+layout to parts properly.
 
 However, with the React popularity growing we have got not only great solutions but also a handful
 of doubtful patterns. One of them is an approach to put logic into the markup. This approach brings
 such components as `<Provider>`, `<Suspense>`, `<Connect(MyComponent)>` etc. that can have no own
 markup at all! 
  
-And while it is acceptable for React components since they exist only on the JS level it could be
-bad for web components which have their representation in the DOM. Existence of only logic
+So while it is acceptable for React components since they exist only on the JS level, it could be
+wrong for web components which have their representation in the DOM. The existence of only logic
 components in DOM breaks the idea of semantics.
 
-That's why Corpuscule suggests slightly different approach. Since it is just a logic, we can apply
+That's why Corpuscule suggests a slightly different approach. Since it is just logic, we can apply
 it to semantic web components using decorators and class properties. It means that single web
 component could be a component connected to Redux, custom context provider and router outlet at the
 same time.
@@ -55,21 +55,33 @@ same time.
 Some technological solutions of Corpuscule could be surprising and confusing. This section provides
 explanation of why this or that solution has been chosen.  
 
-* **Decorators (stage 2)**. The [new decorators specification](https://github.com/tc39/proposal-decorators)
+### Decorators (stage 2)
+The [new decorators specification](https://github.com/tc39/proposal-decorators)
 could become a game-changer in the JavaScript world (along with [private class fields/methods](https://github.com/tc39/proposal-private-fields)
-). Decorators add a powerful system of metaprogramming to the JS language allowing to step into
-all stages of class lifecycle, to manipulate class fields in the very declarative yet incredibly 
+). Decorators add a powerful system of metaprogramming to the JS language allowing to step into all
+stages of the class lifecycle, to manipulate class fields in the very declarative yet incredibly
 flexible way. You still could achieve some similar results using class mixins and static methods
-with property definition, but it is way less descriptive and has its own drawbacks.
+with property definition, but it is way less descriptive and has its drawbacks.
 
-* **Symbols**. The most confusing solution of Corpuscule is using Symbols everywhere. You may almost
-never meet using the regular string-named class fields in Corpuscule tools. Why? Well, the best
-answer is to avoid naming conflicts. Web components are not React. They won't pack component
-properties into a separate object `this.props`. All properties come as a class fields. So, to avoid
-a situation when you want to use property `render`, but you have a `render` method that is a heart
-of your component system, Corpuscule declares all its field names as Symbols. So you are free to 
-use `render` property along with `[render]` method, and you are free to create another Symbol named
-`render` and use it in the same class. Symbols are unique, and that is their power. 
+Unfortunately, the initial proposal Corpuscule was built on is deprecated due to serious performance
+issues. There is a new static decorator proposal, but it does not have Babel implementation yet, and
+it is not defined when it will.
+
+That is the reason Corpuscule moves to an emulation of static decorator proposal. What does
+emulation mean? Well, it is not a specification-correct implementation, but it implements basic
+ideas of the proposal. Emulation uses the legacy decorator proposal (stage 1) that is well-supported
+by Babel and Typescript supplemented with a custom solution: a [Babel plugin](https://github.com/corpusculejs/babel-preset)
+that adds missing parts to the code generated by the legacy plugin. 
+
+### Symbols
+This solution of Corpuscule may confuse you. You may rarely meet using the regular string-named
+class fields in Corpuscule tools. Why? Well, the best answer is to avoid naming conflicts. Web
+components are not React. They won't pack component properties into a separate object `this.props`.
+All properties come as class fields. So, to avoid a situation when you want to use property
+`render`, but you have a `render` method that is a heart of your component system, Corpuscule
+declares all its field names as Symbols. So you are free to use `render` property along with
+`[render]` method, and you are free to create another Symbol named `render` and use it in the same
+class. Symbols are unique, and that is their power. 
 
 ## List of tools
 Corpuscule consists of following tools:
@@ -95,4 +107,11 @@ package, provides Corpuscule solution for routing.
 * [`@corpuscule/typings`](./packages/typings). Typescript and Flow (in future) common typings for
 the Corpuscule.
 * [`@corpuscule/utils`](./packages/utils). Utilities package that is used in almost all Corpuscule
-packages. Doesn't have single entrypoint, each util can be loaded separately. 
+packages. Doesn't have single entrypoint, each util can be loaded separately.
+
+## Future
+When the [static decorator specification]((https://github.com/tc39/proposal-decorators)) reaches
+stage 3, Corpuscule will be rewritten using it. The current implementation of Corpuscule is done
+with the basic ideas of the new proposal in mind (that is why it does not use some obvious ideas
+like a function that creates decorators). It should reduce the number of efforts production code
+refactoring will take when decorators become a standard.
