@@ -1,3 +1,4 @@
+/* eslint-disable no-console, no-process-exit */
 const {copyFile, mkdir, readdir} = require('fs');
 const {basename} = require('path');
 const rimraf = require('rimraf');
@@ -18,25 +19,30 @@ const srcDir = 'src';
 const dtsPattern = /\.d\.ts/;
 
 (async () => {
-  // Recreate lib directory
-  await rimrafAsync(libDir);
-  await mkdirAsync(libDir);
+  try {
+    // Recreate lib directory
+    await rimrafAsync(libDir);
+    await mkdirAsync(libDir);
 
-  // Run rollup
-  const options = config(pack);
+    // Run rollup
+    const options = config(pack);
 
-  await Promise.all(
-    options.map(async ({input, output}) => {
-      const bundle = await rollup(input);
-      await bundle.write(output);
-    }),
-  );
+    await Promise.all(
+      options.map(async ({input, output}) => {
+        const bundle = await rollup(input);
+        await bundle.write(output);
+      }),
+    );
 
-  // Copy d.ts files
-  const files = await readdirAsync(srcDir);
-  await Promise.all(
-    files
-      .filter(file => dtsPattern.test(file))
-      .map(file => copyFileAsync(`${srcDir}/${file}`, `${libDir}/${file}`)),
-  );
+    // Copy d.ts files
+    const files = await readdirAsync(srcDir);
+    await Promise.all(
+      files
+        .filter(file => dtsPattern.test(file))
+        .map(file => copyFileAsync(`${srcDir}/${file}`, `${libDir}/${file}`)),
+    );
+  } catch (e) {
+    console.error(e.stack);
+    process.exit(-1);
+  }
 })();
