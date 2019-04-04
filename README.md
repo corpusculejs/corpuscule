@@ -104,8 +104,7 @@ that makes `lit-html` usage similar to React.
 * [`@corpuscule/router`](./packages/router). Connector for the [Universal Router](https://github.com/kriasoft/universal-router)
 package, provides Corpuscule solution for routing. 
 * [`@corpuscule/styles`](./packages/styles). Solution for loading CSS stylesheets.
-* [`@corpuscule/typings`](./packages/typings). Typescript and Flow (in future) common typings for
-the Corpuscule.
+* [`@corpuscule/typings`](./packages/typings). Typescript common typings for the Corpuscule.
 * [`@corpuscule/utils`](./packages/utils). Utilities package that is used in almost all Corpuscule
 packages. Doesn't have single entrypoint, each util can be loaded separately.
 
