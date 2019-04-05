@@ -1,4 +1,4 @@
-const defineExtendable = (target, methods, supers) =>
+const defineExtendable = (target, methods, supers, initializers) =>
   Reflect.ownKeys(methods).forEach(key => {
     const selfKey = Symbol();
 
@@ -6,7 +6,7 @@ const defineExtendable = (target, methods, supers) =>
       this[selfKey](...args);
     };
 
-    target.__initializers.push(self => {
+    initializers.push(self => {
       self[selfKey] = self.constructor !== target ? supers[key] : methods[key];
     });
   });

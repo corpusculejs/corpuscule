@@ -117,6 +117,7 @@ const field = (
       },
     },
     supers,
+    target.__initializers,
   );
 
   Object.assign(target.prototype, {

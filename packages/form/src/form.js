@@ -74,6 +74,7 @@ const form = (token, {decorators = [], subscription = all} = {}) => target => {
       },
     },
     supers,
+    target.__initializers,
   );
 
   provider(token)(target);

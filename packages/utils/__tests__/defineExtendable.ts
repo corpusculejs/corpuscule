@@ -18,9 +18,9 @@ describe('@corpuscule/utils', () => {
     });
 
     it('defines methods if class is not extended', () => {
-      class Test {
-        public static __initializers: ReadonlyArray<(self: Test) => void> = [];
-      }
+      const initializers: Array<(self: Test) => void> = [];
+
+      class Test {}
 
       defineExtendable(
         Test,
@@ -40,10 +40,11 @@ describe('@corpuscule/utils', () => {
             symbolMethodSuperSpy(...args);
           },
         },
+        initializers,
       );
 
       const test: any = new Test();
-      Test.__initializers.forEach(fn => fn(test));
+      initializers.forEach(fn => fn(test));
 
       test.test(20);
       test[symbolMethodName](30);
@@ -55,9 +56,9 @@ describe('@corpuscule/utils', () => {
     });
 
     it('defines supers if class is extended', () => {
-      class Parent {
-        public static __initializers: ReadonlyArray<(self: Parent) => void> = [];
-      }
+      const initializers: Array<(self: Parent) => void> = [];
+
+      class Parent {}
 
       class Child extends Parent {}
 
@@ -79,10 +80,11 @@ describe('@corpuscule/utils', () => {
             symbolMethodSuperSpy(...args);
           },
         },
+        initializers,
       );
 
       const test: any = new Child();
-      Parent.__initializers.forEach(fn => fn(test));
+      initializers.forEach(fn => fn(test));
 
       test.test(20);
       test[symbolMethodName](30);

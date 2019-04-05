@@ -27,16 +27,21 @@ const provider = (token, defaultValue = null) => target => {
     assertRequiredProperty('provider', 'value', $value);
   });
 
-  defineExtendable(target, {
-    connectedCallback() {
-      this.addEventListener(eventName, this[$$subscribe]);
-      supers.connectedCallback.call(this);
+  defineExtendable(
+    target,
+    {
+      connectedCallback() {
+        this.addEventListener(eventName, this[$$subscribe]);
+        supers.connectedCallback.call(this);
+      },
+      disconnectedCallback() {
+        this.removeEventListener(eventName, this[$$subscribe]);
+        supers.disconnectedCallback.call(this);
+      },
     },
-    disconnectedCallback() {
-      this.removeEventListener(eventName, this[$$subscribe]);
-      supers.disconnectedCallback.call(this);
-    },
-  });
+    supers,
+    target.__initializers,
+  );
 
   target.__initializers.push(self => {
     Object.assign(self, {

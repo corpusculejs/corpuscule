@@ -65,6 +65,7 @@ const element = (
       },
     },
     supers,
+    target.__initializers,
   );
 
   Object.assign(prototype, {

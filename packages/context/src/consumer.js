@@ -49,6 +49,7 @@ const consumer = token => target => {
       },
     },
     supers,
+    target.__initializers,
   );
 
   target.__initializers.push(self => {

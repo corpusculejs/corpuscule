@@ -39,6 +39,7 @@ const redux = token => target => {
       },
     },
     supers,
+    target.__initializers,
   );
 
   Object.assign(prototype, {

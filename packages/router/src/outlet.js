@@ -43,6 +43,7 @@ const outlet = (token, routes) => target => {
       },
     },
     supers,
+    target.__initializers,
   );
 
   prototype[$resolve] = supers[$resolve];
