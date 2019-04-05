@@ -17,12 +17,15 @@ const value = token => ({constructor: target}, key, {initializer, ...descriptor}
     isProvider = providers.has(target);
   });
 
-  const {get, set} = makeAccessor(target, {
-    ...descriptor,
-    initializer() {
-      return isProvider && initializer ? initializer.call(this) : undefined;
+  const {get, set} = makeAccessor(
+    {
+      ...descriptor,
+      initializer() {
+        return isProvider && initializer ? initializer.call(this) : undefined;
+      },
     },
-  });
+    target.__initializers,
+  );
 
   return {
     configurable: true,

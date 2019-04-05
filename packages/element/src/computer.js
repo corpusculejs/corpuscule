@@ -34,7 +34,7 @@ export const computer = token => ({constructor: target}, _, {get}) => {
 };
 
 export const observer = token => ({constructor: target}, _, descriptor) => {
-  const {get, set} = makeAccessor(target, descriptor);
+  const {get, set} = makeAccessor(descriptor, target.__initializers);
 
   let corrects;
 

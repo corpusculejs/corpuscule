@@ -1,4 +1,4 @@
-const makeAccessor = (target, descriptor) => {
+const makeAccessor = (descriptor, initializers) => {
   const {get, initializer, set} = descriptor;
 
   if (get && set) {
@@ -7,7 +7,7 @@ const makeAccessor = (target, descriptor) => {
 
   const storage = Symbol();
 
-  target.__initializers.push(self => {
+  initializers.push(self => {
     self[storage] = initializer ? initializer.call(self) : undefined;
   });
 

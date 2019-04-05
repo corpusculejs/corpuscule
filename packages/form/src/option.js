@@ -37,7 +37,7 @@ const option = token => ({constructor: target}, key, descriptor) => {
   if ('initializer' in descriptor || ('get' in descriptor && 'set' in descriptor)) {
     let setter;
 
-    const {get, set} = makeAccessor(target, descriptor);
+    const {get, set} = makeAccessor(descriptor, target.__initializers);
 
     // Executes after $formApi, $compareInitialValues and $scheduleSubscription are set.
     target.__registrations.push(() => {

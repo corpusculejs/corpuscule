@@ -1,6 +1,6 @@
 declare const makeAccessor: <T>(
-  target: unknown,
   descriptor: PropertyDescriptor,
+  initializers: Array<(self: unknown) => void>, // tslint:disable-line:readonly-array
 ) => {
   readonly configurable?: boolean;
   readonly enumerable?: boolean;

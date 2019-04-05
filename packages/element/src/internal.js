@@ -3,7 +3,7 @@ import {internalChangedCallback as $internalChangedCallback} from './tokens/life
 import {defaultDescriptor} from './utils';
 
 const internal = ({constructor: target}, key, descriptor) => {
-  const {get, set} = makeAccessor(target, descriptor);
+  const {get, set} = makeAccessor(descriptor, target.__initializers);
 
   return {
     ...defaultDescriptor,

@@ -3,7 +3,7 @@ import {propertyChangedCallback as $propertyChangedCallback} from './tokens/life
 import {defaultDescriptor} from './utils';
 
 const property = (guard = null) => ({constructor: target}, key, descriptor) => {
-  const {get, set} = makeAccessor(target, descriptor);
+  const {get, set} = makeAccessor(descriptor, target.__initializers);
 
   return {
     ...defaultDescriptor,

@@ -3,6 +3,8 @@ import makeAccessor from '../src/makeAccessor';
 describe('@corpuscule/utils', () => {
   describe('makeAccessor', () => {
     it('creates accessor from existing accessor', () => {
+      const initializers: Array<(self: {}) => void> = [];
+
       class Test {
         public _foo: number = 1;
 
@@ -17,7 +19,7 @@ describe('@corpuscule/utils', () => {
 
       const descriptor = Object.getOwnPropertyDescriptor(Test.prototype, 'foo')!;
 
-      const accessorParts = makeAccessor<number>(Test, descriptor);
+      const accessorParts = makeAccessor<number>(descriptor, initializers);
 
       expect(accessorParts).toEqual({
         configurable: true,
@@ -33,14 +35,12 @@ describe('@corpuscule/utils', () => {
       accessorParts.set.call(test, 10);
 
       expect(test.foo).toBe(10);
+
+      expect(initializers).toEqual([]);
     });
 
     it('creates accessor for a class property', () => {
-      class Test {
-        public static __initializers: Array<(self: Test) => void> = [];
-
-        public foo?: number;
-      }
+      const initializers: Array<(self: {}) => void> = [];
 
       const descriptor = {
         configurable: true,
@@ -51,20 +51,18 @@ describe('@corpuscule/utils', () => {
         writable: true,
       };
 
-      const accessorParts = makeAccessor<number>(Test, descriptor);
+      const accessorParts = makeAccessor<number>(descriptor, initializers);
 
       expect(accessorParts).toEqual({
         get: jasmine.any(Function),
         set: jasmine.any(Function),
       });
 
-      expect(Test.__initializers).toContain(jasmine.any(Function));
+      expect(initializers).toContain(jasmine.any(Function));
 
-      const test = new Test();
+      const test = {};
 
-      const [initializer] = Test.__initializers;
-
-      expect(test.foo).toBeUndefined();
+      const [initializer] = initializers;
 
       initializer(test);
 
