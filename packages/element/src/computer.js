@@ -10,18 +10,15 @@ export const computer = token => ({constructor: target}, _, {get}) => {
   const correct = Symbol();
   const memoized = Symbol();
 
-  target.__initializers.push(self =>
-    Object.assign(self, {
-      [correct]: false,
-      [memoized]: null,
-    }),
-  );
+  target.__initializers.push(self => {
+    self[correct] = false;
+    self[memoized] = null;
+  });
 
   setArray(tokenRegistry.get(token), target, correct);
 
   return {
     configurable: true,
-    enumerable: true,
     get() {
       if (!this[correct]) {
         this[memoized] = get.call(this);
@@ -44,7 +41,6 @@ export const observer = token => ({constructor: target}, _, descriptor) => {
 
   return {
     configurable: true,
-    enumerable: true,
     get,
     set(value) {
       set.call(this, value);

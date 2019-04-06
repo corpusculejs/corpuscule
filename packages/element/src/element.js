@@ -8,10 +8,11 @@ import {
   render as $render,
   updatedCallback as $updatedCallback,
 } from './tokens/lifecycle';
-import {defaultDescriptor, noop, shadowElements} from './utils';
+import {noop, shadowElements} from './utils';
 
-const readonlyPropertiesDescriptor = {
-  ...defaultDescriptor,
+const readonlyPropertyDescriptor = {
+  configurable: true,
+  enumerable: true,
   writable: false,
 };
 
@@ -38,11 +39,11 @@ const element = (
 
   Object.defineProperties(target, {
     is: {
-      ...readonlyPropertiesDescriptor,
+      ...readonlyPropertyDescriptor,
       value: name,
     },
     observedAttributes: {
-      ...readonlyPropertiesDescriptor,
+      ...readonlyPropertyDescriptor,
       value: [],
     },
   });
@@ -107,12 +108,10 @@ const element = (
   });
 
   target.__initializers.push(self => {
-    Object.assign(self, {
-      [$$connected]: false,
-      [$$root]:
-        self.constructor !== target ? null : isLight ? self : self.attachShadow({mode: 'open'}),
-      [$$valid]: true,
-    });
+    self[$$connected] = false;
+    self[$$root] =
+      self.constructor !== target ? null : isLight ? self : self.attachShadow({mode: 'open'});
+    self[$$valid] = true;
   });
 
   // Deferring custom element definition allows to run it at the end of all

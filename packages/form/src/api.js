@@ -1,7 +1,7 @@
 import {value} from '@corpuscule/context';
 import {getName} from '@corpuscule/utils/lib/propertyUtils';
 import {setObject} from '@corpuscule/utils/lib/setters';
-import {apis, defaultDescriptor, tokenRegistry} from './utils';
+import {apis, tokenRegistry} from './utils';
 
 const api = token => (prototype, key, descriptor) => {
   const {constructor: target} = prototype;
@@ -21,7 +21,7 @@ const api = token => (prototype, key, descriptor) => {
     });
 
     return {
-      ...defaultDescriptor,
+      configurable: true,
       get() {
         return this[$ref];
       },

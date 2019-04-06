@@ -5,14 +5,7 @@ import getSupers from '@corpuscule/utils/lib/getSupers';
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
 import {setObject} from '@corpuscule/utils/lib/setters';
 import {fieldSubscriptionItems} from 'final-form';
-import {
-  defaultDescriptor,
-  getTargetValue,
-  isNativeElement,
-  noop,
-  setTargetValues,
-  tokenRegistry,
-} from './utils';
+import {getTargetValue, isNativeElement, noop, setTargetValues, tokenRegistry} from './utils';
 
 export const all = fieldSubscriptionItems.reduce((result, key) => {
   result[key] = true;
@@ -151,7 +144,6 @@ const field = (
 
   Object.defineProperties(target.prototype, {
     [$$ref]: {
-      ...defaultDescriptor,
       get: auto
         ? isNativeField
           ? function() {

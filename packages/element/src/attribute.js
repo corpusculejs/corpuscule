@@ -12,7 +12,6 @@ const attribute = (attributeName, guard) => (prototype, key) => {
 
   return {
     configurable: true,
-    enumerable: true,
     get() {
       const value = this.getAttribute(attributeName);
 

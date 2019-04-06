@@ -4,7 +4,7 @@ import {getName} from '@corpuscule/utils/lib/propertyUtils';
 import {setArray, setObject} from '@corpuscule/utils/lib/setters';
 import shallowEqual from '@corpuscule/utils/lib/shallowEqual';
 import {noop} from '../../element/src/utils';
-import {defaultDescriptor, fieldOptions, formOptions, tokenRegistry} from './utils';
+import {fieldOptions, formOptions, tokenRegistry} from './utils';
 
 const optionsList = new Set([...fieldOptions, ...formOptions]);
 
@@ -84,7 +84,7 @@ const option = token => ({constructor: target}, key, descriptor) => {
     });
 
     return {
-      ...defaultDescriptor,
+      configurable: true,
       get,
       set(v) {
         setter(this, v, get);
