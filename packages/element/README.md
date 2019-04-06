@@ -431,7 +431,7 @@ class MySquareInfo extends HTMLElement {
 }
 ```
 
-#### `@query`
+#### `@query(selector: string): PropertyDecorator`
 Allows transforming property to a getter that performs `querySelector` action on the Custom
 Element's root: `ShadowRoot` or `this` depending on what kind of DOM was chosen.
 
@@ -451,7 +451,7 @@ class MyElement extends HTMLElement {
 }
 ```
 
-#### `@queryAll`
+#### `@queryAll(selector: string): PropertyDecorator`
 Allows transforming property to a getter that performs `querySelectorAll` action on the Custom
 Element's root: `ShadowRoot` or `this` depending on what kind of DOM was chosen.
 
@@ -484,7 +484,7 @@ changed.
 
 There can be several getters marked with `@computer` if they rely on the same set of `@observer` fields.
 
-#### `@observer`
+#### `@observer(token: Token): PropertyDecorator`
 Applies to a class field or accessor. When the field changes, it marks the computation result made
 by `@computer` invalid and forces it to recompute result on the next call.
 
