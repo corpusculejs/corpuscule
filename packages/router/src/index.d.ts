@@ -1,8 +1,9 @@
-import createContext from '@corpuscule/context';
 import {CustomElement} from '@corpuscule/typings';
+import {Token, TokenCreator} from '@corpuscule/utils/lib/tokenRegistry';
 import UniversalRouter, {Options, Route} from 'universal-router';
 
-export const layout: unique symbol;
+export {isProvider as isProviderAdvanced, provider as providerAdvanced} from '@corpuscule/context';
+
 export const resolve: unique symbol;
 
 export const createRouter: (
@@ -20,16 +21,12 @@ export class Link extends HTMLAnchorElement implements CustomElement {
 
 export const push: (path: string, title?: string) => void;
 
-export type OutletDecorator = (routes: ReadonlyArray<Route>) => ClassDecorator;
+export const createRouterToken: TokenCreator;
 
 export const api: PropertyDecorator;
-export const outlet: OutletDecorator;
+export const isProvider: (target: unknown) => boolean;
+export const outlet: (routes: ReadonlyArray<Route>) => ClassDecorator;
 export const provider: ClassDecorator;
 
-export interface RouterContext {
-  readonly api: PropertyDecorator;
-  readonly outlet: OutletDecorator;
-  readonly provider: ClassDecorator;
-}
-
-export const createRouterContext: () => RouterContext;
+export const apiAdvanced: (token: Token) => PropertyDecorator;
+export const outletAdvanced: (token: Token, routes: ReadonlyArray<Route>) => ClassDecorator;

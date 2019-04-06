@@ -1,6 +1,6 @@
 import {Link} from '../src';
 
-const linkTest = () => {
+describe('@corpuscule/router', () => {
   describe('Link', () => {
     let historyPushStateSpy: jasmine.Spy;
     let historyStateSpy: jasmine.Spy;
@@ -50,6 +50,4 @@ const linkTest = () => {
       link.click();
     });
   });
-};
-
-export default linkTest;
+});

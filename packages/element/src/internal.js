@@ -1,33 +1,17 @@
-import {accessor} from '@corpuscule/utils/lib/descriptors';
+import makeAccessor from '@corpuscule/utils/lib/makeAccessor';
 import {internalChangedCallback as $internalChangedCallback} from './tokens/lifecycle';
-import {assertElementProperty, noop} from './utils';
 
-const internal = descriptor => {
-  assertElementProperty('internal', descriptor);
+const internal = ({constructor: target}, key, descriptor) => {
+  const {get, set} = makeAccessor(descriptor, target.__initializers);
 
-  const {
-    descriptor: {get, set},
-    extras,
-    finisher = noop,
-    initializer,
-    key,
-  } = descriptor;
-
-  return accessor({
-    adjust: ({get: originalGet, set: originalSet}) => ({
-      get: originalGet,
-      set(value) {
-        this[$internalChangedCallback](key, originalGet.call(this), value);
-        originalSet.call(this, value);
-      },
-    }),
-    extras,
-    finisher,
+  return {
+    configurable: true,
     get,
-    initializer,
-    key,
-    set,
-  });
+    set(value) {
+      this[$internalChangedCallback](key, get.call(this), value);
+      set.call(this, value);
+    },
+  };
 };
 
 export default internal;

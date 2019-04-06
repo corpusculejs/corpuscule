@@ -1,4 +1,5 @@
-import {ComputingPair, createComputingPair} from '../src';
+import {Token} from '@corpuscule/utils/lib/tokenRegistry';
+import {computer as basicComputer, createComputingToken, observer as basicObserver} from '../src';
 
 const repeatGetTenTimes = <C extends object, M extends keyof C, T extends C[M]>(
   instance: C,
@@ -14,25 +15,29 @@ const repeatGetTenTimes = <C extends object, M extends keyof C, T extends C[M]>(
   return res;
 };
 
-const testComputingPair = () => {
+describe('@corpuscule/element', () => {
   describe('createComputingPair', () => {
-    let c: ComputingPair;
+    let computer: PropertyDecorator;
+    let observer: PropertyDecorator;
+    let token: Token;
 
     beforeEach(() => {
-      c = createComputingPair();
+      token = createComputingToken();
+      computer = basicComputer(token);
+      observer = basicObserver(token);
     });
 
     it('memoizes getter result', () => {
       const spy = jasmine.createSpy('onCompute');
 
       class Test {
-        @c.observer
+        @observer
         public observed1: string = 'str';
 
-        @c.observer
+        @observer
         public observed2: number = 10;
 
-        @c.computer
+        @computer
         public get computed(): string {
           spy();
 
@@ -50,13 +55,13 @@ const testComputingPair = () => {
       const spy = jasmine.createSpy('onCompute');
 
       class Test {
-        @c.observer
+        @observer
         public observed1: string = 'str';
 
-        @c.observer
+        @observer
         public observed2: number = 10;
 
-        @c.computer
+        @computer
         public get computed(): string {
           spy();
 
@@ -78,10 +83,10 @@ const testComputingPair = () => {
       const spy = jasmine.createSpy('onCompute');
 
       class Test {
-        @c.observer
+        @observer
         public observed1: string = 'str';
 
-        @c.observer
+        @observer
         public get observed2(): number {
           return this.secret;
         }
@@ -92,7 +97,7 @@ const testComputingPair = () => {
 
         private secret: number = 10;
 
-        @c.computer
+        @computer
         public get computed(): string {
           spy();
 
@@ -115,17 +120,17 @@ const testComputingPair = () => {
       const spy2 = jasmine.createSpy('onCompute2');
 
       class Test {
-        @c.observer
+        @observer
         public observed: string = 'str';
 
-        @c.computer
+        @computer
         public get computed1(): string {
           spy1();
 
           return `foo: ${this.observed}`;
         }
 
-        @c.computer
+        @computer
         public get computed2(): string {
           spy2();
 
@@ -141,6 +146,4 @@ const testComputingPair = () => {
       expect(spy2).toHaveBeenCalledTimes(1);
     });
   });
-};
-
-export default testComputingPair;
+});

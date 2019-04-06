@@ -1,8 +1,6 @@
 /* eslint-disable no-invalid-this, prefer-arrow-callback */
-import {assertKind, Kind} from '@corpuscule/utils/lib/asserts';
-import {field, method, lifecycleKeys} from '@corpuscule/utils/lib/descriptors';
+import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
 import getSupers from '@corpuscule/utils/lib/getSupers';
-import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
 import {
   internalChangedCallback as $internalChangedCallback,
@@ -12,183 +10,116 @@ import {
 } from './tokens/lifecycle';
 import {noop, shadowElements} from './utils';
 
-const attributeChangedCallbackKey = 'attributeChangedCallback';
-const [connectedCallbackKey] = lifecycleKeys;
+const readonlyPropertyDescriptor = {
+  configurable: true,
+  enumerable: true,
+  writable: false,
+};
 
-const filteringNames = ['is', 'observedAttributes'];
-
-const createElementDecorator = ({renderer, scheduler = defaultScheduler}) => (
+const element = (
   name,
-  {extends: builtin, lightDOM = false} = {},
-) => descriptor => {
-  assertKind('element', Kind.Class, descriptor);
-
-  const {elements, finisher = noop, kind} = descriptor;
-
-  const hasRender = elements.some(({key}) => key === $render);
+  {extends: builtin, lightDOM = false, renderer, scheduler = defaultScheduler} = {},
+) => target => {
+  const {prototype} = target;
+  const hasRender = $render in prototype;
   const isLight = lightDOM || (builtin && !shadowElements.includes(builtin));
-
-  let constructor;
-  const getConstructor = () => constructor;
 
   const $$connected = Symbol();
   const $$invalidate = Symbol();
   const $$root = Symbol();
   const $$valid = Symbol();
 
-  const [supers, prepareSupers] = getSupers(elements, [
-    attributeChangedCallbackKey,
-    connectedCallbackKey,
+  const supers = getSupers(prototype, [
+    'attributeChangedCallback',
+    'connectedCallback',
     $internalChangedCallback,
     $propertyChangedCallback,
     $updatedCallback,
   ]);
 
-  return {
-    elements: [
-      // Static
-      field({
-        initializer: () => name,
-        key: 'is',
-        placement: 'static',
-        writable: false,
-      }),
-      field({
-        initializer: () => [],
-        key: 'observedAttributes',
-        placement: 'static',
-        writable: false,
-      }),
-
-      // Public
-      ...lifecycleMethod(
-        {
-          key: connectedCallbackKey,
-          async method() {
-            await this[$$invalidate]();
-            this[$$connected] = true;
-            supers[connectedCallbackKey].call(this);
-          },
-        },
-        supers,
-        getConstructor,
-      ),
-      ...lifecycleMethod(
-        {
-          key: attributeChangedCallbackKey,
-          async method(attributeName, oldValue, newValue) {
-            if (oldValue === newValue || !this[$$connected]) {
-              return;
-            }
-
-            supers[attributeChangedCallbackKey].call(this, attributeName, oldValue, newValue);
-            await this[$$invalidate]();
-          },
-        },
-        supers,
-        getConstructor,
-      ),
-
-      // Protected
-      method({
-        key: $internalChangedCallback,
-        async method(internalName, oldValue, newValue) {
-          if (!this[$$connected]) {
-            return;
-          }
-
-          supers[$internalChangedCallback].call(this, internalName, oldValue, newValue);
-          await this[$$invalidate]();
-        },
-        placement: 'own',
-      }),
-      method({
-        key: $propertyChangedCallback,
-        async method(propertyName, oldValue, newValue) {
-          if (oldValue === newValue || !this[$$connected]) {
-            return;
-          }
-
-          supers[$propertyChangedCallback].call(this, propertyName, oldValue, newValue);
-          await this[$$invalidate]();
-        },
-        placement: 'own',
-      }),
-      method({
-        key: $updatedCallback,
-        async method() {
-          supers[$updatedCallback].call(this);
-        },
-        placement: 'own',
-      }),
-
-      // Private
-      field({
-        initializer: () => false,
-        key: $$connected,
-      }),
-      field({
-        initializer() {
-          // Inheritance workaround. If class is inherited, it will do nothing
-          return this.constructor === constructor
-            ? isLight
-              ? this
-              : this.attachShadow({mode: 'open'})
-            : null;
-        },
-        key: $$root,
-      }),
-      field({
-        initializer: () => true,
-        key: $$valid,
-      }),
-      method({
-        key: $$invalidate,
-        method: hasRender
-          ? async function() {
-              if (!this[$$valid]) {
-                return;
-              }
-
-              this[$$valid] = false;
-
-              await scheduler(() => {
-                renderer(this[$render](), this[$$root], this);
-                this[$$valid] = true;
-              });
-
-              if (this[$$connected]) {
-                this[$updatedCallback]();
-              }
-            }
-          : noop,
-      }),
-
-      // Original elements
-      ...elements.filter(
-        ({key, placement}) =>
-          !(
-            (filteringNames.includes(key) && placement === 'static') ||
-            ((key === connectedCallbackKey || key === attributeChangedCallbackKey) &&
-              placement === 'prototype')
-          ),
-      ),
-    ],
-    finisher(target) {
-      finisher(target);
-      prepareSupers(target);
-
-      constructor = target;
-
-      // Deferring custom element definition allows to run it at the end of all
-      // decorators execution which helps to fix many issues connected with
-      // immediate custom element instance creation during definition.
-      Promise.resolve().then(() => {
-        customElements.define(name, target, builtin && {extends: builtin});
-      });
+  Object.defineProperties(target, {
+    is: {
+      ...readonlyPropertyDescriptor,
+      value: name,
     },
-    kind,
-  };
+    observedAttributes: {
+      ...readonlyPropertyDescriptor,
+      value: [],
+    },
+  });
+
+  defineExtendable(
+    target,
+    {
+      async attributeChangedCallback(attributeName, oldValue, newValue) {
+        if (oldValue === newValue || !this[$$connected]) {
+          return;
+        }
+
+        supers.attributeChangedCallback.call(this, attributeName, oldValue, newValue);
+        await this[$$invalidate]();
+      },
+      async connectedCallback() {
+        await this[$$invalidate]();
+        this[$$connected] = true;
+        supers.connectedCallback.call(this);
+      },
+    },
+    supers,
+    target.__initializers,
+  );
+
+  Object.assign(prototype, {
+    [$$invalidate]: hasRender
+      ? async function() {
+          if (!this[$$valid]) {
+            return;
+          }
+
+          this[$$valid] = false;
+
+          await scheduler(() => {
+            renderer(this[$render](), this[$$root], this);
+            this[$$valid] = true;
+          });
+
+          if (this[$$connected]) {
+            this[$updatedCallback]();
+          }
+        }
+      : noop,
+    async [$internalChangedCallback](internalName, oldValue, newValue) {
+      if (!this[$$connected]) {
+        return;
+      }
+
+      supers[$internalChangedCallback].call(this, internalName, oldValue, newValue);
+      await this[$$invalidate]();
+    },
+    async [$propertyChangedCallback](propertyName, oldValue, newValue) {
+      if (oldValue === newValue || !this[$$connected]) {
+        return;
+      }
+
+      supers[$propertyChangedCallback].call(this, propertyName, oldValue, newValue);
+      await this[$$invalidate]();
+    },
+    [$updatedCallback]: supers[$updatedCallback],
+  });
+
+  target.__initializers.push(self => {
+    self[$$connected] = false;
+    self[$$root] =
+      self.constructor !== target ? null : isLight ? self : self.attachShadow({mode: 'open'});
+    self[$$valid] = true;
+  });
+
+  // Deferring custom element definition allows to run it at the end of all
+  // decorators execution which helps to fix many issues connected with
+  // immediate custom element instance creation during definition.
+  Promise.resolve().then(() => {
+    customElements.define(name, target, builtin && {extends: builtin});
+  });
 };
 
-export default createElementDecorator;
+export default element;

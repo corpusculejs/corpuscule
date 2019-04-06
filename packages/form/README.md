@@ -106,11 +106,11 @@ decorator.
 [`@field` class](#field-option-decorator).
 
 ### Form
-#### `@form(params?: FormDecoratorParams): ClassDecorator`
+#### `@form(options?: FormDecoratorOptions): ClassDecorator`
 Form decorator makes the element a 🏁 FinalForm provider via [`@corpsucule/context`](../context)
 with form instance as a context value. 
 
-The decorator can receive `FormDecoratorParams` object which contains:
+The decorator can receive `FormDecoratorOptions` object which contains:
 * `decorators?: Decorator[]` - a list of [🏁 FinalForm decorators](https://github.com/final-form/final-form#decorator-form-formapi--unsubscribe)
 to apply to the form.
 * `subscription?: FormSubscription` - a [`FormSubscription`](https://github.com/final-form/final-form#formsubscription--string-boolean-)
@@ -146,14 +146,16 @@ section.
 This function is used to compare new initial values that are received by `initialValues` form
 option. By default simple checking of shallow equality is performed.
 
-#### `@field(params?: FieldDecoratorParams): ClassDecorator`
+#### `@field(options?: FieldDecoratorOptions): ClassDecorator`
 Field decorator makes the element a 🏁 FinalForm field, a consumer via [`@corpsucule/context`](../context)
 with form instance as a context value.
 
-The decorator can receive `FieldDecoratorParams` object which contains:
+The decorator can receive `FieldDecoratorOptions` object which contains:
 * `auto?: boolean` - a property that creates [Auto Field](#autofield) from a simple `Field`.
 * `selector?: string` - Auto Field uses this selector to search native form elements in the light
-DOM. More details [here](#autofield).  
+DOM. More details [here](#autofield).
+* `scheduler: (callback: () => void) => Promise<void>`. Function that performs scheduling for your
+field element. By default, [`@corpuscule/utils` scheduler](../utils/README.md#scheduler) is used.
 
 #### Field `@api` decorator
 Field `@api` decorator has following property names it can be applied to:
@@ -250,25 +252,34 @@ field and returns an error if the value is invalid, or `undefined` if the value 
 ##### `validateFields?: string[]`
 [See the 🏁 Final Form docs on `validateFields`](https://github.com/final-form/final-form#validatefields-string).
 
-#### `createFormContext(): FormContext`
-Function that creates new FormContext that contains following items:
-* `api: PropertyDecorator` - `@api` decorator bound with the new context.
-* `form(params?: FormDecoratorParams): ClassDecorator` - `@form` decorator bound with the new
-context.
-* `field(params?: FieldDecoratorParams): ClassDecorator` - `@field` decorator bound with the new
-context.
-* `option: PropertyDecorator` - `@option` decorator bound with the new context.
-
-Created context is completely independent from the default context and can be used to create complex
-structures like a form inside a form.  
-
-Function can receive `FormContextOptions` object which contains:
-* `scheduler: (callback: () => void) => Promise<void>`. Function that performs scheduling for your
-field element. Specifying scheduler is not required, [`@corpuscule/utils` scheduler](../utils/README.md#scheduler)
-is used by default.
-
 #### `isForm(target: unknown): boolean`
-[See the @corpuscule/context docs on `isProvider`](../context/README.md#isprovider-target-unknown--boolean).
+[See the `@corpuscule/context` docs on `isProvider`](../context/README.md#isprovider-token-token-target-unknown--boolean).
+
+### Advanced
+Using a set of advanced decorators allows creating a new context that is completely independent of
+the default one. It means that you can complex solutions like a form inside a form. 
+
+#### How it works
+[See `@copruscule/context` docs](../context/README.md#how-it-works).
+
+#### `createFormToken(): Token`
+The function creates a token to bind `@form`, `@field`, `@api` and `@option` together. To make a
+connection, you have to send a token to all these decorators as an argument.
+
+#### `@apiAdvanced(token: Token): PropertyDecorator`
+[See default `@api` decorator](#api-propertydecorator).
+
+#### `@formAdvanced(token: Token, options?: FormDecoratorOptions): ClassDecorator`
+[See default `@form` decorator](#formoptions-formdecoratoroptions-classdecorator).
+
+#### `@fieldAdvanced(token: Token, options?: FieldDecoratorOptions): ClassDecorator`
+[See default `@field` decorator](#fieldoptions-fielddecoratoroptions-classdecorator).
+
+#### `@optionAdvanced(token: Token): PropertyDecorator`
+[See default `@option` decorator](#option-propertydecorator).
+
+#### `isFormAdvanced(token: Token, target: unknown): boolean`
+[See default `isForm` function](#isformtarget-unknown-boolean).
 
 #### Example
 ##### [Simple Form](https://codesandbox.io/s/9j90pjrprw)

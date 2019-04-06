@@ -1,26 +1,19 @@
-import {assertKind, assertPlacement, Kind, Placement} from '@corpuscule/utils/lib/asserts';
-import {accessor} from '@corpuscule/utils/lib/descriptors';
-import {noop} from './utils';
-
-const attribute = (name, guard) => descriptor => {
-  assertKind('attribute', Kind.Field, descriptor);
-  assertPlacement('attribute', Placement.Own, descriptor);
-
+const attribute = (attributeName, guard) => (prototype, key) => {
   if (guard !== Boolean && guard !== Number && guard !== String) {
     throw new TypeError('Guard for @attribute should be either Number, Boolean or String');
   }
 
-  const {extras, finisher = noop, key} = descriptor;
+  const {constructor: target} = prototype;
   const guardType = typeof guard(null);
 
-  return accessor({
-    extras,
-    finisher(target) {
-      finisher(target);
-      target.observedAttributes.push(name);
-    },
+  target.__registrations.push(() => {
+    target.observedAttributes.push(attributeName);
+  });
+
+  return {
+    configurable: true,
     get() {
-      const value = this.getAttribute(name);
+      const value = this.getAttribute(attributeName);
 
       if (guard === Boolean) {
         return value !== null;
@@ -28,19 +21,18 @@ const attribute = (name, guard) => descriptor => {
 
       return value !== null ? (guard === String ? value : guard(value)) : null;
     },
-    key,
     set(value) {
       if (value != null && typeof value !== guardType) {
         throw new TypeError(`Value applied to "${key}" is not ${guard.name} or undefined`);
       }
 
       if (value == null || value === false) {
-        this.removeAttribute(name);
+        this.removeAttribute(attributeName);
       } else {
-        this.setAttribute(name, value === true ? '' : value);
+        this.setAttribute(attributeName, value === true ? '' : value);
       }
     },
-  });
+  };
 };
 
 export default attribute;

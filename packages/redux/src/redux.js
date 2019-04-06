@@ -1,122 +1,90 @@
-import {assertKind, Kind} from '@corpuscule/utils/lib/asserts';
-import {accessor, field, hook, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
+import {consumer, value} from '@corpuscule/context';
+import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
 import getSupers from '@corpuscule/utils/lib/getSupers';
-import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
-import {getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
+import {setObject} from '@corpuscule/utils/lib/setters';
+import {tokenRegistry} from './utils';
 
-// eslint-disable-next-line no-empty-function
-const noop = () => {};
+const redux = token => target => {
+  let units;
 
-const [, disconnectedCallbackKey] = lifecycleKeys;
+  const {prototype} = target;
 
-export const createReduxDecorator = ({consumer, value}, {store, units}) => descriptor => {
-  assertKind('connect', Kind.Class, descriptor);
-
-  const {elements, finisher = noop, kind} = descriptor;
-
-  let constructor;
-  let unitMap;
-
-  const getConstructor = () => constructor;
-
-  const $$api = Symbol();
+  const $$contextProperty = Symbol();
   const $$subscribe = Symbol();
   const $$unsubscribe = Symbol();
   const $$update = Symbol();
 
-  const [supers, prepareSupers] = getSupers(elements, [disconnectedCallbackKey]);
-  const {descriptor: contextDescriptor, extras, finisher: finishContext, ...contextValue} = value(
-    field({key: $$api}),
+  const supers = getSupers(prototype, ['disconnectedCallback']);
+
+  const valueDescriptor = value(token)(prototype, $$contextProperty);
+
+  setObject(tokenRegistry.get(token), target, {
+    store: $$contextProperty,
+    units: new Map(),
+  });
+
+  target.__registrations.push(() => {
+    ({units} = tokenRegistry.get(token).get(target));
+  });
+
+  defineExtendable(
+    target,
+    {
+      disconnectedCallback() {
+        supers.disconnectedCallback.call(this);
+
+        if (this[$$unsubscribe]) {
+          this[$$unsubscribe]();
+        }
+      },
+    },
+    supers,
+    target.__initializers,
   );
 
-  return consumer({
-    elements: [
-      // Public
-      ...lifecycleMethod(
-        {
-          key: disconnectedCallbackKey,
-          method() {
-            supers[disconnectedCallbackKey].call(this);
+  Object.assign(prototype, {
+    [$$subscribe]() {
+      const context = this[$$contextProperty];
+      this[$$update](context);
 
-            if (this[$$unsubscribe]) {
-              this[$$unsubscribe]();
-            }
-          },
-        },
-        supers,
-        getConstructor,
-      ),
-
-      // Private
-      method({
-        key: $$subscribe,
-        method() {
-          const context = getValue(this, $$api);
-          this[$$update](context);
-
-          this[$$unsubscribe] = context.subscribe(() => {
-            this[$$update](context);
-          });
-        },
-      }),
-      method({
-        key: $$update,
-        method({getState}) {
-          if (unitMap.size === 0) {
-            return;
-          }
-
-          const state = getState();
-
-          for (const [key, getter] of unitMap) {
-            const v = getter(state);
-
-            if (v !== getValue(this, key)) {
-              setValue(this, key, v);
-            }
-          }
-        },
-      }),
-
-      // Static Hooks
-      hook({
-        start() {
-          store.set(this, $$api);
-          units.set(this, new Map());
-        },
-      }),
-
-      // Context
-      ...extras,
-      accessor({
-        adjust: ({get: originalGet, set: originalSet}) => ({
-          get: originalGet,
-          set(v) {
-            originalSet.call(this, v);
-
-            if (this[$$unsubscribe]) {
-              this[$$unsubscribe]();
-            }
-
-            this[$$subscribe]();
-          },
-        }),
-        ...contextDescriptor,
-        ...contextValue,
-      }),
-
-      // Original elements
-      ...elements.filter(
-        ({key, placement}) => !(key === disconnectedCallbackKey && placement === 'prototype'),
-      ),
-    ],
-    finisher(target) {
-      finisher(target);
-      constructor = target;
-      unitMap = units.get(target);
-      prepareSupers(target);
-      finishContext(target);
+      this[$$unsubscribe] = context.subscribe(() => {
+        this[$$update](context);
+      });
     },
-    kind,
+    [$$update]({getState}) {
+      if (units.size === 0) {
+        return;
+      }
+
+      const state = getState();
+
+      for (const [key, getter] of units) {
+        const v = getter(state);
+
+        if (v !== this[key]) {
+          this[key] = v;
+        }
+      }
+    },
   });
+
+  Object.defineProperties(prototype, {
+    [$$contextProperty]: {
+      ...valueDescriptor,
+      get: valueDescriptor.get,
+      set(v) {
+        valueDescriptor.set.call(this, v);
+
+        if (this[$$unsubscribe]) {
+          this[$$unsubscribe]();
+        }
+
+        this[$$subscribe]();
+      },
+    },
+  });
+
+  consumer(token)(target);
 };
+
+export default redux;

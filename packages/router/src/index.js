@@ -1,6 +1,9 @@
-import createContext from '@corpuscule/context';
-import createApiDecorator from './api';
-import createOutletDecorator from './outlet';
+import {isProvider as isProviderAdvanced, provider as providerAdvanced} from '@corpuscule/context';
+import apiAdvanced from './api';
+import outletAdvanced from './outlet';
+import {createRouterToken} from './utils';
+
+export {apiAdvanced, createRouterToken, isProviderAdvanced, outletAdvanced, providerAdvanced};
 
 export {default as createUrl} from 'universal-router/generateUrls';
 export {default as createRouter} from './createRouter';
@@ -8,19 +11,9 @@ export {default as Link} from './Link';
 export {default as push} from './push';
 export * from './tokens/lifecycle';
 
-export const createRouterContext = () => {
-  const context = createContext();
+const defaultToken = createRouterToken();
 
-  const shared = {
-    layout: new WeakMap(),
-    route: new WeakMap(),
-  };
-
-  return {
-    api: createApiDecorator(context, shared),
-    outlet: createOutletDecorator(context, shared),
-    provider: context.provider,
-  };
-};
-
-export const {api, outlet, provider} = createRouterContext();
+export const api = apiAdvanced(defaultToken);
+export const isProvider = target => isProviderAdvanced(defaultToken, target);
+export const outlet = routes => outletAdvanced(defaultToken, routes);
+export const provider = providerAdvanced(defaultToken);

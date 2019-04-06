@@ -3,26 +3,17 @@ import {defineCE, fixture, html, unsafeStatic} from '@open-wc/testing-helpers';
 import {FieldState, FormApi, FormState} from 'final-form';
 import {formSpyObject, unsubscribe} from '../../../test/mocks/finalForm';
 import {createSimpleContext, CustomElement, genName} from '../../../test/utils';
-import {
-  createFormContext,
-  FieldDecorator,
-  FieldInputProps,
-  FieldMetaProps,
-  FormDecorator,
-} from '../src';
+import {api, field as basicField, FieldInputProps, FieldMetaProps, form, option} from '../src';
 import {all} from '../src/field';
 
-const testField = () => {
+describe('@corpuscule/form', () => {
   describe('@field', () => {
     let scheduler: jasmine.Spy;
     let state: jasmine.SpyObj<FieldState>;
     let fieldValue: object;
     let metaObject: FieldMetaProps;
 
-    let api: PropertyDecorator;
-    let form: FormDecorator;
-    let field: FieldDecorator;
-    let option: PropertyDecorator;
+    let field: typeof basicField;
 
     const getListener = (index: number | null = null) => {
       const {calls} = formSpyObject.registerField;
@@ -34,7 +25,7 @@ const testField = () => {
     beforeEach(() => {
       scheduler = jasmine.createSpy('scheduler');
 
-      ({api, field, form, option} = createFormContext({scheduler}));
+      field = options => basicField({...options, scheduler});
 
       unsubscribe.calls.reset();
       formSpyObject.registerField.calls.reset();
@@ -1573,6 +1564,4 @@ const testField = () => {
       });
     });
   });
-};
-
-export default testField;
+});

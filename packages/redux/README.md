@@ -6,7 +6,7 @@ using it in production. API is not ready yet and can receive large changes.
 [![Latest Stable Version](https://img.shields.io/npm/v/@corpuscule/redux.svg)](https://www.npmjs.com/package/@corpuscule/redux)
 [![Package size](https://badgen.net/bundlephobia/minzip/@corpuscule/redux)](https://bundlephobia.com/result?p=@corpuscule/redux)
 
-Lightweight set of decorators for providing [Redux](https://redux.js.org/) support for web
+A lightweight set of decorators for providing [Redux](https://redux.js.org/) support for web
 components. 
 
 ## Features
@@ -25,6 +25,7 @@ $ yarn add redux @corpuscule/redux
 ```
 
 ## API
+### Default
 #### `@provider: ClassDecorator`
 [See the `@corpuscule/context` docs on `@provider` decorator](../context/README.md#provider-classdecorator).
 Redux store should be sent.
@@ -33,26 +34,55 @@ Redux store should be sent.
 [See the `@corpuscule/context` docs on `@value` decorator](../context/README.md#value-propertydecorator).
 
 #### `@redux: ClassDecorator`
-Basically it is [`@consumer` decorator](../context/README.md#consumer-classdecorator) of
+It is a [`@consumer` decorator](../context/README.md#consumer-classdecorator) of
 `@corpuscule/context` that receives store sent by `@provider`. Decorator provides API to access the
 store instance with `@unit` and `@dispatcher` property decorators.
 
-**Note**: applying `@api` in this class unnecessary and will cause an error.
+**Note**: applying `@api` for the class properties is unnecessary and will cause an error.
 
 #### `@unit<S extends ReduxState>(getter: (state: S) => unknown): PropertyDecorator`
-This decorator extracts value from the store on each store update using getter and saves it in
-property if property value and store value are not equal.
+Extracts value from the store on each store update with getter and saves it in property if property
+value and store value are not equal.
 
 You can mark any type of property: string, symbolic or private.
 
 #### `@dispatcher: PropertyDecorator`
-This decorator makes class element a redux dispatcher. It works for both own and prototype
-fields, so it is possible to bind bare action creators as well as class methods.
+Makes class element a redux dispatcher. It works for both instance and prototype fields, so it is
+possible to bind bare action creators as well as class methods.
 
 You can mark any type of property: string, symbolic or private.
 
 #### `isProvider(target: unknown): boolean`
-[See the @corpuscule/context docs on `isProvider`](../context/README.md#isprovider-target-unknown--boolean).
+[See the `@corpuscule/context` docs on `isProvider`](../context/README.md#isprovider-target-unknown--boolean).
+
+### Advanced
+Using a set of advanced decorators allows creating a new context that is completely independent of
+the default one.
+
+#### How it works
+[See `@copruscule/context` docs](../context/README.md#how-it-works).
+
+#### `createReduxToken(): Token`
+The function creates a token to bind `@provider`, `@redux`, `@api`, `@unit` and `@dispatcher`
+together. To make a connection, you have to send a token to all these decorators as an argument.
+
+#### `@providerAdvanced(token: Token): ClassDecorator`
+[See default `@provider` decorator](#provider-classdecorator).
+
+#### `@apiAdvanced(token: Token): PropertyDecorator`
+[See default `@api` decorator](#api-propertydecorator).
+
+#### `@reduxAdvanced(token: Token): ClassDecorator`
+[See default `@redux` decorator](#redux-classdecorator).
+
+#### `@unitAdvanced<S extends ReduxState>(token: Token, getter: (state: S) => unknown): PropertyDecorator`
+[See default `@unit` decorator](#units-extends-reduxstategetter-state-s--unknown-propertydecorator).
+
+#### `@dispatcherAdvanced(token: Token): PropertyDecorator`
+[See default `@dispatcher` decorator](#dispatcher-propertydecorator).
+
+#### `isProviderAdvanced(token: Token, target: unknown): boolean`
+[See default `isProvider` function](#isprovidertarget-unknown-boolean).
 
 ## Example
 ```html
@@ -78,21 +108,21 @@ You can mark any type of property: string, symbolic or private.
   
   @redux
   class Consumer extends HTMLElement {
-    #foo;
+    _foo;
     
     @unit(state => state.foo) 
     get foo() {
-      return this.#foo; 
+      return this._foo; 
     }
     
     set foo(value) {
-      this.#foo = value;
+      this._foo = value;
       this.fooElement.textContent = value;
     }
     
     @dispatcher
     bar() {
-      return this.#foo.toString();
+      return this._foo.toString();
     }
     
     @dispatcher baz = bazActionCreator;

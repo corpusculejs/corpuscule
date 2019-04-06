@@ -1,12 +1,10 @@
-import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/asserts';
-import {field, hook, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
-import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
+import {provider} from '@corpuscule/context';
+import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
+import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
 import getSupers from '@corpuscule/utils/lib/getSupers';
-import {getName, getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
+import {getName} from '@corpuscule/utils/lib/propertyUtils';
 import {createForm, formSubscriptionItems} from 'final-form';
-import {filter, noop} from './utils';
-
-const [connectedCallbackKey, disconnectedCallbackKey] = lifecycleKeys;
+import {tokenRegistry} from './utils';
 
 export const all = formSubscriptionItems.reduce((result, key) => {
   result[key] = true;
@@ -14,154 +12,102 @@ export const all = formSubscriptionItems.reduce((result, key) => {
   return result;
 }, {});
 
-const createFormDecorator = ({provider}, {formApi, state}, {configOptions}) => ({
-  decorators,
-  subscription = all,
-} = {}) => descriptor => {
-  assertKind('form', Kind.Class, descriptor);
-
-  const {elements, finisher = noop, kind} = descriptor;
-
+const form = (token, {decorators = [], subscription = all} = {}) => target => {
   let $formApi;
-  let constructor;
   let $state;
-  let configs;
+  let formOptions;
 
-  const getConstructor = () => constructor;
+  const {prototype} = target;
+  const [sharedPropertiesRegistry, formOptionsRegistry] = tokenRegistry.get(token);
 
   const $$reset = Symbol();
   const $$submit = Symbol();
   const $$unsubscriptions = Symbol();
 
-  const [supers, prepareSupers] = getSupers(elements, lifecycleKeys);
+  const supers = getSupers(prototype, ['connectedCallback', 'disconnectedCallback']);
 
-  return provider({
-    elements: [
-      // Public
-      ...lifecycleMethod(
-        {
-          key: connectedCallbackKey,
-          method() {
-            const instance = getValue(this, $formApi);
+  target.__registrations.push(() => {
+    ({formApi: $formApi, state: $state} = sharedPropertiesRegistry.get(target) || {});
+    formOptions = formOptionsRegistry.get(target) || [];
+    assertRequiredProperty('form', 'api', 'form', $formApi);
+    assertRequiredProperty('form', 'api', 'state', $state);
+    assertRequiredProperty(
+      'form',
+      'option',
+      'onSubmit',
+      formOptions.find(key => getName(key) === 'onSubmit'),
+    );
+  });
 
-            if (decorators) {
-              for (const decorate of decorators) {
-                this[$$unsubscriptions].push(decorate(instance));
-              }
-            }
+  defineExtendable(
+    target,
+    {
+      connectedCallback() {
+        const instance = this[$formApi];
 
-            this[$$unsubscriptions].push(
-              instance.subscribe(newState => {
-                setValue(this, $state, newState);
-              }, subscription),
-            );
+        for (const decorate of decorators) {
+          this[$$unsubscriptions].push(decorate(instance));
+        }
 
-            this.addEventListener('submit', this[$$submit]);
-            this.addEventListener('reset', this[$$reset]);
+        this[$$unsubscriptions].push(
+          instance.subscribe(newState => {
+            this[$state] = newState;
+          }, subscription),
+        );
 
-            supers[connectedCallbackKey].call(this);
-          },
-        },
-        supers,
-        getConstructor,
-      ),
-      ...lifecycleMethod(
-        {
-          key: disconnectedCallbackKey,
-          method() {
-            for (const unsubscribe of this[$$unsubscriptions]) {
-              unsubscribe();
-            }
+        this.addEventListener('submit', this[$$submit]);
+        this.addEventListener('reset', this[$$reset]);
 
-            this[$$unsubscriptions] = [];
+        supers.connectedCallback.call(this);
+      },
+      disconnectedCallback() {
+        for (const unsubscribe of this[$$unsubscriptions]) {
+          unsubscribe();
+        }
 
-            this.removeEventListener('submit', this[$$submit]);
-            this.removeEventListener('reset', this[$$reset]);
+        this[$$unsubscriptions] = [];
 
-            supers[disconnectedCallbackKey].call(this);
-          },
-        },
-        supers,
-        getConstructor,
-      ),
+        this.removeEventListener('submit', this[$$submit]);
+        this.removeEventListener('reset', this[$$reset]);
 
-      // Private
-      field({
-        initializer: () => [],
-        key: $$unsubscriptions,
-      }),
-      method({
-        bound: true,
-        key: $$reset,
-        method(e) {
-          e.preventDefault();
-          e.stopPropagation();
-
-          getValue(this, $formApi).reset();
-        },
-      }),
-      method({
-        bound: true,
-        key: $$submit,
-        method(e) {
-          e.preventDefault();
-          e.stopPropagation();
-
-          getValue(this, $formApi).submit();
-        },
-      }),
-
-      // Static Hooks
-      hook({
-        start() {
-          configOptions.set(this, []);
-        },
-      }),
-
-      // Original elements
-      ...filter(elements),
-
-      // Own Hooks
-      hook({
-        placement: 'own',
-        start() {
-          setValue(
-            this,
-            $formApi,
-            createForm(
-              configs.reduce((acc, key) => {
-                acc[key] = this[key];
-
-                return acc;
-              }, {}),
-            ),
-          );
-        },
-      }),
-    ],
-    finisher(target) {
-      finisher(target);
-      constructor = target;
-
-      $formApi = formApi.get(target);
-      $state = state.get(target);
-
-      assertRequiredProperty('form', 'api', 'form', $formApi);
-      assertRequiredProperty('form', 'api', 'state', $state);
-
-      configs = configOptions.get(target);
-
-      assertRequiredProperty(
-        'form',
-        'option',
-        'onSubmit',
-        configs.find(key => getName(key) === 'onSubmit'),
-      );
-
-      prepareSupers(target);
+        supers.disconnectedCallback.call(this);
+      },
     },
-    kind,
+    supers,
+    target.__initializers,
+  );
+
+  provider(token)(target);
+
+  target.__initializers.push(self => {
+    Object.assign(self, {
+      // Fields
+      [$formApi]: createForm(
+        formOptions.reduce((acc, key) => {
+          acc[key] = self[key];
+
+          return acc;
+        }, {}),
+      ),
+      // eslint-disable-next-line sort-keys
+      [$$unsubscriptions]: [],
+
+      // Methods
+      // eslint-disable-next-line sort-keys
+      [$$reset](event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        self[$formApi].reset();
+      },
+      [$$submit](event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        self[$formApi].submit();
+      },
+    });
   });
 };
 
-export default createFormDecorator;
+export default form;

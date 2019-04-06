@@ -1,46 +1,38 @@
-import {assertKind, assertPlacement, Kind, Placement} from '@corpuscule/utils/lib/asserts';
-import {accessor, hook} from '@corpuscule/utils/lib/descriptors';
+import {value} from '@corpuscule/context';
 import {getName} from '@corpuscule/utils/lib/propertyUtils';
-import {apis} from './utils';
+import {setObject} from '@corpuscule/utils/lib/setters';
+import {apis, tokenRegistry} from './utils';
 
-const createApiDecorator = ({value}, shared, {ref}) => descriptor => {
-  assertKind('api', Kind.Field | Kind.Accessor, descriptor);
-  assertPlacement('api', Placement.Own | Placement.Prototype, descriptor);
-
-  const {extras = [], key} = descriptor;
+const api = token => (prototype, key, descriptor) => {
+  const {constructor: target} = prototype;
   const name = getName(key);
 
   if (!apis.includes(name)) {
     throw new TypeError(`Property name ${name} is not allowed`);
   }
 
-  if (name === 'refs') {
-    let $$ref;
+  const [sharedPropertiesRegistry] = tokenRegistry.get(token);
 
-    return accessor({
-      finisher(target) {
-        $$ref = ref.get(target);
-      },
-      get() {
-        return this[$$ref];
-      },
-      key,
+  if (name === 'refs') {
+    let $ref;
+
+    target.__registrations.push(() => {
+      ({ref: $ref} = sharedPropertiesRegistry.get(target));
     });
+
+    return {
+      configurable: true,
+      get() {
+        return this[$ref];
+      },
+    };
   }
 
-  const finalDescriptor = {
-    ...descriptor,
-    extras: [
-      hook({
-        start() {
-          shared[name].set(this, key);
-        },
-      }),
-      ...extras,
-    ],
-  };
+  setObject(sharedPropertiesRegistry, target, {
+    [name]: key,
+  });
 
-  return name === 'formApi' ? value(finalDescriptor) : finalDescriptor;
+  return name === 'formApi' ? value(token)(prototype, key, descriptor) : descriptor;
 };
 
-export default createApiDecorator;
+export default api;

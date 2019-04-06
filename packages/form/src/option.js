@@ -1,123 +1,71 @@
-import {assertKind, assertPlacement, Kind, Placement} from '@corpuscule/utils/lib/asserts';
-import {getName, getValue} from '@corpuscule/utils/lib/propertyUtils';
+import {isProvider} from '@corpuscule/context';
+import makeAccessor from '@corpuscule/utils/lib/makeAccessor';
+import {getName} from '@corpuscule/utils/lib/propertyUtils';
+import {setArray, setObject} from '@corpuscule/utils/lib/setters';
 import shallowEqual from '@corpuscule/utils/lib/shallowEqual';
-import {accessor, hook, method} from '@corpuscule/utils/lib/descriptors';
 import {noop} from '../../element/src/utils';
-import {fieldOptions, formOptions} from './utils';
+import {fieldOptions, formOptions, tokenRegistry} from './utils';
 
 const optionsList = new Set([...fieldOptions, ...formOptions]);
 
-const createOptionDecorator = (
-  {isProvider: isForm},
-  {formApi},
-  options,
-  {compare, configOptions, schedule},
-) => descriptor => {
-  assertKind('option', Kind.Field | Kind.Method | Kind.Accessor, descriptor);
-  assertPlacement('option', Placement.Own | Placement.Prototype, descriptor);
-
-  const {
-    descriptor: d,
-    extras = [],
-    finisher: originalFinisher = noop,
-    initializer,
-    key,
-    kind,
-    placement,
-  } = descriptor;
-  const {get, set, value} = d;
-
+const option = token => ({constructor: target}, key, descriptor) => {
   const name = getName(key);
+  const [sharedPropertiesRegistry, formOptionsRegistry] = tokenRegistry.get(token);
 
   if (!optionsList.has(name)) {
     throw new TypeError(`"${name}" is not one of the Final Form or Field configuration keys`);
   }
 
   const isCompareInitialValues = name === 'compareInitialValues';
-
-  const finisher = isCompareInitialValues
-    ? originalFinisher
-    : target => {
-        originalFinisher(target);
-
-        // There are different behavior for @form and @field finishers
-        if (isForm(target)) {
-          configOptions.get(target).push(key);
-        } else {
-          options[name].set(target, key);
-        }
-      };
-
-  if (kind === 'method' && value) {
-    return {
-      descriptor: d,
-      extras: isCompareInitialValues
-        ? [
-            hook({
-              start() {
-                compare.set(this, key);
-              },
-            }),
-            ...extras,
-          ]
-        : [
-            method({
-              bound: true,
-              key,
-              method: value,
-            }),
-            ...extras,
-          ],
-      finisher,
-      key,
-      kind,
-      placement,
-    };
+  if (isCompareInitialValues) {
+    setObject(sharedPropertiesRegistry, target, {
+      compare: key,
+    });
+  } else {
+    // Executes after the distinction between providers and consumers are set.
+    target.__registrations.push(() => {
+      if (isProvider(token, target)) {
+        setArray(formOptionsRegistry, target, key);
+      } else {
+        setObject(sharedPropertiesRegistry, target, {
+          [name]: key,
+        });
+      }
+    });
   }
 
-  // @field properties
-  let $scheduleSubscription;
+  if ('initializer' in descriptor || ('get' in descriptor && 'set' in descriptor)) {
+    let setter;
 
-  // @form properties
-  let $compareInitialValues;
-  let $formApi;
-  let setter;
+    const {get, set} = makeAccessor(descriptor, target.__initializers);
 
-  return accessor({
-    adjust: ({get: originalGet, set: originalSet}) => ({
-      get: originalGet,
-      set(v) {
-        setter(this, v, originalGet);
-        originalSet.call(this, v);
-      },
-    }),
-    extras,
-    finisher(target) {
-      finisher(target);
-
-      if (isForm(target)) {
-        $formApi = formApi.get(target);
-        $compareInitialValues = compare.get(target);
+    // Executes after $formApi, $compareInitialValues and $scheduleSubscription are set.
+    target.__registrations.push(() => {
+      if (isProvider(token, target)) {
+        const {formApi: $formApi, compare: $compareInitialValues} = sharedPropertiesRegistry.get(
+          target,
+        );
 
         setter =
           name === 'initialValues'
             ? (self, initialValues) => {
                 if (
-                  !(
-                    ($compareInitialValues && getValue(self, $compareInitialValues)) ||
-                    shallowEqual
-                  ).call(self, getValue(self, key), initialValues)
+                  !(($compareInitialValues && self[$compareInitialValues]) || shallowEqual).call(
+                    self,
+                    self[key],
+                    initialValues,
+                  )
                 ) {
-                  getValue(self, $formApi).initialize(initialValues);
+                  self[$formApi].initialize(initialValues);
                 }
               }
             : (self, v) => {
                 if (self[key] !== v) {
-                  getValue(self, $formApi).setConfig(name, v);
+                  self[$formApi].setConfig(name, v);
                 }
               };
       } else {
-        $scheduleSubscription = schedule.get(target);
+        const {schedule: $scheduleSubscription} = sharedPropertiesRegistry.get(target);
 
         const areEqual =
           name === 'subscription'
@@ -133,12 +81,23 @@ const createOptionDecorator = (
               }
             : noop;
       }
-    },
-    get,
-    initializer,
-    key,
-    set,
+    });
+
+    return {
+      configurable: true,
+      get,
+      set(v) {
+        setter(this, v, get);
+        set.call(this, v);
+      },
+    };
+  }
+
+  target.__initializers.push(self => {
+    self[key] = descriptor.value.bind(self);
   });
+
+  return descriptor;
 };
 
-export default createOptionDecorator;
+export default option;

@@ -1,21 +1,20 @@
-import createContext from '@corpuscule/context';
+import {isProvider} from '@corpuscule/context';
 import {Omit} from '@corpuscule/typings';
+import {Token, TokenCreator} from '@corpuscule/utils/lib/tokenRegistry';
 import {Decorator, FieldState, FormApi, FormSubscription} from 'final-form';
 
 export {FormApi};
 
-export interface FormDecoratorParams {
+export interface FormDecoratorOptions {
   readonly decorators?: ReadonlyArray<Decorator>;
   readonly subscription?: FormSubscription;
 }
 
-export interface FieldDecoratorParams {
+export interface FieldDecoratorOptions {
   readonly auto?: boolean;
+  readonly scheduler?: (callback: () => void) => Promise<void>;
   readonly selector?: string;
 }
-
-export type FormDecorator = (params?: FormDecoratorParams) => ClassDecorator;
-export type FieldDecorator = (params?: FieldDecoratorParams) => ClassDecorator;
 
 export interface FieldInputProps<T> {
   readonly name: string;
@@ -27,22 +26,16 @@ export type FieldMetaProps = Omit<
   'blur' | 'change' | 'focus' | 'length' | 'name' | 'value'
 >;
 
-export interface FormContextOptions {
-  readonly scheduler?: (callback: () => void) => Promise<void>;
-}
+export const createFormToken: TokenCreator;
 
 export const api: PropertyDecorator;
-export const form: FormDecorator;
-export const field: FieldDecorator;
-export const isForm: ReturnType<typeof createContext>['isProvider'];
+export const field: (options?: FieldDecoratorOptions) => ClassDecorator;
+export const form: (options?: FormDecoratorOptions) => ClassDecorator;
+export const isForm: (target: unknown) => boolean;
 export const option: PropertyDecorator;
 
-export interface FormContext {
-  readonly api: PropertyDecorator;
-  readonly form: FormDecorator;
-  readonly field: FieldDecorator;
-  readonly isForm: ReturnType<typeof createContext>['isProvider'];
-  readonly option: PropertyDecorator;
-}
-
-export const createFormContext: (options?: FormContextOptions) => FormContext;
+export const apiAdvanced: (token: Token) => PropertyDecorator;
+export const fieldAdvanced: (token: Token, options?: FieldDecoratorOptions) => ClassDecorator;
+export const formAdvanced: (token: Token, options?: FormDecoratorOptions) => ClassDecorator;
+export const isFormAdvanced: typeof isProvider;
+export const optionAdvanced: (token: Token) => PropertyDecorator;

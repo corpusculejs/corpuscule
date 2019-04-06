@@ -39,7 +39,7 @@ class Bar {
 ```
 
 ## How it works
-This packages provides 4 approaches to work with styles. Let's range them in order they are
+This package provides 4 approaches to work with styles. Let's range them in the order they are
 applying in code.
 
 **Note**: By default `shadyCSS` and `adoptedStyleSheets` conditions are detected automatically, but
@@ -47,14 +47,14 @@ you can change scenario by using `createStylesDecorator` function that creates c
 decorator.
 
 ### URL instance
-You are able to use `URL` instance as a parameter for `@styles` decorator. This way, the `<link>`
-tag with provided URL will be added to your `shadowRoot`. Styles added with `HTMLLinkElement` is
-scoped, so it is a simplest way to provide styles for component.
+You can use `URL` instance as a parameter for `@styles` decorator. This way, the `<link>` tag with
+the provided URL will be added to your `shadowRoot`. Styles added with `HTMLLinkElement` is scoped,
+so it is the simplest way to provide styles for the component.
 
 However, it may not be the best, because loading CSS files is a time-consuming process, and until
-that your component will not be styled properly. You can consider this approach as a development
-one. Also you can use `[stylesAttachedCallback]` method, it will be fired right after all styles are
-loaded.
+that your component will not be styled correctly. You can consider this approach as a development
+one. Also, you can use `[stylesAttachedCallback]` method: it will be fired right after all styles
+are loaded.
 
 **Note**: in future there is a plan to create simple Babel plugin that converts `URL` instances to
 an `import` expressions that could be consumed by Webpack then. 
@@ -68,33 +68,33 @@ If Constructable Stylesheet is supported and no ShadyCSS is enabled (or native s
 it will be used.
 
 ### HTMLStyleElement
-If nothing above works, decorator will add `<style>` tag as a first child of `ShadowRoot`.
+If nothing above works, the decorator will add `<style>` tag as a first child of `ShadowRoot`.
 
 ## API
 ### External
 #### `@style(...pathsOrStyles: Array<string | URL>): ClassDecorator`
-This decorator applies algorithm described above to the marked class.
+Applies algorithm described above to the marked class.
 
-#### `createStylesDecorator(params: {adoptedStyleSheets: boolean, shadyCSS: boolean}): @style`
-This function can be used to create custom [`@style`](#stylepathsorstyles-arraystring--url-classdecorator).
-With this function you can adjust `adoptedStyleSheets` or `shadyCSS` support. 
+#### `@styleAdvanced(options: {adoptedStyleSheets: boolean, shadyCSS: boolean}, ...pathsOrStyles: Array<string | URL>): ClassDecorator`
+Advanced version of default `@style` which allows adjusting `adoptedStyleSheets` and `shadyCSS`
+support.
 
 ### Internal
 #### `[stylesAttachedCallback](): void`
-This callback would be called just after the `HTMLStyleElement` is attached. It solves following
+This callback would be called just after the `HTMLStyleElement` is attached. It solves the following
 problem.
 
-To add `HTMLStyleElement` `MutationObserver` is used. It is necessary to catch a moment when
-`ShadowRoot` is filled for the first time, because otherwise any rendering engines (like
+For adding `HTMLStyleElement` `MutationObserver` is used. It is necessary to catch a moment when
+`ShadowRoot` is filled for the first time because otherwise, any rendering engines (like
 [`lit-html`](https://lit-html.polymer-project.org/) or [`React`](https://reactjs.org/)) will remove
-everything during the first rendering. However, if new node is added __after__ the first rendering,
-it will be preserved during following renderings.
+everything during the first rendering. However, if the new node is added __after__ the first
+rendering, it will be preserved during subsequent renderings.
 
 However, `MutationObserver` is asynchronous, so if you need something to run __after__ styles are
 connected, you have to use `[stylesAttachedCallback]`. You can also use it to catch a moment when 
 all `URL` styles are downloaded.
 
-For other approaches it will be called immediately after the `connectedCallback`.
+For other approaches, it will be called immediately after the `connectedCallback`.
 
 ## Example
 `styles.css`
@@ -114,10 +114,11 @@ For other approaches it will be called immediately after the `connectedCallback`
     constructor() {
       super();
       this.attachShadow({mode: 'open'});
+      this.shadowRoot.innerHTML = '<div class="container">Text</div>';
     }
     
     [stylesAttachedCallback]() {
-      this.shadowRoot.innerHTML = '<div class="container">Text</div>';
+      this.styles = this.shadowRoot.querySelector('styles');
     }
   }
 </script>

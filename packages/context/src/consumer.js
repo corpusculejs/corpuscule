@@ -1,94 +1,62 @@
-import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/asserts';
-import getSupers from '@corpuscule/utils/lib/getSupers';
-import {lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
-import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
-import {setValue} from '@corpuscule/utils/lib/propertyUtils';
-import {filter, noop} from './utils';
+import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
+import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
+import {getSupers, tokenRegistry} from './utils';
 
-const createConsumer = (
-  {eventName, value},
-  [connectedCallbackKey, disconnectedCallbackKey],
-) => descriptor => {
-  assertKind('consumer', Kind.Class, descriptor);
-
-  const {elements, finisher = noop, kind} = descriptor;
-
-  let constructor;
+const consumer = token => target => {
   let $value;
 
-  const getConstructor = () => constructor;
+  const {prototype} = target;
 
   const $$consume = Symbol();
   const $$unsubscribe = Symbol();
 
-  const [supers, prepareSupers] = getSupers(elements, lifecycleKeys);
+  const supers = getSupers(prototype);
 
-  return {
-    elements: [
-      // Public
-      ...lifecycleMethod(
-        {
-          key: connectedCallbackKey,
-          method() {
-            const event = new CustomEvent(eventName, {
-              bubbles: true,
-              cancelable: true,
-              composed: true,
-              detail: {consume: this[$$consume]},
-            });
+  const [eventName, values] = tokenRegistry.get(token);
 
-            this.dispatchEvent(event);
+  target.__registrations.push(() => {
+    ({value: $value} = values.get(target) || {});
+    assertRequiredProperty('consumer', 'value', $value);
+  });
 
-            this[$$unsubscribe] = event.detail.unsubscribe;
+  defineExtendable(
+    target,
+    {
+      connectedCallback() {
+        const event = new CustomEvent(eventName, {
+          bubbles: true,
+          cancelable: true,
+          composed: true,
+          detail: {consume: this[$$consume]},
+        });
 
-            if (!this[$$unsubscribe]) {
-              throw new Error(`No provider found for ${this.constructor.name}`);
-            }
+        this.dispatchEvent(event);
 
-            supers[connectedCallbackKey].call(this);
-          },
-        },
-        supers,
-        getConstructor,
-      ),
-      ...lifecycleMethod(
-        {
-          key: disconnectedCallbackKey,
-          method() {
-            if (this[$$unsubscribe]) {
-              this[$$unsubscribe](this[$$consume]);
-            }
+        this[$$unsubscribe] = event.detail.unsubscribe;
 
-            supers[disconnectedCallbackKey].call(this);
-          },
-        },
-        supers,
-        getConstructor,
-      ),
+        if (!this[$$unsubscribe]) {
+          throw new Error(`No provider found for ${this.constructor.name}`);
+        }
 
-      // Private
-      method({
-        bound: true,
-        key: $$consume,
-        method(v) {
-          setValue(this, $value, v);
-        },
-      }),
+        supers.connectedCallback.call(this);
+      },
+      disconnectedCallback() {
+        if (this[$$unsubscribe]) {
+          this[$$unsubscribe](this[$$consume]);
+        }
 
-      // Original elements
-      ...filter(elements),
-    ],
-    finisher(target) {
-      finisher(target);
-      constructor = target;
-
-      $value = value.get(target);
-      assertRequiredProperty('consumer', 'value', $value);
-
-      prepareSupers(target);
+        supers.disconnectedCallback.call(this);
+      },
     },
-    kind,
-  };
+    supers,
+    target.__initializers,
+  );
+
+  target.__initializers.push(self => {
+    self[$$consume] = v => {
+      self[$value] = v;
+    };
+  });
 };
 
-export default createConsumer;
+export default consumer;

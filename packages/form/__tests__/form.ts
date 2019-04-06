@@ -3,18 +3,12 @@ import {defineCE, fixture, html, unsafeStatic} from '@open-wc/testing-helpers';
 import {FormApi, FormState} from 'final-form';
 import {createForm, formSpyObject, unsubscribe} from '../../../test/mocks/finalForm';
 import {CustomElement} from '../../../test/utils';
-import {createFormContext, FormDecorator} from '../src';
+import {api, form, option} from '../src';
 import {all} from '../src/form';
 
-const testForm = () => {
+describe('@corpuscule/form', () => {
   describe('@form', () => {
-    let api: PropertyDecorator;
-    let form: FormDecorator;
-    let option: PropertyDecorator;
-
     beforeEach(() => {
-      ({api, form, option} = createFormContext());
-
       createForm.calls.reset();
       unsubscribe.calls.reset();
 
@@ -463,6 +457,4 @@ const testForm = () => {
       }).not.toThrow();
     });
   });
-};
-
-export default testForm;
+});

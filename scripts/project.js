@@ -1,3 +1,16 @@
+const utils = [
+  'asserts',
+  'compose',
+  'defineExtendable',
+  'getSupers',
+  'makeAccessor',
+  'propertyUtils',
+  'scheduler',
+  'setters',
+  'shallowEqual',
+  'tokenRegistry',
+];
+
 const packages = {
   context: {
     entries: ['index'],
@@ -22,26 +35,8 @@ const packages = {
     entries: ['index'],
   },
   utils: {
-    entries: [
-      'asserts',
-      'compose',
-      'descriptors',
-      'getSupers',
-      'lifecycleDescriptors',
-      'propertyUtils',
-      'scheduler',
-      'shallowEqual',
-    ],
-    external: [
-      'asserts',
-      'compose',
-      'descriptors',
-      'getSupers',
-      'lifecycleDescriptors',
-      'propertyUtils',
-      'scheduler',
-      'shallowEqual',
-    ],
+    entries: utils,
+    external: utils,
   },
 };
 

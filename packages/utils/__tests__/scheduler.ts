@@ -8,7 +8,7 @@ interface TaskObject {
   readonly throws?: boolean;
 }
 
-const testSchedule = () => {
+describe('@corpuscule/utils', () => {
   describe('schedule', () => {
     let raf: jasmine.Spy;
     let taskSpy: jasmine.Spy;
@@ -88,6 +88,4 @@ const testSchedule = () => {
       });
     });
   });
-};
-
-export default testSchedule;
+});

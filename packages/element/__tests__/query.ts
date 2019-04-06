@@ -1,7 +1,7 @@
 import {defineCE, fixture} from '@open-wc/testing-helpers';
 import {query, queryAll} from '../src';
 
-const testQuery = () => {
+describe('@corpuscule/element', () => {
   describe('@query', () => {
     it('finds element in shadow root', async () => {
       class Test extends HTMLElement {
@@ -117,6 +117,4 @@ const testQuery = () => {
       expect(test.targets[2].textContent).toBe('Test 3');
     });
   });
-};
-
-export default testQuery;
+});

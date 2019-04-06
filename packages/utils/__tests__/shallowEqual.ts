@@ -9,7 +9,7 @@
 
 import shallowEqual from '../src/shallowEqual';
 
-const testShallowEqual = () => {
+describe('@corpuscule/utils', () => {
   describe('shallowEqual', () => {
     it('returns false if either argument is null', () => {
       expect(shallowEqual(null, {})).toBe(false);
@@ -55,6 +55,4 @@ const testShallowEqual = () => {
       expect(shallowEqual({a: 1, b: 2, c: {}}, {a: 1, b: 2, c: {}})).toBe(false);
     });
   });
-};
-
-export default testShallowEqual;
+});

@@ -1,11 +1,7 @@
-import {ExtendedPropertyDescriptor} from '@corpuscule/typings';
-
 declare const getSupers: <N extends PropertyKey>(
-  elements: ReadonlyArray<ExtendedPropertyDescriptor>,
+  target: unknown,
   names: ReadonlyArray<N>,
-) => [
-  Record<N, Function>,
-  (constructor: unknown, fallbacks?: Partial<Record<N, Function>>) => void
-];
+  fallbacks?: Partial<Record<N, Function>>,
+) => Record<N, Function>;
 
 export default getSupers;

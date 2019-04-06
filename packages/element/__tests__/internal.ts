@@ -11,7 +11,7 @@ class CorpusculeElementMock {
   }
 }
 
-const testInternalDecorator = () => {
+describe('@corpuscule/element', () => {
   describe('@internal', () => {
     it('initializes, gets and sets internal properties', () => {
       class Test extends CorpusculeElementMock {
@@ -78,6 +78,4 @@ const testInternalDecorator = () => {
       expect(internalChangedCallbackSpy).toHaveBeenCalledTimes(1);
     });
   });
-};
-
-export default testInternalDecorator;
+});

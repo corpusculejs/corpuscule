@@ -51,9 +51,7 @@ class Bar {
   import renderer from '@corpuscule/lit-html-renderer';
   import {html} from 'lit-html';
   
-  const element = createElementDecorator({renderer});
-  
-  @element('my-element')
+  @element('my-element', {renderer})
   class MyElement extends HTMLElement {
     @attribute('mood')
     mood;
@@ -298,19 +296,9 @@ class MyAnchor extends HTMLAnchorElement {}
 ## API
 This section describes decorators API and how to use them.
 
-#### `createElementDecorator(options: ElementDecoratorOptions): ElementDecorator`
-This function creates an element decorator. It is the main piece of the `@corpuscule/element`: it
-brings other decorators together and unites them.
-
-Creator function receives single `options` param which is an object that consists of following:
-* `renderer: <C, R>(result: R, container: Element | DocumentFragment, context: C) => void`.
-  A function that performs renderer operation for the element. More details at the [Renderer Agnostic](#renderer-agnostic)
-  section. Specifying this function is required.
-* `scheduler?: (callback: () => void) => Promise<void>`. A function that performs scheduling for your
-  element. Specifying scheduler is not required, [`@corpuscule/utils` scheduler](../utils/README.md#scheduler)
-  is used by default.
-  
-Creator function returns an `@element` decorator function that receives following params:
+#### `@element(name: string, options: ElementDecoratorOptions): ClassDecorator`
+This decorator is the main piece of the `@corpuscule/element`. It brings other decorators together
+and unites them.
 * `name: string`. The name of your Custom Element.
 * `params: ElementDecoratorParams`. Object consists of following elements:
   * `extends?: keyof HTMLElementTagNameMap`. This parameter allows to create a
@@ -318,26 +306,38 @@ Creator function returns an `@element` decorator function that receives followin
   * `lightDOM: boolean`. This parameter allows to create Light DOM instead of Shadow DOM.
   Basically, all the data `render` returns will be rendered to the element itself (`this` instead
   of `this.shadowRoot`).
+  * `renderer: <C, R>(result: R, container: Element | DocumentFragment, context: C) => void`.
+  A function that performs renderer operation for the element. More details at the [Renderer Agnostic](#renderer-agnostic)
+  section. Specifying this function is required.
+  * `scheduler?: (callback: () => void) => Promise<void>`. A function that performs scheduling for
+  your element. [`@corpuscule/utils` scheduler](../utils/README.md#scheduler) is used by default.
 
-**Note**: new custom element definition with `@element` decorator is an asynchronous operation. You cannot use it
-immediately. If you need to do something with the element right after it is created, use the following approach:
+**Note**: new custom element definition with `@element` decorator is an asynchronous operation. You
+cannot use it immediately. If you need to do something with the element right after it is created,
+use the following approach:
 ```javascript
-@element('my-component')
+@element('my-component', {renderer})
 class MyComponent extends HTMLElement {}
 
-await customElements.whenDefined('my-component');
+customElements.whenDefined('my-component').then(() => {
+  const myComponent = new MyComponent();
+});
+```
 
-const myComponent = new MyComponent();
-``` 
+**Note**: to avoid setting `renderer` each time you can create a wrapper decorator:
+```javascript
+import {element as elementUniversal} from '@corpuscule/element';
+import renderer from '@coruscule/lit-html-renderer';
+
+const element = (name, options) => elementUniversal(name, {...options, renderer});
+```
 
 ##### Example
 ```javascript
-import {createElementDecorator, render} from '@corpuscule/element';
+import {element, render} from '@corpuscule/element';
 import renderer from '@coruscule/lit-html-renderer';
 
-const element = createElementDecorator({renderer}); 
-
-@element('my-component')
+@element('my-component', {renderer})
 class MyComponent extends HTMLElement {
   [render]() {
     return html`<div>Hello, World!</div>`
@@ -346,12 +346,10 @@ class MyComponent extends HTMLElement {
 ```
 To create element with LightDOM you should do following:
 ```javascript
-import {createElementDecorator, render} from '@corpuscule/element';
+import {element, render} from '@corpuscule/element';
 import renderer from '@coruscule/lit-html-renderer';
 
-const element = createElementDecorator({renderer}); 
-
-@element('my-component', {lightDOM: true})
+@element('my-component', {lightDOM: true, renderer})
 class MyComponent extends HTMLElement {
   [render]() {
     return html`<div>Hello, World!</div>`
@@ -360,19 +358,18 @@ class MyComponent extends HTMLElement {
 ```
 
 #### `@attribute(name: string, guard: AttributeGuard): PropertyDecorator`
-Attribute decorator binds a class property to an attribute with the `name` and provides a
-transformation mechanism that allows converting value with the type described by `guard` to and
-from attribute string.
+Binds a class property to an attribute with the `name` and provides a transformation mechanism that
+allows converting value with the type described by `guard` to and from attribute string.
 * `name`. An attribute name by which it can be set via `setAttribute` and get by `getAttribute`.
 * `guard`. A constructor of one of three primitive types: `String`, `Boolean` or `Number`. It describes
 the transformation process for the attribute.
 
 ##### Example
-```javascript
-@element('my-button')
+```html
+<script type="module">
+@element('my-button', {renderer})
 class MyButton extends HTMLElement {
-  @attribute('disabled', Boolean)
-  isDisabled;
+  @attribute('disabled', Boolean) isDisabled;
   
   [render]() {
     return html`
@@ -381,20 +378,19 @@ class MyButton extends HTMLElement {
     `;
   }
 }
-```
-```html
+</script>
 <my-button disabled>Don't click me</my-button>
 ```
 
 #### `@property(guard: (value: unknown) => boolean): PropertyDecorator`
-Property decorator converts class property to an element property.
-* `guard`. A function that checks received value to be proper type. Guards are inspired by [React
-PropTypes](https://reactjs.org/docs/typechecking-with-proptypes.html) and should be used in a
-similar way.
+Marks the class property as an [element property](#property)
+  * `guard`. A function that checks received value to be proper type. Guards are inspired by [React
+  PropTypes](https://reactjs.org/docs/typechecking-with-proptypes.html) and should be used in a
+  similar way.
 
 ##### Example
 ```javascript
-@element('my-square-info')
+@element('my-square-info', {renderer})
 class MySquareInfo extends HTMLElement {
   @property(v => typeof v === 'object' && v.width && v.height)
   square = {width: 10, height: 10};
@@ -406,18 +402,18 @@ class MySquareInfo extends HTMLElement {
     `;
   }
 }
-```
-```javascript
-render(html`<my-square-info .square=${{width: 40, height: 40}}></my-square-info>`, document.body);
+
+customElements.whenDefined('my-component').then(() => {
+  render(html`<my-square-info .square=${{width: 40, height: 40}}></my-square-info>`, document.body);  
+});
 ```
 
 #### `@internal: PropertyDecorator`
-Internal property decorator converts property to an element internal property. It receive no 
-params and can be applied as is.
+Makes the class property [internal](#internal).
 
 ##### Example
 ```javascript
-@element('my-square-info')
+@element('my-square-info', {renderer})
 class MySquareInfo extends HTMLElement {
   @internal
   isOpen = false;
@@ -435,13 +431,13 @@ class MySquareInfo extends HTMLElement {
 }
 ```
 
-#### `@query`
-Decorator that allows to transform property to a getter that performs `querySelector` action on
-the Custom Element's root: `ShadowRoot` or `this` depending on what kind of DOM was chosen.
+#### `@query(selector: string): PropertyDecorator`
+Allows transforming property to a getter that performs `querySelector` action on the Custom
+Element's root: `ShadowRoot` or `this` depending on what kind of DOM was chosen.
 
 #### Example
 ```javascript
-@element('my-element')
+@element('my-element', {renderer})
 class MyElement extends HTMLElement {
   @query('#target') target;
   
@@ -455,13 +451,13 @@ class MyElement extends HTMLElement {
 }
 ```
 
-#### `@queryAll`
-Decorator that allows to transform property to a getter that performs `querySelectorAll` action on
-the Custom Element's root: `ShadowRoot` or `this` depending on what kind of DOM was chosen.
+#### `@queryAll(selector: string): PropertyDecorator`
+Allows transforming property to a getter that performs `querySelectorAll` action on the Custom
+Element's root: `ShadowRoot` or `this` depending on what kind of DOM was chosen.
 
 #### Example
 ```javascript
-@element('my-element')
+@element('my-element', {renderer})
 class MyElement extends HTMLElement {
   @queryAll('.target') targets;
   
@@ -477,35 +473,39 @@ class MyElement extends HTMLElement {
 }
 ```
 
-#### `createComputingPair(): ComputingPair`
-Function creates an object that contains a pair of bound decorators, `@observer` and `@computer`
-that could be used to create computed properties.
-* `@computer`. Applies to a single getter that computes something requiring other class properties
-and depends on their values. Once applied, `@computer` calculates result on the first getter call,
-memoizes it and then returns memoized result on next calls.
-* `@observer`. Should be used to mark all dependencies required for the `@computed`. When they are
-changed, `@observer` sets current computation state to "dirty", and then `@computer` has to
-recalculate result on the next getter call and memoize it again.
+#### `createComputingToken(): Token`
+The function creates a token to bind `@computer` and `@observer` together. To make a connection, you
+have to send a token to all `@observer` and dependent `@computer` decorators as an argument.
 
-One computing pair could be applied to any number of properties. They just should depend on the same
-properties, because you cannot move `@observer`'s, and computed properties will be recalculated on
-any change. 
+#### `@computer(token: Token): PropertyDecorator`
+Applies to a single getter that computes some data from several values stored in other class fields.
+After the first computation, it memorizes the value until any of the class fields it depends on is
+changed.
 
-Be accurate with [internal properties](#internal), they will change even if they have the same
-value.
+There can be several getters marked with `@computer` if they rely on the same set of `@observer` fields.
+
+#### `@observer(token: Token): PropertyDecorator`
+Applies to a class field or accessor. When the field changes, it marks the computation result made
+by `@computer` invalid and forces it to recompute result on the next call.
+
+`@observer` can be applied to a number of the class fields no matter how many they are. Each change
+of any `@observer` invalidates a computation result of a `@computer` connected with it. 
+
+Be accurate with [internal properties](#internal), they will change (and invalidate the computation
+result) even if they have the same value.
 
 ##### Example
 ```javascript
-const calc = createComputingPair();
+const calculatedToken = createComputingToken();
 
 class Foo {
-  @calc.observer
+  @observer(calculatedToken)
   bar = 1;
   
-  @calc.observer
+  @observer(calculatedToken)
   baz = 2;
 
-  @calc.computer
+  @computer(calculatedToken)
   get calculated() {
     return this.bar + this.baz
   }
@@ -523,10 +523,8 @@ const third = foo.calculated; // `calculated` is called again because `foo.bar`
 ``` 
 
 ## Future
-There is some plans for the future to improve this package.
-* When the JS private properties are able to interact with decorators, all internal Symbols are
-going to be rewritten to the `PrivateName`. It would improve encapsulation. Basically, it shouldn't
-affect public API, because all changes should be done inside.
-* There are also plans to create Babel plugin that will remove `guard`s from the production builds.
+There are plans to create Babel plugin that will remove `guard`s from the production builds.
 Since the source of inspiration for them were PropTypes, workflow should be the same: working during
 development, removed in production.
+
+Common future plans for all Corpuscule packages can be found [here](../../README.md#future).

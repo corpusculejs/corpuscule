@@ -1,5 +1,14 @@
-import {lifecycleKeys} from '@corpuscule/utils/lib/descriptors';
+import {createContextToken} from '@corpuscule/context';
+import createTokenRegistry from '@corpuscule/utils/lib/tokenRegistry';
 import {configOptions} from 'final-form';
+
+export const [createFormToken, tokenRegistry] = createTokenRegistry(
+  () => [
+    new WeakMap(), // Shared properties list
+    new WeakMap(), // Form configuration options list
+  ],
+  createContextToken,
+);
 
 export const noop = () => {}; // eslint-disable-line no-empty-function
 
@@ -88,8 +97,3 @@ export const setTargetValues = (targets, formValue) => {
     setSingleValue(targets, formValue);
   }
 };
-
-export const filter = elements =>
-  elements.filter(
-    ({key, placement}) => !(lifecycleKeys.includes(key) && placement === 'prototype'),
-  );

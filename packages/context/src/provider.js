@@ -1,112 +1,69 @@
-import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/asserts';
-import getSupers from '@corpuscule/utils/lib/getSupers';
-import {field, hook, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
-import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
-import {getValue, setValue} from '@corpuscule/utils/lib/propertyUtils';
-import {filter, noop} from './utils';
+import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
+import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
+import {setObject} from '@corpuscule/utils/lib/setters';
+import {getSupers, tokenRegistry} from './utils';
 
-const createProvider = (
-  {consumers, eventName, providers, value},
-  [connectedCallbackKey, disconnectedCallbackKey],
-  defaultValue,
-) => descriptor => {
-  assertKind('provider', Kind.Class, descriptor);
-
-  const {elements, finisher = noop, kind} = descriptor;
-
-  let constructor;
+const provider = (token, defaultValue = null) => target => {
   let $value;
 
-  const getConstructor = () => constructor;
+  const {prototype} = target;
 
   const $$consumers = Symbol();
   const $$subscribe = Symbol();
   const $$unsubscribe = Symbol();
 
-  const [supers, prepareSupers] = getSupers(elements, lifecycleKeys);
+  const supers = getSupers(prototype);
 
-  return {
-    elements: [
-      // Public
-      ...lifecycleMethod(
-        {
-          key: connectedCallbackKey,
-          method() {
-            this.addEventListener(eventName, this[$$subscribe]);
-            supers[connectedCallbackKey].call(this);
-          },
-        },
-        supers,
-        getConstructor,
-      ),
-      ...lifecycleMethod(
-        {
-          key: disconnectedCallbackKey,
-          method() {
-            this.removeEventListener(eventName, this[$$subscribe]);
-            supers[disconnectedCallbackKey].call(this);
-          },
-        },
-        supers,
-        getConstructor,
-      ),
+  const [eventName, values, providers] = tokenRegistry.get(token);
 
-      // Private
-      field({
-        initializer: () => [],
-        key: $$consumers,
-      }),
-      method({
-        bound: true,
-        key: $$unsubscribe,
-        method(consume) {
-          this[$$consumers] = this[$$consumers].filter(p => p !== consume);
-        },
-      }),
-      method({
-        bound: true,
-        key: $$subscribe,
-        method(event) {
-          const {consume} = event.detail;
+  providers.add(target);
 
-          this[$$consumers].push(consume);
-          consume(getValue(this, $value));
+  setObject(values, target, {
+    consumers: $$consumers,
+  });
 
-          event.detail.unsubscribe = this[$$unsubscribe];
-          event.stopPropagation();
-        },
-      }),
+  target.__registrations.push(() => {
+    ({value: $value} = values.get(target));
+    assertRequiredProperty('provider', 'value', $value);
+  });
 
-      // Original elements
-      ...filter(elements),
-
-      // Hooks
-      hook({
-        start() {
-          providers.add(this);
-          consumers.set(this, $$consumers);
-        },
-      }),
-      hook({
-        placement: 'own',
-        start() {
-          if (getValue(this, $value) === undefined) {
-            setValue(this, $value, defaultValue);
-          }
-        },
-      }),
-    ],
-    finisher(target) {
-      finisher(target);
-      constructor = target;
-
-      $value = value.get(target);
-      assertRequiredProperty('provider', 'value', $value);
-
-      prepareSupers(target);
+  defineExtendable(
+    target,
+    {
+      connectedCallback() {
+        this.addEventListener(eventName, this[$$subscribe]);
+        supers.connectedCallback.call(this);
+      },
+      disconnectedCallback() {
+        this.removeEventListener(eventName, this[$$subscribe]);
+        supers.disconnectedCallback.call(this);
+      },
     },
-    kind,
-  };
+    supers,
+    target.__initializers,
+  );
+
+  target.__initializers.push(self => {
+    Object.assign(self, {
+      [$$consumers]: [],
+      [$$subscribe](event) {
+        const {consume} = event.detail;
+
+        self[$$consumers].push(consume);
+        consume(self[$value]);
+
+        event.detail.unsubscribe = self[$$unsubscribe];
+        event.stopPropagation();
+      },
+      [$$unsubscribe](consume) {
+        self[$$consumers] = self[$$consumers].filter(p => p !== consume);
+      },
+    });
+
+    if (self[$value] === undefined) {
+      self[$value] = defaultValue;
+    }
+  });
 };
 
-export default createProvider;
+export default provider;

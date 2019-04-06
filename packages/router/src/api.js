@@ -1,28 +1,20 @@
-import {assertKind, assertPlacement, Kind, Placement} from '@corpuscule/utils/lib/asserts';
-import {hook} from '@corpuscule/utils/lib/descriptors';
+import {value} from '@corpuscule/context';
 import {getName} from '@corpuscule/utils/lib/propertyUtils';
+import {setObject} from '@corpuscule/utils/lib/setters';
+import {tokenRegistry} from './utils';
 
-const createApiDecorator = ({value}, shared) => descriptor => {
-  assertKind('api', Kind.Field | Kind.Method | Kind.Accessor, descriptor);
-  assertPlacement('api', Placement.Own | Placement.Prototype, descriptor);
-
-  const {key} = descriptor;
+const api = token => (prototype, key, descriptor) => {
   const name = getName(key);
 
   if (name === 'layout' || name === 'route') {
-    return {
-      ...descriptor,
-      extras: [
-        hook({
-          start() {
-            shared[name].set(this, key);
-          },
-        }),
-      ],
-    };
+    setObject(tokenRegistry.get(token), prototype.constructor, {
+      [name]: key,
+    });
+
+    return descriptor;
   }
 
-  return value(descriptor);
+  return value(token)(prototype, key, descriptor);
 };
 
-export default createApiDecorator;
+export default api;

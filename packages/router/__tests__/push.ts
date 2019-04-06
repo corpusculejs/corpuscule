@@ -1,6 +1,6 @@
 import {push} from '../src';
 
-const pushTest = () => {
+describe('@corpuscule/router', () => {
   describe('push', () => {
     let historyPushStateSpy: jasmine.Spy;
     let historyStateSpy: jasmine.Spy;
@@ -41,6 +41,4 @@ const pushTest = () => {
       push('/test');
     });
   });
-};
-
-export default pushTest;
+});

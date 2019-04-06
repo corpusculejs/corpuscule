@@ -2,7 +2,7 @@ import {defineCE, fixture} from '@open-wc/testing-helpers';
 import {CustomElement} from '../../../test/utils';
 import {attribute} from '../src';
 
-const testAttributeDecorator = () => {
+describe('@corpuscule/element', () => {
   describe('@attribute', () => {
     it('gets string attribute', async () => {
       class Test extends CustomElement {
@@ -204,7 +204,14 @@ const testAttributeDecorator = () => {
         test.a2 = undefined;
       }).not.toThrow();
     });
-  });
-};
 
-export default testAttributeDecorator;
+    it('delays setting observedAttributes to the end of class creation', () => {
+      class Test extends CustomElement {
+        public static readonly observedAttributes: ReadonlyArray<string> = [];
+        @attribute('attr', Boolean) public attribute: boolean = false;
+      }
+
+      expect((Test as any).__registrations).toEqual([jasmine.any(Function)]);
+    });
+  });
+});

@@ -1,50 +1,23 @@
-import createContext from '@corpuscule/context';
-import defaultScheduler from '@corpuscule/utils/lib/scheduler';
-import createApiDecorator from './api';
-import createFieldDecorator from './field';
-import createFormDecorator from './form';
-import createOptionDecorator from './option';
-import {fieldOptions} from './utils';
+import {isProvider} from '@corpuscule/context';
+import apiAdvanced from './api';
+import fieldAdvanced from './field';
+import formAdvanced from './form';
+import optionAdvanced from './option';
+import {createFormToken} from './utils';
 
-export const createFormContext = ({scheduler = defaultScheduler} = {}) => {
-  const context = createContext();
-
-  const apiShared = {
-    formApi: new WeakMap(),
-    input: new WeakMap(),
-    meta: new WeakMap(),
-    state: new WeakMap(),
-  };
-
-  const optionShared = fieldOptions.reduce((map, option) => {
-    map[option] = new WeakMap();
-
-    return map;
-  }, {});
-
-  const propsShared = {
-    // @form properties
-    compare: new WeakMap(),
-    configOptions: new WeakMap(),
-
-    // @field properties
-    ref: new WeakMap(),
-    schedule: new WeakMap(),
-    scheduler,
-  };
-
-  const api = createApiDecorator(context, apiShared, propsShared);
-  const field = createFieldDecorator(context, apiShared, optionShared, propsShared);
-  const form = createFormDecorator(context, apiShared, propsShared);
-  const option = createOptionDecorator(context, apiShared, optionShared, propsShared);
-
-  return {
-    api,
-    field,
-    form,
-    isForm: context.isProvider,
-    option,
-  };
+export {
+  apiAdvanced,
+  createFormToken,
+  fieldAdvanced,
+  formAdvanced,
+  isProvider as isFormAdvanced,
+  optionAdvanced,
 };
 
-export const {api, field, form, isForm, option} = createFormContext();
+const defaultToken = createFormToken();
+
+export const api = apiAdvanced(defaultToken);
+export const field = options => fieldAdvanced(defaultToken, options);
+export const form = options => formAdvanced(defaultToken, options);
+export const isForm = target => isProvider(defaultToken, target);
+export const option = optionAdvanced(defaultToken);

@@ -1,9 +1,18 @@
-import {lifecycleKeys} from '@corpuscule/utils/lib/descriptors';
+import basicGetSupers from '@corpuscule/utils/lib/getSupers';
+import createTokenRegistry from '@corpuscule/utils/lib/tokenRegistry';
 
-// eslint-disable-next-line no-empty-function
-export const noop = () => {};
+const randomString = () => {
+  const arr = new Uint32Array(2);
+  const [rnd1, rnd2] = crypto.getRandomValues(arr);
 
-export const filter = elements =>
-  elements.filter(
-    ({key, placement}) => !(lifecycleKeys.includes(key) && placement === 'prototype'),
-  );
+  return `${rnd1}${rnd2}`;
+};
+
+export const [createContextToken, tokenRegistry] = createTokenRegistry(() => [
+  randomString(),
+  new WeakMap(),
+  new Set(),
+]);
+
+export const getSupers = target =>
+  basicGetSupers(target, ['connectedCallback', 'disconnectedCallback']);

@@ -1,124 +1,77 @@
-import {assertKind, assertRequiredProperty, Kind} from '@corpuscule/utils/lib/asserts';
-import {field, lifecycleKeys, method} from '@corpuscule/utils/lib/descriptors';
-import {method as lifecycleMethod} from '@corpuscule/utils/lib/lifecycleDescriptors';
-import {setValue} from '@corpuscule/utils/lib/propertyUtils';
-import {resolve} from './tokens/lifecycle';
+import {consumer, value} from '@corpuscule/context';
+import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
+import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
+import {resolve as $resolve} from './tokens/lifecycle';
 import getSupers from '@corpuscule/utils/lib/getSupers';
+import {tokenRegistry} from './utils';
 
-// eslint-disable-next-line no-empty-function
-const noop = () => {};
-
-const methods = [...lifecycleKeys, resolve];
-
-const [connectedCallbackKey, disconnectedCallbackKey] = lifecycleKeys;
-
-const createOutletDecorator = ({consumer, value}, {layout, route}) => routes => descriptor => {
-  assertKind('outlet', Kind.Class, descriptor);
-
-  const {elements, finisher = noop, kind} = descriptor;
-
-  let constructor;
+const outlet = (token, routes) => target => {
   let $layout;
   let $route;
 
-  const getConstructor = () => constructor;
+  const {prototype} = target;
 
-  const $$contextValue = Symbol();
+  const $$contextProperty = Symbol();
   const $$updateRoute = Symbol();
 
-  const [supers, prepareSupers] = getSupers(elements, methods);
-  const {extras, finisher: contextValueFinisher, ...contextValueDescriptor} = value(
-    field({key: $$contextValue}),
+  const supers = getSupers(prototype, ['connectedCallback', 'disconnectedCallback', $resolve], {
+    *[$resolve](path) {
+      return yield path;
+    },
+  });
+
+  const valueDescriptor = value(token)(prototype, $$contextProperty);
+
+  target.__registrations.push(() => {
+    ({layout: $layout, route: $route} = tokenRegistry.get(token).get(target));
+    assertRequiredProperty('outlet', 'api', 'layout', $layout);
+    assertRequiredProperty('outlet', 'api', 'route', $route);
+  });
+
+  defineExtendable(
+    target,
+    {
+      connectedCallback() {
+        window.addEventListener('popstate', this[$$updateRoute]);
+        supers.connectedCallback.call(this);
+
+        this[$$updateRoute](location.pathname);
+      },
+      disconnectedCallback() {
+        window.removeEventListener('popstate', this[$$updateRoute]);
+        supers.disconnectedCallback.call(this);
+      },
+    },
+    supers,
+    target.__initializers,
   );
 
-  return consumer({
-    elements: [
-      // Public
-      ...lifecycleMethod(
-        {
-          key: connectedCallbackKey,
-          method() {
-            window.addEventListener('popstate', this[$$updateRoute]);
-            supers[connectedCallbackKey].call(this);
+  prototype[$resolve] = supers[$resolve];
 
-            this[$$updateRoute](location.pathname);
-          },
-        },
-        supers,
-        getConstructor,
-      ),
-      ...lifecycleMethod(
-        {
-          key: disconnectedCallbackKey,
-          method() {
-            window.removeEventListener('popstate', this[$$updateRoute]);
-            supers[disconnectedCallbackKey].call(this);
-          },
-        },
-        supers,
-        getConstructor,
-      ),
+  Object.defineProperty(prototype, $$contextProperty, valueDescriptor);
 
-      // Protected
-      method({
-        key: resolve,
-        method(...args) {
-          return supers[resolve].apply(this, args);
-        },
-      }),
+  target.__initializers.push(self => {
+    self[$$updateRoute] = async pathOrEvent => {
+      const path = typeof pathOrEvent === 'string' ? pathOrEvent : pathOrEvent.state || '';
 
-      // Private
-      method({
-        bound: true,
-        key: $$updateRoute,
-        async method(pathOrEvent) {
-          const path = typeof pathOrEvent === 'string' ? pathOrEvent : pathOrEvent.state || '';
+      const iter = self[$resolve](path);
 
-          const iter = this[resolve](path);
+      const resolved = await self[$$contextProperty].resolve(iter.next().value);
 
-          const resolved = await this[$$contextValue].resolve(iter.next().value);
+      if (resolved === undefined) {
+        return;
+      }
 
-          if (resolved === undefined) {
-            return;
-          }
+      const [result, {route: currentRoute}] = resolved;
 
-          const [result, {route: currentRoute}] = resolved;
-
-          if (routes.includes(currentRoute)) {
-            setValue(this, $route, currentRoute);
-            setValue(this, $layout, iter.next(result).value);
-          }
-        },
-      }),
-
-      // Context
-      ...extras,
-      contextValueDescriptor,
-
-      // Original elements
-      ...elements.filter(
-        ({key, placement}) => !(lifecycleKeys.includes(key) && placement === 'prototype'),
-      ),
-    ],
-    finisher(target) {
-      finisher(target);
-
-      constructor = target;
-      $layout = layout.get(target);
-      $route = route.get(target);
-      assertRequiredProperty('outlet', 'api', 'layout', $layout);
-      assertRequiredProperty('outlet', 'api', 'route', $route);
-
-      prepareSupers(target, {
-        *[resolve](path) {
-          return yield path;
-        },
-      });
-
-      contextValueFinisher(target);
-    },
-    kind,
+      if (routes.includes(currentRoute)) {
+        self[$route] = currentRoute;
+        self[$layout] = iter.next(result).value;
+      }
+    };
   });
+
+  consumer(token)(target);
 };
 
-export default createOutletDecorator;
+export default outlet;
