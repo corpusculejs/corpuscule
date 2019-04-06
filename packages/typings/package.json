@@ -2,10 +2,10 @@
   "name": "@corpuscule/typings",
   "version": "0.11.0",
   "description": "Common types for Corpuscule",
-  "types": "src/index.d.ts",
+  "types": "lib/index.d.ts",
   "author": "Vlad Rindevich <rindevich.vs@gmail.com> (https://github.com/Lodin)",
   "files": [
-    "src"
+    "lib"
   ],
   "bugs": {
     "url": "https://github.com/corpusculejs/corpuscule/issues"
