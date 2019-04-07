@@ -7,6 +7,6 @@ node_js:
 cache:
   directories:
   - $HOME/.npm
-script: npm test
+script: npm run test:coverage
 after_success:
   - ./node_modules/.bin/codecov -e TRAVIS_NODE_VERSION -f .coverage/lcov.info

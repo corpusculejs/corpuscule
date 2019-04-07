@@ -4,6 +4,7 @@
 const webpack = require('./webpack.config');
 
 const isCI = !!process.env.CI;
+const watch = !!process.argv.find(arg => arg.includes('watch')) && !isCI;
 
 module.exports = config => {
   config.set({
@@ -51,7 +52,7 @@ module.exports = config => {
     logLevel: config.LOG_INFO,
 
     // Enable / disable watching file and executing test whenever any file changes
-    autoWatch: !isCI,
+    autoWatch: watch,
 
     // Start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
@@ -59,7 +60,7 @@ module.exports = config => {
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the test and exits
-    singleRun: isCI,
+    singleRun: !watch,
 
     // Concurrency level
     // how many browser should be started simultaneous
