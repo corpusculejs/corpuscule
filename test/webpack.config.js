@@ -1,6 +1,8 @@
 /* eslint-disable sort-keys */
 const {resolve} = require('path');
 
+const coverage = process.argv.find(arg => arg.includes('coverage'));
+
 module.exports = {
   devtool: 'inline-source-map',
   mode: 'development',
@@ -18,7 +20,7 @@ module.exports = {
       {
         test: /\.js/,
         use: [
-          {
+          coverage && {
             loader: 'istanbul-instrumenter-loader',
             options: {
               esModules: true,
@@ -33,7 +35,7 @@ module.exports = {
               plugins: [require('@babel/plugin-proposal-class-properties')],
             },
           },
-        ],
+        ].filter(Boolean),
         include: /packages/,
         exclude: /node_modules|__tests__|lib/,
       },
