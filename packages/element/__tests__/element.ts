@@ -139,7 +139,7 @@ describe('@corpuscule/element', () => {
         }
       }
 
-      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
+      const test = await fixture<Test>(`<${tag}></${tag}>`);
 
       test.attributeChangedCallback('test', 'old', 'new');
       expect(attributeChangedCallbackSpy).toHaveBeenCalledWith('test', 'old', 'new');
@@ -162,7 +162,7 @@ describe('@corpuscule/element', () => {
         }
       }
 
-      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
+      const test = await fixture<Test>(`<${tag}></${tag}>`);
 
       test[propertyChangedCallback]('test', 'old', 'new');
       expect(propertyChangedCallbackSpy).toHaveBeenCalledWith('test', 'old', 'new');
@@ -185,7 +185,7 @@ describe('@corpuscule/element', () => {
         }
       }
 
-      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
+      const test = await fixture<Test>(`<${tag}></${tag}>`);
 
       test[internalChangedCallback]('test', 'old', 'new');
       expect(internalChangedCallbackSpy).toHaveBeenCalledWith('test', 'old', 'new');
@@ -209,7 +209,7 @@ describe('@corpuscule/element', () => {
         }
       }
 
-      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
+      const test = await fixture<Test>(`<${tag}></${tag}>`);
 
       // This commands causes update
       test.attributeChangedCallback('test', '1', '2');
@@ -229,7 +229,7 @@ describe('@corpuscule/element', () => {
         }
       }
 
-      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
+      const test = await fixture<Test>(`<${tag}></${tag}>`);
 
       expect(rendererSpy).toHaveBeenCalledWith('rendered string', jasmine.any(Node), test);
     });
@@ -260,7 +260,7 @@ describe('@corpuscule/element', () => {
         }
       }
 
-      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
+      const test = await fixture<Test>(`<${tag}></${tag}>`);
 
       schedulerSpy.calls.reset();
 
@@ -303,7 +303,7 @@ describe('@corpuscule/element', () => {
 
       await customElements.whenDefined(tag);
 
-      const test = fixtureSync(`<${tag}></${tag}>`) as Test;
+      const test = fixtureSync<Test>(`<${tag}></${tag}>`);
 
       test.attributeChangedCallback('attr', 'old', 'new');
       test[propertyChangedCallback]('attr', 'old', 'new');
@@ -334,7 +334,7 @@ describe('@corpuscule/element', () => {
         }
       }
 
-      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
+      const test = await fixture<Test>(`<${tag}></${tag}>`);
       schedulerSpy.calls.reset();
       schedulerSpy.and.stub();
 
@@ -359,7 +359,7 @@ describe('@corpuscule/element', () => {
         }
       }
 
-      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
+      const test = await fixture<Test>(`<${tag}></${tag}>`);
 
       expect(rendererSpy).toHaveBeenCalledWith('render', test, jasmine.any(Object));
     });
@@ -480,7 +480,7 @@ describe('@corpuscule/element', () => {
         @element(tag, {extends: 'span'})
         class Test extends fixtureMixin(HTMLSpanElement) {}
 
-        const test = (await fixture(`<span is="${tag}"></span>`)) as Test;
+        const test = await fixture<Test>(`<span is="${tag}"></span>`);
 
         expect(test.shadowRoot).not.toBeUndefined();
       });
@@ -491,7 +491,7 @@ describe('@corpuscule/element', () => {
         @element(tag, {extends: 'a'})
         class Test extends fixtureMixin(HTMLAnchorElement) {}
 
-        const test = (await fixture(`<a is="${tag}"></a>`)) as Test;
+        const test = await fixture<Test>(`<a is="${tag}"></a>`);
 
         expect(test.shadowRoot).toBeNull();
       });
@@ -507,7 +507,7 @@ describe('@corpuscule/element', () => {
           }
         }
 
-        const test = (await fixture(`<a is="${tag}"></a>`)) as Test;
+        const test = await fixture<Test>(`<a is="${tag}"></a>`);
 
         test.attributeChangedCallback('test', '1', '2');
 

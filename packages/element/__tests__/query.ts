@@ -26,7 +26,7 @@ describe('@corpuscule/element', () => {
       }
 
       const tag = defineCE(Test);
-      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
+      const test = await fixture<Test>(`<${tag}></${tag}>`);
 
       expect(test.target).toEqual(jasmine.any(HTMLElement));
       expect(test.target.textContent).toBe('Test text');
@@ -49,7 +49,7 @@ describe('@corpuscule/element', () => {
       }
 
       const tag = defineCE(Test);
-      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
+      const test = await fixture<Test>(`<${tag}></${tag}>`);
 
       expect(test.target).toEqual(jasmine.any(HTMLElement));
       expect(test.target.textContent).toBe('Test text');
@@ -82,7 +82,7 @@ describe('@corpuscule/element', () => {
       }
 
       const tag = defineCE(Test);
-      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
+      const test = await fixture<Test>(`<${tag}></${tag}>`);
 
       expect(test.targets).toEqual(jasmine.any(NodeList));
       expect(test.targets[0].textContent).toBe('Test 1');
@@ -109,7 +109,7 @@ describe('@corpuscule/element', () => {
       }
 
       const tag = defineCE(Test);
-      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
+      const test = await fixture<Test>(`<${tag}></${tag}>`);
 
       expect(test.targets).toEqual(jasmine.any(NodeList));
       expect(test.targets[0].textContent).toBe('Test 1');

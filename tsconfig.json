@@ -24,11 +24,12 @@
     "target": "esnext"
   },
   "include": [
-    "packages/**/*"
+    "packages/**/*",
+    "node_modules/@open-wc/**/*.js"
   ],
   "exclude": [
     "packages/**/lib",
     "packages/**/node_modules",
-    "node_modules"
+    "node_modules/!(@open-wc)"
   ]
 }

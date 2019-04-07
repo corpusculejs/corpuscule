@@ -117,7 +117,7 @@ describe('@corpuscule/form', () => {
       }
 
       const tag = defineCE(Test);
-      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
+      const test = await fixture<Test>(`<${tag}></${tag}>`);
 
       test.debug = false;
 
@@ -138,7 +138,7 @@ describe('@corpuscule/form', () => {
       }
 
       const tag = defineCE(Test);
-      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
+      const test = await fixture<Test>(`<${tag}></${tag}>`);
 
       test.debug = true;
 
@@ -318,7 +318,7 @@ describe('@corpuscule/form', () => {
       }
 
       const tag = defineCE(Test);
-      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
+      const test = await fixture<Test>(`<${tag}></${tag}>`);
 
       expect(formSpyObject.subscribe).toHaveBeenCalledWith(jasmine.any(Function), all);
 
@@ -344,7 +344,7 @@ describe('@corpuscule/form', () => {
       }
 
       const tag = defineCE(Test);
-      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
+      const test = await fixture<Test>(`<${tag}></${tag}>`);
 
       const submitEvent = new Event('submit');
       spyOn(submitEvent, 'preventDefault').and.callThrough();
@@ -368,7 +368,7 @@ describe('@corpuscule/form', () => {
       }
 
       const tag = defineCE(Test);
-      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
+      const test = await fixture<Test>(`<${tag}></${tag}>`);
 
       const resetEvent = new Event('reset');
       spyOn(resetEvent, 'preventDefault').and.callThrough();
@@ -425,7 +425,7 @@ describe('@corpuscule/form', () => {
         }
 
         const tag = defineCE(Test);
-        const test = (await fixture(`<${tag}></${tag}>`)) as Test;
+        const test = await fixture<Test>(`<${tag}></${tag}>`);
 
         const [{validate}] = createForm.calls.mostRecent().args;
 

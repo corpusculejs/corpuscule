@@ -1,5 +1,5 @@
 // tslint:disable:max-classes-per-file
-import UniversalRouter from 'universal-router';
+import UniversalRouter, {ResolveContext} from 'universal-router';
 import {Route} from 'universal-router/sync';
 import {createSimpleContext, createTestingPromise, CustomElement} from '../../../test/utils';
 import {api, outlet, provider} from '../src';
@@ -20,7 +20,7 @@ describe('@corpuscule/router', () => {
       action: () => 'Other',
     };
 
-    const fakeResolve = (path: string) => {
+    const fakeResolve = async (path: string | ResolveContext) => {
       const [root, test2] = routes;
 
       switch (path) {
@@ -101,7 +101,7 @@ describe('@corpuscule/router', () => {
     });
 
     it("ignores path that wasn't in the routes", async () => {
-      appRouter.resolve.and.callFake((path: string) => {
+      appRouter.resolve.and.callFake(async path => {
         finalResolve();
 
         return fakeResolve(path);
@@ -152,7 +152,7 @@ describe('@corpuscule/router', () => {
     });
 
     it('ignores routes that are not in current component route list', async () => {
-      appRouter.resolve.and.callFake((path: string) => {
+      appRouter.resolve.and.callFake(async path => {
         finalResolve();
 
         return fakeResolve(path);

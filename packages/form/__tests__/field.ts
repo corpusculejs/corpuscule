@@ -1524,14 +1524,14 @@ describe('@corpuscule/form', () => {
             const nativeFieldTag = genName();
             customElements.define(nativeFieldTag, Field, {extends: 'select'});
 
-            const formElement = (await fixture(`
+            const formElement = await fixture<HTMLSelectElement>(`
               <${formTag}>
                 <select is="${nativeFieldTag}">
                   <option value="1">One</option>
                   <option value="2">Two</option>
                 </select>
               </${formTag}>
-            `)) as HTMLSelectElement;
+            `);
 
             selectElement = formElement.querySelector('select')!;
             [option1, option2] = Array.from<HTMLOptionElement>(
