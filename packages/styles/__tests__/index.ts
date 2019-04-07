@@ -6,7 +6,7 @@ import defaultStyles, {stylesAdvanced, stylesAttachedCallback} from '../src';
 const createSimpleElement = <T extends Element>(cls: Constructor<T>): T => {
   const tag = defineCE(cls);
 
-  return fixtureSync(`<${tag}></${tag}>`) as any;
+  return fixtureSync<T>(`<${tag}></${tag}>`);
 };
 
 describe('@corpuscule/styles', () => {

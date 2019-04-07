@@ -13,7 +13,7 @@ describe('@corpuscule/element', () => {
       }
 
       const tag = defineCE(Test);
-      const test = (await fixture(`<${tag} attr="str"></${tag}>`)) as Test;
+      const test = await fixture<Test>(`<${tag} attr="str"></${tag}>`);
 
       expect(test.attribute).toBe('str');
     });
@@ -30,7 +30,7 @@ describe('@corpuscule/element', () => {
       }
 
       const tag = defineCE(Test);
-      const test = (await fixture(`<${tag} a1></${tag}>`)) as Test;
+      const test = await fixture<Test>(`<${tag} a1></${tag}>`);
 
       expect(test.attr1).toBeTruthy();
       expect(test.attr2).not.toBeTruthy();
@@ -45,7 +45,7 @@ describe('@corpuscule/element', () => {
       }
 
       const tag = defineCE(Test);
-      const test = (await fixture(`<${tag} num="10"></${tag}>`)) as Test;
+      const test = await fixture<Test>(`<${tag} num="10"></${tag}>`);
 
       expect(test.numAttribute).toBe(10);
     });
@@ -59,7 +59,7 @@ describe('@corpuscule/element', () => {
       }
 
       const tag = defineCE(Test);
-      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
+      const test = await fixture<Test>(`<${tag}></${tag}>`);
 
       test.attribute = 'str';
 
@@ -78,7 +78,7 @@ describe('@corpuscule/element', () => {
       }
 
       const tag = defineCE(Test);
-      const test = (await fixture(`<${tag} a2></${tag}>`)) as Test;
+      const test = await fixture<Test>(`<${tag} a2></${tag}>`);
 
       test.attr1 = true;
       test.attr2 = false;
@@ -96,7 +96,7 @@ describe('@corpuscule/element', () => {
       }
 
       const tag = defineCE(Test);
-      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
+      const test = await fixture<Test>(`<${tag}></${tag}>`);
 
       test.numAttribute = 10;
 
@@ -137,7 +137,7 @@ describe('@corpuscule/element', () => {
       }
 
       const tag = defineCE(Test);
-      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
+      const test = await fixture<Test>(`<${tag}></${tag}>`);
 
       test.attribute = 'test';
 
@@ -164,7 +164,7 @@ describe('@corpuscule/element', () => {
       }
 
       const tag = defineCE(Test);
-      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
+      const test = await fixture<Test>(`<${tag}></${tag}>`);
 
       expect(() => {
         (test as any).numAttribute = 'str';
@@ -180,7 +180,7 @@ describe('@corpuscule/element', () => {
       }
 
       const tag = defineCE(Test);
-      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
+      const test = await fixture<Test>(`<${tag}></${tag}>`);
 
       expect(test.numAttribute).toBeNull();
     });
@@ -197,7 +197,7 @@ describe('@corpuscule/element', () => {
       }
 
       const tag = defineCE(Test);
-      const test = (await fixture(`<${tag}></${tag}>`)) as Test;
+      const test = await fixture<Test>(`<${tag}></${tag}>`);
 
       expect(() => {
         test.a1 = null;

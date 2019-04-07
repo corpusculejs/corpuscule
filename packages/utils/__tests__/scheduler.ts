@@ -38,8 +38,10 @@ describe('@corpuscule/utils', () => {
     });
 
     beforeEach(() => {
-      raf = spyOn(window, 'requestAnimationFrame').and.callFake((callback: () => void) => {
-        callback();
+      raf = spyOn(window, 'requestAnimationFrame').and.callFake(callback => {
+        callback(0);
+
+        return 0;
       });
 
       taskSpy = jasmine.createSpy('task');
