@@ -1,0 +1,34 @@
+{
+  "name": "@corpuscule/storeon",
+  "version": "0.12.0",
+  "description": "Storeon connector for Corpuscule",
+  "main": "lib/index.js",
+  "module": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "build": "node ../../scripts/build.js"
+  },
+  "author": "Vlad Rindevich <rindevich.vs@gmail.com> (https://github.com/Lodin)",
+  "bugs": {
+    "url": "https://github.com/corpusculejs/corpuscule/issues"
+  },
+  "homepage": "https://github.com/corpusculejs/corpuscule/packages/storeon#readme",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/corpusculejs/corpuscule.git"
+  },
+  "dependencies": {
+    "@corpuscule/context": "^0.12.0",
+    "@corpuscule/utils": "^0.12.0"
+  },
+  "peerDependencies": {
+    "storeon": "0.8.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
