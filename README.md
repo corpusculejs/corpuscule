@@ -110,7 +110,9 @@ that makes `lit-html` usage similar to React.
 * [`@corpuscule/redux`](./packages/redux). A connector for the [Redux](https://redux.js.org/)
 library. It is `react-redux` for Corpuscule.
 * [`@corpuscule/router`](./packages/router). A connector for the [Universal Router](https://github.com/kriasoft/universal-router)
-package, provides Corpuscule solution for routing. 
+package, provides Corpuscule solution for routing.
+* [`@corpuscule/storeon`](./packages/storeon). A connector for the [`storeon`](https://github.com/ai/storeon)
+package, a tiny Redux-like state manager. 
 * [`@corpuscule/styles`](./packages/styles). A solution for loading CSS stylesheets.
 * [`@corpuscule/typings`](./packages/typings). Typescript common typings for the Corpuscule.
 * [`@corpuscule/utils`](./packages/utils). This package contains a lot of utilities used in almost
