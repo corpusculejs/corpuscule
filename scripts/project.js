@@ -31,6 +31,9 @@ const packages = {
   router: {
     entries: ['index'],
   },
+  storeon: {
+    entries: ['index'],
+  },
   styles: {
     entries: ['index'],
   },
