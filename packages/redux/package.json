@@ -23,7 +23,6 @@
   },
   "dependencies": {
     "@corpuscule/context": "^0.12.0",
-    "@corpuscule/typings": "^0.12.0",
     "@corpuscule/utils": "^0.12.0"
   },
   "peerDependencies": {

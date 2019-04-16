@@ -9,6 +9,8 @@ const dispatcher = token => ({constructor: target}, key, descriptor) => {
     ({store: $store} = tokenRegistry.get(token).get(target));
   });
 
+  let callback;
+
   if ('initializer' in descriptor) {
     const actionCreator = initializer && initializer();
 
@@ -16,22 +18,21 @@ const dispatcher = token => ({constructor: target}, key, descriptor) => {
       throw new TypeError(`@dispatcher "${key}" should be initialized with a function`);
     }
 
-    target.__initializers.push(self => {
-      self[key] = (...args) => {
-        self[$store].dispatch(actionCreator(...args));
-      };
-    });
-
-    return descriptor;
+    callback = function(...args) {
+      this[$store].dispatch(actionCreator(...args));
+    };
+  } else {
+    callback = function(...args) {
+      this[$store].dispatch(value.apply(this, args));
+    };
   }
 
-  target.__initializers.push(self => {
-    self[key] = (...args) => {
-      self[$store].dispatch(value.apply(self, args));
-    };
-  });
-
-  return descriptor;
+  return {
+    configurable: true,
+    enumerable: false,
+    value: callback,
+    writable: true,
+  };
 };
 
 export default dispatcher;

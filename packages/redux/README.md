@@ -27,21 +27,21 @@ $ yarn add redux @corpuscule/redux
 ## API
 ### Default
 #### `@provider: ClassDecorator`
-[See the `@corpuscule/context` docs on `@provider` decorator](../context/README.md#provider-classdecorator).
+[See the `@corpuscule/context` docs on `@provider` decorator](../context/README.md#providertoken-token-classdecorator).
 Redux store should be sent.
 
 #### `@api: PropertyDecorator`
-[See the `@corpuscule/context` docs on `@value` decorator](../context/README.md#value-propertydecorator).
+[See the `@corpuscule/context` docs on `@value` decorator](../context/README.md#valuetoken-token-propertydecorator).
 
 #### `@redux: ClassDecorator`
-It is a [`@consumer` decorator](../context/README.md#consumer-classdecorator) of
+It is a [`@consumer` decorator](../context/README.md#consumertoken-token-classdecorator) of
 `@corpuscule/context` that receives store sent by `@provider`. Decorator provides API to access the
 store instance with `@unit` and `@dispatcher` property decorators.
 
-**Note**: applying `@api` for the class properties is unnecessary and will cause an error.
+**Note**: applying `@api` here is unnecessary and will cause an error.
 
 #### `@unit<S extends ReduxState>(getter: (state: S) => unknown): PropertyDecorator`
-Extracts value from the store on each store update with getter and saves it in property if property
+Extracts value from the store on each store update via getter and saves it in property if property
 value and store value are not equal.
 
 You can mark any type of property: string, symbolic or private.
@@ -53,7 +53,7 @@ possible to bind bare action creators as well as class methods.
 You can mark any type of property: string, symbolic or private.
 
 #### `isProvider(target: unknown): boolean`
-[See the `@corpuscule/context` docs on `isProvider`](../context/README.md#isprovider-target-unknown--boolean).
+[See the `@corpuscule/context` docs on `isProvider`](../context/README.md#isprovider-token-token-target-unknown--boolean).
 
 ### Advanced
 Using a set of advanced decorators allows creating a new context that is completely independent of
@@ -87,7 +87,7 @@ together. To make a connection, you have to send a token to all these decorators
 ## Example
 ```html
 <script type="module">
-  import {dispatcher, provider, redux, unit, value} from '@corpuscule/redux';
+  import {api, dispatcher, provider, redux, unit} from '@corpuscule/redux';
   import {configureStore} from './store';
   import {bazActionCreator} from './reducer';
   

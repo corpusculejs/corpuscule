@@ -13,6 +13,8 @@ describe('@corpuscule/redux', () => {
     unsubscribe = jasmine.createSpy('unsubscribe');
     reduxStore = jasmine.createSpyObj('store', ['dispatch', 'getState', 'subscribe']);
     reduxStore.subscribe.and.returnValue(unsubscribe);
+
+    // callFake allows to change reduxState during the test
     reduxStore.getState.and.callFake(() => reduxState);
   });
 
@@ -24,7 +26,10 @@ describe('@corpuscule/redux', () => {
       }
 
       @redux
-      class Connected extends CustomElement {}
+      class Connected extends CustomElement {
+        @unit(store => store)
+        public readonly store!: Store;
+      }
 
       await createSimpleContext(Provider, Connected);
 
@@ -38,9 +43,14 @@ describe('@corpuscule/redux', () => {
       }
 
       @redux
-      class Connected extends CustomElement {}
+      class Connected extends CustomElement {
+        @unit(store => store)
+        public readonly store!: Store;
+      }
 
       const nextStore = jasmine.createSpyObj('nextStore', ['getState', 'subscribe']);
+      nextStore.getState.and.returnValue(reduxState);
+      nextStore.subscribe.and.returnValue(unsubscribe);
 
       const [providerElement] = await createSimpleContext(Provider, Connected);
 
@@ -59,7 +69,10 @@ describe('@corpuscule/redux', () => {
       }
 
       @redux
-      class Connected extends CustomElement {}
+      class Connected extends CustomElement {
+        @unit(store => store)
+        public readonly store!: Store;
+      }
 
       const [, connectedElement] = await createSimpleContext(Provider, Connected);
 
@@ -103,21 +116,6 @@ describe('@corpuscule/redux', () => {
       await createSimpleContext(Provider, Connected);
 
       expect(connectedCallbackSpy).toHaveBeenCalledWith(10);
-    });
-
-    it('does not throw an error if class already have own lifecycle element', () => {
-      expect(() => {
-        @redux
-        // @ts-ignore
-        class Connected extends CustomElement {
-          public constructor() {
-            super();
-            this.disconnectedCallback = this.disconnectedCallback.bind(this);
-          }
-
-          public disconnectedCallback(): void {} // tslint:disable-line:no-empty
-        }
-      }).not.toThrow();
     });
   });
 
@@ -171,7 +169,7 @@ describe('@corpuscule/redux', () => {
 
       @redux
       class Connected extends CustomElement {
-        public testValue: number = 10;
+        public testValue!: number;
 
         @unit((state: typeof reduxState) => state.test)
         public get test(): number {
@@ -185,6 +183,7 @@ describe('@corpuscule/redux', () => {
       }
 
       await createSimpleContext(Provider, Connected);
+      setterSpy.calls.reset();
 
       const [subscription] = reduxStore.subscribe.calls.argsFor(0);
       reduxState = {test: 10};
