@@ -6,8 +6,6 @@ export {
   value as apiAdvanced,
 } from '@corpuscule/context';
 
-export type PropertyGetter<S> = (state: S) => any;
-
 export const api: PropertyDecorator;
 export const dispatcher: (eventKey?: PropertyKey) => PropertyDecorator;
 export const isProvider: (target: unknown) => boolean;
