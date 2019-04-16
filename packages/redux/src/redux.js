@@ -4,15 +4,16 @@ import getSupers from '@corpuscule/utils/lib/getSupers';
 import {setObject} from '@corpuscule/utils/lib/setters';
 import {tokenRegistry} from './utils';
 
+// eslint-disable-next-line no-empty-function
+const noop = () => {};
+
 const redux = token => target => {
   let units;
 
   const {prototype} = target;
 
   const $$contextProperty = Symbol();
-  const $$subscribe = Symbol();
   const $$unsubscribe = Symbol();
-  const $$update = Symbol();
 
   const supers = getSupers(prototype, ['disconnectedCallback']);
 
@@ -20,7 +21,7 @@ const redux = token => target => {
 
   setObject(tokenRegistry.get(token), target, {
     store: $$contextProperty,
-    units: new Map(),
+    units: [],
   });
 
   target.__registrations.push(() => {
@@ -32,57 +33,32 @@ const redux = token => target => {
     {
       disconnectedCallback() {
         supers.disconnectedCallback.call(this);
-
-        if (this[$$unsubscribe]) {
-          this[$$unsubscribe]();
-        }
+        this[$$unsubscribe]();
       },
     },
     supers,
     target.__initializers,
   );
 
-  Object.assign(prototype, {
-    [$$subscribe]() {
-      const context = this[$$contextProperty];
-      this[$$update](context);
+  Object.defineProperty(prototype, $$contextProperty, {
+    ...valueDescriptor,
+    get: valueDescriptor.get,
+    set(newValue) {
+      valueDescriptor.set.call(this, newValue);
 
-      this[$$unsubscribe] = context.subscribe(() => {
-        this[$$update](context);
-      });
-    },
-    [$$update]({getState}) {
-      if (units.size === 0) {
-        return;
-      }
+      if (units.length !== 0) {
+        this[$$unsubscribe]();
 
-      const state = getState();
+        const update = () =>
+          units.forEach(callback => callback(this, this[$$contextProperty].getState()));
 
-      for (const [key, getter] of units) {
-        const v = getter(state);
-
-        if (v !== this[key]) {
-          this[key] = v;
-        }
+        update();
+        this[$$unsubscribe] = this[$$contextProperty].subscribe(update);
       }
     },
   });
 
-  Object.defineProperties(prototype, {
-    [$$contextProperty]: {
-      ...valueDescriptor,
-      get: valueDescriptor.get,
-      set(v) {
-        valueDescriptor.set.call(this, v);
-
-        if (this[$$unsubscribe]) {
-          this[$$unsubscribe]();
-        }
-
-        this[$$subscribe]();
-      },
-    },
-  });
+  prototype[$$unsubscribe] = noop;
 
   consumer(token)(target);
 };
