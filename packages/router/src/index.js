@@ -1,9 +1,10 @@
-import {isProvider as isProviderAdvanced, provider as providerAdvanced} from '@corpuscule/context';
+import {isProvider as isProviderAdvanced} from '@corpuscule/context';
 import apiAdvanced from './api';
 import outletAdvanced from './outlet';
+import providerAdvanced from './provider';
 import {createRouterToken} from './utils';
 
-export {apiAdvanced, createRouterToken, isProviderAdvanced, outletAdvanced, providerAdvanced};
+export {apiAdvanced, createRouterToken, isProviderAdvanced, outletAdvanced};
 
 export {default as createUrl} from 'universal-router/generateUrls';
 export {default as createRouter} from './createRouter';
@@ -16,4 +17,4 @@ const defaultToken = createRouterToken();
 export const api = apiAdvanced(defaultToken);
 export const isProvider = target => isProviderAdvanced(defaultToken, target);
 export const outlet = routes => outletAdvanced(defaultToken, routes);
-export const provider = providerAdvanced(defaultToken);
+export const provider = options => providerAdvanced(defaultToken, options);

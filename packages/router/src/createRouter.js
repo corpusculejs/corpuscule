@@ -1,11 +1,14 @@
 import UniversalRouter from 'universal-router';
 
-const resolveRoute = (context, params) => {
-  if (typeof context.route.action === 'function') {
-    return [context.route.action(context, params), context];
-  }
+const resolveRoute = async (context, params) => {
+  const {chain, route} = context;
 
-  return undefined;
+  chain.push({
+    result: typeof route.action === 'function' ? await route.action(context, params) : null,
+    route,
+  });
+
+  return !route.children ? chain : undefined;
 };
 
 const createRouter = (routes, options = {}) =>

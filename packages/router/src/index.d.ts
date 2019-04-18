@@ -2,7 +2,7 @@ import {CustomElement} from '@corpuscule/typings';
 import {Token, TokenCreator} from '@corpuscule/utils/lib/tokenRegistry';
 import UniversalRouter, {Options, Route} from 'universal-router';
 
-export {isProvider as isProviderAdvanced, provider as providerAdvanced} from '@corpuscule/context';
+export {isProvider as isProviderAdvanced} from '@corpuscule/context';
 
 export const resolve: unique symbol;
 
@@ -23,10 +23,15 @@ export const push: (path: string, title?: string) => void;
 
 export const createRouterToken: TokenCreator;
 
+export interface RouterProviderOptions {
+  readonly initial?: string;
+}
+
 export const api: PropertyDecorator;
 export const isProvider: (target: unknown) => boolean;
 export const outlet: (routes: ReadonlyArray<Route>) => ClassDecorator;
-export const provider: ClassDecorator;
+export const provider: (options?: RouterProviderOptions) => ClassDecorator;
 
 export const apiAdvanced: (token: Token) => PropertyDecorator;
 export const outletAdvanced: (token: Token, routes: ReadonlyArray<Route>) => ClassDecorator;
+export const providerAdvanced: (token: Token, options?: RouterProviderOptions) => ClassDecorator;
