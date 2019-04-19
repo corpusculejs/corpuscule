@@ -275,6 +275,21 @@ describe('@corpuscule/context', () => {
     expect(isProvider(token, Consumer)).not.toBeTruthy();
   });
 
+  it('sends undefined if there is not value set', async () => {
+    @provider
+    class Provider extends CustomElement {
+      @value public providingValue: undefined;
+    }
+
+    @consumer
+    class Consumer extends CustomElement {
+      @value public contextValue: undefined;
+    }
+
+    const [, consumerElement] = await createSimpleContext(Provider, Consumer);
+    expect(consumerElement.contextValue).toBeUndefined();
+  });
+
   it('throws an error if no provider exists for context', done => {
     @consumer
     class Consumer extends CustomElement {
