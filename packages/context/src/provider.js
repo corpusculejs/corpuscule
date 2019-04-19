@@ -3,7 +3,7 @@ import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
 import {setObject} from '@corpuscule/utils/lib/setters';
 import {getSupers, tokenRegistry} from './utils';
 
-const provider = (token, defaultValue = null) => target => {
+const provider = (token, defaultValue) => target => {
   let $value;
 
   const {prototype} = target;
