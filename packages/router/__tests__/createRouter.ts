@@ -1,6 +1,11 @@
-import UniversalRouter from 'universal-router';
+import UniversalRouter, {Route} from 'universal-router';
 import {universalRouterConstructorSpy} from '../../../test/mocks/universalRouter';
 import {createRouter} from '../src';
+
+interface RoutingChainElement {
+  readonly result: unknown;
+  readonly route: Route;
+}
 
 describe('@corpuscule/router', () => {
   describe('createRouter', () => {
@@ -20,8 +25,11 @@ describe('@corpuscule/router', () => {
       });
     });
 
-    describe('custom resolveRoute', () => {
-      let resolveRoute: (context: unknown, params: unknown) => [string, unknown];
+    describe('resolveRoute', () => {
+      let resolveRoute: (
+        context: unknown,
+        params: unknown,
+      ) => Promise<ReadonlyArray<RoutingChainElement> | undefined>;
 
       beforeEach(() => {
         createRouter(routes, options);
@@ -29,32 +37,85 @@ describe('@corpuscule/router', () => {
         [, {resolveRoute}] = universalRouterConstructorSpy.calls.mostRecent().args;
       });
 
-      it('gets route action result along with context', () => {
-        const actionSpy = jasmine.createSpy('action');
-        actionSpy.and.returnValue('Test');
-
-        const ctx = {
-          route: {
-            action: actionSpy,
-          },
+      it('builds chain of visited routes', async () => {
+        const firstRoute = {
+          action: jasmine.createSpy('firstAction').and.returnValue('Foo'),
         };
+
+        const secondRoute = {
+          action: jasmine.createSpy('secondAction').and.callFake(async () => 'Bar'),
+        };
+
+        const chain: readonly RoutingChainElement[] = [];
 
         const params = {param1: 1};
 
-        expect(resolveRoute(ctx, params)).toEqual(['Test', ctx]);
-        expect(actionSpy).toHaveBeenCalledWith(ctx, params);
+        await resolveRoute({chain, route: firstRoute}, params);
+        await resolveRoute({chain, route: secondRoute}, params);
+
+        expect(chain).toEqual([
+          {
+            result: 'Foo',
+            route: firstRoute,
+          },
+          {
+            result: 'Bar',
+            route: secondRoute,
+          },
+        ]);
+
+        expect(firstRoute.action).toHaveBeenCalledWith({chain, route: firstRoute}, params);
+        expect(secondRoute.action).toHaveBeenCalledWith({chain, route: secondRoute}, params);
       });
 
-      it('gets undefined if action is not a function', () => {
-        const ctx = {
-          route: {
-            action: null,
-          },
+      it('returns built chain if route does not have children', async () => {
+        const route = {
+          action: jasmine.createSpy('action').and.returnValue('Foo'),
         };
 
-        const params = {param1: 1};
+        const chain: readonly RoutingChainElement[] = [];
 
-        expect(resolveRoute(ctx, params)).toBeUndefined();
+        const newChain = await resolveRoute({chain, route}, {param: 1});
+
+        expect(newChain).toBe(chain);
+        expect(newChain).toEqual([
+          {
+            result: 'Foo',
+            route,
+          },
+        ]);
+      });
+
+      it('returns undefined if visited route has children', async () => {
+        const route = {
+          action: jasmine.createSpy('action').and.returnValue('Foo'),
+          children: [],
+        };
+
+        const chain: readonly RoutingChainElement[] = [];
+
+        const result = await resolveRoute({chain, route}, {param: 1});
+        expect(result).toBeUndefined();
+        expect(chain).toEqual([
+          {
+            result: 'Foo',
+            route,
+          },
+        ]);
+      });
+
+      it('makes result null if action is not a function', async () => {
+        const route = {};
+
+        const chain: readonly RoutingChainElement[] = [];
+
+        await resolveRoute({chain, route}, {param: 1});
+        expect(chain).toEqual([
+          {
+            result: null,
+            route,
+          },
+        ]);
       });
     });
   });
