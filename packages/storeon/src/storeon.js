@@ -40,9 +40,9 @@ const storeon = token => target => {
     target.__initializers,
   );
 
+  // eslint-disable-next-line accessor-pairs
   Object.defineProperty(prototype, $$contextProperty, {
     ...valueDescriptor,
-    get: valueDescriptor.get,
     set(v) {
       valueDescriptor.set.call(this, v);
 

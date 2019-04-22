@@ -40,9 +40,9 @@ const redux = token => target => {
     target.__initializers,
   );
 
+  // eslint-disable-next-line accessor-pairs
   Object.defineProperty(prototype, $$contextProperty, {
     ...valueDescriptor,
-    get: valueDescriptor.get,
     set(newValue) {
       valueDescriptor.set.call(this, newValue);
 
