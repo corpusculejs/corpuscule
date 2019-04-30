@@ -3,17 +3,17 @@ import {getName} from '@corpuscule/utils/lib/propertyUtils';
 import {setObject} from '@corpuscule/utils/lib/setters';
 import {apis, tokenRegistry} from './utils';
 
-const api = token => (prototype, key, descriptor) => {
+const api = (token, name) => (prototype, key, descriptor) => {
   const {constructor: target} = prototype;
-  const name = getName(key);
+  const apiName = name || getName(key);
 
-  if (!apis.includes(name)) {
-    throw new TypeError(`Property name ${name} is not allowed`);
+  if (!apis.includes(apiName)) {
+    throw new TypeError(`${apiName} is not allowed`);
   }
 
   const [sharedPropertiesRegistry] = tokenRegistry.get(token);
 
-  if (name === 'refs') {
+  if (apiName === 'refs') {
     let $ref;
 
     target.__registrations.push(() => {
@@ -29,10 +29,10 @@ const api = token => (prototype, key, descriptor) => {
   }
 
   setObject(sharedPropertiesRegistry, target, {
-    [name]: key,
+    [apiName]: key,
   });
 
-  return name === 'formApi' ? value(token)(prototype, key, descriptor) : descriptor;
+  return apiName === 'formApi' ? value(token)(prototype, key, descriptor) : descriptor;
 };
 
 export default api;

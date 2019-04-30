@@ -61,20 +61,20 @@ describe('@corpuscule/form', () => {
     it('creates field that receives form', async () => {
       @form()
       class Form extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api() public readonly formApi!: FormApi;
+        @api() public readonly state!: FormState;
 
-        @option
+        @option()
         public onSubmit(): void {}
       }
 
       @field()
       class Field extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly input!: FieldInputProps<string>;
-        @api public readonly meta!: FieldMetaProps;
+        @api() public readonly formApi!: FormApi;
+        @api() public readonly input!: FieldInputProps<string>;
+        @api() public readonly meta!: FieldMetaProps;
 
-        @option public readonly name: string = 'test';
+        @option() public readonly name: string = 'test';
       }
 
       const [, fieldElement] = await createSimpleContext(Form, Field);
@@ -88,20 +88,20 @@ describe('@corpuscule/form', () => {
 
       @form()
       class Form extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api() public readonly formApi!: FormApi;
+        @api() public readonly state!: FormState;
 
-        @option
+        @option()
         public onSubmit(): void {}
       }
 
       @field()
       class Field extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly input!: FieldInputProps<string>;
-        @api public readonly meta!: FieldMetaProps;
+        @api() public readonly formApi!: FormApi;
+        @api() public readonly input!: FieldInputProps<string>;
+        @api() public readonly meta!: FieldMetaProps;
 
-        @option public readonly name: string = 'test';
+        @option() public readonly name: string = 'test';
 
         public connectedCallback(): void {
           connectedCallbackSpy(this.formApi);
@@ -116,32 +116,32 @@ describe('@corpuscule/form', () => {
     it('subscribes to form with defined options', async () => {
       @form()
       class Form extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api() public readonly formApi!: FormApi;
+        @api() public readonly state!: FormState;
 
-        @option
+        @option()
         public onSubmit(): void {}
       }
 
       @field()
       class Field extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly input!: FieldInputProps<string>;
-        @api public readonly meta!: FieldMetaProps;
+        @api() public readonly formApi!: FormApi;
+        @api() public readonly input!: FieldInputProps<string>;
+        @api() public readonly meta!: FieldMetaProps;
 
-        @option public readonly name: string = 'test';
+        @option() public readonly name: string = 'test';
 
-        @option
+        @option()
         public isEqual(): boolean {
           return true;
         }
 
-        @option
+        @option()
         public validate(): boolean {
           return true;
         }
 
-        @option
+        @option()
         public validateFields(): boolean {
           return true;
         }
@@ -163,20 +163,20 @@ describe('@corpuscule/form', () => {
     it('creates new input and meta objects on each form update', async () => {
       @form()
       class Form extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api() public readonly formApi!: FormApi;
+        @api() public readonly state!: FormState;
 
-        @option
+        @option()
         public onSubmit(): void {}
       }
 
       @field()
       class Field extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly input!: FieldInputProps<object>;
-        @api public readonly meta!: FieldMetaProps;
+        @api() public readonly formApi!: FormApi;
+        @api() public readonly input!: FieldInputProps<object>;
+        @api() public readonly meta!: FieldMetaProps;
 
-        @option public readonly name: string = 'test';
+        @option() public readonly name: string = 'test';
       }
 
       const [, fieldElement] = await createSimpleContext(Form, Field);
@@ -194,25 +194,25 @@ describe('@corpuscule/form', () => {
 
       @form()
       class Form extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api() public readonly formApi!: FormApi;
+        @api() public readonly state!: FormState;
 
-        @option
+        @option()
         public onSubmit(): void {}
       }
 
       @field()
       class Field extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly input!: FieldInputProps<object>;
-        @api public readonly meta!: FieldMetaProps;
+        @api() public readonly formApi!: FormApi;
+        @api() public readonly input!: FieldInputProps<object>;
+        @api() public readonly meta!: FieldMetaProps;
 
-        @option public readonly name: string = 'test';
+        @option() public readonly name: string = 'test';
 
-        @option
+        @option()
         public formatOnBlur: boolean = false;
 
-        @option
+        @option()
         public format(value: unknown, name: string): unknown {
           formatSpy(value, name);
 
@@ -230,20 +230,20 @@ describe('@corpuscule/form', () => {
 
       @form()
       class Form extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api() public readonly formApi!: FormApi;
+        @api() public readonly state!: FormState;
 
-        @option
+        @option()
         public onSubmit(): void {}
       }
 
       @field()
       class Field extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly input!: FieldInputProps<object>;
-        @api public readonly meta!: FieldMetaProps;
+        @api() public readonly formApi!: FormApi;
+        @api() public readonly input!: FieldInputProps<object>;
+        @api() public readonly meta!: FieldMetaProps;
 
-        @option public name: string = 'test';
+        @option() public name: string = 'test';
       }
 
       const [, fieldElement] = await createSimpleContext(Form, Field);
@@ -256,20 +256,20 @@ describe('@corpuscule/form', () => {
     it('unsubscribes on disconnectedCallback', async () => {
       @form()
       class Form extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api() public readonly formApi!: FormApi;
+        @api() public readonly state!: FormState;
 
-        @option
+        @option()
         public onSubmit(): void {}
       }
 
       @field()
       class Field extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly input!: FieldInputProps<object>;
-        @api public readonly meta!: FieldMetaProps;
+        @api() public readonly formApi!: FormApi;
+        @api() public readonly input!: FieldInputProps<object>;
+        @api() public readonly meta!: FieldMetaProps;
 
-        @option public readonly name: string = 'test';
+        @option() public readonly name: string = 'test';
       }
 
       const [, fieldElement] = await createSimpleContext(Form, Field);
@@ -286,20 +286,20 @@ describe('@corpuscule/form', () => {
 
       @form()
       class Form extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api() public readonly formApi!: FormApi;
+        @api() public readonly state!: FormState;
 
-        @option
+        @option()
         public onSubmit(): void {}
       }
 
       @field()
       class Field extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly input!: FieldInputProps<object>;
-        @api public readonly meta!: FieldMetaProps;
+        @api() public readonly formApi!: FormApi;
+        @api() public readonly input!: FieldInputProps<object>;
+        @api() public readonly meta!: FieldMetaProps;
 
-        @option public name: string = 'test';
+        @option() public name: string = 'test';
       }
 
       const [, fieldElement] = await createSimpleContext(Form, Field);
@@ -312,20 +312,20 @@ describe('@corpuscule/form', () => {
     it('does not change form value if event is not custom and field is not auto', async () => {
       @form()
       class Form extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api() public readonly formApi!: FormApi;
+        @api() public readonly state!: FormState;
 
-        @option
+        @option()
         public onSubmit(): void {}
       }
 
       @field()
       class Field extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly input!: FieldInputProps<string>;
-        @api public readonly meta!: FieldMetaProps;
+        @api() public readonly formApi!: FormApi;
+        @api() public readonly input!: FieldInputProps<string>;
+        @api() public readonly meta!: FieldMetaProps;
 
-        @option public readonly name: string = 'test';
+        @option() public readonly name: string = 'test';
       }
 
       const formTag = defineCE(Form);
@@ -350,20 +350,20 @@ describe('@corpuscule/form', () => {
     it('does not run update before the first subscription', async () => {
       @form()
       class Form extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api() public readonly formApi!: FormApi;
+        @api() public readonly state!: FormState;
 
-        @option
+        @option()
         public onSubmit(): void {}
       }
 
       @field()
       class Field extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly input!: FieldInputProps<string>;
-        @api public readonly meta!: FieldMetaProps;
+        @api() public readonly formApi!: FormApi;
+        @api() public readonly input!: FieldInputProps<string>;
+        @api() public readonly meta!: FieldMetaProps;
 
-        @option public readonly name: string = 'test';
+        @option() public readonly name: string = 'test';
       }
 
       const formTag = unsafeStatic(defineCE(Form));
@@ -384,20 +384,20 @@ describe('@corpuscule/form', () => {
       it('resubscribes on name value change', async () => {
         @form()
         class Form extends CustomElement {
-          @api public readonly formApi!: FormApi;
-          @api public readonly state!: FormState;
+          @api() public readonly formApi!: FormApi;
+          @api() public readonly state!: FormState;
 
-          @option
+          @option()
           public onSubmit(): void {}
         }
 
         @field()
         class Field extends CustomElement {
-          @api public readonly formApi!: FormApi;
-          @api public readonly input!: FieldInputProps<object>;
-          @api public readonly meta!: FieldMetaProps;
+          @api() public readonly formApi!: FormApi;
+          @api() public readonly input!: FieldInputProps<object>;
+          @api() public readonly meta!: FieldMetaProps;
 
-          @option
+          @option()
           public name: string = 'test1';
         }
 
@@ -411,20 +411,20 @@ describe('@corpuscule/form', () => {
       it('does not resubscribe on name change if option values are equal', async () => {
         @form()
         class Form extends CustomElement {
-          @api public readonly formApi!: FormApi;
-          @api public readonly state!: FormState;
+          @api() public readonly formApi!: FormApi;
+          @api() public readonly state!: FormState;
 
-          @option
+          @option()
           public onSubmit(): void {}
         }
 
         @field()
         class Field extends CustomElement {
-          @api public readonly formApi!: FormApi;
-          @api public readonly input!: FieldInputProps<object>;
-          @api public readonly meta!: FieldMetaProps;
+          @api() public readonly formApi!: FormApi;
+          @api() public readonly input!: FieldInputProps<object>;
+          @api() public readonly meta!: FieldMetaProps;
 
-          @option public name: string = 'test1';
+          @option() public name: string = 'test1';
         }
 
         const [, fieldElement] = await createSimpleContext(Form, Field);
@@ -437,21 +437,21 @@ describe('@corpuscule/form', () => {
       it('resubscribes on subscription value change', async () => {
         @form()
         class Form extends CustomElement {
-          @api public readonly formApi!: FormApi;
-          @api public readonly state!: FormState;
+          @api() public readonly formApi!: FormApi;
+          @api() public readonly state!: FormState;
 
-          @option
+          @option()
           public onSubmit(): void {}
         }
 
         @field()
         class Field extends CustomElement {
-          @api public readonly formApi!: FormApi;
-          @api public readonly input!: FieldInputProps<object>;
-          @api public readonly meta!: FieldMetaProps;
+          @api() public readonly formApi!: FormApi;
+          @api() public readonly input!: FieldInputProps<object>;
+          @api() public readonly meta!: FieldMetaProps;
 
-          @option public name: string = 'test';
-          @option public subscription: Record<string, boolean> = all;
+          @option() public name: string = 'test';
+          @option() public subscription: Record<string, boolean> = all;
         }
 
         const [, fieldElement] = await createSimpleContext(Form, Field);
@@ -464,21 +464,21 @@ describe('@corpuscule/form', () => {
       it('does not resubscribe on subscription change if option values are equal', async () => {
         @form()
         class Form extends CustomElement {
-          @api public readonly formApi!: FormApi;
-          @api public readonly state!: FormState;
+          @api() public readonly formApi!: FormApi;
+          @api() public readonly state!: FormState;
 
-          @option
+          @option()
           public onSubmit(): void {}
         }
 
         @field()
         class Field extends CustomElement {
-          @api public readonly formApi!: FormApi;
-          @api public readonly input!: FieldInputProps<object>;
-          @api public readonly meta!: FieldMetaProps;
+          @api() public readonly formApi!: FormApi;
+          @api() public readonly input!: FieldInputProps<object>;
+          @api() public readonly meta!: FieldMetaProps;
 
-          @option public name: string = 'test';
-          @option public subscription: Record<string, boolean> = all;
+          @option() public name: string = 'test';
+          @option() public subscription: Record<string, boolean> = all;
         }
 
         const [, fieldElement] = await createSimpleContext(Form, Field);
@@ -493,13 +493,13 @@ describe('@corpuscule/form', () => {
           @field()
           // @ts-ignore
           class Field extends CustomElement {
-            @api public readonly formApi!: FormApi;
-            @api public readonly input!: FieldInputProps<object>;
-            @api public readonly meta!: FieldMetaProps;
+            @api() public readonly formApi!: FormApi;
+            @api() public readonly input!: FieldInputProps<object>;
+            @api() public readonly meta!: FieldMetaProps;
 
-            @option public readonly name: string = 'test';
+            @option() public readonly name: string = 'test';
 
-            @option
+            @option()
             public test: string = 'test';
           }
         }).toThrow(
@@ -512,9 +512,9 @@ describe('@corpuscule/form', () => {
           @field()
           // @ts-ignore
           class Field extends CustomElement {
-            @api public readonly formApi!: FormApi;
-            @api public readonly input!: FieldInputProps<object>;
-            @api public readonly meta!: FieldMetaProps;
+            @api() public readonly formApi!: FormApi;
+            @api() public readonly input!: FieldInputProps<object>;
+            @api() public readonly meta!: FieldMetaProps;
           }
         }).toThrowError('@field requires name property marked with @option');
       });
@@ -522,20 +522,20 @@ describe('@corpuscule/form', () => {
       it('does not run registerField on connection if name has no value', async () => {
         @form()
         class Form extends CustomElement {
-          @api public readonly formApi!: FormApi;
-          @api public readonly state!: FormState;
+          @api() public readonly formApi!: FormApi;
+          @api() public readonly state!: FormState;
 
-          @option
+          @option()
           public onSubmit(): void {}
         }
 
         @field()
         class Field extends CustomElement {
-          @api public readonly formApi!: FormApi;
-          @api public readonly input!: FieldInputProps<string>;
-          @api public readonly meta!: FieldMetaProps;
+          @api() public readonly formApi!: FormApi;
+          @api() public readonly input!: FieldInputProps<string>;
+          @api() public readonly meta!: FieldMetaProps;
 
-          @option public readonly name?: string;
+          @option() public readonly name?: string;
         }
 
         const formTag = defineCE(Form);
@@ -553,22 +553,22 @@ describe('@corpuscule/form', () => {
       it('properly sets validate option', async () => {
         @form()
         class Form extends CustomElement {
-          @api public readonly formApi!: FormApi;
-          @api public readonly state!: FormState;
+          @api() public readonly formApi!: FormApi;
+          @api() public readonly state!: FormState;
 
-          @option
+          @option()
           public onSubmit(): void {}
         }
 
         @field()
         class Field extends CustomElement {
-          @api public readonly formApi!: FormApi;
-          @api public readonly input!: FieldInputProps<string>;
-          @api public readonly meta!: FieldMetaProps;
+          @api() public readonly formApi!: FormApi;
+          @api() public readonly input!: FieldInputProps<string>;
+          @api() public readonly meta!: FieldMetaProps;
 
-          @option public readonly name: string = 'test';
+          @option() public readonly name: string = 'test';
 
-          @option
+          @option()
           public validate(): void {}
         }
 
@@ -601,7 +601,7 @@ describe('@corpuscule/form', () => {
           @field()
           // @ts-ignore
           class Field extends CustomElement {
-            @api public readonly formApi!: FormApi;
+            @api() public readonly formApi!: FormApi;
           }
         }).toThrowError('@field requires input property marked with @api');
 
@@ -609,8 +609,8 @@ describe('@corpuscule/form', () => {
           @field()
           // @ts-ignore
           class Field extends CustomElement {
-            @api public readonly formApi!: FormApi;
-            @api public readonly input!: FieldInputProps<object>;
+            @api() public readonly formApi!: FormApi;
+            @api() public readonly input!: FieldInputProps<object>;
           }
         }).toThrowError('@field requires meta property marked with @api');
       });
@@ -618,10 +618,10 @@ describe('@corpuscule/form', () => {
       it('allows using accessors for all api elements', async () => {
         @form()
         class Form extends CustomElement {
-          @api public readonly formApi!: FormApi;
-          @api public readonly state!: FormState;
+          @api() public readonly formApi!: FormApi;
+          @api() public readonly state!: FormState;
 
-          @option
+          @option()
           public onSubmit(): void {}
         }
 
@@ -629,7 +629,7 @@ describe('@corpuscule/form', () => {
         class Field extends CustomElement {
           public storage!: FormApi;
 
-          @api
+          @api()
           public get formApi(): FormApi {
             return this.storage;
           }
@@ -638,10 +638,10 @@ describe('@corpuscule/form', () => {
             this.storage = v;
           }
 
-          @api public readonly input!: FieldInputProps<object>;
-          @api public readonly meta!: FieldMetaProps;
+          @api() public readonly input!: FieldInputProps<object>;
+          @api() public readonly meta!: FieldMetaProps;
 
-          @option public readonly name: string = 'test';
+          @option() public readonly name: string = 'test';
         }
 
         const [, fieldElement] = await createSimpleContext(Form, Field);
@@ -654,9 +654,9 @@ describe('@corpuscule/form', () => {
           @form()
           // @ts-ignore
           class Form extends CustomElement {
-            @api public readonly notForm!: FormApi;
+            @api() public readonly notForm!: FormApi;
 
-            @option
+            @option()
             public onSubmit(): void {}
           }
         }).toThrow(new TypeError('Property name notForm is not allowed'));
@@ -665,9 +665,9 @@ describe('@corpuscule/form', () => {
           @field()
           // @ts-ignore
           class Field extends CustomElement {
-            @api public readonly notInput!: FieldInputProps<object>;
+            @api() public readonly notInput!: FieldInputProps<object>;
 
-            @option
+            @option()
             public onSubmit(): void {}
           }
         }).toThrow(new TypeError('Property name notInput is not allowed'));
@@ -677,20 +677,20 @@ describe('@corpuscule/form', () => {
         it('calls blur() method of field state if the "focusout" event is fired', async () => {
           @form()
           class Form extends CustomElement {
-            @api public readonly formApi!: FormApi;
-            @api public readonly state!: FormState;
+            @api() public readonly formApi!: FormApi;
+            @api() public readonly state!: FormState;
 
-            @option
+            @option()
             public onSubmit(): void {}
           }
 
           @field()
           class Field extends CustomElement {
-            @api public readonly formApi!: FormApi;
-            @api public readonly input!: FieldInputProps<object>;
-            @api public readonly meta!: FieldMetaProps;
+            @api() public readonly formApi!: FormApi;
+            @api() public readonly input!: FieldInputProps<object>;
+            @api() public readonly meta!: FieldMetaProps;
 
-            @option public readonly name: string = 'test';
+            @option() public readonly name: string = 'test';
           }
 
           const [, fieldElement] = await createSimpleContext(Form, Field);
@@ -703,25 +703,25 @@ describe('@corpuscule/form', () => {
         it('formats and sets value on blur if appropriate options are set', async () => {
           @form()
           class Form extends CustomElement {
-            @api public readonly formApi!: FormApi;
-            @api public readonly state!: FormState;
+            @api() public readonly formApi!: FormApi;
+            @api() public readonly state!: FormState;
 
-            @option
+            @option()
             public onSubmit(): void {}
           }
 
           @field()
           class Field extends CustomElement {
-            @api public readonly formApi!: FormApi;
-            @api public readonly input!: FieldInputProps<object>;
-            @api public readonly meta!: FieldMetaProps;
+            @api() public readonly formApi!: FormApi;
+            @api() public readonly input!: FieldInputProps<object>;
+            @api() public readonly meta!: FieldMetaProps;
 
-            @option public readonly name: string = 'test';
+            @option() public readonly name: string = 'test';
 
-            @option
+            @option()
             public formatOnBlur: boolean = true;
 
-            @option
+            @option()
             public format(value: unknown): unknown {
               return value;
             }
@@ -740,20 +740,20 @@ describe('@corpuscule/form', () => {
         it('calls change() method of field state when new "change" event is fired', async () => {
           @form()
           class Form extends CustomElement {
-            @api public readonly formApi!: FormApi;
-            @api public readonly state!: FormState;
+            @api() public readonly formApi!: FormApi;
+            @api() public readonly state!: FormState;
 
-            @option
+            @option()
             public onSubmit(): void {}
           }
 
           @field()
           class Field extends CustomElement {
-            @api public readonly formApi!: FormApi;
-            @api public readonly input!: FieldInputProps<object>;
-            @api public readonly meta!: FieldMetaProps;
+            @api() public readonly formApi!: FormApi;
+            @api() public readonly input!: FieldInputProps<object>;
+            @api() public readonly meta!: FieldMetaProps;
 
-            @option public readonly name: string = 'test';
+            @option() public readonly name: string = 'test';
           }
 
           const [, fieldElement] = await createSimpleContext(Form, Field);
@@ -768,22 +768,22 @@ describe('@corpuscule/form', () => {
         it('parses value if parse option is defined', async () => {
           @form()
           class Form extends CustomElement {
-            @api public readonly formApi!: FormApi;
-            @api public readonly state!: FormState;
+            @api() public readonly formApi!: FormApi;
+            @api() public readonly state!: FormState;
 
-            @option
+            @option()
             public onSubmit(): void {}
           }
 
           @field()
           class Field extends CustomElement {
-            @api public readonly formApi!: FormApi;
-            @api public readonly input!: FieldInputProps<object>;
-            @api public readonly meta!: FieldMetaProps;
+            @api() public readonly formApi!: FormApi;
+            @api() public readonly input!: FieldInputProps<object>;
+            @api() public readonly meta!: FieldMetaProps;
 
-            @option public readonly name: string = 'test';
+            @option() public readonly name: string = 'test';
 
-            @option
+            @option()
             public parse(value: string): object {
               return JSON.parse(value);
             }
@@ -804,20 +804,20 @@ describe('@corpuscule/form', () => {
         it('calls focus() method of field stat if "focusin" event is fired', async () => {
           @form()
           class Form extends CustomElement {
-            @api public readonly formApi!: FormApi;
-            @api public readonly state!: FormState;
+            @api() public readonly formApi!: FormApi;
+            @api() public readonly state!: FormState;
 
-            @option
+            @option()
             public onSubmit(): void {}
           }
 
           @field()
           class Field extends CustomElement {
-            @api public readonly formApi!: FormApi;
-            @api public readonly input!: FieldInputProps<object>;
-            @api public readonly meta!: FieldMetaProps;
+            @api() public readonly formApi!: FormApi;
+            @api() public readonly input!: FieldInputProps<object>;
+            @api() public readonly meta!: FieldMetaProps;
 
-            @option public readonly name: string = 'test';
+            @option() public readonly name: string = 'test';
           }
 
           const [, fieldElement] = await createSimpleContext(Form, Field);
@@ -831,20 +831,20 @@ describe('@corpuscule/form', () => {
       it('catches event even if it is fired not in the component itself', async () => {
         @form()
         class Form extends CustomElement {
-          @api public readonly formApi!: FormApi;
-          @api public readonly state!: FormState;
+          @api() public readonly formApi!: FormApi;
+          @api() public readonly state!: FormState;
 
-          @option
+          @option()
           public onSubmit(): void {}
         }
 
         @field()
         class Field extends CustomElement {
-          @api public readonly formApi!: FormApi;
-          @api public readonly input!: FieldInputProps<object>;
-          @api public readonly meta!: FieldMetaProps;
+          @api() public readonly formApi!: FormApi;
+          @api() public readonly input!: FieldInputProps<object>;
+          @api() public readonly meta!: FieldMetaProps;
 
-          @option public readonly name: string = 'test';
+          @option() public readonly name: string = 'test';
         }
 
         const fieldTag = defineCE(Field);
@@ -873,20 +873,20 @@ describe('@corpuscule/form', () => {
       beforeEach(() => {
         @form()
         class Form extends CustomElement {
-          @api public readonly formApi!: FormApi;
-          @api public readonly state!: FormState;
+          @api() public readonly formApi!: FormApi;
+          @api() public readonly state!: FormState;
 
-          @option
+          @option()
           public onSubmit(): void {}
         }
 
         @field({auto: true})
         class Field extends CustomElement {
-          @api public readonly formApi!: FormApi;
-          @api public readonly input!: FieldInputProps<object>;
-          @api public readonly meta!: FieldMetaProps;
+          @api() public readonly formApi!: FormApi;
+          @api() public readonly input!: FieldInputProps<object>;
+          @api() public readonly meta!: FieldMetaProps;
 
-          @option public readonly name: string = 'test';
+          @option() public readonly name: string = 'test';
         }
 
         formTag = defineCE(Form);
@@ -898,12 +898,12 @@ describe('@corpuscule/form', () => {
       it('allows to define ref property for container', async () => {
         @field({auto: true})
         class Field extends CustomElement {
-          @api public readonly formApi!: FormApi;
-          @api public readonly input!: FieldInputProps<object>;
-          @api public readonly meta!: FieldMetaProps;
-          @api public readonly refs!: NodeListOf<HTMLInputElement>;
+          @api() public readonly formApi!: FormApi;
+          @api() public readonly input!: FieldInputProps<object>;
+          @api() public readonly meta!: FieldMetaProps;
+          @api() public readonly refs!: NodeListOf<HTMLInputElement>;
 
-          @option public readonly name: string = 'test';
+          @option() public readonly name: string = 'test';
         }
 
         const tag = defineCE(Field);
@@ -927,11 +927,11 @@ describe('@corpuscule/form', () => {
           @field()
           // @ts-ignore
           class Field extends CustomElement {
-            @api public readonly formApi!: FormApi;
-            @api public readonly input!: FieldInputProps<string>;
-            @api public readonly meta!: FieldMetaProps;
+            @api() public readonly formApi!: FormApi;
+            @api() public readonly input!: FieldInputProps<string>;
+            @api() public readonly meta!: FieldMetaProps;
 
-            @option public readonly name: string = 'test';
+            @option() public readonly name: string = 'test';
 
             public constructor() {
               super();
@@ -1012,11 +1012,11 @@ describe('@corpuscule/form', () => {
         it('allows HTMLInputElement to update form value', async () => {
           @field({auto: true})
           class Field extends HTMLInputElement {
-            @api public readonly formApi!: FormApi;
-            @api public readonly input!: FieldInputProps<object>;
-            @api public readonly meta!: FieldMetaProps;
+            @api() public readonly formApi!: FormApi;
+            @api() public readonly input!: FieldInputProps<object>;
+            @api() public readonly meta!: FieldMetaProps;
 
-            @option public readonly name: string = 'test';
+            @option() public readonly name: string = 'test';
           }
 
           const nativeFieldTag = genName();
@@ -1039,11 +1039,11 @@ describe('@corpuscule/form', () => {
         it('allows HTMLInputElement updating on form change', async () => {
           @field({auto: true})
           class Field extends HTMLInputElement {
-            @api public readonly formApi!: FormApi;
-            @api public readonly input!: FieldInputProps<object>;
-            @api public readonly meta!: FieldMetaProps;
+            @api() public readonly formApi!: FormApi;
+            @api() public readonly input!: FieldInputProps<object>;
+            @api() public readonly meta!: FieldMetaProps;
 
-            @option public readonly name: string = 'test';
+            @option() public readonly name: string = 'test';
           }
 
           const nativeFieldTag = genName();
@@ -1232,11 +1232,11 @@ describe('@corpuscule/form', () => {
         it('allows HTMLInputElement to update form value', async () => {
           @field({auto: true})
           class Field extends HTMLInputElement {
-            @api public readonly formApi!: FormApi;
-            @api public readonly input!: FieldInputProps<object>;
-            @api public readonly meta!: FieldMetaProps;
+            @api() public readonly formApi!: FormApi;
+            @api() public readonly input!: FieldInputProps<object>;
+            @api() public readonly meta!: FieldMetaProps;
 
-            @option public readonly name: string = 'test';
+            @option() public readonly name: string = 'test';
           }
 
           const nativeFieldTag = genName();
@@ -1258,11 +1258,11 @@ describe('@corpuscule/form', () => {
         it('allows HTMLInputElement updating on form change', async () => {
           @field({auto: true})
           class Field extends HTMLInputElement {
-            @api public readonly formApi!: FormApi;
-            @api public readonly input!: FieldInputProps<object>;
-            @api public readonly meta!: FieldMetaProps;
+            @api() public readonly formApi!: FormApi;
+            @api() public readonly input!: FieldInputProps<object>;
+            @api() public readonly meta!: FieldMetaProps;
 
-            @option public readonly name: string = 'test';
+            @option() public readonly name: string = 'test';
           }
 
           const nativeFieldTag = genName();
@@ -1356,11 +1356,11 @@ describe('@corpuscule/form', () => {
         it('allows HTMLInputElement to update form value', async () => {
           @field({auto: true})
           class Field extends HTMLInputElement {
-            @api public readonly formApi!: FormApi;
-            @api public readonly input!: FieldInputProps<object>;
-            @api public readonly meta!: FieldMetaProps;
+            @api() public readonly formApi!: FormApi;
+            @api() public readonly input!: FieldInputProps<object>;
+            @api() public readonly meta!: FieldMetaProps;
 
-            @option public readonly name: string = 'test';
+            @option() public readonly name: string = 'test';
           }
 
           const nativeFieldTag = genName();
@@ -1388,11 +1388,11 @@ describe('@corpuscule/form', () => {
         it('allows HTMLInputElement updating on form change', async () => {
           @field({auto: true})
           class Field extends HTMLInputElement {
-            @api public readonly formApi!: FormApi;
-            @api public readonly input!: FieldInputProps<object>;
-            @api public readonly meta!: FieldMetaProps;
+            @api() public readonly formApi!: FormApi;
+            @api() public readonly input!: FieldInputProps<object>;
+            @api() public readonly meta!: FieldMetaProps;
 
-            @option public readonly name: string = 'test';
+            @option() public readonly name: string = 'test';
           }
 
           const nativeFieldTag = genName();
@@ -1514,11 +1514,11 @@ describe('@corpuscule/form', () => {
           beforeEach(async () => {
             @field({auto: true})
             class Field extends HTMLSelectElement {
-              @api public readonly formApi!: FormApi;
-              @api public readonly input!: FieldInputProps<object>;
-              @api public readonly meta!: FieldMetaProps;
+              @api() public readonly formApi!: FormApi;
+              @api() public readonly input!: FieldInputProps<object>;
+              @api() public readonly meta!: FieldMetaProps;
 
-              @option public readonly name: string = 'test';
+              @option() public readonly name: string = 'test';
             }
 
             const nativeFieldTag = genName();

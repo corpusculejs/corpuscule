@@ -16,8 +16,8 @@ export {
 
 const defaultToken = createFormToken();
 
-export const api = apiAdvanced(defaultToken);
+export const api = type => apiAdvanced(defaultToken, type);
 export const field = options => fieldAdvanced(defaultToken, options);
 export const form = options => formAdvanced(defaultToken, options);
 export const isForm = target => isProvider(defaultToken, target);
-export const option = optionAdvanced(defaultToken);
+export const option = type => optionAdvanced(defaultToken, type);

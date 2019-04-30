@@ -2,7 +2,6 @@ import {provider} from '@corpuscule/context';
 import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
 import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
 import getSupers from '@corpuscule/utils/lib/getSupers';
-import {getName} from '@corpuscule/utils/lib/propertyUtils';
 import {createForm, formSubscriptionItems} from 'final-form';
 import {tokenRegistry} from './utils';
 
@@ -27,16 +26,11 @@ const form = (token, {decorators = [], subscription = all} = {}) => target => {
   const supers = getSupers(prototype, ['connectedCallback', 'disconnectedCallback']);
 
   target.__registrations.push(() => {
+    formOptions = formOptionsRegistry.get(target) || {};
     ({formApi: $formApi, state: $state} = sharedPropertiesRegistry.get(target) || {});
-    formOptions = formOptionsRegistry.get(target) || [];
     assertRequiredProperty('form', 'api', 'form', $formApi);
     assertRequiredProperty('form', 'api', 'state', $state);
-    assertRequiredProperty(
-      'form',
-      'option',
-      'onSubmit',
-      formOptions.find(key => getName(key) === 'onSubmit'),
-    );
+    assertRequiredProperty('form', 'option', 'onSubmit', formOptions.onSubmit);
   });
 
   defineExtendable(
@@ -80,15 +74,16 @@ const form = (token, {decorators = [], subscription = all} = {}) => target => {
   provider(token)(target);
 
   target.__initializers.push(self => {
+    const options = {};
+
+    // eslint-disable-next-line guard-for-in
+    for (const optionName in formOptions) {
+      options[optionName] = self[formOptions[optionName]];
+    }
+
     Object.assign(self, {
       // Fields
-      [$formApi]: createForm(
-        formOptions.reduce((acc, key) => {
-          acc[key] = self[key];
-
-          return acc;
-        }, {}),
-      ),
+      [$formApi]: createForm(options),
       // eslint-disable-next-line sort-keys
       [$$unsubscriptions]: [],
 

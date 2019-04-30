@@ -1,36 +1,34 @@
 import {isProvider} from '@corpuscule/context';
 import makeAccessor from '@corpuscule/utils/lib/makeAccessor';
 import {getName} from '@corpuscule/utils/lib/propertyUtils';
-import {setArray, setObject} from '@corpuscule/utils/lib/setters';
+import {setObject} from '@corpuscule/utils/lib/setters';
 import shallowEqual from '@corpuscule/utils/lib/shallowEqual';
 import {noop} from '../../element/src/utils';
 import {fieldOptions, formOptions, tokenRegistry} from './utils';
 
 const optionsList = new Set([...fieldOptions, ...formOptions]);
 
-const option = token => ({constructor: target}, key, descriptor) => {
-  const name = getName(key);
+const option = (token, name) => ({constructor: target}, key, descriptor) => {
+  const optionName = name || getName(key);
   const [sharedPropertiesRegistry, formOptionsRegistry] = tokenRegistry.get(token);
 
-  if (!optionsList.has(name)) {
-    throw new TypeError(`"${name}" is not one of the Final Form or Field configuration keys`);
+  if (!optionsList.has(optionName)) {
+    throw new TypeError(`"${optionName}" is not one of the Final Form or Field configuration keys`);
   }
 
-  const isCompareInitialValues = name === 'compareInitialValues';
+  const isCompareInitialValues = optionName === 'compareInitialValues';
   if (isCompareInitialValues) {
     setObject(sharedPropertiesRegistry, target, {
       compare: key,
     });
   } else {
-    // Executes after the distinction between providers and consumers are set.
+    // Executes after the distinction between providers and consumers is defined.
     target.__registrations.push(() => {
-      if (isProvider(token, target)) {
-        setArray(formOptionsRegistry, target, key);
-      } else {
-        setObject(sharedPropertiesRegistry, target, {
-          [name]: key,
-        });
-      }
+      setObject(
+        isProvider(token, target) ? formOptionsRegistry : sharedPropertiesRegistry,
+        target,
+        {[optionName]: key},
+      );
     });
   }
 
@@ -47,7 +45,7 @@ const option = token => ({constructor: target}, key, descriptor) => {
         );
 
         setter =
-          name === 'initialValues'
+          optionName === 'initialValues'
             ? (self, initialValues) => {
                 if (
                   !(($compareInitialValues && self[$compareInitialValues]) || shallowEqual).call(
@@ -61,19 +59,19 @@ const option = token => ({constructor: target}, key, descriptor) => {
               }
             : (self, v) => {
                 if (self[key] !== v) {
-                  self[$formApi].setConfig(name, v);
+                  self[$formApi].setConfig(optionName, v);
                 }
               };
       } else {
         const {schedule: $scheduleSubscription} = sharedPropertiesRegistry.get(target);
 
         const areEqual =
-          name === 'subscription'
+          optionName === 'subscription'
             ? (v, oldValue) => shallowEqual(v, oldValue)
             : (v, oldValue) => v === oldValue;
 
         setter =
-          name === 'name' || name === 'subscription'
+          optionName === 'name' || optionName === 'subscription'
             ? (self, v, originalGet) => {
                 if (!areEqual(v, originalGet.call(self))) {
                   self[$scheduleSubscription]();

@@ -28,11 +28,11 @@ export type FieldMetaProps = Omit<
 
 export const createFormToken: TokenCreator;
 
-export const api: PropertyDecorator;
+export const api: (type?: string) => PropertyDecorator;
 export const field: (options?: FieldDecoratorOptions) => ClassDecorator;
 export const form: (options?: FormDecoratorOptions) => ClassDecorator;
 export const isForm: (target: unknown) => boolean;
-export const option: PropertyDecorator;
+export const option: (type?: string) => PropertyDecorator;
 
 export const apiAdvanced: (token: Token) => PropertyDecorator;
 export const fieldAdvanced: (token: Token, options?: FieldDecoratorOptions) => ClassDecorator;
