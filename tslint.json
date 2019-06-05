@@ -2,15 +2,8 @@
   "extends": ["tslint-config-poetez", "tslint-config-prettier"],
   "rulesDirectory": ["tslint-plugin-prettier"],
   "rules": {
-    "ban": false,
     "max-classes-per-file": false,
     "no-implicit-dependencies": false,
-    "no-empty": false,
-    "no-floating-promises": false,
-    "no-unused-variable": false,
-    "no-unnecessary-class": false,
-    "prettier": [true, ".prettierrc"],
-    "naming-convention": false,
-    "ter-padded-blocks": false
+    "prettier": [true, ".prettierrc"]
   }
 }

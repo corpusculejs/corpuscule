@@ -1,4 +1,3 @@
-// tslint:disable:no-unnecessary-class
 import {html, render} from 'lit-html';
 import withCustomElement, {unsafeStatic} from '../src/withCustomElement';
 
