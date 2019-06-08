@@ -1,7 +1,7 @@
 import createTokenRegistry from '../src/tokenRegistry';
 
 describe('@corpuscule/utils', () => {
-  describe('tokenRegistry', () => {
+  describe('createTokenRegistry', () => {
     it('creates token creator and a store connected with it', () => {
       const [createToken, tokenRegistry] = createTokenRegistry(() => []);
 
