@@ -23,14 +23,14 @@ module.exports = config => {
     frameworks: ['jasmine'],
 
     // List of files / patterns to load in the browser
-    files: ['test/test.js'],
+    files: ['test/test.ts'],
 
     // List of files / patterns to exclude
     exclude: [],
 
     // Preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-    preprocessors: {'test/test.js': ['webpack']},
+    preprocessors: {'test/test.ts': ['webpack']},
 
     // Test results reporter to use
     // possible values: 'dots', 'progress'

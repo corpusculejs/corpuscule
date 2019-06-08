@@ -3,6 +3,8 @@ const {packages} = require('./project');
 
 const babelPlugin = babel({
   babelrc: false,
+  comments: false,
+  extensions: ['.js', '.ts'],
   plugins: [
     [
       require('@babel/plugin-proposal-class-properties'),
@@ -11,6 +13,7 @@ const babelPlugin = babel({
       },
     ],
   ],
+  presets: [require('@babel/preset-typescript')],
 });
 
 module.exports = pack => {
@@ -21,7 +24,7 @@ module.exports = pack => {
     files[i] = {
       input: {
         external: external.map(path => `./${path}`),
-        input: `src/${entries[i]}.js`,
+        input: `src/${entries[i]}.ts`,
         plugins: [babelPlugin],
       },
       output: {

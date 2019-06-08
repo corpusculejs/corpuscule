@@ -1,22 +1,62 @@
 /* eslint-disable no-console, no-process-exit */
-const {copyFile, mkdir, readdir} = require('fs');
+const {existsSync, mkdir, readFileSync} = require('fs');
 const {basename} = require('path');
 const rimraf = require('rimraf');
 const {rollup} = require('rollup');
+const tsc = require('typescript');
 const {promisify} = require('util');
 const config = require('./rollup.config');
+const tsconfig = require('../tsconfig.json');
 
-const copyFileAsync = promisify(copyFile);
 const mkdirAsync = promisify(mkdir);
-const readdirAsync = promisify(readdir);
 const rimrafAsync = promisify(rimraf);
 
-const pack = basename(process.cwd());
+const cwd = process.cwd();
+const pack = basename(cwd);
 
 const libDir = 'lib';
-const srcDir = 'src';
+const parseConfigHost = {
+  fileExists: existsSync,
+  readDirectory: tsc.sys.readDirectory,
+  readFile(file) {
+    return readFileSync(file, 'utf8');
+  },
+  useCaseSensitiveFileNames: true,
+};
 
-const dtsPattern = /\.d\.ts/;
+const updatedTsconfig = {
+  ...tsconfig,
+  compilerOptions: {
+    ...tsconfig.compilerOptions,
+    allowJs: false,
+    declaration: true,
+    declarationDir: './lib',
+    emitDeclarationOnly: true,
+    newLine: 'lf',
+  },
+  include: ['src/**/*.ts'],
+};
+
+const runRollup = async () => {
+  const options = config(pack);
+
+  await Promise.all(
+    options.map(async ({input, output}) => {
+      const bundle = await rollup(input);
+      await bundle.write(output);
+    }),
+  );
+};
+
+const createDts = () => {
+  const {fileNames, options} = tsc.parseJsonConfigFileContent(
+    updatedTsconfig,
+    parseConfigHost,
+    cwd,
+  );
+
+  tsc.createProgram(fileNames, options).emit();
+};
 
 (async () => {
   try {
@@ -24,23 +64,11 @@ const dtsPattern = /\.d\.ts/;
     await rimrafAsync(libDir);
     await mkdirAsync(libDir);
 
-    // Run rollup
-    const options = config(pack);
+    // Run Rollup
+    await runRollup();
 
-    await Promise.all(
-      options.map(async ({input, output}) => {
-        const bundle = await rollup(input);
-        await bundle.write(output);
-      }),
-    );
-
-    // Copy d.ts files
-    const files = await readdirAsync(srcDir);
-    await Promise.all(
-      files
-        .filter(file => dtsPattern.test(file))
-        .map(file => copyFileAsync(`${srcDir}/${file}`, `${libDir}/${file}`)),
-    );
+    // Create typescript declaration files
+    createDts();
   } catch (e) {
     console.error(e.stack);
     process.exit(-1);

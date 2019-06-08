@@ -18,7 +18,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js/,
+        test: /\.ts/,
         use: [
           coverage && {
             loader: 'istanbul-instrumenter-loader',
@@ -33,11 +33,11 @@ module.exports = {
               cacheDirectory: true,
               cacheCompression: false,
               plugins: [require('@babel/plugin-proposal-class-properties')],
+              presets: [require('@babel/preset-typescript')],
             },
           },
         ].filter(Boolean),
-        include: /packages/,
-        exclude: /node_modules|__tests__|lib/,
+        include: /packages\/\w+\/src/,
       },
       {
         test: /\.ts/,
