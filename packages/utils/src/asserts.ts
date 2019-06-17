@@ -1,5 +1,21 @@
 /**
- * @module @corpuscule/utils
+ * This module contains assertion functions that can be used to verify the
+ * correctness of the decorator application.
+ *
+ * For example, you want to make sure that the user applies class decorators to
+ * classes and property decorators to properties. Or you have two decorators:
+ * `@classDecorator` and `@propertyDecorator` and at least one property of the
+ * class marked with the `@classDecorator` should be marked with the
+ * `@propertyDecorator`.
+ *
+ * This module contains assertions to check these cases.
+ *
+ * @module asserts
+ *
+ * @import ```typescript
+ *
+ * import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts'
+ * ```
  */
 
 /**

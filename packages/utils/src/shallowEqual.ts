@@ -1,5 +1,10 @@
 /**
- * @module @corpuscule/utils
+ * @module shallowEqual
+ *
+ * @import ```typescript
+ *
+ * import shallowEqual from '@corpuscule/utils/lib/shallowEqual'
+ * ```
  */
 
 /**

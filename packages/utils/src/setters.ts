@@ -1,5 +1,10 @@
 /**
- * @module @corpuscule/utils
+ * @module setters
+ *
+ * @import ```typescript
+ *
+ * import {setArray} from '@corpuscule/utils/lib/setters'
+ * ```
  */
 
 /**

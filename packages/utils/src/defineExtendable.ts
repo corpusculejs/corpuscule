@@ -1,5 +1,10 @@
 /**
- * @module @corpuscule/utils
+ * @module defineExtendable
+ *
+ * @import ```typescript
+ *
+ * import defineExtendable from '@corpuscule/utils/lib/defineExtendable'
+ * ```
  */
 
 /**

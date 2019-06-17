@@ -1,10 +1,16 @@
 /**
- * `@corpuscule/utils` module contains utils that are used by Corpuscule
- * packages. They are pretty specific but can be used to create
- * Corpuscule-like packages.
+ * This module provides a solution for scheduling tree-structured tasks where
+ * one task could spawn a number of new tasks to complete.
  *
- * @module @corpuscule/utils
- * @preferred
+ * The default purpose of this module is to provide a scheduling system for the
+ * web components that could schedule rendering of nested components recursively.
+ *
+ * @module scheduler
+ *
+ * @import ```typescript
+ *
+ * import schedule from '@corpuscule/utils/lib/scheduler'
+ * ```
  */
 
 /**

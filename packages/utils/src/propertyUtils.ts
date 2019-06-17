@@ -1,5 +1,13 @@
 /**
- * @module @corpuscule/utils
+ * This module provides tools to work with different kinds of properties:
+ * string, symbolic, and private, — identically.
+ *
+ * @module propertyUtils
+ *
+ * @import ```typescript
+ *
+ * import {getName} from '@corpuscule/utils/lib/propertyUtils'
+ * ```
  */
 
 /**

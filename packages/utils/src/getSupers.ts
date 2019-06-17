@@ -1,5 +1,15 @@
 /**
- * @module @corpuscule/utils
+ * @module getSupers
+ *
+ * @import ```typescript
+ *
+ * import getSupers from '@corpuscule/utils/lib/getSupers'
+ * ```
+ */
+
+/**
+ * Do not remove this comment; it keeps typedoc from misplacing the module
+ * docs.
  */
 
 /* istanbul ignore next */

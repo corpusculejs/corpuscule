@@ -6,7 +6,8 @@
     "lib"
   ],
   "scripts": {
-    "build": "node ../../scripts/build.js"
+    "build": "node ../../scripts/build.js",
+    "docs": "typedoc src"
   },
   "author": "Vlad Rindevich <rindevich.vs@gmail.com> (https://github.com/Lodin)",
   "bugs": {
