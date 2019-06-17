@@ -1,18 +1,21 @@
+/**
+ * `@corpuscule/utils` module contains utils that are used by Corpuscule
+ * packages. They are pretty specific but can be used to create
+ * Corpuscule-like packages.
+ *
+ * @module @corpuscule/utils
+ * @preferred
+ */
+
+/**
+ * Do not remove this comment; it keeps typedoc from misplacing the module
+ * docs.
+ */
+
 let currentNode;
 let newNode;
 
-/**
- * Schedules tree-structured tasks where one task could generate a number of
- * children which execution is also scheduled. Each task is connected to a
- * parent one, and also can have a child and a sibling. Traversing algorithm is
- * depth-first. There are two visits to the node: the first one occurs when the
- * task is going to be performed, and the second one is when we need to resolve
- * or reject the scheduled promise.
- *
- * If task execution runs into an error, it rejects all promises from bottom to
- * top.
- */
-const walk: () => void = () => {
+function walk(): void {
   let rejectionReason;
 
   while (currentNode) {
@@ -42,17 +45,26 @@ const walk: () => void = () => {
   }
 
   newNode = currentNode;
-};
+}
 
 /**
- * Schedules execution of a task.
+ * Schedules tree-structured tasks where one task could generate a number of
+ * children which execution is also scheduled. Each task is connected to a
+ * parent one, and also can have a child and a sibling. Traversing algorithm is
+ * depth-first. There are two visits to the node: the first one occurs when the
+ * task is going to be performed, and the second one is when we need to resolve
+ * or reject the scheduled promise.
  *
- * @param task function to schedule
+ * If task execution runs into an error, it rejects all promises from bottom to
+ * top.
+ *
+ * @param task function to schedule.
+ *
  * @returns a Promise which resolves when the task is completed or rejects if
  * there is any error.
  */
-const schedule: (task: () => void) => Promise<void> = async task =>
-  new Promise((resolve, reject) => {
+export default async function schedule(task: () => void): Promise<void> {
+  return new Promise((resolve, reject) => {
     const previousNode = newNode;
 
     newNode = {
@@ -78,5 +90,4 @@ const schedule: (task: () => void) => Promise<void> = async task =>
       newNode.parent = previousNode.parent;
     }
   });
-
-export default schedule;
+}

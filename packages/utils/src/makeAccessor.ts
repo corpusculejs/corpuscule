@@ -1,4 +1,8 @@
 /**
+ * @module @corpuscule/utils
+ */
+
+/**
  * Converts the regular property to an accessor and registers the initializer
  * to set the initial value. If the received descriptor already belongs to an
  * accessor, it will be returned as is.
@@ -8,10 +12,10 @@
  * @param initializers an array of functions to register the initial value
  * initializer.
  */
-const makeAccessor = (
+export default function makeAccessor(
   descriptor: PropertyDescriptor & {initializer?: () => unknown},
   initializers: Array<(self: object) => void>,
-): Required<Pick<PropertyDescriptor, 'get' | 'set'>> & Omit<PropertyDescriptor, 'get' | 'set'> => {
+): Required<Pick<PropertyDescriptor, 'get' | 'set'>> & Omit<PropertyDescriptor, 'get' | 'set'> {
   const {get, initializer, set} = descriptor;
 
   if (get && set) {
@@ -32,6 +36,4 @@ const makeAccessor = (
       this[storage] = value;
     },
   };
-};
-
-export default makeAccessor;
+}

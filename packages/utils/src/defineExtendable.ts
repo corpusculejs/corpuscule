@@ -1,4 +1,8 @@
 /**
+ * @module @corpuscule/utils
+ */
+
+/**
  * A workaround for a Corpuscule-decorated class inheritance. Corpuscule
  * decorators applied to a class override user-defined Custom Elements
  * lifecycle hooks like `connectedCallback` etc. creating an internal worker
@@ -23,12 +27,12 @@
  * @param initializers an array of functions to register the function to
  * execute during the class instantiation.
  */
-const defineExtendable = <N extends PropertyKey>(
+export default function defineExtendable<N extends PropertyKey>(
   target: any,
   methods: Record<N, Function>,
   supers: Record<N, Function>,
   initializers: Array<(self: object) => void>,
-): void =>
+): void {
   Reflect.ownKeys(methods).forEach(key => {
     const selfKey = Symbol();
 
@@ -40,5 +44,4 @@ const defineExtendable = <N extends PropertyKey>(
       self[selfKey] = self.constructor !== target ? supers[key] : methods[key];
     });
   });
-
-export default defineExtendable;
+}

@@ -1,3 +1,7 @@
+/**
+ * @module @corpuscule/utils
+ */
+
 /* istanbul ignore next */
 const noop = () => {};
 
@@ -15,12 +19,12 @@ const noop = () => {};
  * @param fallbacks a list of fallback functions to replace methods which are
  * missing in the `target`.
  */
-const getSupers = <N extends PropertyKey>(
+export default function getSupers<N extends PropertyKey>(
   target: any,
   names: ReadonlyArray<N>,
   fallbacks: Partial<Record<N, Function>> = {},
-): Record<N, Function> =>
-  names.reduce(
+): Record<N, Function> {
+  return names.reduce(
     (supers, name) => {
       supers[name] = target[name] || fallbacks[name] || noop;
 
@@ -28,5 +32,4 @@ const getSupers = <N extends PropertyKey>(
     },
     {} as Record<N, Function>,
   );
-
-export default getSupers;
+}
