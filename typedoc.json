@@ -1,0 +1,7 @@
+{
+  "mode": "modules",
+  "ignoreCompilerErrors": true,
+  "excludeNotExported": true,
+  "excludePrivate": true,
+  "exclude": ["**/+(__tests__|lib)/**"]
+}
