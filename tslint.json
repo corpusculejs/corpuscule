@@ -4,6 +4,7 @@
   "rules": {
     "max-classes-per-file": false,
     "no-implicit-dependencies": false,
+    "no-redundant-jsdoc": false,
     "prettier": [true, ".prettierrc"]
   }
 }

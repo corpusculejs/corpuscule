@@ -68,6 +68,8 @@
     "tslint-config-poetez": "^2.0.0",
     "tslint-config-prettier": "^1.18.0",
     "tslint-plugin-prettier": "^2.0.1",
+    "typedoc": "^0.14.2",
+    "typedoc-plugin-external-module-name": "^2.1.0",
     "typescript": "^3.5.2",
     "universal-router": "^8.2.0",
     "uuid": "^3.3.2",
