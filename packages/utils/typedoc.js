@@ -7,5 +7,4 @@ module.exports = {
   ...commonConfig,
   name: '@corpuscule/utils API',
   out: resolve(cwd, '../../docs/api/utils'),
-  tsconfig: resolve(cwd, '../../tsconfig'),
 };
