@@ -12,71 +12,74 @@
  *
  * @module asserts
  *
- * @import ```typescript
+ * @import
  *
+ * ```typescript
  * import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts'
  * ```
  */
 
 /**
- * Checks the property to have a value and throws a formatted error if the
- * property does not have it.
+ * Checks if the property decorator actually applied to a property of a class
+ * marked with class decorator by checking the value of this property and
+ * creates a formatted error if it does not.
  *
  * @overload
- * This overload should be used if the property with the specific name required
- * to be marked with the marker. The function throws an error like `@foo requires
- * bar property marked with @baz`.
+ * This overload should be used if the property of the class required to be
+ * marked with the property decorator has a specific name. The function will
+ * throw an error like:
+ * ```
+ * Error: @foo requires bar property marked with @baz
+ * ```
  *
- * @param decoratorName a name of the decorator the assertion applies to.
+ * @param classDecoratorName a name of the base class decorator that requires
+ * some property marked with some property decorator.
  *
- * @param markerName a name of the decorator the property should be marked with.
+ * @param propertyDecoratorName a name of the decorator the class decorator
+ * requires to mark the property with.
  *
  * @param propertyName a name of the property the assertion is applied to.
- * Omitting this parameter means that any property should be marked with the
- * marker decorator.
  *
- * @param property a value of the property.
+ * @param propertyValue a value of the property.
+ *
+ * @function
  */
 export function assertRequiredProperty(
-  decoratorName: string,
-  markerName: string,
+  classDecoratorName: string,
+  propertyDecoratorName: string,
   propertyName: string,
-  property: unknown,
+  propertyValue: unknown,
 ): void;
 
 /**
  * @overload
  * This overload should be used if any property of the class required to be
- * marked with the marker. The function will throw an error like `@foo requires
- * property marked with @baz`.
- *
- * @param decoratorName
- *
- * @param markerName
- *
- * @param property
+ * marked with the property decorator. The function will throw an error like
+ * ```
+ * Error: @foo requires property marked with @baz
+ * ```.
  */
 export function assertRequiredProperty(
-  decoratorName: string,
-  markerName: string,
-  property: unknown,
+  classDecoratorName: string,
+  propertyDecoratorName: string,
+  propertyValue: unknown,
 ): void;
 
 export function assertRequiredProperty(...args: any[]): void {
-  let decoratorName;
-  let markerName;
+  let classDecoratorName;
+  let propertyDecoratorName;
   let propertyName = 'any';
-  let property;
+  let propertyValue;
 
   if (args.length === 3) {
-    [decoratorName, markerName, property] = args;
+    [classDecoratorName, propertyDecoratorName, propertyValue] = args;
   } else {
-    [decoratorName, markerName, propertyName, property] = args;
+    [classDecoratorName, propertyDecoratorName, propertyName, propertyValue] = args;
   }
 
-  if (property === undefined) {
+  if (propertyValue === undefined) {
     throw new Error(
-      `@${decoratorName} requires ${propertyName} property marked with @${markerName}`,
+      `@${classDecoratorName} requires ${propertyName} property marked with @${propertyDecoratorName}`,
     );
   }
 }
