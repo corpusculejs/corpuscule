@@ -5,7 +5,7 @@ describe('@corpuscule/utils', () => {
     describe('setArray', () => {
       it('creates an array for a registry by key if the key is not set yet', () => {
         const registry = new Map();
-        setArray(registry, 'foo', 'bar');
+        setArray(registry, 'foo', ['bar']);
 
         expect(registry.get('foo')).toEqual(['bar']);
       });
@@ -14,7 +14,7 @@ describe('@corpuscule/utils', () => {
         const registry = new Map();
         registry.set('foo', ['baz']);
 
-        setArray(registry, 'foo', 'bar');
+        setArray(registry, 'foo', ['bar']);
 
         expect(registry.get('foo')).toEqual(['baz', 'bar']);
       });

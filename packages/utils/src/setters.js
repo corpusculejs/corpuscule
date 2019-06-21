@@ -1,15 +1,15 @@
-export const setArray = (registry, key, value) => {
-  if (registry.has(key)) {
-    registry.get(key).push(value);
+export const setArray = (store, key, array) => {
+  if (store.has(key)) {
+    store.get(key).push(...array);
   } else {
-    registry.set(key, [value]);
+    store.set(key, array);
   }
 };
 
-export const setObject = (registry, key, object) => {
-  if (registry.has(key)) {
-    Object.assign(registry.get(key), object);
+export const setObject = (store, key, object) => {
+  if (store.has(key)) {
+    Object.assign(store.get(key), object);
   } else {
-    registry.set(key, object);
+    store.set(key, object);
   }
 };

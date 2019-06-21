@@ -7,8 +7,6 @@
  * @source https://github.com/facebook/fbjs/blob/master/packages/fbjs/src/core/shallowEqual.js
  */
 
-const has = Object.prototype.hasOwnProperty;
-
 const shallowEqual = (objA, objB) => {
   if (Object.is(objA, objB)) {
     return true;
@@ -27,7 +25,10 @@ const shallowEqual = (objA, objB) => {
 
   // Test for A's keys different from B.
   for (let i = 0; i < keysA.length; i++) {
-    if (!has.call(objB, keysA[i]) || !Object.is(objA[keysA[i]], objB[keysA[i]])) {
+    if (
+      !Object.prototype.hasOwnProperty.call(objB, keysA[i]) ||
+      !Object.is(objA[keysA[i]], objB[keysA[i]])
+    ) {
       return false;
     }
   }
