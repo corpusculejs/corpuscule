@@ -7,7 +7,7 @@ const observerConfig = {childList: true};
 
 export const stylesAdvanced = ({shadyCSS, adoptedStyleSheets}, ...pathsOrStyles) => target => {
   const {prototype} = target;
-  const template = document.createElement('template');
+  const fragment = document.createDocumentFragment();
   const constructableStyles = [];
 
   for (const pathOrStyle of pathsOrStyles) {
@@ -20,7 +20,7 @@ export const stylesAdvanced = ({shadyCSS, adoptedStyleSheets}, ...pathsOrStyles)
         pathOrStyle.origin === location.origin
           ? pathOrStyle.pathname + pathOrStyle.search
           : pathOrStyle;
-      template.content.appendChild(link);
+      fragment.appendChild(link);
     } else if (shadyCSS) {
       // If ShadyCSS
       constructableStyles.push(pathOrStyle);
@@ -33,7 +33,7 @@ export const stylesAdvanced = ({shadyCSS, adoptedStyleSheets}, ...pathsOrStyles)
       // Otherwise, just create a style tag
       const style = document.createElement('style');
       style.textContent = pathOrStyle;
-      template.content.appendChild(style);
+      fragment.appendChild(style);
     }
   }
 
@@ -50,13 +50,30 @@ export const stylesAdvanced = ({shadyCSS, adoptedStyleSheets}, ...pathsOrStyles)
       }
     }
 
-    if (template.content.hasChildNodes()) {
-      const styleElements = template.content.cloneNode(true);
+    if (fragment.hasChildNodes()) {
+      const elements = fragment.cloneNode(true);
+      const links = elements.querySelectorAll('link');
 
       const observer = new MutationObserver(() => {
-        root.prepend(styleElements);
+        root.prepend(elements);
         observer.disconnect();
-        supers[stylesAttachedCallback].call(this);
+
+        if (links.length > 0) {
+          let count = links.length;
+
+          for (const link of links) {
+            // eslint-disable-next-line no-loop-func
+            link.addEventListener('load', () => {
+              count -= 1;
+
+              if (count === 0) {
+                supers[stylesAttachedCallback].call(this);
+              }
+            });
+          }
+        } else {
+          supers[stylesAttachedCallback].call(this);
+        }
       });
 
       observer.observe(root, observerConfig);
