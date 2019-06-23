@@ -9,6 +9,14 @@ const createSimpleElement = <T extends Element>(cls: Constructor<T>): T => {
   return fixtureSync<T>(`<${tag}></${tag}>`);
 };
 
+const emulateCssFileLoadingSuccess = (observationTarget: HTMLElement | ShadowRoot) => {
+  const observer = new MutationObserver(([record]: MutationRecord[]) => {
+    record.addedNodes[0].dispatchEvent(new Event('load'));
+  });
+
+  observer.observe(observationTarget, {childList: true});
+};
+
 describe('@corpuscule/styles', () => {
   const rawStyles = '.foo{color: red;}';
   let styles: typeof defaultStyles;
@@ -40,6 +48,8 @@ describe('@corpuscule/styles', () => {
 
       const test = createSimpleElement(Test);
 
+      emulateCssFileLoadingSuccess(test.shadowRoot!);
+
       await promise;
 
       expect(test.shadowRoot!.innerHTML).toBe(
@@ -67,6 +77,8 @@ describe('@corpuscule/styles', () => {
       }
 
       const test = createSimpleElement(Test);
+
+      emulateCssFileLoadingSuccess(test.shadowRoot!);
 
       await promise;
 
