@@ -23,8 +23,12 @@
  * ```typescript
  * @styles(new URL('styles.css', import.meta.url))
  * class Component extends HTMLElement {
+ *   public connectedCallback() {
+ *     this.shadowRoot!.innerHTML = 'Loading...';
+ *   }
+ *
  *   private [stylesAttachedCallback]() {
- *     this.innerHTML = '<div class="foo">Bar</div>'
+ *     this.shadowRoot!.innerHTML = '<div class="foo">Bar</div>'
  *   }
  * }
  * ```
