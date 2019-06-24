@@ -25,7 +25,7 @@ const option = token => ({constructor: target}, key, descriptor) => {
     // Executes after the distinction between providers and consumers are set.
     target.__registrations.push(() => {
       if (isProvider(token, target)) {
-        setArray(formOptionsRegistry, target, key);
+        setArray(formOptionsRegistry, target, [key]);
       } else {
         setObject(sharedPropertiesRegistry, target, {
           [name]: key,

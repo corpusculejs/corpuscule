@@ -15,7 +15,7 @@ export const computer = token => ({constructor: target}, _, {get}) => {
     self[memoized] = null;
   });
 
-  setArray(tokenRegistry.get(token), target, correct);
+  setArray(tokenRegistry.get(token), target, [correct]);
 
   return {
     configurable: true,
