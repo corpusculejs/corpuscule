@@ -16,7 +16,7 @@ const repeatGetTenTimes = <C extends object, M extends keyof C, T extends C[M]>(
 };
 
 describe('@corpuscule/element', () => {
-  describe('createComputingPair', () => {
+  describe('@computer and @observer', () => {
     let computer: PropertyDecorator;
     let observer: PropertyDecorator;
     let token: Token;
