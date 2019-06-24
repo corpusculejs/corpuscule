@@ -1,7 +1,7 @@
 import {provider as contextProvider, value} from '@corpuscule/context';
 import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
 import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
-import getSupers from '@corpuscule/utils/lib/getSupers';
+import reflectClassMethods from '@corpuscule/utils/lib/reflectClassMethods';
 import {tokenRegistry} from './utils';
 
 const provider = (token, {initial = location.pathname} = {}) => target => {
@@ -17,7 +17,7 @@ const provider = (token, {initial = location.pathname} = {}) => target => {
     assertRequiredProperty('provider', 'api', $router);
   });
 
-  const supers = getSupers(prototype, ['connectedCallback', 'disconnectedCallback']);
+  const supers = reflectClassMethods(prototype, ['connectedCallback', 'disconnectedCallback']);
   const valueDescriptor = value(token)(prototype, $$providingValue);
 
   defineExtendable(

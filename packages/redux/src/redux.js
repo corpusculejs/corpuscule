@@ -1,6 +1,6 @@
 import {consumer, value} from '@corpuscule/context';
 import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
-import getSupers from '@corpuscule/utils/lib/getSupers';
+import reflectClassMethods from '@corpuscule/utils/lib/reflectClassMethods';
 import {setObject} from '@corpuscule/utils/lib/setters';
 import {tokenRegistry} from './utils';
 
@@ -15,7 +15,7 @@ const redux = token => target => {
   const $$contextProperty = Symbol();
   const $$unsubscribe = Symbol();
 
-  const supers = getSupers(prototype, ['disconnectedCallback']);
+  const supers = reflectClassMethods(prototype, ['disconnectedCallback']);
 
   const valueDescriptor = value(token)(prototype, $$contextProperty);
 

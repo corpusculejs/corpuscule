@@ -1,9 +1,9 @@
 /**
- * @module getSupers
+ * @module reflectClassMethods
  *
  * @import
  * ```typescript
- * import getSupers from '@corpuscule/utils/lib/getSupers'
+ * import reflectClassMethods from '@corpuscule/utils/lib/reflectClassMethods'
  * ```
  */
 
@@ -14,9 +14,9 @@
  * will be used. If there is no appropriate element in the `target` or the
  * `fallbacks`, the method will be a noop function.
  *
- * @param target a class declaration prototype.
+ * @param klass a class declaration prototype.
  *
- * @param names a list of names of methods to extract.
+ * @param methodNames a list of names of methods to extract.
  *
  * @param fallbacks a list of fallback functions to replace methods which are
  * missing in the `target`.
@@ -47,16 +47,16 @@
  *
  * const bar = new Bar();
  *
- * const supers = getSupers(bar, ['foo', 'bar', 'baz', 'boo'], fallbacks);
+ * const reflection = reflectClassMethods(bar, ['foo', 'bar', 'baz', 'boo'], fallbacks);
  *
- * supers.foo(); // foo called
- * supers.bar(); // bar called
- * supers.baz(); // baz called
- * supers.boo(); // <nothing happens>
+ * reflection.foo(); // foo called
+ * reflection.bar(); // bar called
+ * reflection.baz(); // baz called
+ * reflection.boo(); // <nothing happens>
  * ```
  */
-export default function getSupers<N extends PropertyKey>(
-  target: any,
-  names: ReadonlyArray<N>,
+export default function reflectClassMethods<N extends PropertyKey>(
+  klass: any,
+  methodNames: ReadonlyArray<N>,
   fallbacks?: Partial<Record<N, Function>>,
 ): Record<N, Function>;

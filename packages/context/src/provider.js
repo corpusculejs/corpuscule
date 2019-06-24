@@ -1,7 +1,7 @@
 import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
 import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
 import {setObject} from '@corpuscule/utils/lib/setters';
-import {getSupers, tokenRegistry} from './utils';
+import {reflectClassMethods, tokenRegistry} from './utils';
 
 const provider = (token, defaultValue) => target => {
   let $value;
@@ -12,7 +12,7 @@ const provider = (token, defaultValue) => target => {
   const $$subscribe = Symbol();
   const $$unsubscribe = Symbol();
 
-  const supers = getSupers(prototype);
+  const supers = reflectClassMethods(prototype);
 
   const [eventName, values, providers] = tokenRegistry.get(token);
 

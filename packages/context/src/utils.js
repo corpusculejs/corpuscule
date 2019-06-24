@@ -1,4 +1,4 @@
-import basicGetSupers from '@corpuscule/utils/lib/getSupers';
+import basicReflectClassMethods from '@corpuscule/utils/lib/reflectClassMethods';
 import createTokenRegistry from '@corpuscule/utils/lib/tokenRegistry';
 
 const randomString = () => {
@@ -14,5 +14,5 @@ export const [createContextToken, tokenRegistry] = createTokenRegistry(() => [
   new Set(),
 ]);
 
-export const getSupers = target =>
-  basicGetSupers(target, ['connectedCallback', 'disconnectedCallback']);
+export const reflectClassMethods = target =>
+  basicReflectClassMethods(target, ['connectedCallback', 'disconnectedCallback']);

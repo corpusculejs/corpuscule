@@ -1,6 +1,6 @@
 /* eslint-disable no-invalid-this, prefer-arrow-callback */
 import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
-import getSupers from '@corpuscule/utils/lib/getSupers';
+import reflectClassMethods from '@corpuscule/utils/lib/reflectClassMethods';
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
 import {
   internalChangedCallback as $internalChangedCallback,
@@ -29,7 +29,7 @@ const element = (
   const $$root = Symbol();
   const $$valid = Symbol();
 
-  const supers = getSupers(prototype, [
+  const supers = reflectClassMethods(prototype, [
     'attributeChangedCallback',
     'connectedCallback',
     $internalChangedCallback,

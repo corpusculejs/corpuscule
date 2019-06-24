@@ -1,7 +1,7 @@
 import {provider} from '@corpuscule/context';
 import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
 import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
-import getSupers from '@corpuscule/utils/lib/getSupers';
+import reflectClassMethods from '@corpuscule/utils/lib/reflectClassMethods';
 import {getName} from '@corpuscule/utils/lib/propertyUtils';
 import {createForm, formSubscriptionItems} from 'final-form';
 import {tokenRegistry} from './utils';
@@ -24,7 +24,7 @@ const form = (token, {decorators = [], subscription = all} = {}) => target => {
   const $$submit = Symbol();
   const $$unsubscriptions = Symbol();
 
-  const supers = getSupers(prototype, ['connectedCallback', 'disconnectedCallback']);
+  const supers = reflectClassMethods(prototype, ['connectedCallback', 'disconnectedCallback']);
 
   target.__registrations.push(() => {
     ({formApi: $formApi, state: $state} = sharedPropertiesRegistry.get(target) || {});

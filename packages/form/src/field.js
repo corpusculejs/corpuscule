@@ -1,7 +1,7 @@
 import {consumer} from '@corpuscule/context';
 import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
 import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
-import getSupers from '@corpuscule/utils/lib/getSupers';
+import reflectClassMethods from '@corpuscule/utils/lib/reflectClassMethods';
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
 import {setObject} from '@corpuscule/utils/lib/setters';
 import {fieldSubscriptionItems} from 'final-form';
@@ -46,7 +46,10 @@ const field = (
   const $$unsubscribe = Symbol();
   const $$update = Symbol();
 
-  const supers = getSupers(target.prototype, ['connectedCallback', 'disconnectedCallback']);
+  const supers = reflectClassMethods(target.prototype, [
+    'connectedCallback',
+    'disconnectedCallback',
+  ]);
 
   setObject(sharedPropertiesRegistry, target, {
     ref: $$ref,
