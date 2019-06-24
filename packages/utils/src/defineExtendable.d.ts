@@ -20,21 +20,21 @@
  * class is extended or not. If the class is not extended, the Corpuscule
  * worker is called; otherwise, the original user-defined method is used.
  *
- * @param target a class declaration which lifecycle hooks should be redefined
+ * @param klass a class declaration which lifecycle hooks should be redefined
  * to be extendable.
  *
- * @param methods an object with methods that should be used in case the class
- * is not extended.
+ * @param baseClassMethods an object with methods that should be used in case
+ * the class is not extended.
  *
- * @param supers an object with methods that should be used in case the class
- * is extended.
+ * @param extendedClassMethods an object with methods that should be used in
+ * case the class is extended.
  *
  * @param initializers an array of functions to register the function to
  * execute during the class instantiation.
  */
 export default function defineExtendable<N extends PropertyKey>(
-  target: any,
-  methods: Record<N, Function>,
-  supers: Record<N, Function>,
+  klass: any,
+  baseClassMethods: Record<N, Function>,
+  extendedClassMethods: Record<N, Function>,
   initializers: Array<(self: object) => void>,
 ): void;
