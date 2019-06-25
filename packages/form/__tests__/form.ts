@@ -24,7 +24,7 @@ describe('@corpuscule/form', () => {
       @form()
       class Test extends CustomElement {
         @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api public readonly state!: FormState<unknown>;
 
         @option
         public debug: boolean = true;
@@ -48,7 +48,7 @@ describe('@corpuscule/form', () => {
       @form()
       class Test extends CustomElement {
         @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api public readonly state!: FormState<unknown>;
 
         public call(): void {
           submitSpy();
@@ -77,7 +77,7 @@ describe('@corpuscule/form', () => {
       @form()
       class Test extends CustomElement {
         @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api public readonly state!: FormState<unknown>;
 
         public secret: boolean = true;
 
@@ -107,7 +107,7 @@ describe('@corpuscule/form', () => {
       @form()
       class Test extends CustomElement {
         @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api public readonly state!: FormState<unknown>;
 
         @option
         public debug: boolean = true;
@@ -128,7 +128,7 @@ describe('@corpuscule/form', () => {
       @form()
       class Test extends CustomElement {
         @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api public readonly state!: FormState<unknown>;
 
         @option
         public debug: boolean = true;
@@ -151,7 +151,7 @@ describe('@corpuscule/form', () => {
         // @ts-ignore
         class Test extends CustomElement {
           @api public readonly formApi!: FormApi;
-          @api public readonly state!: FormState;
+          @api public readonly state!: FormState<unknown>;
 
           @option
           public test: boolean = true;
@@ -166,7 +166,7 @@ describe('@corpuscule/form', () => {
       @form()
       class Test extends CustomElement {
         @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api public readonly state!: FormState<unknown>;
 
         @option
         public initialValues: object = {
@@ -196,7 +196,7 @@ describe('@corpuscule/form', () => {
       @form()
       class Test extends CustomElement {
         @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api public readonly state!: FormState<unknown>;
 
         @option
         public initialValues: object = {
@@ -225,7 +225,7 @@ describe('@corpuscule/form', () => {
       @form()
       class Test extends CustomElement {
         @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api public readonly state!: FormState<unknown>;
 
         @option
         public initialValues: object = {
@@ -265,7 +265,7 @@ describe('@corpuscule/form', () => {
       @form()
       class Test extends CustomElement {
         @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api public readonly state!: FormState<unknown>;
 
         @option
         public debug?: boolean;
@@ -292,7 +292,7 @@ describe('@corpuscule/form', () => {
       })
       class Test extends CustomElement {
         @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api public readonly state!: FormState<unknown>;
 
         @option
         public onSubmit(): void {}
@@ -311,7 +311,7 @@ describe('@corpuscule/form', () => {
       @form()
       class Test extends CustomElement {
         @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api public readonly state!: FormState<unknown>;
 
         @option
         public onSubmit(): void {}
@@ -327,7 +327,7 @@ describe('@corpuscule/form', () => {
       const [fn] = formSpyObject.subscribe.calls.mostRecent().args;
       fn(state);
 
-      expect(test.state).toBe(state as FormState);
+      expect(test.state).toBe(state as FormState<unknown>);
 
       test.remove();
       expect(unsubscribe).toHaveBeenCalled();
@@ -337,7 +337,7 @@ describe('@corpuscule/form', () => {
       @form()
       class Test extends CustomElement {
         @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api public readonly state!: FormState<unknown>;
 
         @option
         public onSubmit(): void {}
@@ -361,7 +361,7 @@ describe('@corpuscule/form', () => {
       @form()
       class Test extends CustomElement {
         @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api public readonly state!: FormState<unknown>;
 
         @option
         public onSubmit(): void {}
@@ -406,7 +406,7 @@ describe('@corpuscule/form', () => {
           // @ts-ignore
           class Test extends CustomElement {
             @api public readonly formApi!: FormApi;
-            @api public readonly state!: FormState;
+            @api public readonly state!: FormState<unknown>;
           }
         }).toThrowError('@form requires onSubmit property marked with @option');
       });
@@ -415,7 +415,7 @@ describe('@corpuscule/form', () => {
         @form()
         class Test extends CustomElement {
           @api public readonly formApi!: FormApi;
-          @api public readonly state!: FormState;
+          @api public readonly state!: FormState<unknown>;
 
           @option
           public onSubmit(): void {}
@@ -439,7 +439,7 @@ describe('@corpuscule/form', () => {
         // @ts-ignore
         class Test extends CustomElement {
           @api public readonly formApi!: FormApi;
-          @api public readonly state!: FormState;
+          @api public readonly state!: FormState<unknown>;
 
           public constructor() {
             super();

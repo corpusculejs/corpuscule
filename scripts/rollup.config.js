@@ -5,7 +5,7 @@ const babelPlugin = babel({
   babelrc: false,
   plugins: [
     [
-      require('@babel/plugin-proposal-class-properties'),
+      '@babel/plugin-proposal-class-properties',
       {
         loose: true,
       },

@@ -32,7 +32,7 @@ module.exports = {
               babelrc: false,
               cacheDirectory: true,
               cacheCompression: false,
-              plugins: [require('@babel/plugin-proposal-class-properties')],
+              plugins: ['@babel/plugin-proposal-class-properties'],
             },
           },
         ].filter(Boolean),
@@ -50,7 +50,7 @@ module.exports = {
               cacheCompression: false,
               plugins: [
                 [
-                  require('@babel/plugin-transform-runtime'),
+                  '@babel/plugin-transform-runtime',
                   {
                     corejs: false,
                     helpers: true,
@@ -60,7 +60,7 @@ module.exports = {
                   },
                 ],
               ],
-              presets: [require('@babel/preset-typescript'), require('@corpuscule/babel-preset')],
+              presets: ['@babel/preset-typescript', '@corpuscule/babel-preset'],
             },
           },
         ],
