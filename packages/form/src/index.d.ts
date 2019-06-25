@@ -21,8 +21,8 @@ export interface FieldInputProps<T> {
   readonly value: T;
 }
 
-export type FieldMetaProps<FieldValue> = Omit<
-  FieldState<FieldValue>,
+export type FieldMetaProps<TFieldValue> = Omit<
+  FieldState<TFieldValue>,
   'blur' | 'change' | 'focus' | 'length' | 'name' | 'value'
 >;
 

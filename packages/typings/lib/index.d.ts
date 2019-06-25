@@ -1,5 +1,3 @@
-// tslint:disable:readonly-keyword readonly-array
-
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
 export interface CustomElement extends HTMLElement {

@@ -1,4 +1,3 @@
-// tslint:disable:no-unnecessary-class
 import {getName} from '../src/propertyUtils';
 
 describe('@corpuscule/utils', () => {
