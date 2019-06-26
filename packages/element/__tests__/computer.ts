@@ -7,7 +7,7 @@ const repeatGetTenTimes = <C extends object, M extends keyof C, T extends C[M]>(
 ): T => {
   let res: any;
 
-  // tslint:disable-next-line:no-increment-decrement
+  // tslint:disable-next-line:increment-decrement
   for (let i = 0; i < 10; i++) {
     res = instance[method];
   }

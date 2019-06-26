@@ -13,8 +13,8 @@ import {
 
 const fixtureMixin = <T extends Constructor<Element>>(base: T) =>
   class extends base {
-    public updateComplete: Promise<void>; // tslint:disable-line:readonly-keyword
-    private resolve: () => void; // tslint:disable-line:readonly-keyword
+    public updateComplete: Promise<void>; // tslint:disable-line:prefer-readonly
+    private resolve: () => void; // tslint:disable-line:prefer-readonly
 
     public constructor(...args: any[]) {
       super(...args);

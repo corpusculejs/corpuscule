@@ -210,7 +210,7 @@ describe('@corpuscule/redux', () => {
         @dispatcher
         public external: typeof externalActionCreator = externalActionCreator;
 
-        private str: string = 'test';
+        private readonly str: string = 'test';
 
         @dispatcher
         public test(num: number): AnyAction {

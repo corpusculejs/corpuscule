@@ -9,9 +9,9 @@ import {all} from '../src/field';
 describe('@corpuscule/form', () => {
   describe('@field', () => {
     let scheduler: jasmine.Spy;
-    let state: jasmine.SpyObj<FieldState>;
+    let state: jasmine.SpyObj<FieldState<unknown>>;
     let fieldValue: object;
-    let metaObject: FieldMetaProps;
+    let metaObject: FieldMetaProps<unknown>;
 
     let field: typeof basicField;
 
@@ -32,11 +32,13 @@ describe('@corpuscule/form', () => {
       fieldValue = {};
       state = jasmine.createSpyObj('formState', ['blur', 'change', 'focus']);
 
-      formSpyObject.registerField.and.callFake((_, listener: (state: FieldState) => void) => {
-        listener(state);
+      formSpyObject.registerField.and.callFake(
+        (_, listener: (state: FieldState<unknown>) => void) => {
+          listener(state);
 
-        return unsubscribe;
-      });
+          return unsubscribe;
+        },
+      );
 
       metaObject = {
         active: false,
@@ -62,7 +64,7 @@ describe('@corpuscule/form', () => {
       @form()
       class Form extends CustomElement {
         @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api public readonly state!: FormState<unknown>;
 
         @option
         public onSubmit(): void {}
@@ -72,7 +74,7 @@ describe('@corpuscule/form', () => {
       class Field extends CustomElement {
         @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<string>;
-        @api public readonly meta!: FieldMetaProps;
+        @api public readonly meta!: FieldMetaProps<unknown>;
 
         @option public readonly name: string = 'test';
       }
@@ -89,7 +91,7 @@ describe('@corpuscule/form', () => {
       @form()
       class Form extends CustomElement {
         @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api public readonly state!: FormState<unknown>;
 
         @option
         public onSubmit(): void {}
@@ -99,7 +101,7 @@ describe('@corpuscule/form', () => {
       class Field extends CustomElement {
         @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<string>;
-        @api public readonly meta!: FieldMetaProps;
+        @api public readonly meta!: FieldMetaProps<unknown>;
 
         @option public readonly name: string = 'test';
 
@@ -117,7 +119,7 @@ describe('@corpuscule/form', () => {
       @form()
       class Form extends CustomElement {
         @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api public readonly state!: FormState<unknown>;
 
         @option
         public onSubmit(): void {}
@@ -127,7 +129,7 @@ describe('@corpuscule/form', () => {
       class Field extends CustomElement {
         @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<string>;
-        @api public readonly meta!: FieldMetaProps;
+        @api public readonly meta!: FieldMetaProps<unknown>;
 
         @option public readonly name: string = 'test';
 
@@ -164,7 +166,7 @@ describe('@corpuscule/form', () => {
       @form()
       class Form extends CustomElement {
         @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api public readonly state!: FormState<unknown>;
 
         @option
         public onSubmit(): void {}
@@ -174,7 +176,7 @@ describe('@corpuscule/form', () => {
       class Field extends CustomElement {
         @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<object>;
-        @api public readonly meta!: FieldMetaProps;
+        @api public readonly meta!: FieldMetaProps<unknown>;
 
         @option public readonly name: string = 'test';
       }
@@ -195,7 +197,7 @@ describe('@corpuscule/form', () => {
       @form()
       class Form extends CustomElement {
         @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api public readonly state!: FormState<unknown>;
 
         @option
         public onSubmit(): void {}
@@ -205,7 +207,7 @@ describe('@corpuscule/form', () => {
       class Field extends CustomElement {
         @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<object>;
-        @api public readonly meta!: FieldMetaProps;
+        @api public readonly meta!: FieldMetaProps<unknown>;
 
         @option public readonly name: string = 'test';
 
@@ -231,7 +233,7 @@ describe('@corpuscule/form', () => {
       @form()
       class Form extends CustomElement {
         @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api public readonly state!: FormState<unknown>;
 
         @option
         public onSubmit(): void {}
@@ -241,7 +243,7 @@ describe('@corpuscule/form', () => {
       class Field extends CustomElement {
         @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<object>;
-        @api public readonly meta!: FieldMetaProps;
+        @api public readonly meta!: FieldMetaProps<unknown>;
 
         @option public name: string = 'test';
       }
@@ -257,7 +259,7 @@ describe('@corpuscule/form', () => {
       @form()
       class Form extends CustomElement {
         @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api public readonly state!: FormState<unknown>;
 
         @option
         public onSubmit(): void {}
@@ -267,7 +269,7 @@ describe('@corpuscule/form', () => {
       class Field extends CustomElement {
         @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<object>;
-        @api public readonly meta!: FieldMetaProps;
+        @api public readonly meta!: FieldMetaProps<unknown>;
 
         @option public readonly name: string = 'test';
       }
@@ -287,7 +289,7 @@ describe('@corpuscule/form', () => {
       @form()
       class Form extends CustomElement {
         @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api public readonly state!: FormState<unknown>;
 
         @option
         public onSubmit(): void {}
@@ -297,7 +299,7 @@ describe('@corpuscule/form', () => {
       class Field extends CustomElement {
         @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<object>;
-        @api public readonly meta!: FieldMetaProps;
+        @api public readonly meta!: FieldMetaProps<unknown>;
 
         @option public name: string = 'test';
       }
@@ -313,7 +315,7 @@ describe('@corpuscule/form', () => {
       @form()
       class Form extends CustomElement {
         @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api public readonly state!: FormState<unknown>;
 
         @option
         public onSubmit(): void {}
@@ -323,7 +325,7 @@ describe('@corpuscule/form', () => {
       class Field extends CustomElement {
         @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<string>;
-        @api public readonly meta!: FieldMetaProps;
+        @api public readonly meta!: FieldMetaProps<unknown>;
 
         @option public readonly name: string = 'test';
       }
@@ -351,7 +353,7 @@ describe('@corpuscule/form', () => {
       @form()
       class Form extends CustomElement {
         @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState;
+        @api public readonly state!: FormState<unknown>;
 
         @option
         public onSubmit(): void {}
@@ -361,7 +363,7 @@ describe('@corpuscule/form', () => {
       class Field extends CustomElement {
         @api public readonly formApi!: FormApi;
         @api public readonly input!: FieldInputProps<string>;
-        @api public readonly meta!: FieldMetaProps;
+        @api public readonly meta!: FieldMetaProps<unknown>;
 
         @option public readonly name: string = 'test';
       }
@@ -385,7 +387,7 @@ describe('@corpuscule/form', () => {
         @form()
         class Form extends CustomElement {
           @api public readonly formApi!: FormApi;
-          @api public readonly state!: FormState;
+          @api public readonly state!: FormState<unknown>;
 
           @option
           public onSubmit(): void {}
@@ -395,7 +397,7 @@ describe('@corpuscule/form', () => {
         class Field extends CustomElement {
           @api public readonly formApi!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
-          @api public readonly meta!: FieldMetaProps;
+          @api public readonly meta!: FieldMetaProps<unknown>;
 
           @option
           public name: string = 'test1';
@@ -412,7 +414,7 @@ describe('@corpuscule/form', () => {
         @form()
         class Form extends CustomElement {
           @api public readonly formApi!: FormApi;
-          @api public readonly state!: FormState;
+          @api public readonly state!: FormState<unknown>;
 
           @option
           public onSubmit(): void {}
@@ -422,7 +424,7 @@ describe('@corpuscule/form', () => {
         class Field extends CustomElement {
           @api public readonly formApi!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
-          @api public readonly meta!: FieldMetaProps;
+          @api public readonly meta!: FieldMetaProps<unknown>;
 
           @option public name: string = 'test1';
         }
@@ -438,7 +440,7 @@ describe('@corpuscule/form', () => {
         @form()
         class Form extends CustomElement {
           @api public readonly formApi!: FormApi;
-          @api public readonly state!: FormState;
+          @api public readonly state!: FormState<unknown>;
 
           @option
           public onSubmit(): void {}
@@ -448,7 +450,7 @@ describe('@corpuscule/form', () => {
         class Field extends CustomElement {
           @api public readonly formApi!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
-          @api public readonly meta!: FieldMetaProps;
+          @api public readonly meta!: FieldMetaProps<unknown>;
 
           @option public name: string = 'test';
           @option public subscription: Record<string, boolean> = all;
@@ -465,7 +467,7 @@ describe('@corpuscule/form', () => {
         @form()
         class Form extends CustomElement {
           @api public readonly formApi!: FormApi;
-          @api public readonly state!: FormState;
+          @api public readonly state!: FormState<unknown>;
 
           @option
           public onSubmit(): void {}
@@ -475,7 +477,7 @@ describe('@corpuscule/form', () => {
         class Field extends CustomElement {
           @api public readonly formApi!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
-          @api public readonly meta!: FieldMetaProps;
+          @api public readonly meta!: FieldMetaProps<unknown>;
 
           @option public name: string = 'test';
           @option public subscription: Record<string, boolean> = all;
@@ -495,7 +497,7 @@ describe('@corpuscule/form', () => {
           class Field extends CustomElement {
             @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
-            @api public readonly meta!: FieldMetaProps;
+            @api public readonly meta!: FieldMetaProps<unknown>;
 
             @option public readonly name: string = 'test';
 
@@ -514,7 +516,7 @@ describe('@corpuscule/form', () => {
           class Field extends CustomElement {
             @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
-            @api public readonly meta!: FieldMetaProps;
+            @api public readonly meta!: FieldMetaProps<unknown>;
           }
         }).toThrowError('@field requires name property marked with @option');
       });
@@ -523,7 +525,7 @@ describe('@corpuscule/form', () => {
         @form()
         class Form extends CustomElement {
           @api public readonly formApi!: FormApi;
-          @api public readonly state!: FormState;
+          @api public readonly state!: FormState<unknown>;
 
           @option
           public onSubmit(): void {}
@@ -533,7 +535,7 @@ describe('@corpuscule/form', () => {
         class Field extends CustomElement {
           @api public readonly formApi!: FormApi;
           @api public readonly input!: FieldInputProps<string>;
-          @api public readonly meta!: FieldMetaProps;
+          @api public readonly meta!: FieldMetaProps<unknown>;
 
           @option public readonly name?: string;
         }
@@ -554,7 +556,7 @@ describe('@corpuscule/form', () => {
         @form()
         class Form extends CustomElement {
           @api public readonly formApi!: FormApi;
-          @api public readonly state!: FormState;
+          @api public readonly state!: FormState<unknown>;
 
           @option
           public onSubmit(): void {}
@@ -564,7 +566,7 @@ describe('@corpuscule/form', () => {
         class Field extends CustomElement {
           @api public readonly formApi!: FormApi;
           @api public readonly input!: FieldInputProps<string>;
-          @api public readonly meta!: FieldMetaProps;
+          @api public readonly meta!: FieldMetaProps<unknown>;
 
           @option public readonly name: string = 'test';
 
@@ -619,7 +621,7 @@ describe('@corpuscule/form', () => {
         @form()
         class Form extends CustomElement {
           @api public readonly formApi!: FormApi;
-          @api public readonly state!: FormState;
+          @api public readonly state!: FormState<unknown>;
 
           @option
           public onSubmit(): void {}
@@ -639,7 +641,7 @@ describe('@corpuscule/form', () => {
           }
 
           @api public readonly input!: FieldInputProps<object>;
-          @api public readonly meta!: FieldMetaProps;
+          @api public readonly meta!: FieldMetaProps<unknown>;
 
           @option public readonly name: string = 'test';
         }
@@ -678,7 +680,7 @@ describe('@corpuscule/form', () => {
           @form()
           class Form extends CustomElement {
             @api public readonly formApi!: FormApi;
-            @api public readonly state!: FormState;
+            @api public readonly state!: FormState<unknown>;
 
             @option
             public onSubmit(): void {}
@@ -688,7 +690,7 @@ describe('@corpuscule/form', () => {
           class Field extends CustomElement {
             @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
-            @api public readonly meta!: FieldMetaProps;
+            @api public readonly meta!: FieldMetaProps<unknown>;
 
             @option public readonly name: string = 'test';
           }
@@ -704,7 +706,7 @@ describe('@corpuscule/form', () => {
           @form()
           class Form extends CustomElement {
             @api public readonly formApi!: FormApi;
-            @api public readonly state!: FormState;
+            @api public readonly state!: FormState<unknown>;
 
             @option
             public onSubmit(): void {}
@@ -714,7 +716,7 @@ describe('@corpuscule/form', () => {
           class Field extends CustomElement {
             @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
-            @api public readonly meta!: FieldMetaProps;
+            @api public readonly meta!: FieldMetaProps<unknown>;
 
             @option public readonly name: string = 'test';
 
@@ -741,7 +743,7 @@ describe('@corpuscule/form', () => {
           @form()
           class Form extends CustomElement {
             @api public readonly formApi!: FormApi;
-            @api public readonly state!: FormState;
+            @api public readonly state!: FormState<unknown>;
 
             @option
             public onSubmit(): void {}
@@ -751,7 +753,7 @@ describe('@corpuscule/form', () => {
           class Field extends CustomElement {
             @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
-            @api public readonly meta!: FieldMetaProps;
+            @api public readonly meta!: FieldMetaProps<unknown>;
 
             @option public readonly name: string = 'test';
           }
@@ -769,7 +771,7 @@ describe('@corpuscule/form', () => {
           @form()
           class Form extends CustomElement {
             @api public readonly formApi!: FormApi;
-            @api public readonly state!: FormState;
+            @api public readonly state!: FormState<unknown>;
 
             @option
             public onSubmit(): void {}
@@ -779,7 +781,7 @@ describe('@corpuscule/form', () => {
           class Field extends CustomElement {
             @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
-            @api public readonly meta!: FieldMetaProps;
+            @api public readonly meta!: FieldMetaProps<unknown>;
 
             @option public readonly name: string = 'test';
 
@@ -805,7 +807,7 @@ describe('@corpuscule/form', () => {
           @form()
           class Form extends CustomElement {
             @api public readonly formApi!: FormApi;
-            @api public readonly state!: FormState;
+            @api public readonly state!: FormState<unknown>;
 
             @option
             public onSubmit(): void {}
@@ -815,7 +817,7 @@ describe('@corpuscule/form', () => {
           class Field extends CustomElement {
             @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
-            @api public readonly meta!: FieldMetaProps;
+            @api public readonly meta!: FieldMetaProps<unknown>;
 
             @option public readonly name: string = 'test';
           }
@@ -832,7 +834,7 @@ describe('@corpuscule/form', () => {
         @form()
         class Form extends CustomElement {
           @api public readonly formApi!: FormApi;
-          @api public readonly state!: FormState;
+          @api public readonly state!: FormState<unknown>;
 
           @option
           public onSubmit(): void {}
@@ -842,7 +844,7 @@ describe('@corpuscule/form', () => {
         class Field extends CustomElement {
           @api public readonly formApi!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
-          @api public readonly meta!: FieldMetaProps;
+          @api public readonly meta!: FieldMetaProps<unknown>;
 
           @option public readonly name: string = 'test';
         }
@@ -874,7 +876,7 @@ describe('@corpuscule/form', () => {
         @form()
         class Form extends CustomElement {
           @api public readonly formApi!: FormApi;
-          @api public readonly state!: FormState;
+          @api public readonly state!: FormState<unknown>;
 
           @option
           public onSubmit(): void {}
@@ -884,7 +886,7 @@ describe('@corpuscule/form', () => {
         class Field extends CustomElement {
           @api public readonly formApi!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
-          @api public readonly meta!: FieldMetaProps;
+          @api public readonly meta!: FieldMetaProps<unknown>;
 
           @option public readonly name: string = 'test';
         }
@@ -900,7 +902,7 @@ describe('@corpuscule/form', () => {
         class Field extends CustomElement {
           @api public readonly formApi!: FormApi;
           @api public readonly input!: FieldInputProps<object>;
-          @api public readonly meta!: FieldMetaProps;
+          @api public readonly meta!: FieldMetaProps<unknown>;
           @api public readonly refs!: NodeListOf<HTMLInputElement>;
 
           @option public readonly name: string = 'test';
@@ -929,7 +931,7 @@ describe('@corpuscule/form', () => {
           class Field extends CustomElement {
             @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<string>;
-            @api public readonly meta!: FieldMetaProps;
+            @api public readonly meta!: FieldMetaProps<unknown>;
 
             @option public readonly name: string = 'test';
 
@@ -1014,7 +1016,7 @@ describe('@corpuscule/form', () => {
           class Field extends HTMLInputElement {
             @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
-            @api public readonly meta!: FieldMetaProps;
+            @api public readonly meta!: FieldMetaProps<unknown>;
 
             @option public readonly name: string = 'test';
           }
@@ -1041,7 +1043,7 @@ describe('@corpuscule/form', () => {
           class Field extends HTMLInputElement {
             @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
-            @api public readonly meta!: FieldMetaProps;
+            @api public readonly meta!: FieldMetaProps<unknown>;
 
             @option public readonly name: string = 'test';
           }
@@ -1234,7 +1236,7 @@ describe('@corpuscule/form', () => {
           class Field extends HTMLInputElement {
             @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
-            @api public readonly meta!: FieldMetaProps;
+            @api public readonly meta!: FieldMetaProps<unknown>;
 
             @option public readonly name: string = 'test';
           }
@@ -1260,7 +1262,7 @@ describe('@corpuscule/form', () => {
           class Field extends HTMLInputElement {
             @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
-            @api public readonly meta!: FieldMetaProps;
+            @api public readonly meta!: FieldMetaProps<unknown>;
 
             @option public readonly name: string = 'test';
           }
@@ -1358,7 +1360,7 @@ describe('@corpuscule/form', () => {
           class Field extends HTMLInputElement {
             @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
-            @api public readonly meta!: FieldMetaProps;
+            @api public readonly meta!: FieldMetaProps<unknown>;
 
             @option public readonly name: string = 'test';
           }
@@ -1390,7 +1392,7 @@ describe('@corpuscule/form', () => {
           class Field extends HTMLInputElement {
             @api public readonly formApi!: FormApi;
             @api public readonly input!: FieldInputProps<object>;
-            @api public readonly meta!: FieldMetaProps;
+            @api public readonly meta!: FieldMetaProps<unknown>;
 
             @option public readonly name: string = 'test';
           }
@@ -1516,7 +1518,7 @@ describe('@corpuscule/form', () => {
             class Field extends HTMLSelectElement {
               @api public readonly formApi!: FormApi;
               @api public readonly input!: FieldInputProps<object>;
-              @api public readonly meta!: FieldMetaProps;
+              @api public readonly meta!: FieldMetaProps<unknown>;
 
               @option public readonly name: string = 'test';
             }

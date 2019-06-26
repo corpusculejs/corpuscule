@@ -7,12 +7,8 @@ export class UnsafeStatic {
 
 export const unsafeStatic: (value: unknown) => UnsafeStatic;
 
-declare const withCustomElement: // tslint:disable-next-line:readonly-array
-(
-  processor: (
-    strings: TemplateStringsArray,
-    ...values: any[] // tslint:disable-line:readonly-array
-  ) => TemplateResult,
-) => (strings: TemplateStringsArray, ...values: any[]) => TemplateResult; // tslint:disable-line:readonly-array
+declare const withCustomElement: (
+  processor: (strings: TemplateStringsArray, ...values: any[]) => TemplateResult,
+) => (strings: TemplateStringsArray, ...values: any[]) => TemplateResult;
 
 export default withCustomElement;

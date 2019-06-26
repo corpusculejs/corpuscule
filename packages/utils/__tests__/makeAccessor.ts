@@ -6,7 +6,7 @@ describe('@corpuscule/utils', () => {
       const initializers: Array<(self: {}) => void> = [];
 
       class Test {
-        public _foo: number = 1;
+        private _foo: number = 1;
 
         public get foo(): number {
           return this._foo;
