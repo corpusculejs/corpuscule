@@ -1,5 +1,5 @@
 /**
- * @module setters
+ * @module @corpuscule/utils/lib/setters
  *
  * @import
  *

@@ -2,7 +2,7 @@
  * This module provides tools to work with different kinds of properties:
  * string, symbolic, and private, — identically.
  *
- * @module propertyUtils
+ * @module @corpuscule/utils/lib/propertyUtils
  *
  * @import
  *

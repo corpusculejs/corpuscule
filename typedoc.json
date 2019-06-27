@@ -4,5 +4,7 @@
   "excludePrivate": true,
   "ignoreCompilerErrors": true,
   "includeDeclarations": true,
-  "mode": "modules"
+  "mode": "modules",
+  "name": "Corpuscule API",
+  "out":"./docs/api"
 }

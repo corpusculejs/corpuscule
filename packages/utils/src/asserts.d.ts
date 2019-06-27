@@ -10,7 +10,7 @@
  *
  * This module contains assertions to check these cases.
  *
- * @module asserts
+ * @module @corpuscule/utils/lib/asserts
  *
  * @import
  * ```typescript

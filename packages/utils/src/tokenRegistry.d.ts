@@ -1,5 +1,5 @@
 /**
- * @module tokenRegistry
+ * @module @corpuscule/utils/lib/tokenRegistry
  *
  * @import ```typescript
  *

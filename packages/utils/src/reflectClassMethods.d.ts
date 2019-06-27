@@ -1,5 +1,5 @@
 /**
- * @module reflectClassMethods
+ * @module @corpuscule/utils/lib/reflectClassMethods
  *
  * @import
  * ```typescript

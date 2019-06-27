@@ -1,5 +1,5 @@
 /**
- * @module shallowEqual
+ * @module @corpuscule/utils/lib/shallowEqual
  *
  * @import ```typescript
  *

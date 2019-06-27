@@ -1,5 +1,5 @@
 /**
- * @module makeAccessor
+ * @module @corpuscule/utils/lib/makeAccessor
  *
  * @import
  * ```typescript

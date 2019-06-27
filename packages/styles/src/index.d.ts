@@ -1,7 +1,7 @@
 /**
  * This module provides tools to add styles to a web component.
  *
- * @module styles
+ * @module @corpuscule/styles
  *
  * @import
  * ```typescript

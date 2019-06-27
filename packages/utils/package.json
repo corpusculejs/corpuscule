@@ -6,8 +6,7 @@
     "lib"
   ],
   "scripts": {
-    "build": "node ../../scripts/build.js",
-    "docs": "typedoc --tsconfig ../../tsconfig.json src"
+    "build": "node ../../scripts/build.js"
   },
   "author": "Vlad Rindevich <rindevich.vs@gmail.com> (https://github.com/Lodin)",
   "bugs": {
