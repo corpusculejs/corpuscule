@@ -23,7 +23,16 @@ module.exports = config => {
     frameworks: ['jasmine'],
 
     // List of files / patterns to load in the browser
-    files: ['test/test.js'],
+    files: [
+      'test/test.js',
+      {
+        pattern: './test/assets/**/*',
+        watched: false,
+        included: false,
+        nocache: false,
+        served: true,
+      },
+    ],
 
     // List of files / patterns to exclude
     exclude: [],
@@ -67,6 +76,10 @@ module.exports = config => {
     concurrency: Infinity,
 
     webpack,
+
+    proxies: {
+      '/assets/': '/base/test/assets/',
+    },
 
     coverageIstanbulReporter: {
       reports: ['html', 'lcovonly'],
