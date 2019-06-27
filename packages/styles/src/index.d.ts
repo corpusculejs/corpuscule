@@ -24,11 +24,11 @@
  * @styles(new URL('styles.css', import.meta.url))
  * class Component extends HTMLElement {
  *   public connectedCallback() {
- *     this.shadowRoot!.innerHTML = 'Loading...';
+ *     this.shadowRoot!.innerHTML = '<div hidden class="foo">Bar</div>';
  *   }
  *
  *   private [stylesAttachedCallback]() {
- *     this.shadowRoot!.innerHTML = '<div class="foo">Bar</div>'
+ *      this.shadowRoot!.querySelector('.foo')!.hidden = false;
  *   }
  * }
  * ```
