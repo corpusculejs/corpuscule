@@ -5,9 +5,16 @@ export const stylesAttachedCallback = Symbol();
 
 const observerConfig = {childList: true};
 
-export const stylesAdvanced = ({shadyCSS, adoptedStyleSheets}, ...pathsOrStyles) => target => {
+export const stylesAdvanced = (
+  pathsOrStyles,
+  {
+    adoptedStyleSheets = 'adoptedStyleSheets' in Document.prototype,
+    shadyCSS = window.ShadyCSS !== undefined && !window.ShadyCSS.nativeShadow,
+  } = {},
+) => target => {
   const {prototype} = target;
-  const template = document.createElement('template');
+  const linkNodes = document.createDocumentFragment();
+  const styleNodes = document.createDocumentFragment();
   const constructableStyles = [];
 
   for (const pathOrStyle of pathsOrStyles) {
@@ -20,7 +27,7 @@ export const stylesAdvanced = ({shadyCSS, adoptedStyleSheets}, ...pathsOrStyles)
         pathOrStyle.origin === location.origin
           ? pathOrStyle.pathname + pathOrStyle.search
           : pathOrStyle;
-      template.content.appendChild(link);
+      linkNodes.append(link);
     } else if (shadyCSS) {
       // If ShadyCSS
       constructableStyles.push(pathOrStyle);
@@ -33,7 +40,7 @@ export const stylesAdvanced = ({shadyCSS, adoptedStyleSheets}, ...pathsOrStyles)
       // Otherwise, just create a style tag
       const style = document.createElement('style');
       style.textContent = pathOrStyle;
-      template.content.appendChild(style);
+      styleNodes.append(style);
     }
   }
 
@@ -50,13 +57,30 @@ export const stylesAdvanced = ({shadyCSS, adoptedStyleSheets}, ...pathsOrStyles)
       }
     }
 
-    if (template.content.hasChildNodes()) {
-      const styleElements = template.content.cloneNode(true);
-
+    if (linkNodes.hasChildNodes() || styleNodes.hasChildNodes()) {
       const observer = new MutationObserver(() => {
-        root.prepend(styleElements);
+        root.prepend(styleNodes.cloneNode(true));
+
+        if (linkNodes.hasChildNodes()) {
+          const nodesToAppend = linkNodes.cloneNode(true);
+
+          for (let i = 0, count = nodesToAppend.children.length; i < count; i++) {
+            // eslint-disable-next-line no-loop-func
+            nodesToAppend.children[i].addEventListener('load', () => {
+              count -= 1;
+
+              if (count === 0) {
+                supers[stylesAttachedCallback].call(this);
+              }
+            });
+          }
+
+          root.prepend(nodesToAppend);
+        } else {
+          supers[stylesAttachedCallback].call(this);
+        }
+
         observer.disconnect();
-        supers[stylesAttachedCallback].call(this);
       });
 
       observer.observe(root, observerConfig);
@@ -68,11 +92,6 @@ export const stylesAdvanced = ({shadyCSS, adoptedStyleSheets}, ...pathsOrStyles)
   };
 };
 
-const defaultOptions = {
-  adoptedStyleSheets: 'adoptedStyleSheets' in Document.prototype,
-  shadyCSS: window.ShadyCSS !== undefined && !window.ShadyCSS.nativeShadow,
-};
-
-const styles = (...pathsOrStyles) => stylesAdvanced(defaultOptions, ...pathsOrStyles);
+const styles = (...pathsOrStyles) => stylesAdvanced(pathsOrStyles);
 
 export default styles;

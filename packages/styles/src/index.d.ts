@@ -1,14 +1,14 @@
 export const stylesAttachedCallback: unique symbol;
 
 export interface StylesDecoratorOptions {
-  readonly adoptedStyleSheets: boolean;
-  readonly shadyCSS: boolean;
+  readonly adoptedStyleSheets?: boolean;
+  readonly shadyCSS?: boolean;
 }
 
-export const stylesAdvanced: <T extends Array<string | URL>>(
-  options: StylesDecoratorOptions,
-  ...pathsOrStyles: T
+export const stylesAdvanced: (
+  pathsOrStyles: Array<string | URL>,
+  options?: StylesDecoratorOptions,
 ) => ClassDecorator;
 
-declare const styles: <T extends Array<string | URL>>(...pathsOrStyles: T) => ClassDecorator;
+declare const styles: (...pathsOrStyles: Array<string | URL>) => ClassDecorator;
 export default styles;

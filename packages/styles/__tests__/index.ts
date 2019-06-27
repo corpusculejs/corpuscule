@@ -15,14 +15,14 @@ describe('@corpuscule/styles', () => {
 
   beforeEach(() => {
     styles = (...pathsOrStyles) =>
-      stylesAdvanced({adoptedStyleSheets: false, shadyCSS: false}, ...pathsOrStyles);
+      stylesAdvanced(pathsOrStyles, {adoptedStyleSheets: false, shadyCSS: false});
   });
 
   describe('file links', () => {
     it('appends "link" tags for urls with same origin', async () => {
       const [promise, resolve] = createTestingPromise();
 
-      @styles(new URL('./styles.css', location.origin))
+      @styles(new URL('assets/styles/basic.css', location.origin))
       class Test extends HTMLElement {
         public constructor() {
           super();
@@ -30,7 +30,7 @@ describe('@corpuscule/styles', () => {
         }
 
         public connectedCallback(): void {
-          this.shadowRoot!.innerHTML = '<div>Bar</div>';
+          this.shadowRoot!.innerHTML = '<div class="foo">Bar</div>';
         }
 
         public [stylesAttachedCallback](): void {
@@ -43,35 +43,8 @@ describe('@corpuscule/styles', () => {
       await promise;
 
       expect(test.shadowRoot!.innerHTML).toBe(
-        `<link rel="stylesheet" type="text/css" href="/styles.css"><div>Bar</div>`,
-      );
-    });
-
-    it('appends "link" tags for urls with different origins', async () => {
-      const [promise, resolve] = createTestingPromise();
-
-      @styles(new URL('./styles.css', 'https://foo'))
-      class Test extends HTMLElement {
-        public constructor() {
-          super();
-          this.attachShadow({mode: 'open'});
-        }
-
-        public connectedCallback(): void {
-          this.shadowRoot!.innerHTML = '<div>Bar</div>';
-        }
-
-        public [stylesAttachedCallback](): void {
-          resolve();
-        }
-      }
-
-      const test = createSimpleElement(Test);
-
-      await promise;
-
-      expect(test.shadowRoot!.innerHTML).toBe(
-        `<link rel="stylesheet" type="text/css" href="https://foo/styles.css"><div>Bar</div>`,
+        '<link rel="stylesheet" type="text/css" href="/assets/styles/basic.css">' +
+          '<div class="foo">Bar</div>',
       );
     });
   });
@@ -83,7 +56,7 @@ describe('@corpuscule/styles', () => {
 
     beforeEach(() => {
       styles = (...pathsOrStyles) =>
-        stylesAdvanced({adoptedStyleSheets: true, shadyCSS: false}, ...pathsOrStyles);
+        stylesAdvanced(pathsOrStyles, {adoptedStyleSheets: true, shadyCSS: false});
       sheetSpyObj = jasmine.createSpyObj('CSSStyleSheet', ['replaceSync']);
       sheetSpy = spyOn(window as any, 'CSSStyleSheet').and.returnValue(sheetSpyObj);
 
@@ -132,7 +105,7 @@ describe('@corpuscule/styles', () => {
   describe('ShadyCSS', () => {
     beforeEach(() => {
       styles = (...pathsOrStyles) =>
-        stylesAdvanced({adoptedStyleSheets: false, shadyCSS: true}, ...pathsOrStyles);
+        stylesAdvanced(pathsOrStyles, {adoptedStyleSheets: false, shadyCSS: true});
       (window as any).ShadyCSS = jasmine.createSpyObj('ShadyCSS', ['prepareAdoptedCssText']);
     });
 
