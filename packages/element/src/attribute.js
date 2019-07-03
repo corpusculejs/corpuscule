@@ -1,13 +1,13 @@
-const attribute = (attributeName, guard) => (prototype, key) => {
+const attribute = (attributeName, guard) => (prototype, propertyKey) => {
   if (guard !== Boolean && guard !== Number && guard !== String) {
     throw new TypeError('Guard for @attribute should be either Number, Boolean or String');
   }
 
-  const {constructor: target} = prototype;
+  const {constructor: klass} = prototype;
   const guardType = typeof guard(null);
 
-  target.__registrations.push(() => {
-    target.observedAttributes.push(attributeName);
+  klass.__registrations.push(() => {
+    klass.observedAttributes.push(attributeName);
   });
 
   return {
@@ -23,7 +23,7 @@ const attribute = (attributeName, guard) => (prototype, key) => {
     },
     set(value) {
       if (value != null && typeof value !== guardType) {
-        throw new TypeError(`Value applied to "${key}" is not ${guard.name} or undefined`);
+        throw new TypeError(`Value applied to "${propertyKey}" is not ${guard.name} or undefined`);
       }
 
       if (value == null || value === false) {

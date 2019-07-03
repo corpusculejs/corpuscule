@@ -19,8 +19,8 @@ const readonlyPropertyDescriptor = {
 const element = (
   name,
   {extends: builtin, lightDOM, renderer, scheduler = defaultScheduler} = {},
-) => target => {
-  const {prototype} = target;
+) => klass => {
+  const {prototype} = klass;
   const hasRender = $render in prototype;
   const isLight = lightDOM || (builtin && !shadowElements.includes(builtin));
 
@@ -37,7 +37,7 @@ const element = (
     $updatedCallback,
   ]);
 
-  Object.defineProperties(target, {
+  Object.defineProperties(klass, {
     is: {
       ...readonlyPropertyDescriptor,
       value: name,
@@ -49,7 +49,7 @@ const element = (
   });
 
   defineExtendable(
-    target,
+    klass,
     {
       async attributeChangedCallback(attributeName, oldValue, newValue) {
         if (oldValue === newValue || !this[$$connected]) {
@@ -66,7 +66,7 @@ const element = (
       },
     },
     supers,
-    target.__initializers,
+    klass.__initializers,
   );
 
   Object.assign(prototype, {
@@ -107,10 +107,10 @@ const element = (
     [$updatedCallback]: supers[$updatedCallback],
   });
 
-  target.__initializers.push(self => {
+  klass.__initializers.push(self => {
     self[$$connected] = false;
     self[$$root] =
-      self.constructor !== target ? null : isLight ? self : self.attachShadow({mode: 'open'});
+      self.constructor !== klass ? null : isLight ? self : self.attachShadow({mode: 'open'});
     self[$$valid] = true;
   });
 
@@ -118,7 +118,7 @@ const element = (
   // decorators execution which helps to fix many issues connected with
   // immediate custom element instance creation during definition.
   Promise.resolve().then(() => {
-    customElements.define(name, target, builtin && {extends: builtin});
+    customElements.define(name, klass, builtin && {extends: builtin});
   });
 };
 
