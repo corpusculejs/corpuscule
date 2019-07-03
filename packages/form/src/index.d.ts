@@ -1,6 +1,15 @@
+/**
+ * @module @corpuscule/form
+ */
+
+/**
+ * Do not remove this comment; it keeps typedoc from misplacing the module
+ * docs.
+ */
+
 import {isProvider} from '@corpuscule/context';
 import {Omit} from '@corpuscule/typings';
-import {Token, TokenCreator} from '@corpuscule/utils/lib/tokenRegistry';
+import {Token} from '@corpuscule/utils/lib/tokenRegistry';
 import {Decorator, FieldState, FormApi, FormSubscription} from 'final-form';
 
 export {FormApi};
@@ -26,8 +35,11 @@ export type FieldMetaProps<TFieldValue> = Omit<
   'blur' | 'change' | 'focus' | 'length' | 'name' | 'value'
 >;
 
-export const createFormToken: TokenCreator;
+export const createFormToken: () => Token;
 
+/**
+ *
+ */
 export const api: PropertyDecorator;
 export const field: (options?: FieldDecoratorOptions) => ClassDecorator;
 export const form: (options?: FormDecoratorOptions) => ClassDecorator;
