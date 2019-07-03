@@ -18,7 +18,7 @@ const readonlyPropertyDescriptor = {
 
 const element = (
   name,
-  {extends: builtin, lightDOM = false, renderer, scheduler = defaultScheduler} = {},
+  {extends: builtin, lightDOM, renderer, scheduler = defaultScheduler} = {},
 ) => target => {
   const {prototype} = target;
   const hasRender = $render in prototype;
