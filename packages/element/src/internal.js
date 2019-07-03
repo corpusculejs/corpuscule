@@ -1,5 +1,5 @@
 import makeAccessor from '@corpuscule/utils/lib/makeAccessor';
-import {internalChangedCallback as $internalChangedCallback} from './tokens/lifecycle';
+import {internalChangedCallback as $internalChangedCallback} from './tokens';
 
 const internal = ({constructor: klass}, propertyKey, descriptor) => {
   const {get, set} = makeAccessor(descriptor, klass.__initializers);

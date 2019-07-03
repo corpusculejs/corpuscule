@@ -7,7 +7,7 @@ import {
   propertyChangedCallback as $propertyChangedCallback,
   render as $render,
   updatedCallback as $updatedCallback,
-} from './tokens/lifecycle';
+} from './tokens';
 import {noop, shadowElements} from './utils';
 
 const readonlyPropertyDescriptor = {
