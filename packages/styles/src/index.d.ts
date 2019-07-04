@@ -1,12 +1,44 @@
 /**
  * This module provides tools to add styles to a web component.
  *
- * ## How it works
+ * ```typescript
+ * import styles, {stylesAttachedCallback} from '@corpuscule/styles';
+ * ```
  *
- * There are four ways to add styles to a web component. The [[styles]]
- * decorator detect the appropriate one automatically and using the
- * [[stylesAdvanced]] you can define it manually via the
- * [[StylesDecoratorOptions]].
+ * @module @corpuscule/styles
+ */
+
+/**
+ * A symbolic name of the method that is called when all styles are properly
+ * added. There are three different timings it can fire:
+ * * If the `URL` instance is used, it will fire after all CSS files are
+ * loaded.
+ * * If the `HTMLStyleElement` is used and no `URL` instance exists, it will
+ * fire after the `<style>` tag is mounted.
+ * * If nothing above is used, it will fire immediately after the
+ * `attachShadow` is called.
+ *
+ * ### Method signature
+ * ```typescript
+ * [stylesAttachedCallback](): void;
+ * ```
+ */
+export const stylesAttachedCallback: unique symbol;
+
+export interface StylesDecoratorOptions {
+  /**
+   * Defines whether the decorator should use the [Constructible Stylesheet
+   * proposal](https://wicg.github.io/construct-stylesheets/).
+   */
+  readonly adoptedStyleSheets?: boolean;
+  /**
+   * Defines whether the decorator should use the [Shady CSS](https://github.com/webcomponents/polyfills/tree/master/packages/shadycss)
+   * polyfill.
+   */
+  readonly shadyCSS?: boolean;
+}
+/**
+ * A decorator to add styles to a web component. There are four ways to do it.
  *
  * ### URL instances
  * Using an `URL` instance, you can define the path to the CSS file you want to
@@ -45,15 +77,24 @@
  * customElements.define('styled-component', StyledComponent);
  * ```
  *
+ * This approach is used if the element is an `URL` instance.
+ *
  * ### Constructible Stylesheets
  * The Constructible Stylesheets proposal allows attaching styles directly to a
  * component `ShadowRoot` as if a browser defined it. No intermediate `<style>`
  * tag is required.
  *
+ * This approach is used if the element is a string and
+ * [adoptedStyleSheets]{@link StylesDecoratorOptions.adoptedStyleSheets} is
+ * enabled.
+ *
  * ### ShadyCSS
  * `ShadyCSS` provides support for a Constructible Stylesheets proposal, so
  * this approach does not differ a lot from the previous one; just the polyfill
  * is used.
+ *
+ * This approach is used if the element is a string and the
+ * [shadyCSS]{@link StylesDecoratorOptions.shadyCSS} is enabled.
  *
  * ### HTMLStyleElement
  * If no approach described above works, the fallback to a `<style>` tag in the
@@ -73,51 +114,7 @@
  * customElements.define('styled-component', StyledComponent);
  * ```
  *
- * ```typescript
- * import styles, {stylesAttachedCallback} from '@corpuscule/styles';
- * ```
- *
- * @module @corpuscule/styles
- */
-
-/**
- * A symbolic name of the method that is called when all styles are properly
- * added. There are three different timings it can fire:
- * * If the `URL` instance is used, it will fire after all CSS files are
- * loaded.
- * * If the `HTMLStyleElement` is used and no `URL` instance exists, it will
- * fire after the `<style>` tag is mounted.
- * * If nothing above is used, it will fire immediately after the
- * `attachShadow` is called.
- */
-export const stylesAttachedCallback: unique symbol;
-
-export interface StylesDecoratorOptions {
-  /**
-   * Defines whether the decorator should use the [Constructible Stylesheet
-   * proposal](https://wicg.github.io/construct-stylesheets/).
-   */
-  readonly adoptedStyleSheets?: boolean;
-  /**
-   * Defines whether the decorator should use the [Shady CSS](https://github.com/webcomponents/polyfills/tree/master/packages/shadycss)
-   * polyfill.
-   */
-  readonly shadyCSS?: boolean;
-}
-/**
- * A decorator to add styles to a web component.
- *
- * ### Decision algorithm
- * This algorithm is applied to each element of the `pathsOrStyles` array.
- * * The [URL instances](#url-instances) approach is used if the element is an
- * `URL` instance.
- * * The [ShadyCSS](#shadycss) approach is used if the element is a string and
- * the [shadyCSS]{@link StylesDecoratorOptions.shadyCSS}
- * * The [Constructible Stylesheets](#constructible-stylesheets) approach is
- * used if the element is a string and browser supports Constructible
- * Stylesheets proposal.
- * * The [HTMLStyleElement](#htmlstyleelement) approach will be used if no one
- * above works.
+ * This approach is used if no other approach works.
  *
  * @param pathsOrStyles an array with paths to the CSS files (as `URL`
  * instances) or strings with CSS code.
