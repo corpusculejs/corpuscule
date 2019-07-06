@@ -1,7 +1,6 @@
 /**
  * @module @corpuscule/utils/lib/reflectClassMethods
  *
- * @import
  * ```typescript
  * import reflectClassMethods from '@corpuscule/utils/lib/reflectClassMethods'
  * ```
@@ -25,7 +24,7 @@
  * array. Method could be a target method (both own or inherited), a fallback
  * function or a noop.
  *
- * @example
+ * ### Example
  * ```typescript
  * class Foo {
  *   public foo() {

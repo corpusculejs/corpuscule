@@ -7,7 +7,6 @@
  *
  * @module @corpuscule/utils/lib/scheduler
  *
- * @import
  * ```typescript
  * import schedule from '@corpuscule/utils/lib/scheduler'
  * ```

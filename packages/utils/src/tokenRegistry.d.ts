@@ -1,8 +1,7 @@
 /**
  * @module @corpuscule/utils/lib/tokenRegistry
  *
- * @import ```typescript
- *
+ * ```typescript
  * import createTokenRegistry from '@corpuscule/utils/lib/tokenRegistry'
  * ```
  */
@@ -33,6 +32,18 @@ export type TokenCreator = () => Token;
  * * a key-value registry where the key is a unique token and the value
  * is a data store;
  * * a function to generate a token.
+ *
+ * ### Example
+ * ```typescript
+ *
+ * const [createToken, registry] = createTokenRegistry<string[]>(() => []);
+ *
+ * const token = createToken();
+ *
+ * const arr = registry.get(token);
+ *
+ * arr.push('test'); // ['test']
+ * ```
  *
  * @typeparam T type of the data store.
  *

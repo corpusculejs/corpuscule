@@ -1,8 +1,7 @@
 /**
  * @module @corpuscule/utils/lib/shallowEqual
  *
- * @import ```typescript
- *
+ * ```typescript
  * import shallowEqual from '@corpuscule/utils/lib/shallowEqual'
  * ```
  */
@@ -17,8 +16,8 @@
  *
  * @returns result of the comparison
  *
- * @example ```typescript
- *
+ * ### Example
+ * ```typescript
  * const objA = {foo: 1, bar: 2};
  * const objB = {foo: 1, bar: 2};
  * const objC = {foo: 1, baz: 2};

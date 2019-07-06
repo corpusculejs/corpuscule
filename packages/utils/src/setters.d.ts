@@ -1,8 +1,6 @@
 /**
  * @module @corpuscule/utils/lib/setters
  *
- * @import
- *
  * ```typescript
  * import {setArray} from '@corpuscule/utils/lib/setters'
  * ```
@@ -19,8 +17,7 @@
  * @param key a key to access the target array.
  * @param array an array with new elements to add to the target array.
  *
- * @example
- *
+ * ### Example
  * ```typescript
  * const store = new Map<string, string[]>();
  *

@@ -1,7 +1,6 @@
 /**
  * @module @corpuscule/utils/lib/makeAccessor
  *
- * @import
  * ```typescript
  * import createTokenRegistry from '@corpuscule/utils/lib/tokenRegistry'
  * ```

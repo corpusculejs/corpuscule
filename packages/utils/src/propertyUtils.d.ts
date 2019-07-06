@@ -4,8 +4,6 @@
  *
  * @module @corpuscule/utils/lib/propertyUtils
  *
- * @import
- *
  * ```typescript
  * import {getName} from '@corpuscule/utils/lib/propertyUtils'
  * ```
@@ -17,7 +15,7 @@
  *
  * @param property string or symbol property.
  *
- * @example
+ * ### Example
  * ```typescript
  * const foo = 'foo';
  * const bar = Symbol('bar');

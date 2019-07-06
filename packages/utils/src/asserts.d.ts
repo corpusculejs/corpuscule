@@ -12,7 +12,6 @@
  *
  * @module @corpuscule/utils/lib/asserts
  *
- * @import
  * ```typescript
  * import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts'
  * ```
