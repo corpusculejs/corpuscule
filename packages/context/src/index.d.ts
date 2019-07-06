@@ -96,7 +96,7 @@
 import {Token} from '@corpuscule/utils/lib/tokenRegistry';
 
 /**
- * Creates tokens to bind decorators between each other.
+ * Creates tokens to bind decorators with each other.
  */
 export function createContextToken(): Token;
 
