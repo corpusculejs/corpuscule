@@ -8,10 +8,9 @@
  * desired descendant.
  *
  * ## How it works
- * The implementation of the context in this module works on an idea of token
- * access. When you create a token, you also receive a hidden connection that
- * could bind together two independent decorators. All you need to send this
- * token to decorators you would like to link.
+ * The implementation of the context in this module works on an idea of [token
+ * access]{@link Token}. All you need to send a token created with the
+ * [[createContextToken]] function to decorators you would like to link.
  *
  * The module provides three decorators: [@provider]{@link provider},
  * [@consumer]{@link consumer} and [@value]{@link value}. When you apply
@@ -20,13 +19,6 @@
  * the DOM branch. Component marked with [@consumer]{@link consumer} decorator
  * can receive this value in its field marked with [@value]{@link value} during
  * connection stage if it is a descendant of a provider component.
- *
- * However, by default, [@provider]{@link provider} does not know to which
- * [@consumer]{@link consumer} it should send a value, and [@value]{@link value}
- * cannot work correctly with both of them. To connect all three of them, you
- * have to send a token created with [[createContextToken]] as the first
- * argument to [@provider]{@link provider}, [@consumer]{@link consumer} and
- * [@value]{@link value} you want to link together.
  *
  * You also can:
  * * Use multiple contexts for a single DOM tree branch.
