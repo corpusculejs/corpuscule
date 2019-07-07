@@ -3,7 +3,7 @@ import {defineCE, fixture, html, unsafeStatic} from '@open-wc/testing-helpers';
 import {FormApi, FormState} from 'final-form';
 import {createForm, formSpyObject, unsubscribe} from '../../../test/mocks/finalForm';
 import {CustomElement} from '../../../test/utils';
-import {api, form, option} from '../src';
+import {form, gear, option} from '../src';
 import {all} from '../src/form';
 
 describe('@corpuscule/form', () => {
@@ -23,8 +23,8 @@ describe('@corpuscule/form', () => {
     it('allows to declare form configuration with decorator', async () => {
       @form()
       class Test extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState<unknown>;
+        @gear public readonly formApi!: FormApi;
+        @gear public readonly state!: FormState<unknown>;
 
         @option
         public debug: boolean = true;
@@ -47,8 +47,8 @@ describe('@corpuscule/form', () => {
 
       @form()
       class Test extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState<unknown>;
+        @gear public readonly formApi!: FormApi;
+        @gear public readonly state!: FormState<unknown>;
 
         public call(): void {
           submitSpy();
@@ -76,8 +76,8 @@ describe('@corpuscule/form', () => {
     it('allows to declare configuration on full accessor', async () => {
       @form()
       class Test extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState<unknown>;
+        @gear public readonly formApi!: FormApi;
+        @gear public readonly state!: FormState<unknown>;
 
         public secret: boolean = true;
 
@@ -106,8 +106,8 @@ describe('@corpuscule/form', () => {
     it('allows to update form data with defined properties', async () => {
       @form()
       class Test extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState<unknown>;
+        @gear public readonly formApi!: FormApi;
+        @gear public readonly state!: FormState<unknown>;
 
         @option
         public debug: boolean = true;
@@ -127,8 +127,8 @@ describe('@corpuscule/form', () => {
     it('does not update property if it is the same', async () => {
       @form()
       class Test extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState<unknown>;
+        @gear public readonly formApi!: FormApi;
+        @gear public readonly state!: FormState<unknown>;
 
         @option
         public debug: boolean = true;
@@ -150,8 +150,8 @@ describe('@corpuscule/form', () => {
         @form()
         // @ts-ignore
         class Test extends CustomElement {
-          @api public readonly formApi!: FormApi;
-          @api public readonly state!: FormState<unknown>;
+          @gear public readonly formApi!: FormApi;
+          @gear public readonly state!: FormState<unknown>;
 
           @option
           public test: boolean = true;
@@ -165,8 +165,8 @@ describe('@corpuscule/form', () => {
     it('initializes form if new "initialValues" are set', async () => {
       @form()
       class Test extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState<unknown>;
+        @gear public readonly formApi!: FormApi;
+        @gear public readonly state!: FormState<unknown>;
 
         @option
         public initialValues: object = {
@@ -195,8 +195,8 @@ describe('@corpuscule/form', () => {
     it('checks shallow equality by default for initialValues', async () => {
       @form()
       class Test extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState<unknown>;
+        @gear public readonly formApi!: FormApi;
+        @gear public readonly state!: FormState<unknown>;
 
         @option
         public initialValues: object = {
@@ -224,8 +224,8 @@ describe('@corpuscule/form', () => {
 
       @form()
       class Test extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState<unknown>;
+        @gear public readonly formApi!: FormApi;
+        @gear public readonly state!: FormState<unknown>;
 
         @option
         public initialValues: object = {
@@ -264,8 +264,8 @@ describe('@corpuscule/form', () => {
     it('sets default undefined if option exists but not set', async () => {
       @form()
       class Test extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState<unknown>;
+        @gear public readonly formApi!: FormApi;
+        @gear public readonly state!: FormState<unknown>;
 
         @option
         public debug?: boolean;
@@ -291,8 +291,8 @@ describe('@corpuscule/form', () => {
         decorators: [decorate],
       })
       class Test extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState<unknown>;
+        @gear public readonly formApi!: FormApi;
+        @gear public readonly state!: FormState<unknown>;
 
         @option
         public onSubmit(): void {}
@@ -310,8 +310,8 @@ describe('@corpuscule/form', () => {
     it('subscribes to the form on connection, unsubscribes on disconnection and sets form state', async () => {
       @form()
       class Test extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState<unknown>;
+        @gear public readonly formApi!: FormApi;
+        @gear public readonly state!: FormState<unknown>;
 
         @option
         public onSubmit(): void {}
@@ -336,8 +336,8 @@ describe('@corpuscule/form', () => {
     it('catches submit event', async () => {
       @form()
       class Test extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState<unknown>;
+        @gear public readonly formApi!: FormApi;
+        @gear public readonly state!: FormState<unknown>;
 
         @option
         public onSubmit(): void {}
@@ -360,8 +360,8 @@ describe('@corpuscule/form', () => {
     it('catches reset event', async () => {
       @form()
       class Test extends CustomElement {
-        @api public readonly formApi!: FormApi;
-        @api public readonly state!: FormState<unknown>;
+        @gear public readonly formApi!: FormApi;
+        @gear public readonly state!: FormState<unknown>;
 
         @option
         public onSubmit(): void {}
@@ -381,21 +381,21 @@ describe('@corpuscule/form', () => {
       expect(formSpyObject.reset).toHaveBeenCalled();
     });
 
-    describe('@api', () => {
+    describe('@gear', () => {
       it('requires form and state fields defined', () => {
         expect(() => {
           @form()
           // @ts-ignore
           class FormField extends CustomElement {}
-        }).toThrowError('@form requires form property marked with @api');
+        }).toThrowError('@form requires form property marked with @gear');
 
         expect(() => {
           @form()
           // @ts-ignore
           class FormField extends CustomElement {
-            @api public readonly formApi!: FormApi;
+            @gear public readonly formApi!: FormApi;
           }
-        }).toThrowError('@form requires state property marked with @api');
+        }).toThrowError('@form requires state property marked with @gear');
       });
     });
 
@@ -405,8 +405,8 @@ describe('@corpuscule/form', () => {
           @form()
           // @ts-ignore
           class Test extends CustomElement {
-            @api public readonly formApi!: FormApi;
-            @api public readonly state!: FormState<unknown>;
+            @gear public readonly formApi!: FormApi;
+            @gear public readonly state!: FormState<unknown>;
           }
         }).toThrowError('@form requires onSubmit property marked with @option');
       });
@@ -414,8 +414,8 @@ describe('@corpuscule/form', () => {
       it('properly sets validate option', async () => {
         @form()
         class Test extends CustomElement {
-          @api public readonly formApi!: FormApi;
-          @api public readonly state!: FormState<unknown>;
+          @gear public readonly formApi!: FormApi;
+          @gear public readonly state!: FormState<unknown>;
 
           @option
           public onSubmit(): void {}
@@ -438,8 +438,8 @@ describe('@corpuscule/form', () => {
         @form()
         // @ts-ignore
         class Test extends CustomElement {
-          @api public readonly formApi!: FormApi;
-          @api public readonly state!: FormState<unknown>;
+          @gear public readonly formApi!: FormApi;
+          @gear public readonly state!: FormState<unknown>;
 
           public constructor() {
             super();

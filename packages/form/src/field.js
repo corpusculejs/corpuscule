@@ -58,7 +58,7 @@ const field = (
 
   target.__registrations.push(() => {
     ({
-      // @api
+      // @gear
       formApi: $formApi,
       input: $input,
       meta: $meta,
@@ -74,9 +74,9 @@ const field = (
       validateFields: $validateFields,
     } = sharedPropertiesRegistry.get(target) || {});
 
-    assertRequiredProperty('field', 'api', 'form', $formApi);
-    assertRequiredProperty('field', 'api', 'input', $input);
-    assertRequiredProperty('field', 'api', 'meta', $meta);
+    assertRequiredProperty('field', 'gear', 'form', $formApi);
+    assertRequiredProperty('field', 'gear', 'input', $input);
+    assertRequiredProperty('field', 'gear', 'meta', $meta);
 
     assertRequiredProperty('field', 'option', 'name', $name);
   });

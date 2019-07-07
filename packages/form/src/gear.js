@@ -1,13 +1,13 @@
 import {value} from '@corpuscule/context';
 import {getName} from '@corpuscule/utils/lib/propertyUtils';
 import {setObject} from '@corpuscule/utils/lib/setters';
-import {apis, tokenRegistry} from './utils';
+import {gears, tokenRegistry} from './utils';
 
-const api = token => (prototype, key, descriptor) => {
+const gear = token => (prototype, key, descriptor) => {
   const {constructor: target} = prototype;
   const name = getName(key);
 
-  if (!apis.includes(name)) {
+  if (!gears.includes(name)) {
     throw new TypeError(`Property name ${name} is not allowed`);
   }
 
@@ -35,4 +35,4 @@ const api = token => (prototype, key, descriptor) => {
   return name === 'formApi' ? value(token)(prototype, key, descriptor) : descriptor;
 };
 
-export default api;
+export default gear;

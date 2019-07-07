@@ -29,8 +29,8 @@ const form = (token, {decorators = [], subscription = all} = {}) => target => {
   target.__registrations.push(() => {
     ({formApi: $formApi, state: $state} = sharedPropertiesRegistry.get(target) || {});
     formOptions = formOptionsRegistry.get(target) || [];
-    assertRequiredProperty('form', 'api', 'form', $formApi);
-    assertRequiredProperty('form', 'api', 'state', $state);
+    assertRequiredProperty('form', 'gear', 'form', $formApi);
+    assertRequiredProperty('form', 'gear', 'state', $state);
     assertRequiredProperty(
       'form',
       'option',

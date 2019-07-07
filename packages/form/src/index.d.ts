@@ -174,10 +174,10 @@ export type FieldMetaProps<TFieldValue> = FieldOptions<TFieldValue>;
 export function createFormToken(): Token;
 
 /**
- * A default version of the [@apiAdvanced]{@link apiAdvanced} with the
+ * A default version of the [@gearAdvanced]{@link gearAdvanced} with the
  * token already provided.
  */
-export const api: PropertyDecorator;
+export const gear: PropertyDecorator;
 
 /**
  * A default version of the [@fieldAdvanced]{@link fieldAdvanced} with the
@@ -206,7 +206,7 @@ export const option: PropertyDecorator;
 /**
  * A decorator that converts a class property to a part of the 🏁 Final Form
  * interface. Both [@form]{@link formAdvanced} and [@field]{@link fieldAdvanced}
- * decorators require several specific @api properties to exist.
+ * decorators require several specific @gear properties to exist.
  * * Properties of the [@form]{@link formAdvanced} are described in the
  * [[FormGears]] interface.
  * * Properties of the [@field]{@link fieldAdvanced} are described in the
@@ -218,7 +218,7 @@ export const option: PropertyDecorator;
  * @param token a token issued by a [[createFormToken]] function that connects
  * all decorators in a single working system.
  */
-export function apiAdvanced(token: Token): PropertyDecorator;
+export function gearAdvanced(token: Token): PropertyDecorator;
 
 /**
  * A decorator that makes a class declaration a 🏁 FinalForm field with a form
