@@ -21,7 +21,7 @@ const stringsCache = new WeakMap();
  * An example would be a `tag()` directive that lets a template contain tags
  * whose names aren't known until runtime, like:
  *
- *     html`<${tag(myTagName)>Whoa</tag(MyElement)>`
+ *     html`<${tag(myTagName)}>Whoa</${tag(MyElement)}>`
  *
  * Here, `tag()` should validate that `myTagName` is a valid HTML tag name,
  * and throw if it contains any illegal characters.
@@ -36,7 +36,7 @@ export class UnsafeStatic {
  * Interpolates a value before template parsing and making it available to
  * template pre-processing steps.
  *
- * Static values cannot be updated, since they don't define a part and are
+ * Static values cannot be updated since they don't define a part and are
  * effectively merged into the literal part of a lit-html template. Because
  * they are interpolated before the template is parsed as HTML, static values
  * may occupy positions in the template that regular interpolations may not,
