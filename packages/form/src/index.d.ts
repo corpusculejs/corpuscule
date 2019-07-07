@@ -40,6 +40,11 @@ export interface FormDecoratorOptions {
   readonly subscription?: FormSubscription;
 }
 
+/**
+ * This interface is not necessary to be implemented because it covers only the
+ * one case when all your properties are string and you do not plan to use
+ * specific property names.
+ */
 export interface FormGears<TFormValues> {
   /**
    * Contains a form instance and allows working with the
@@ -57,6 +62,10 @@ export interface FormGears<TFormValues> {
 /**
  * See the [FormConfig](https://github.com/final-form/final-form#config)
  * documentation.
+ *
+ * This interface is not necessary to be implemented because it covers only the
+ * one case when all your properties are string and you do not plan to use
+ * specific property names.
  */
 export interface FormOptions<TFormValues = object> extends FormConfig<TFormValues> {
   /**
@@ -99,6 +108,11 @@ export interface FieldDecoratorOptions {
   scheduler?(task: () => void): Promise<void>;
 }
 
+/**
+ * This interface is not necessary to be implemented because it covers only the
+ * one case when all your properties are string and you do not plan to use
+ * specific property names.
+ */
 export interface FieldGears<TFieldValue> {
   /**
    * Contains a form instance and allows working with the
@@ -130,6 +144,10 @@ export interface FieldGears<TFieldValue> {
  * * `length`,
  * * `name`,
  * * `value`,
+ *
+ * This interface is not necessary to be implemented because it covers only the
+ * one case when all your properties are string and you do not plan to use
+ * specific property names.
  */
 export type FieldOptions<TFieldValue> = Omit<
   FieldState<TFieldValue>,
@@ -194,8 +212,8 @@ export const option: PropertyDecorator;
  * * Properties of the [@field]{@link fieldAdvanced} are described in the
  * [[FieldGears]] interface.
  *
- * To get the typescript support for properties implement the appropriate
- * interface.
+ * If you do not plan to use the specific properties names, you can implement
+ * the [[FormGears]] interface for the form or [[FieldGears]] for the field.
  *
  * @param token a token issued by a [[createFormToken]] function that connects
  * all decorators in a single working system.
@@ -241,8 +259,8 @@ export const isFormAdvanced: typeof isProvider;
  * * Properties of the [@field]{@link fieldAdvanced} are described in the
  * [[FieldOptions]] interface.
  *
- * To get the typescript support for properties implement the appropriate
- * interface.
+ * If you do not plan to use the specific properties names, you can implement
+ * the [[FormGears]] interface for the form or [[FieldGears]] for the field.
  *
  * @param token a token issued by a [[createFormToken]] function that connects
  * all decorators in a single working system.
