@@ -1,6 +1,6 @@
 import {tokenRegistry} from './utils';
 
-const dispatcher = (token, eventKey) => (prototype, _, descriptor) => {
+const dispatcher = (token, eventName) => (prototype, _, descriptor) => {
   let $store;
   const {constructor: klass} = prototype;
 
@@ -11,13 +11,13 @@ const dispatcher = (token, eventKey) => (prototype, _, descriptor) => {
   return {
     configurable: true,
     enumerable: false,
-    value: eventKey
+    value: eventName
       ? 'initializer' in descriptor
         ? function(data) {
-            this[$store].dispatch(eventKey, data);
+            this[$store].dispatch(eventName, data);
           }
         : function(...args) {
-            this[$store].dispatch(eventKey, descriptor.value.apply(this, args));
+            this[$store].dispatch(eventName, descriptor.value.apply(this, args));
           }
       : function(...args) {
           this[$store].dispatch(...args);
