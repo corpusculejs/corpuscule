@@ -1,6 +1,6 @@
 import {Dispatch, Store} from 'storeon';
 import {createSimpleContext, CustomElement} from '../../../test/utils';
-import {api, dispatcher, provider, storeon, unit} from '../src';
+import {dispatcher, gear, provider, storeon, unit} from '../src';
 
 interface State {
   readonly test: number;
@@ -23,7 +23,7 @@ describe('@corpuscule/storeon', () => {
     it('creates element that subscribes to a store', async () => {
       @provider
       class Provider extends CustomElement {
-        @api public store: Store<State> = storeonStore;
+        @gear public store: Store<State> = storeonStore;
       }
 
       @storeon
@@ -39,7 +39,7 @@ describe('@corpuscule/storeon', () => {
     it('unsubscribes from store before subscribing to a new one', async () => {
       @provider
       class Provider extends CustomElement {
-        @api public store: Store<State> = storeonStore;
+        @gear public store: Store<State> = storeonStore;
       }
 
       @storeon
@@ -64,7 +64,7 @@ describe('@corpuscule/storeon', () => {
     it('unsubscribes on disconnect', async () => {
       @provider
       class Provider extends CustomElement {
-        @api public store: Store<State> = storeonStore;
+        @gear public store: Store<State> = storeonStore;
       }
 
       @storeon
@@ -82,7 +82,7 @@ describe('@corpuscule/storeon', () => {
     it('does nothing during update if no @unit is defined', async () => {
       @provider
       class Provider extends CustomElement {
-        @api public store: Store<State> = storeonStore;
+        @gear public store: Store<State> = storeonStore;
       }
 
       @storeon
@@ -99,7 +99,7 @@ describe('@corpuscule/storeon', () => {
 
       @provider
       class Provider extends CustomElement {
-        @api public store: Store<State> = storeonStore;
+        @gear public store: Store<State> = storeonStore;
       }
 
       @storeon
@@ -121,7 +121,7 @@ describe('@corpuscule/storeon', () => {
     it('allows to declare properties connected with store', async () => {
       @provider
       class Provider extends CustomElement {
-        @api public store: Store<State> = storeonStore;
+        @gear public store: Store<State> = storeonStore;
       }
 
       @storeon
@@ -138,7 +138,7 @@ describe('@corpuscule/storeon', () => {
     it('updates properties when store is updated', async () => {
       @provider
       class Provider extends CustomElement {
-        @api public store: Store<State> = storeonStore;
+        @gear public store: Store<State> = storeonStore;
       }
 
       @storeon
@@ -159,7 +159,7 @@ describe('@corpuscule/storeon', () => {
 
       @provider
       class Provider extends CustomElement {
-        @api public store: Store<State> = storeonStore;
+        @gear public store: Store<State> = storeonStore;
       }
 
       @storeon
@@ -191,7 +191,7 @@ describe('@corpuscule/storeon', () => {
     it('allows to define dispatchers', async () => {
       @provider
       class Provider extends CustomElement {
-        @api public store: Store<State> = storeonStore;
+        @gear public store: Store<State> = storeonStore;
       }
 
       @storeon
