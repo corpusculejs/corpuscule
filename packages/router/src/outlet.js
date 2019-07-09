@@ -2,15 +2,15 @@ import {consumer, value} from '@corpuscule/context';
 import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
 import {tokenRegistry} from './utils';
 
-const outlet = (token, routes) => target => {
+const outlet = (token, routes) => klass => {
   let $value;
 
-  const {prototype} = target;
+  const {prototype} = klass;
   const $$contextProperty = Symbol();
   const valueDescriptor = value(token)(prototype, $$contextProperty);
 
-  target.__registrations.push(() => {
-    ({value: $value} = tokenRegistry.get(token).get(target));
+  klass.__registrations.push(() => {
+    ({value: $value} = tokenRegistry.get(token).get(klass));
     assertRequiredProperty('outlet', 'gear', $value);
   });
 
@@ -29,7 +29,7 @@ const outlet = (token, routes) => target => {
     },
   });
 
-  consumer(token)(target);
+  consumer(token)(klass);
 };
 
 export default outlet;

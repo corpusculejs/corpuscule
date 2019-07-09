@@ -4,16 +4,16 @@ import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
 import reflectClassMethods from '@corpuscule/utils/lib/reflectClassMethods';
 import {tokenRegistry} from './utils';
 
-const provider = (token, {initial = location.pathname} = {}) => target => {
+const provider = (token, {initial = location.pathname} = {}) => klass => {
   let $router;
 
-  const {prototype} = target;
+  const {prototype} = klass;
 
   const $$providingValue = Symbol();
   const $$updateRoute = Symbol();
 
-  target.__registrations.push(() => {
-    ({value: $router} = tokenRegistry.get(token).get(target));
+  klass.__registrations.push(() => {
+    ({value: $router} = tokenRegistry.get(token).get(klass));
     assertRequiredProperty('provider', 'gear', $router);
   });
 
@@ -21,7 +21,7 @@ const provider = (token, {initial = location.pathname} = {}) => target => {
   const valueDescriptor = value(token)(prototype, $$providingValue);
 
   defineExtendable(
-    target,
+    klass,
     {
       connectedCallback() {
         window.addEventListener('popstate', this[$$updateRoute]);
@@ -35,12 +35,12 @@ const provider = (token, {initial = location.pathname} = {}) => target => {
       },
     },
     supers,
-    target.__initializers,
+    klass.__initializers,
   );
 
   Object.defineProperty(prototype, $$providingValue, valueDescriptor);
 
-  target.__initializers.push(self => {
+  klass.__initializers.push(self => {
     self[$$updateRoute] = async ({state: pathname = initial} = {}) => {
       self[$$providingValue] = await self[$router].resolve({
         chain: [],
@@ -49,7 +49,7 @@ const provider = (token, {initial = location.pathname} = {}) => target => {
     };
   });
 
-  contextProvider(token)(target);
+  contextProvider(token)(klass);
 };
 
 export default provider;

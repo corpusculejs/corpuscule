@@ -28,7 +28,7 @@ export interface RouterProviderOptions {
 }
 
 export const gear: PropertyDecorator;
-export const isProvider: (target: unknown) => boolean;
+export const isProvider: (klass: unknown) => boolean;
 export const outlet: (routes: ReadonlyArray<Route>) => ClassDecorator;
 export const provider: (options?: RouterProviderOptions) => ClassDecorator;
 

@@ -15,6 +15,6 @@ export * from './tokens/lifecycle';
 const defaultToken = createRouterToken();
 
 export const gear = gearAdvanced(defaultToken);
-export const isProvider = target => isProviderAdvanced(defaultToken, target);
+export const isProvider = klass => isProviderAdvanced(defaultToken, klass);
 export const outlet = routes => outletAdvanced(defaultToken, routes);
 export const provider = options => providerAdvanced(defaultToken, options);
