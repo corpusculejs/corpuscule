@@ -8,7 +8,7 @@ import {fieldOptions, formOptions, tokenRegistry} from './utils';
 
 const optionsList = new Set([...fieldOptions, ...formOptions]);
 
-const option = token => ({constructor: target}, key, descriptor) => {
+const option = token => ({constructor: klass}, key, descriptor) => {
   const name = getName(key);
   const [sharedPropertiesRegistry, formOptionsRegistry] = tokenRegistry.get(token);
 
@@ -18,16 +18,16 @@ const option = token => ({constructor: target}, key, descriptor) => {
 
   const isCompareInitialValues = name === 'compareInitialValues';
   if (isCompareInitialValues) {
-    setObject(sharedPropertiesRegistry, target, {
+    setObject(sharedPropertiesRegistry, klass, {
       compare: key,
     });
   } else {
     // Executes after the distinction between providers and consumers are set.
-    target.__registrations.push(() => {
-      if (isProvider(token, target)) {
-        setArray(formOptionsRegistry, target, [key]);
+    klass.__registrations.push(() => {
+      if (isProvider(token, klass)) {
+        setArray(formOptionsRegistry, klass, [key]);
       } else {
-        setObject(sharedPropertiesRegistry, target, {
+        setObject(sharedPropertiesRegistry, klass, {
           [name]: key,
         });
       }
@@ -37,13 +37,13 @@ const option = token => ({constructor: target}, key, descriptor) => {
   if ('initializer' in descriptor || ('get' in descriptor && 'set' in descriptor)) {
     let setter;
 
-    const {get, set} = makeAccessor(descriptor, target.__initializers);
+    const {get, set} = makeAccessor(descriptor, klass.__initializers);
 
     // Executes after $formApi, $compareInitialValues and $scheduleSubscription are set.
-    target.__registrations.push(() => {
-      if (isProvider(token, target)) {
+    klass.__registrations.push(() => {
+      if (isProvider(token, klass)) {
         const {formApi: $formApi, compare: $compareInitialValues} = sharedPropertiesRegistry.get(
-          target,
+          klass,
         );
 
         setter =
@@ -65,7 +65,7 @@ const option = token => ({constructor: target}, key, descriptor) => {
                 }
               };
       } else {
-        const {schedule: $scheduleSubscription} = sharedPropertiesRegistry.get(target);
+        const {schedule: $scheduleSubscription} = sharedPropertiesRegistry.get(klass);
 
         const areEqual =
           name === 'subscription'
@@ -93,7 +93,7 @@ const option = token => ({constructor: target}, key, descriptor) => {
     };
   }
 
-  target.__initializers.push(self => {
+  klass.__initializers.push(self => {
     self[key] = descriptor.value.bind(self);
   });
 

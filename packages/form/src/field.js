@@ -15,8 +15,8 @@ export const all = fieldSubscriptionItems.reduce((result, key) => {
 
 const field = (
   token,
-  {auto = false, scheduler = defaultScheduler, selector = 'input, select, textarea'} = {},
-) => target => {
+  {auto = false, scheduler = defaultScheduler, childrenSelector = 'input, select, textarea'} = {},
+) => klass => {
   let $formApi;
   let $input;
   let $meta;
@@ -31,7 +31,7 @@ const field = (
   let $validateFields;
 
   const [sharedPropertiesRegistry] = tokenRegistry.get(token);
-  const isNativeField = isNativeElement(target.prototype);
+  const isNativeField = isNativeElement(klass.prototype);
 
   const $$connected = Symbol();
   const $$isSubscriptionScheduled = Symbol();
@@ -46,17 +46,17 @@ const field = (
   const $$unsubscribe = Symbol();
   const $$update = Symbol();
 
-  const supers = reflectClassMethods(target.prototype, [
+  const supers = reflectClassMethods(klass.prototype, [
     'connectedCallback',
     'disconnectedCallback',
   ]);
 
-  setObject(sharedPropertiesRegistry, target, {
+  setObject(sharedPropertiesRegistry, klass, {
     ref: $$ref,
     schedule: $$scheduleSubscription,
   });
 
-  target.__registrations.push(() => {
+  klass.__registrations.push(() => {
     ({
       // @gear
       formApi: $formApi,
@@ -72,7 +72,7 @@ const field = (
       subscription: $subscription,
       validate: $validate,
       validateFields: $validateFields,
-    } = sharedPropertiesRegistry.get(target) || {});
+    } = sharedPropertiesRegistry.get(klass) || {});
 
     assertRequiredProperty('field', 'gear', 'form', $formApi);
     assertRequiredProperty('field', 'gear', 'input', $input);
@@ -82,7 +82,7 @@ const field = (
   });
 
   defineExtendable(
-    target,
+    klass,
     {
       connectedCallback() {
         this.addEventListener('input', this[$$handleInput]);
@@ -113,10 +113,10 @@ const field = (
       },
     },
     supers,
-    target.__initializers,
+    klass.__initializers,
   );
 
-  Object.assign(target.prototype, {
+  Object.assign(klass.prototype, {
     [$$scheduleSubscription]() {
       if (this[$$isSubscriptionScheduled] || !this[$$connected]) {
         return;
@@ -145,7 +145,7 @@ const field = (
     },
   });
 
-  Object.defineProperties(target.prototype, {
+  Object.defineProperties(klass.prototype, {
     [$$ref]: {
       get: auto
         ? isNativeField
@@ -153,15 +153,15 @@ const field = (
               return this;
             }
           : function() {
-              return this.querySelectorAll(selector);
+              return this.querySelectorAll(childrenSelector);
             }
         : noop,
     },
   });
 
-  consumer(token)(target);
+  consumer(token)(klass);
 
-  target.__initializers.push(self => {
+  klass.__initializers.push(self => {
     Object.assign(self, {
       // Properties
       [$$connected]: false,

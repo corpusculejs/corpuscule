@@ -4,7 +4,7 @@ import {setObject} from '@corpuscule/utils/lib/setters';
 import {gears, tokenRegistry} from './utils';
 
 const gear = token => (prototype, key, descriptor) => {
-  const {constructor: target} = prototype;
+  const {constructor: klass} = prototype;
   const name = getName(key);
 
   if (!gears.includes(name)) {
@@ -16,8 +16,8 @@ const gear = token => (prototype, key, descriptor) => {
   if (name === 'refs') {
     let $ref;
 
-    target.__registrations.push(() => {
-      ({ref: $ref} = sharedPropertiesRegistry.get(target));
+    klass.__registrations.push(() => {
+      ({ref: $ref} = sharedPropertiesRegistry.get(klass));
     });
 
     return {
@@ -28,7 +28,7 @@ const gear = token => (prototype, key, descriptor) => {
     };
   }
 
-  setObject(sharedPropertiesRegistry, target, {
+  setObject(sharedPropertiesRegistry, klass, {
     [name]: key,
   });
 

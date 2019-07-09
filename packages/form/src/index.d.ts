@@ -195,7 +195,7 @@ export function form(options?: FormDecoratorOptions): ClassDecorator;
  * A default version of the [@isFormAdvanced]{@link @corpuscule/form.isFormAdvanced}
  * with the token already provided.
  */
-export function isForm(target: unknown): boolean;
+export function isForm(klass: unknown): boolean;
 
 /**
  * A default version of the [@optionAdvanced]{@link @corpuscule/form.optionAdvanced}
