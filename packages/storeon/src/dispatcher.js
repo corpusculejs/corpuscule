@@ -2,10 +2,10 @@ import {tokenRegistry} from './utils';
 
 const dispatcher = (token, eventKey) => (prototype, _, descriptor) => {
   let $store;
-  const {constructor: target} = prototype;
+  const {constructor: klass} = prototype;
 
-  target.__registrations.push(() => {
-    ({store: $store} = tokenRegistry.get(token).get(target));
+  klass.__registrations.push(() => {
+    ({store: $store} = tokenRegistry.get(token).get(klass));
   });
 
   return {
