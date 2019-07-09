@@ -11,7 +11,7 @@ const outlet = (token, routes) => target => {
 
   target.__registrations.push(() => {
     ({value: $value} = tokenRegistry.get(token).get(target));
-    assertRequiredProperty('outlet', 'api', $value);
+    assertRequiredProperty('outlet', 'gear', $value);
   });
 
   // eslint-disable-next-line accessor-pairs

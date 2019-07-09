@@ -1,8 +1,8 @@
 import {setObject} from '@corpuscule/utils/lib/setters';
 import {tokenRegistry} from './utils';
 
-const api = token => ({constructor: target}, key) => {
+const gear = token => ({constructor: target}, key) => {
   setObject(tokenRegistry.get(token), target, {value: key});
 };
 
-export default api;
+export default gear;

@@ -27,11 +27,11 @@ export interface RouterProviderOptions {
   readonly initial?: string;
 }
 
-export const api: PropertyDecorator;
+export const gear: PropertyDecorator;
 export const isProvider: (target: unknown) => boolean;
 export const outlet: (routes: ReadonlyArray<Route>) => ClassDecorator;
 export const provider: (options?: RouterProviderOptions) => ClassDecorator;
 
-export const apiAdvanced: (token: Token) => PropertyDecorator;
+export const gearAdvanced: (token: Token) => PropertyDecorator;
 export const outletAdvanced: (token: Token, routes: ReadonlyArray<Route>) => ClassDecorator;
 export const providerAdvanced: (token: Token, options?: RouterProviderOptions) => ClassDecorator;

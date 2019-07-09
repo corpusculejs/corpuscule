@@ -14,7 +14,7 @@ const provider = (token, {initial = location.pathname} = {}) => target => {
 
   target.__registrations.push(() => {
     ({value: $router} = tokenRegistry.get(token).get(target));
-    assertRequiredProperty('provider', 'api', $router);
+    assertRequiredProperty('provider', 'gear', $router);
   });
 
   const supers = reflectClassMethods(prototype, ['connectedCallback', 'disconnectedCallback']);

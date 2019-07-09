@@ -1,6 +1,6 @@
 import UniversalRouter, {Route} from 'universal-router';
 import {createSimpleContext} from '../../../test/utils';
-import {api, outlet, provider} from '../src';
+import {gear, outlet, provider} from '../src';
 
 interface RoutingChainElement {
   readonly result: unknown;
@@ -23,12 +23,12 @@ describe('@corpuscule/router', () => {
     it('resolves route at the provider and sends data down to outlets', async () => {
       @provider({initial: '/'})
       class Provider extends HTMLElement {
-        @api public router: UniversalRouter = router;
+        @gear public router: UniversalRouter = router;
       }
 
       @outlet([route])
       class Outlet extends HTMLElement {
-        @api public output!: string;
+        @gear public output!: string;
       }
 
       const [, outletElement] = await createSimpleContext(Provider, Outlet);
@@ -44,12 +44,12 @@ describe('@corpuscule/router', () => {
     it('re-resolves route on popstate event', async () => {
       @provider({initial: '/'})
       class Provider extends HTMLElement {
-        @api public router: UniversalRouter = router;
+        @gear public router: UniversalRouter = router;
       }
 
       @outlet([route])
       class Outlet extends HTMLElement {
-        @api public output!: string;
+        @gear public output!: string;
       }
 
       await createSimpleContext(Provider, Outlet);
@@ -68,14 +68,14 @@ describe('@corpuscule/router', () => {
 
       @provider({initial: '/'})
       class Provider extends HTMLElement {
-        @api public router: UniversalRouter = router;
+        @gear public router: UniversalRouter = router;
       }
 
       @outlet([])
       class Outlet extends HTMLElement {
         private _output?: string;
 
-        @api
+        @gear
         public get output(): string | undefined {
           return this._output;
         }
