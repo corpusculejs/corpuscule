@@ -114,8 +114,6 @@ export interface StylesDecoratorOptions {
  * customElements.define('styled-component', StyledComponent);
  * ```
  *
- * This approach is used if no other approach works.
- *
  * @param pathsOrStyles an array with paths to the CSS files (as `URL`
  * instances) or strings with CSS code.
  *
