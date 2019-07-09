@@ -111,6 +111,10 @@ export const providerAdvanced: typeof contextProvider;
  * context value. The [@consumer]{@link @corpuscule/context.consumer} decorator
  * is used internally.
  *
+ * @note Do not use the [@gear]{@link @corpuscule/redux.gearAdvanced} decorator
+ * for fields of the class declaration marked with this decorator. It will cause
+ * an error.
+ *
  * @param token a token issued by a [[createReduxToken]] function that connects
  * all decorators in a single working system.
  */
