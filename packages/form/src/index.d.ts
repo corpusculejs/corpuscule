@@ -174,32 +174,32 @@ export type FieldMetaProps<TFieldValue> = FieldOptions<TFieldValue>;
 export function createFormToken(): Token;
 
 /**
- * A default version of the [@gearAdvanced]{@link gearAdvanced} with the
- * token already provided.
+ * A default version of the [@gearAdvanced]{@link @corpuscule/form.gearAdvanced}
+ * with the token already provided.
  */
 export const gear: PropertyDecorator;
 
 /**
- * A default version of the [@fieldAdvanced]{@link fieldAdvanced} with the
- * token already provided.
+ * A default version of the [@fieldAdvanced]{@link @corpuscule/form.fieldAdvanced}
+ * with the token already provided.
  */
 export function field(options?: FieldDecoratorOptions): ClassDecorator;
 
 /**
- * A default version of the [@formAdvanced]{@link formAdvanced} with the
- * token already provided.
+ * A default version of the [@formAdvanced]{@link @corpuscule/form.formAdvanced}
+ * with the token already provided.
  */
 export function form(options?: FormDecoratorOptions): ClassDecorator;
 
 /**
- * A default version of the [@isFormAdvanced]{@link isFormAdvanced} with the
- * token already provided.
+ * A default version of the [@isFormAdvanced]{@link @corpuscule/form.isFormAdvanced}
+ * with the token already provided.
  */
 export function isForm(target: unknown): boolean;
 
 /**
- * A default version of the [@optionAdvanced]{@link optionAdvanced} with the
- * token already provided.
+ * A default version of the [@optionAdvanced]{@link @corpuscule/form.optionAdvanced}
+ * with the token already provided.
  */
 export const option: PropertyDecorator;
 
@@ -246,18 +246,19 @@ export function formAdvanced(token: Token, options?: FormDecoratorOptions): Clas
 
 /**
  * Works as a [isProvider]{@link @corpuscule/context.isProvider} for the
- * [@form]{@link formAdvanced}.
+ * [@form]{@link @corpuscule/form.formAdvanced}.
  */
 export const isFormAdvanced: typeof isProvider;
 
 /**
  * A decorator that converts a class property to a 🏁 Final Form option. Both
- * [@form]{@link formAdvanced} and [@field]{@link fieldAdvanced} have their
- * options. Some options are required; others can be omitted.
- * * Properties of the [@form]{@link formAdvanced} are described in the
- * [[FormOptions]] interface.
- * * Properties of the [@field]{@link fieldAdvanced} are described in the
- * [[FieldOptions]] interface.
+ * [@form]{@link @corpuscule/form.formAdvanced} and
+ * [@field]{@link @corpuscule/form.fieldAdvanced} have their options. Some
+ * options are required; others can be omitted.
+ * * Properties of the [@form]{@link @corpuscule/form.formAdvanced} are
+ * described in the [[FormOptions]] interface.
+ * * Properties of the [@field]{@link @corpuscule/form.fieldAdvanced} are
+ * described in the [[FieldOptions]] interface.
  *
  * If you do not plan to use the specific properties names, you can implement
  * the [[FormGears]] interface for the form or [[FieldGears]] for the field.
