@@ -1,7 +1,7 @@
 import {
   isProvider as isProviderAdvanced,
   provider as providerAdvanced,
-  value as apiAdvanced,
+  value as gearAdvanced,
 } from '@corpuscule/context';
 import dispatcherAdvanced from './dispatcher';
 import reduxAdvanced from './redux';
@@ -9,7 +9,7 @@ import unitAdvanced from './unit';
 import {createReduxToken} from './utils';
 
 export {
-  apiAdvanced,
+  gearAdvanced,
   createReduxToken,
   dispatcherAdvanced,
   isProviderAdvanced,
@@ -20,7 +20,7 @@ export {
 
 const defaultToken = createReduxToken();
 
-export const api = apiAdvanced(defaultToken);
+export const gear = gearAdvanced(defaultToken);
 export const dispatcher = dispatcherAdvanced(defaultToken);
 export const isProvider = target => isProviderAdvanced(defaultToken, target);
 export const provider = providerAdvanced(defaultToken);
