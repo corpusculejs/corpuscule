@@ -1,12 +1,12 @@
 import {tokenRegistry} from './utils';
 
-const dispatcher = token => ({constructor: target}, key, descriptor) => {
+const dispatcher = token => ({constructor: klass}, key, descriptor) => {
   const {initializer, value} = descriptor;
 
   let $store;
 
-  target.__registrations.push(() => {
-    ({store: $store} = tokenRegistry.get(token).get(target));
+  klass.__registrations.push(() => {
+    ({store: $store} = tokenRegistry.get(token).get(klass));
   });
 
   let callback;

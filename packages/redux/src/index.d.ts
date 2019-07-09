@@ -33,7 +33,7 @@ export const dispatcher: PropertyDecorator;
  * A default version of the [@isProviderAdvanced]{@link @corpuscule/redux.isProviderAdvanced}
  * with the token already provided.
  */
-export function isProvider(target: unknown): boolean;
+export function isProvider(klass: unknown): boolean;
 
 /**
  * A default version of the [@providerAdvanced]{@link @corpuscule/redux.providerAdvanced}

@@ -7,10 +7,10 @@ import {tokenRegistry} from './utils';
 // eslint-disable-next-line no-empty-function
 const noop = () => {};
 
-const redux = token => target => {
+const redux = token => klass => {
   let units;
 
-  const {prototype} = target;
+  const {prototype} = klass;
 
   const $$contextProperty = Symbol();
   const $$unsubscribe = Symbol();
@@ -19,17 +19,17 @@ const redux = token => target => {
 
   const valueDescriptor = value(token)(prototype, $$contextProperty);
 
-  setObject(tokenRegistry.get(token), target, {
+  setObject(tokenRegistry.get(token), klass, {
     store: $$contextProperty,
     units: [],
   });
 
-  target.__registrations.push(() => {
-    ({units} = tokenRegistry.get(token).get(target));
+  klass.__registrations.push(() => {
+    ({units} = tokenRegistry.get(token).get(klass));
   });
 
   defineExtendable(
-    target,
+    klass,
     {
       disconnectedCallback() {
         supers.disconnectedCallback.call(this);
@@ -37,7 +37,7 @@ const redux = token => target => {
       },
     },
     supers,
-    target.__initializers,
+    klass.__initializers,
   );
 
   // eslint-disable-next-line accessor-pairs
@@ -60,7 +60,7 @@ const redux = token => target => {
 
   prototype[$$unsubscribe] = noop;
 
-  consumer(token)(target);
+  consumer(token)(klass);
 };
 
 export default redux;
