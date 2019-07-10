@@ -43,6 +43,8 @@ const provider = (token, {initial = location.pathname} = {}) => klass => {
   klass.__initializers.push(self => {
     self[$$updateRoute] = async ({state: pathname = initial} = {}) => {
       self[$$providingValue] = await self[$router].resolve({
+        // This array goes to the resolveRoute function and fills with the
+        // passed routes.
         chain: [],
         pathname,
       });
