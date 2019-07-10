@@ -21,7 +21,7 @@ describe('@corpuscule/router', () => {
     });
 
     it('resolves route at the provider and sends data down to outlets', async () => {
-      @provider({initial: '/'})
+      @provider({initialPath: '/'})
       class Provider extends HTMLElement {
         @gear public router: UniversalRouter = router;
       }
@@ -42,7 +42,7 @@ describe('@corpuscule/router', () => {
     });
 
     it('re-resolves route on popstate event', async () => {
-      @provider({initial: '/'})
+      @provider({initialPath: '/'})
       class Provider extends HTMLElement {
         @gear public router: UniversalRouter = router;
       }
@@ -66,7 +66,7 @@ describe('@corpuscule/router', () => {
     it('changes nothing if there is no fitting route in outlet list', async () => {
       const outputSpy = jasmine.createSpy('output');
 
-      @provider({initial: '/'})
+      @provider({initialPath: '/'})
       class Provider extends HTMLElement {
         @gear public router: UniversalRouter = router;
       }

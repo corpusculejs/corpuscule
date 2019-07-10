@@ -4,7 +4,7 @@ import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
 import reflectClassMethods from '@corpuscule/utils/lib/reflectClassMethods';
 import {tokenRegistry} from './utils';
 
-const provider = (token, {initial = location.pathname} = {}) => klass => {
+const provider = (token, {initialPath = location.pathname} = {}) => klass => {
   let $router;
 
   const {prototype} = klass;
@@ -41,7 +41,7 @@ const provider = (token, {initial = location.pathname} = {}) => klass => {
   Object.defineProperty(prototype, $$providingValue, valueDescriptor);
 
   klass.__initializers.push(self => {
-    self[$$updateRoute] = async ({state: pathname = initial} = {}) => {
+    self[$$updateRoute] = async ({state: pathname = initialPath} = {}) => {
       self[$$providingValue] = await self[$router].resolve({
         // This array goes to the resolveRoute function and fills with the
         // passed routes.
