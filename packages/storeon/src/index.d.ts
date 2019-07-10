@@ -147,8 +147,8 @@ export const gearAdvanced: typeof contextValue;
 export const isProviderAdvanced: typeof isContextProvider;
 
 /**
- * A decorator that works as a Redux store provider. See
- * [@provider]{@link @corpuscule/context.provider} for more information.
+ * A decorator that creates a Storeon store provider. See [@provider]{@link @corpuscule/context.provider}
+ * for more information.
  */
 export const providerAdvanced: typeof contextProvider;
 
