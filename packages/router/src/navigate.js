@@ -1,5 +1,5 @@
-const navigate = (path, title = '') => {
-  history.pushState(path, title, path);
+const navigate = path => {
+  history.pushState(path, null, path);
   dispatchEvent(new PopStateEvent('popstate', {state: history.state}));
 };
 

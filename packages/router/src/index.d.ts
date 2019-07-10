@@ -19,7 +19,7 @@ export class Link extends HTMLAnchorElement implements CustomElement {
   public disconnectedCallback(): void;
 }
 
-export function navigate(path: string, title?: string): void;
+export function navigate(path: string): void;
 
 export const createRouterToken: TokenCreator;
 

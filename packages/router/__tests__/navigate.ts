@@ -18,14 +18,8 @@ describe('@corpuscule/router', () => {
     it('should push new state to history', () => {
       navigate('/test');
       // tslint:disable-next-line:no-unbound-method
-      expect(history.pushState).toHaveBeenCalledWith('/test', '', '/test');
+      expect(history.pushState).toHaveBeenCalledWith('/test', null, '/test');
       expect(historyStateSpy).toHaveBeenCalled();
-    });
-
-    it('should allow to add title to a page', () => {
-      navigate('/test', 'Test');
-      // tslint:disable-next-line:no-unbound-method
-      expect(history.pushState).toHaveBeenCalledWith('/test', 'Test', '/test');
     });
 
     it("should dispatch 'popstate' event", done => {
