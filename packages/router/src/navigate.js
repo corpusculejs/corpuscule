@@ -1,6 +1,6 @@
-const push = (path, title = '') => {
+const navigate = (path, title = '') => {
   history.pushState(path, title, path);
   dispatchEvent(new PopStateEvent('popstate', {state: history.state}));
 };
 
-export default push;
+export default navigate;
