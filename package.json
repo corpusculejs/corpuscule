@@ -4,7 +4,7 @@
   "scripts": {
     "bootstrap": "lerna bootstrap",
     "build": "lerna run build --parallel",
-    "docs": "typedoc --tsconfig ../../tsconfig.json packages",
+    "docs": "typedoc --tsconfig ../../tsconfig.json packages && node scripts/fixDocs.js",
     "lint": "run-p lint:es lint:ts",
     "lint-staged": "lint-staged",
     "lint:es": "eslint packages/**/*.js",
