@@ -1,0 +1,317 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Corpuscule API</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">Corpuscule API</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1> Corpuscule API</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<blockquote>
+					<h2 id="-status-in-development">🛠 Status: In Development</h2>
+					<p>Corpuscule is currently under heavy development. Feedback is always welcome, but be careful with
+					using it in production. API is not ready yet and can receive large changes.</p>
+				</blockquote>
+				<h1 id="corpuscule">Corpuscule</h1>
+				<p><a href="https://travis-ci.org/corpusculejs/corpuscule"><img src="https://img.shields.io/travis/corpusculejs/corpuscule/master.svg" alt="Build Status"></a>
+					<a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="GitHub license"></a>
+				<a href="https://codecov.io/gh/corpusculejs/corpuscule"><img src="https://img.shields.io/codecov/c/github/corpusculejs/corpuscule/master.svg" alt="Test Coverage"></a></p>
+				<p>Corpuscule is a set of libraries built on top of Web Components standard. It provides all necessary
+				tools to built whole application from scratch including redux connector, router and form utils.</p>
+				<h2 id="principles">Principles</h2>
+				<h3 id="be-universal">Be universal</h3>
+				<p>You can use almost all Corpuscule tools with any Web Component based system, like <a href="https://www.polymer-project.org/">Polymer</a>,
+					<a href="https://lit-element.polymer-project.org/">LitElement</a> or <a href="https://skatejs.netlify.com/">SkateJS</a>.
+					They are not bound to <code>@corpuscule/element</code> and implemented with only web components lifecycle
+					hooks. Also, <code>@corpuscule/element</code> can use any renderer you want: <a href="https://lit-html.polymer-project.org/">lit-html</a>,
+					<a href="https://github.com/WebReflection/hyperHTML">hyperHTML</a>, <a href="https://preactjs.com/">preact</a> or even
+				<a href="https://reactjs.org/">React</a>.</p>
+				<h3 id="be-small-yet-powerful">Be small yet powerful</h3>
+				<p>Bundle size matters. It becomes critical for people with a slow internet connection. Corpuscule
+					already uses Web Components standard that takes care of the component system, so everything it needs
+				is to have as many useful features as possible in smallest size as possible. </p>
+				<h3 id="be-at-the-bleeding-edge-of-javascript">Be at the bleeding edge of JavaScript</h3>
+				<p>Features adding to the JavaScript language simplify developer&#39;s life, give new opportunities and
+					solve problems like security holes. That&#39;s why Corpuscule is trying to be on the bleeding edge of
+				language development and use the latest features.</p>
+				<h3 id="separate-semantics-from-logic">Separate semantics from logic</h3>
+				<p>Semantics is a keystone of the web for a long time now. We used to make our markup as meaningful as
+					possible. We use <code>&lt;article&gt;</code> instead of <code>&lt;div&gt;</code> to wrap our articles because <code>&lt;article&gt;</code> makes way
+					more sense than a simple <code>&lt;div&gt;</code>. We have <code>&lt;header&gt;</code>, <code>&lt;section&gt;</code> and <code>&lt;footer&gt;</code> tags to split our
+				layout to parts properly.</p>
+				<p>However, with the React popularity growing we have got not only great solutions but also a handful
+					of doubtful patterns. One of them is an approach to put logic into the markup. This approach brings
+					such components as <code>&lt;Provider&gt;</code>, <code>&lt;Suspense&gt;</code>, <code>&lt;Connect(MyComponent)&gt;</code> etc. that can have no own
+				markup at all! </p>
+				<p>So while it is acceptable for React components since they exist only on the JS level, it could be
+					wrong for web components which have their representation in the DOM. The existence of only logic
+				components in DOM breaks the idea of semantics.</p>
+				<p>That&#39;s why Corpuscule suggests a slightly different approach. Since it is just logic, we can apply
+					it to semantic web components using decorators and class properties. It means that single web
+					component could be a component connected to Redux, custom context provider and router outlet at the
+				same time.</p>
+				<h2 id="technologies">Technologies</h2>
+				<p>Some technological solutions of Corpuscule could be surprising and confusing. This section provides
+				explanation of why this or that solution has been chosen.  </p>
+				<h3 id="decorators-stage-2-">Decorators (stage 2)</h3>
+				<p>The <a href="https://github.com/tc39/proposal-decorators">new decorators specification</a>
+					could become a game-changer in the JavaScript world (along with <a href="https://github.com/tc39/proposal-private-fields">private class fields/methods</a>
+					). Decorators add a powerful system of metaprogramming to the JS language allowing to step into all
+					stages of the class lifecycle, to manipulate class fields in the very declarative yet incredibly
+					flexible way. You still could achieve some similar results using class mixins and static methods
+				with property definition, but it is way less descriptive and has its drawbacks.</p>
+				<p>Unfortunately, the initial proposal Corpuscule was built on is deprecated due to serious performance
+					issues. There is a new static decorator proposal, but it does not have Babel implementation yet, and
+				it is not defined when it will.</p>
+				<p>That is the reason Corpuscule moves to an emulation of static decorator proposal. What does
+					emulation mean? Well, it is not a specification-correct implementation, but it implements basic
+					ideas of the proposal. Emulation uses the legacy decorator proposal (stage 1) that is well-supported
+					by Babel and Typescript supplemented with a custom solution: a <a href="https://github.com/corpusculejs/babel-preset/README.md#babel-plugin-inject-decorator-initializer%60">Babel plugin</a>
+				that adds missing parts to the code generated by the legacy plugin. </p>
+				<h3 id="symbols">Symbols</h3>
+				<p>This solution of Corpuscule may confuse you. You may rarely meet using the regular string-named
+					class fields in Corpuscule tools. Why? Well, the best answer is to avoid naming conflicts. Web
+					components are not React. They won&#39;t pack component properties into a separate object <code>this.props</code>.
+					All properties come as class fields. So, to avoid a situation when you want to use property
+					<code>render</code>, but you have a <code>render</code> method that is a heart of your component system, Corpuscule
+					declares all its field names as Symbols. So you are free to use <code>render</code> property along with
+					<code>[render]</code> method, and you are free to create another Symbol named <code>render</code> and use it in the same
+				class. Symbols are unique, and that is their power. </p>
+				<h2 id="how-to-use">How to use</h2>
+				<p>To work with the Corpuscule project, you have to transpile it using <a href="https://babeljs.io">Babel</a>
+				because decorators are not a part of the language yet. </p>
+				<p>Along with the Babel you have to install <a href="https://github.com/corpusculejs/babel-preset"><code>@corpuscule/babel-preset</code></a>
+					that should be used in Babel configuration. This preset contains everything to compile decorators in
+				a way Corpuscule need to work.</p>
+				<h2 id="list-of-tools">List of tools</h2>
+				<p>Corpuscule consists of following tools:</p>
+				<ul>
+					<li><a href="./packages/context"><code>@corpuscule/context</code></a>. This package allows creating a context that sends
+						data top-down, from parents to children. Context is DOM-dependent, so using it on different DOM
+						branches with different values you will get different results. It is also a base for many other
+					Corpuscule tools like <code>router</code> or <code>redux</code>. </li>
+					<li><a href="./packages/element"><code>@corpuscule/element</code></a>. This package provides a set of decorators for
+						creating web components. It is decorator-based analogue for Polymer&#39;s <a href="https://github.com/Polymer/lit-element">LitElement</a>
+					or <a href="https://reactjs.org/">React</a>.</li>
+					<li><a href="./packages/form"><code>@corpuscule/form</code></a>. Connector for the <a href="https://github.com/final-form/final-form">🏁 final-form</a>
+					package that provides Corpuscule solution for forms.</li>
+					<li><a href="./packages/lit-html-renderer"><code>@corpuscule/lit-html-renderer</code></a>. <a href="https://github.com/Polymer/lit-html">lit-html</a>
+						based renderer for <a href="./packages/element"><code>@corpuscule/element</code></a>. Also includes solution for using
+						custom element class definition as a source for custom element name (<code>MyElement</code> -&gt; <code>my-element</code>)
+					that makes <code>lit-html</code> usage similar to React. </li>
+					<li><a href="./packages/redux"><code>@corpuscule/redux</code></a>. A connector for the <a href="https://redux.js.org/">Redux</a>
+					library. It is <code>react-redux</code> for Corpuscule.</li>
+					<li><a href="./packages/router"><code>@corpuscule/router</code></a>. A connector for the <a href="https://github.com/kriasoft/universal-router">Universal Router</a>
+					package, provides Corpuscule solution for routing.</li>
+					<li><a href="./packages/storeon"><code>@corpuscule/storeon</code></a>. A connector for the <a href="https://github.com/ai/storeon">Storeon</a>
+					package, a tiny Redux-like state manager. </li>
+					<li><a href="./packages/styles"><code>@corpuscule/styles</code></a>. A solution for loading CSS stylesheets.</li>
+					<li><a href="./packages/typings"><code>@corpuscule/typings</code></a>. Typescript common typings for the Corpuscule.</li>
+					<li><a href="./packages/utils"><code>@corpuscule/utils</code></a>. This package contains a lot of utilities used in almost
+					all Corpuscule packages. Doesn&#39;t have single entrypoint; each util should be loaded separately.</li>
+				</ul>
+				<h2 id="future">Future</h2>
+				<p>When the <a href="(https://github.com/tc39/proposal-decorators)">static decorator specification</a> reaches
+					stage 3, Corpuscule will be rewritten using it. The current implementation of Corpuscule is done
+					with the basic ideas of the new proposal in mind (that is why it does not use some obvious ideas
+					like a function that creates decorators). It should reduce the number of efforts production code
+				refactoring will take when decorators become a standard.</p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_corpuscule_context.html">@corpuscule/context</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_corpuscule_element.html">@corpuscule/element</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_corpuscule_form.html">@corpuscule/form</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_corpuscule_lit_html_renderer.html">@corpuscule/lit-<wbr>html-<wbr>renderer</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_corpuscule_lit_html_renderer_lib_init.html">@corpuscule/lit-<wbr>html-<wbr>renderer/lib/init</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_corpuscule_lit_html_renderer_lib_shady.html">@corpuscule/lit-<wbr>html-<wbr>renderer/lib/shady</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_corpuscule_lit_html_renderer_lib_withcustomelement.html">@corpuscule/lit-<wbr>html-<wbr>renderer/lib/with<wbr>Custom<wbr>Element</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_corpuscule_redux.html">@corpuscule/redux</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_corpuscule_router.html">@corpuscule/router</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_corpuscule_storeon.html">@corpuscule/storeon</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_corpuscule_styles.html">@corpuscule/styles</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_corpuscule_utils_lib_asserts.html">@corpuscule/utils/lib/asserts</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_corpuscule_utils_lib_defineextendable.html">@corpuscule/utils/lib/define<wbr>Extendable</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_corpuscule_utils_lib_makeaccessor.html">@corpuscule/utils/lib/make<wbr>Accessor</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_corpuscule_utils_lib_propertyutils.html">@corpuscule/utils/lib/property<wbr>Utils</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_corpuscule_utils_lib_reflectclassmethods.html">@corpuscule/utils/lib/reflect<wbr>Class<wbr>Methods</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_corpuscule_utils_lib_scheduler.html">@corpuscule/utils/lib/scheduler</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_corpuscule_utils_lib_setters.html">@corpuscule/utils/lib/setters</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_corpuscule_utils_lib_shallowequal.html">@corpuscule/utils/lib/shallow<wbr>Equal</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_corpuscule_utils_lib_tokenregistry.html">@corpuscule/utils/lib/token<wbr>Registry</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>
