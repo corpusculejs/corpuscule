@@ -74,6 +74,29 @@ export function unsafeStatic(value: unknown): UnsafeStatic;
  * will be used as a tag name. The behavior of custom elements classes are equal
  * to the unsafe static values behavior.
  *
+ * ### Example
+ * ```typescript
+ * // index.js
+ * import '@corpuscule/lit-html-renderer/lib/init';
+ * import './app.js';
+ *
+ * // app.js
+ * import withCustomElement, {unsafeStatic} from '@corpuscule/lit-html-renderer';
+ * import {html, render} from 'lit-html';
+ *
+ * class Foo extends HTMLElement {}
+ * customElements.define('x-foo', Foo);
+ *
+ * const shtml = withCustomElement(html);
+ * const barTag = unsafeStatic('x-bar');
+ *
+ * render(shtml`
+ *   <${Foo}>
+ *     <${barTag}></${barTag}>
+ *   </${Foo}>
+ * `); // Will render <x-foo><x-bar></x-bar></x-foo>
+ * ```
+ *
  * @param processor `html` function
  *
  * @returns decorated `html` function
