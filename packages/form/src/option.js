@@ -8,8 +8,8 @@ import {fieldOptions, formOptions, tokenRegistry} from './utils';
 
 const optionsList = new Set([...fieldOptions, ...formOptions]);
 
-const option = token => ({constructor: klass}, key, descriptor) => {
-  const name = getName(key);
+const option = token => ({constructor: klass}, propertyKey, descriptor) => {
+  const name = getName(propertyKey);
   const [sharedPropertiesRegistry, formOptionsRegistry] = tokenRegistry.get(token);
 
   if (!optionsList.has(name)) {
@@ -19,16 +19,16 @@ const option = token => ({constructor: klass}, key, descriptor) => {
   const isCompareInitialValues = name === 'compareInitialValues';
   if (isCompareInitialValues) {
     setObject(sharedPropertiesRegistry, klass, {
-      compare: key,
+      compare: propertyKey,
     });
   } else {
     // Executes after the distinction between providers and consumers are set.
     klass.__registrations.push(() => {
       if (isProvider(token, klass)) {
-        setArray(formOptionsRegistry, klass, [key]);
+        setArray(formOptionsRegistry, klass, [propertyKey]);
       } else {
         setObject(sharedPropertiesRegistry, klass, {
-          [name]: key,
+          [name]: propertyKey,
         });
       }
     });
@@ -52,7 +52,7 @@ const option = token => ({constructor: klass}, key, descriptor) => {
                 if (
                   !(($compareInitialValues && self[$compareInitialValues]) || shallowEqual).call(
                     self,
-                    self[key],
+                    self[propertyKey],
                     initialValues,
                   )
                 ) {
@@ -60,7 +60,7 @@ const option = token => ({constructor: klass}, key, descriptor) => {
                 }
               }
             : (self, v) => {
-                if (self[key] !== v) {
+                if (self[propertyKey] !== v) {
                   self[$formApi].setConfig(name, v);
                 }
               };
@@ -94,7 +94,7 @@ const option = token => ({constructor: klass}, key, descriptor) => {
   }
 
   klass.__initializers.push(self => {
-    self[key] = descriptor.value.bind(self);
+    self[propertyKey] = descriptor.value.bind(self);
   });
 
   return descriptor;

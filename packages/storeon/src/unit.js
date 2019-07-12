@@ -1,13 +1,13 @@
 import {tokenRegistry} from './utils';
 
-const unit = (token, storeKey) => ({constructor: klass}, key) => {
+const unit = (token, storeKey) => ({constructor: klass}, propertyKey) => {
   klass.__registrations.push(() => {
     tokenRegistry
       .get(token)
       .get(klass)
       .units.push((self, updated) => {
         if (storeKey in updated) {
-          self[key] = updated[storeKey];
+          self[propertyKey] = updated[storeKey];
         }
       });
   });

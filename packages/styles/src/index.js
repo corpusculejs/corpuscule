@@ -11,8 +11,8 @@ export const stylesAdvanced = (
     adoptedStyleSheets = 'adoptedStyleSheets' in Document.prototype,
     shadyCSS = window.ShadyCSS !== undefined && !window.ShadyCSS.nativeShadow,
   } = {},
-) => target => {
-  const {prototype} = target;
+) => klass => {
+  const {prototype} = klass;
   const linkNodes = document.createDocumentFragment();
   const styleNodes = document.createDocumentFragment();
   const constructableStyles = [];
@@ -46,7 +46,7 @@ export const stylesAdvanced = (
 
   const supers = reflectClassMethods(prototype, ['attachShadow', stylesAttachedCallback]);
 
-  target.prototype.attachShadow = function attachShadow(options) {
+  klass.prototype.attachShadow = function attachShadow(options) {
     const root = supers.attachShadow.call(this, options);
 
     if (constructableStyles.length > 0) {

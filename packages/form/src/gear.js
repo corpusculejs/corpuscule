@@ -3,9 +3,9 @@ import {getName} from '@corpuscule/utils/lib/propertyUtils';
 import {setObject} from '@corpuscule/utils/lib/setters';
 import {gears, tokenRegistry} from './utils';
 
-const gear = token => (prototype, key, descriptor) => {
+const gear = token => (prototype, propertyKey, descriptor) => {
   const {constructor: klass} = prototype;
-  const name = getName(key);
+  const name = getName(propertyKey);
 
   if (!gears.includes(name)) {
     throw new TypeError(`Property name ${name} is not allowed`);
@@ -29,10 +29,10 @@ const gear = token => (prototype, key, descriptor) => {
   }
 
   setObject(sharedPropertiesRegistry, klass, {
-    [name]: key,
+    [name]: propertyKey,
   });
 
-  return name === 'formApi' ? value(token)(prototype, key, descriptor) : descriptor;
+  return name === 'formApi' ? value(token)(prototype, propertyKey, descriptor) : descriptor;
 };
 
 export default gear;

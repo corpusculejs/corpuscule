@@ -1,6 +1,6 @@
 import {tokenRegistry} from './utils';
 
-const dispatcher = token => ({constructor: klass}, key, descriptor) => {
+const dispatcher = token => ({constructor: klass}, propertyKey, descriptor) => {
   const {initializer, value} = descriptor;
 
   let $store;
@@ -15,7 +15,7 @@ const dispatcher = token => ({constructor: klass}, key, descriptor) => {
     const actionCreator = initializer && initializer();
 
     if (!actionCreator || typeof actionCreator !== 'function') {
-      throw new TypeError(`@dispatcher "${key}" should be initialized with a function`);
+      throw new TypeError(`@dispatcher "${propertyKey}" should be initialized with a function`);
     }
 
     callback = function(...args) {
