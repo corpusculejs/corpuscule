@@ -385,6 +385,22 @@ describe('@corpuscule/element', () => {
       }).not.toThrow();
     });
 
+    it('allows omitting renderer option', async () => {
+      const tag = genName();
+
+      @basicElement(tag, {scheduler: schedulerSpy})
+      // @ts-ignore
+      class Test extends fixtureMixin(CustomElement) {
+        public [render](): string {
+          return 'render';
+        }
+      }
+
+      await fixture(`<${tag}></${tag}>`);
+
+      expect(schedulerSpy).not.toHaveBeenCalled();
+    });
+
     describe('elements extending', () => {
       it('allows extending existing element', async () => {
         const tag1 = genName();

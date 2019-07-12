@@ -98,6 +98,8 @@ export interface ElementDecoratorOptions {
    * This option defines the rendering function that applies result returned
    * from the [[render]] function to the component body.
    *
+   * If you omit this property, re-rendering won't ever happen on your element.
+   *
    * @param renderingResult a result returned by a [[render]] function.
    *
    * @param container a component root to which result should be applied. It
@@ -108,7 +110,11 @@ export interface ElementDecoratorOptions {
    * setting the [eventContext](https://lit-html.polymer-project.org/api/interfaces/lit_html.renderoptions.html#eventcontext)
    * of lit-html.
    */
-  renderer(renderingResult: unknown, container: Element | DocumentFragment, context: unknown): void;
+  renderer?(
+    renderingResult: unknown,
+    container: Element | DocumentFragment,
+    context: unknown,
+  ): void;
 
   /**
    * This option defines the function that schedules the rendering process.

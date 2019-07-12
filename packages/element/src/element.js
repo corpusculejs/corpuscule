@@ -21,7 +21,6 @@ const element = (
   {extends: builtin, lightDOM, renderer, scheduler = defaultScheduler} = {},
 ) => klass => {
   const {prototype} = klass;
-  const hasRender = $render in prototype;
   const isLight = lightDOM || (builtin && !shadowElements.includes(builtin));
 
   const $$connected = Symbol();
@@ -70,24 +69,25 @@ const element = (
   );
 
   Object.assign(prototype, {
-    [$$invalidate]: hasRender
-      ? async function() {
-          if (!this[$$valid]) {
-            return;
+    [$$invalidate]:
+      $render in prototype && renderer
+        ? async function() {
+            if (!this[$$valid]) {
+              return;
+            }
+
+            this[$$valid] = false;
+
+            await scheduler(() => {
+              renderer(this[$render](), this[$$root], this);
+              this[$$valid] = true;
+            });
+
+            if (this[$$connected]) {
+              this[$updatedCallback]();
+            }
           }
-
-          this[$$valid] = false;
-
-          await scheduler(() => {
-            renderer(this[$render](), this[$$root], this);
-            this[$$valid] = true;
-          });
-
-          if (this[$$connected]) {
-            this[$updatedCallback]();
-          }
-        }
-      : noop,
+        : noop,
     async [$internalChangedCallback](internalName, oldValue, newValue) {
       if (!this[$$connected]) {
         return;
