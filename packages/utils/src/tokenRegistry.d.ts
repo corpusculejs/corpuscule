@@ -23,6 +23,11 @@
 export type Token = object;
 
 /**
+ * A function that creates tokens.
+ */
+export type TokenCreator = () => Token;
+
+/**
  * Creates:
  * * a key-value registry where the key is a unique token and the value
  * is a data store;
@@ -55,5 +60,5 @@ export type Token = object;
  */
 export default function createTokenRegistry<T>(
   createDataStore: () => T,
-  createRawToken?: () => Token,
-): [() => Token, WeakMap<Token, T>];
+  createRawToken?: TokenCreator,
+): [TokenCreator, WeakMap<Token, T>];
