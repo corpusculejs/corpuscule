@@ -1,9 +1,12 @@
 /**
- * @module @corpuscule/utils/lib/tokenRegistry
+ * This module provides tools to connect separate decorators together.
  *
+ * ### Usage
  * ```typescript
  * import createTokenRegistry from '@corpuscule/utils/lib/tokenRegistry'
  * ```
+ *
+ * @module @corpuscule/utils/lib/tokenRegistry
  */
 
 /**

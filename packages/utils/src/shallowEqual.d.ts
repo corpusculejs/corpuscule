@@ -1,9 +1,12 @@
 /**
- * @module @corpuscule/utils/lib/shallowEqual
+ * This module provides tools to compare object shallowly.
  *
+ * ### Usage
  * ```typescript
  * import shallowEqual from '@corpuscule/utils/lib/shallowEqual'
  * ```
+ *
+ * @module @corpuscule/utils/lib/shallowEqual
  */
 
 /**

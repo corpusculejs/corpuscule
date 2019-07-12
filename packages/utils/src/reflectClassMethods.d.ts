@@ -1,9 +1,13 @@
 /**
- * @module @corpuscule/utils/lib/reflectClassMethods
+ * This module provides tools to extract existing methods of the class to the
+ * object to use later.
  *
+ * ### Usage
  * ```typescript
  * import reflectClassMethods from '@corpuscule/utils/lib/reflectClassMethods'
  * ```
+ *
+ * @module @corpuscule/utils/lib/reflectClassMethods
  */
 
 /**

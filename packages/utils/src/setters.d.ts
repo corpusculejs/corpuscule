@@ -1,9 +1,14 @@
 /**
- * @module @corpuscule/utils/lib/setters
+ * This module provides tools to change complex values (like objects and arrays)
+ * in the `Map` or `WeakMap` store without explicit check for their existence.
+ * If the value does not exist, it will be created.
  *
+ * ### Usage
  * ```typescript
- * import {setArray} from '@corpuscule/utils/lib/setters'
+ * import {setArray, setObject} from '@corpuscule/utils/lib/setters'
  * ```
+ *
+ * @module @corpuscule/utils/lib/setters
  */
 
 /**

@@ -5,11 +5,12 @@
  * The default purpose of this module is to provide a scheduling system for the
  * web components that could schedule rendering of nested components recursively.
  *
- * @module @corpuscule/utils/lib/scheduler
- *
+ * ### Usage
  * ```typescript
  * import schedule from '@corpuscule/utils/lib/scheduler'
  * ```
+ *
+ * @module @corpuscule/utils/lib/scheduler
  */
 
 /**

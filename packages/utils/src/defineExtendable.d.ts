@@ -1,9 +1,13 @@
 /**
- * @module @corpuscule/utils/lib/defineExtendable
+ * This module provides tools to work with restrictions of the Custom Elements
+ * spec.
  *
+ * ### Usage
  * ```typescript
  * import defineExtendable from '@corpuscule/utils/lib/defineExtendable'
  * ```
+ *
+ * @module @corpuscule/utils/lib/defineExtendable
  */
 
 /**

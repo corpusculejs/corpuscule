@@ -10,11 +10,12 @@
  *
  * This module contains assertions to check these cases.
  *
- * @module @corpuscule/utils/lib/asserts
- *
+ * ### Usage
  * ```typescript
  * import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts'
  * ```
+ *
+ * @module @corpuscule/utils/lib/asserts
  */
 
 /**

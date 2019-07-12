@@ -1,9 +1,13 @@
 /**
- * @module @corpuscule/utils/lib/makeAccessor
+ * This module provides tools to transform property descriptors to accessor
+ * descriptors.
  *
+ * ### Usage
  * ```typescript
- * import createTokenRegistry from '@corpuscule/utils/lib/tokenRegistry'
+ * import makeAccessor from '@corpuscule/utils/lib/makeAccessor'
  * ```
+ *
+ * @module @corpuscule/utils/lib/makeAccessor
  */
 
 /**
