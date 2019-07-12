@@ -11,7 +11,6 @@
  */
 
 import {isProvider} from '@corpuscule/context';
-import {Omit} from '@corpuscule/typings';
 import {Token} from '@corpuscule/utils/lib/tokenRegistry';
 import {
   Config as FormConfig,

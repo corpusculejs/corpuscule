@@ -1,7 +1,6 @@
 // tslint:disable:no-unbound-method
 import {fixture, fixtureSync} from '@open-wc/testing-helpers';
 import {Constructor, createTestingPromise, CustomElement, genName} from '../../../test/utils';
-import {Omit} from '../../typings';
 import {
   element as basicElement,
   ElementDecoratorOptions,
