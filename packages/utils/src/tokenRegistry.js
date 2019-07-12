@@ -1,9 +1,9 @@
-const createTokenRegistry = (newRegistry, newToken = () => ({})) => {
+const createTokenRegistry = (createDataStore, createRawToken = () => ({})) => {
   const tokenRegistry = new WeakMap();
 
   const createToken = () => {
-    const token = newToken();
-    const registry = newRegistry();
+    const token = createRawToken();
+    const registry = createDataStore();
 
     tokenRegistry.set(token, registry);
 

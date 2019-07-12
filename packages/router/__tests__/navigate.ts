@@ -1,7 +1,7 @@
-import {push} from '../src';
+import {navigate} from '../src';
 
 describe('@corpuscule/router', () => {
-  describe('push', () => {
+  describe('navigate', () => {
     let historyPushStateSpy: jasmine.Spy;
     let historyStateSpy: jasmine.Spy;
 
@@ -16,16 +16,10 @@ describe('@corpuscule/router', () => {
     });
 
     it('should push new state to history', () => {
-      push('/test');
+      navigate('/test');
       // tslint:disable-next-line:no-unbound-method
-      expect(history.pushState).toHaveBeenCalledWith('/test', '', '/test');
+      expect(history.pushState).toHaveBeenCalledWith('/test', null, '/test');
       expect(historyStateSpy).toHaveBeenCalled();
-    });
-
-    it('should allow to add title to a page', () => {
-      push('/test', 'Test');
-      // tslint:disable-next-line:no-unbound-method
-      expect(history.pushState).toHaveBeenCalledWith('/test', 'Test', '/test');
     });
 
     it("should dispatch 'popstate' event", done => {
@@ -38,7 +32,7 @@ describe('@corpuscule/router', () => {
 
       window.addEventListener('popstate', listener);
 
-      push('/test');
+      navigate('/test');
     });
   });
 });

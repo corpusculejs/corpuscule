@@ -1,18 +1,18 @@
 export const assertRequiredProperty = (...args) => {
-  let decoratorName;
-  let markerName;
+  let classDecoratorName;
+  let propertyDecoratorName;
   let propertyName = 'any';
-  let property;
+  let propertyValue;
 
   if (args.length === 3) {
-    [decoratorName, markerName, property] = args;
+    [classDecoratorName, propertyDecoratorName, propertyValue] = args;
   } else {
-    [decoratorName, markerName, propertyName, property] = args;
+    [classDecoratorName, propertyDecoratorName, propertyName, propertyValue] = args;
   }
 
-  if (property === undefined) {
+  if (propertyValue === undefined) {
     throw new Error(
-      `@${decoratorName} requires ${propertyName} property marked with @${markerName}`,
+      `@${classDecoratorName} requires ${propertyName} property marked with @${propertyDecoratorName}`,
     );
   }
 };

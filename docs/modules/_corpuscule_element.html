@@ -1,0 +1,966 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>@corpuscule/element | Corpuscule API</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">Corpuscule API</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="_corpuscule_element.html">@corpuscule/element</a>
+				</li>
+			</ul>
+			<h1>External module @corpuscule/element</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>This module provides tools to define web components in a declarative way.</p>
+					</div>
+					<h2 id="how-it-works">How it works</h2>
+					<p>By default, web components are too low-level to define them directly. They
+						require too much boilerplate to create and support. This module provides
+						special decorators that allow setting main parts of web components in the
+						most declarative way possible. These decorators combined, create a component
+					system that works together and is easy to interact with.</p>
+					<p>There are the following decorators that makes the system work:</p>
+					<ul>
+						<li><a href="_corpuscule_element.html#attribute">@attribute</a>,</li>
+						<li><a href="_corpuscule_element.html#property">@property</a>,</li>
+						<li><a href="_corpuscule_element.html#internal">@internal</a>,</li>
+					</ul>
+					<h2 id="element-lifecycle">Element Lifecycle</h2>
+					<p>Each custom element marked with an <a href="_corpuscule_element.html#element">@element</a> decorator has
+						the following lifecycle (including standard JS class and custom element
+					lifecycle).</p>
+					<dl class="tsd-comment-tags">
+						<dt>note</dt>
+						<dd><p>A rendering system is able to wait until multiple properties are set
+								synchronously; only then the single rendering will be performed. However, be
+								careful with the asynchronous setting: it may cause re-rendering on each
+							assignment.</p>
+							<table>
+								<thead>
+									<tr>
+										<th>Name</th>
+										<th>Hook Type</th>
+										<th>Stage</th>
+										<th>Description</th>
+									</tr>
+								</thead>
+								<tbody><tr>
+										<td>constructor</td>
+										<td>JS Class</td>
+										<td>Creation</td>
+										<td>Since DOM element can be created with the <code>document.createElement</code> method, this hook is separate.</td>
+									</tr>
+									<tr>
+										<td>connectedCallback</td>
+										<td>Custom Element</td>
+										<td>Connecting</td>
+										<td>This callback is invoked whenever the element is connected to the DOM. During the connection, Corpuscule performs the initial rendering, and then user-defined <code>connectedCallback</code> is fired. Can be invoked multiple times for the single element.</td>
+									</tr>
+									<tr>
+										<td>disconnectedCallback</td>
+										<td>Custom Element</td>
+										<td>Connecting</td>
+										<td>This callback is invoked after the element is disconnected from DOM. Since there is nothing for Corpuscule to do at this time, user-defined <code>disconnectedCallback</code> will be invoked directly. Can be invoked multiple times for the single element.</td>
+									</tr>
+									<tr>
+										<td>attributeChangedCallback</td>
+										<td>Custom Element</td>
+										<td>Update</td>
+										<td>This callback is invoked each time the <a href="#attribute-property">attribute</a> property is changed. The method receives a string name of the changed property, its old and new value (in a string form).</td>
+									</tr>
+									<tr>
+										<td><a href="_corpuscule_element.html#propertychangedcallback">propertyChangedCallback</a></td>
+										<td>Corpuscule</td>
+										<td>Update</td>
+										<td>see the description by the link.</td>
+									</tr>
+									<tr>
+										<td><a href="_corpuscule_element.html#internalchangedcallback">internalChangedCallback</a></td>
+										<td>Corpuscule</td>
+										<td>Update</td>
+										<td>see the description by the link.</td>
+									</tr>
+									<tr>
+										<td><a href="_corpuscule_element.html#updatedcallback">updatedCallback</a></td>
+										<td>Corpuscule</td>
+										<td>Update</td>
+										<td>see the description by the link.</td>
+									</tr>
+									<tr>
+										<td><a href="_corpuscule_element.html#render">render</a></td>
+										<td>Corpuscule</td>
+										<td>Rendering</td>
+										<td>see the description by the link.</td>
+									</tr>
+							</tbody></table>
+						</dd>
+					</dl>
+				</div>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Interfaces</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-interface tsd-parent-kind-external-module"><a href="../interfaces/_corpuscule_element.elementdecoratoroptions.html" class="tsd-kind-icon">Element<wbr>Decorator<wbr>Options</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Type aliases</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-type-alias tsd-parent-kind-external-module"><a href="_corpuscule_element.html#propertyguard" class="tsd-kind-icon">Property<wbr>Guard</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Variables</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-variable tsd-parent-kind-external-module"><a href="_corpuscule_element.html#internal" class="tsd-kind-icon">internal</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-external-module"><a href="_corpuscule_element.html#internalchangedcallback" class="tsd-kind-icon">internal<wbr>Changed<wbr>Callback</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-external-module"><a href="_corpuscule_element.html#propertychangedcallback" class="tsd-kind-icon">property<wbr>Changed<wbr>Callback</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-external-module"><a href="_corpuscule_element.html#render" class="tsd-kind-icon">render</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-external-module"><a href="_corpuscule_element.html#updatedcallback" class="tsd-kind-icon">updated<wbr>Callback</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Functions</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_corpuscule_element.html#attribute" class="tsd-kind-icon">attribute</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_corpuscule_element.html#computer" class="tsd-kind-icon">computer</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_corpuscule_element.html#createcomputingtoken" class="tsd-kind-icon">create<wbr>Computing<wbr>Token</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_corpuscule_element.html#element" class="tsd-kind-icon">element</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_corpuscule_element.html#observer" class="tsd-kind-icon">observer</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_corpuscule_element.html#property" class="tsd-kind-icon">property</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_corpuscule_element.html#query" class="tsd-kind-icon">query</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_corpuscule_element.html#queryall" class="tsd-kind-icon">query<wbr>All</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Type aliases</h2>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-external-module">
+					<a name="propertyguard" class="tsd-anchor"></a>
+					<h3>Property<wbr>Guard</h3>
+					<div class="tsd-signature tsd-kind-icon">Property<wbr>Guard<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L128">element/src/index.d.ts:128</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-siganture">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-alias tsd-is-not-exported">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>value: <span class="tsd-signature-type">unknown</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Variables</h2>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module">
+					<a name="internal" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> internal</h3>
+					<div class="tsd-signature tsd-kind-icon">internal<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">PropertyDecorator</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L278">element/src/index.d.ts:278</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>A decorator that transforms a class property to a component internal
+							property.</p>
+						</div>
+						<p>An internal property is a property that works under the hood. Its role is to
+							be an intrinsic mechanism, so it would be better to avoid sharing and
+						reusing it outside of the class.</p>
+						<p>For React users, this concept may be familiar as a <a href="https://reactjs.org/docs/state-and-lifecycle.html">Component State</a>.</p>
+						<h3 id="features-and-limitations">Features and limitations</h3>
+						<ul>
+							<li>Any change of the internal property initiates rendering; the equality
+							check of the old and the new value is not performed.</li>
+							<li>The internal property doesn&#39;t have any guard on it.</li>
+							<li>Each internal property update calls <a href="_corpuscule_element.html#internalchangedcallback">internalChangedCallback</a> with
+							internal property name, old and new value.</li>
+						</ul>
+						<h3 id="example">Example</h3>
+						<pre><code class="language-typescript"><span class="hljs-meta">@element</span>(<span class="hljs-string">'my-component-with-modal'</span>, {renderer})
+<span class="hljs-keyword">class</span> MyComponentWithModal <span class="hljs-keyword">extends</span> HTMLElement {
+  <span class="hljs-meta">@internal</span> <span class="hljs-keyword">private</span> isOpen: <span class="hljs-built_in">boolean</span> = <span class="hljs-literal">false</span>;
+
+  <span class="hljs-keyword">private</span> handleOpen(): <span class="hljs-built_in">void</span> {
+    <span class="hljs-keyword">this</span>.isOpen = !<span class="hljs-keyword">this</span>.isOpen;
+  }
+
+  <span class="hljs-keyword">private</span> [render](): TemplateResult {
+    <span class="hljs-keyword">return</span> html<span class="hljs-string">`
+      &lt;button @click=<span class="hljs-subst">${this.handleOpen}</span>&gt;Open modal&lt;/button&gt;
+      &lt;some-modal ?open=<span class="hljs-subst">${this.isOpen}</span>&gt;&lt;/some-modal&gt;
+    `</span>;
+  }
+}</code></pre>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module">
+					<a name="internalchangedcallback" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> internal<wbr>Changed<wbr>Callback</h3>
+					<div class="tsd-signature tsd-kind-icon">internal<wbr>Changed<wbr>Callback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">keyof symbol</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L414">element/src/index.d.ts:414</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>A symbolic name of a method that is invoked when an <a href="#internal-property">internal</a>
+								property is assigned. The method receives the name of the changed property
+								(either symbolic or string), its old and new value. The behavior is
+							identical to <code>attributeChangedCallback</code>.</p>
+						</div>
+						<h3 id="method-signature">Method signature</h3>
+						<pre><code class="language-typescript"><span class="hljs-keyword">protected</span> [internalChangedCallback](propertyName: PropertyKey, oldValue: unknown, newValue: unknown): <span class="hljs-built_in">void</span>;</code></pre>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module">
+					<a name="propertychangedcallback" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> property<wbr>Changed<wbr>Callback</h3>
+					<div class="tsd-signature tsd-kind-icon">property<wbr>Changed<wbr>Callback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">keyof symbol</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L427">element/src/index.d.ts:427</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>A symbolic name of a method that is invoked when a <a href="#regular-property">regular</a>
+								property is assigned. The method receives the name of the changed property
+								(either symbolic or string), its old and new value. The behavior is
+							identical to <code>attributeChangedCallback</code>.</p>
+						</div>
+						<h3 id="method-signature">Method signature</h3>
+						<pre><code class="language-typescript"><span class="hljs-keyword">protected</span> [propertyChangedCallback](propertyName: PropertyKey, oldValue: unknown, newValue: unknown): <span class="hljs-built_in">void</span>;</code></pre>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module">
+					<a name="render" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> render</h3>
+					<div class="tsd-signature tsd-kind-icon">render<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">keyof symbol</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L445">element/src/index.d.ts:445</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>A symbolic name of a method that is invoked each time any of the component
+								properties (either <a href="#attribute-property">attribute</a>,
+								<a href="#regular-property">regular</a> or <a href="#internal-property">internal</a>) causes
+								re-rendering. The method work synchronously; returned result of its work
+								will be handled by a <a href="../interfaces/_corpuscule_element.elementdecoratoroptions.html#renderer">renderer</a>
+							function.</p>
+						</div>
+						<p>If you do not specify this method, re-rendering won&#39;t ever happen on your
+						element.</p>
+						<h3 id="method-signature">Method signature</h3>
+						<pre><code class="language-typescript"><span class="hljs-keyword">protected</span> [render](): unknown;</code></pre>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module">
+					<a name="updatedcallback" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> updated<wbr>Callback</h3>
+					<div class="tsd-signature tsd-kind-icon">updated<wbr>Callback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">keyof symbol</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L457">element/src/index.d.ts:457</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>A symbolic name of a method that is invoked each time the rendering is over
+								and the component acquires the new state. This method is not called during
+							the initial render (<code>connectedCallback</code> is invoked instead).</p>
+						</div>
+						<h3 id="method-signature">Method signature</h3>
+						<pre><code class="language-typescript"><span class="hljs-keyword">protected</span> [updatedCallback](): <span class="hljs-built_in">void</span>;</code></pre>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Functions</h2>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
+					<a name="attribute" class="tsd-anchor"></a>
+					<h3>attribute</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
+						<li class="tsd-signature tsd-kind-icon">attribute<span class="tsd-signature-symbol">(</span>attributeName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, guard<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BooleanConstructor</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">NumberConstructor</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">StringConstructor</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">PropertyDecorator</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L182">element/src/index.d.ts:182</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>A decorator that binds a class property to an appropriate attribute and
+										provides a transformation to the property value to and from the attribute
+									string.</p>
+								</div>
+								<p>An attribute is the most well-known property type and also the most complex
+									type to work with. Standard requires that it should only be a string type,
+									but Corpuscule allows it to have three primitive types: <code>String</code>, <code>Boolean</code>,
+								and <code>Number</code>.</p>
+								<h3 id="features-and-limitations">Features and limitations</h3>
+								<ul>
+									<li>The attribute cannot have a default value. The reason is that creating an
+										element with attributes defined in a constructor is <a href="https://html.spec.whatwg.org/multipage/custom-elements.html#custom-element-conformance">forbidden</a>
+										by the standard. Setting attributes manually in <code>connectedCallback</code> is
+										allowed yet also limited, because component users can set these attributes
+										before connection to DOM and would be upset if default values override ones
+										made by them. If you consider all these possibilities, you can set defaults
+										in <code>connectedCallback</code> manually; it will require additional render for your
+									component though.</li>
+									<li>Attribute are saved as strings in <code>HTMLElement</code> attributes storage, and
+										whenever you request them, cast to proper type happens. That&#39;s the reason
+									you cannot save in attribute more than just a primitive type.</li>
+									<li>It is not required for the attribute name to be equal to the property it
+									is bound with. There are no restrictions for it.</li>
+									<li>Attributes start the rendering only when the old and the new value are not
+									equal. To find it out the simple strict equality check is performed.</li>
+									<li>Each attribute update calls the <code>attributeChangedCallback</code> method with
+									attribute name, old and new value.</li>
+									<li>Each attribute update initiates rendering.</li>
+								</ul>
+								<h3 id="example">Example</h3>
+								<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"module"</span>&gt;</span><span class="javascript">
+@element(<span class="hljs-string">'my-button'</span>, {renderer})
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyButton</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">HTMLElement</span> </span>{
+  @attribute(<span class="hljs-string">'disabled'</span>, <span class="hljs-built_in">Boolean</span>) isDisabled;
+
+  [render]() {
+    <span class="hljs-keyword">return</span> html<span class="hljs-string">`
+      &lt;button disabled=<span class="hljs-subst">${<span class="hljs-keyword">this</span>.isDisabled}</span>&gt;&lt;slot&gt;&lt;/slot&gt;&lt;/button&gt;
+      <span class="hljs-subst">${<span class="hljs-keyword">this</span>.isDisabled ? html<span class="hljs-string">`&lt;span&gt;Button disabled&lt;/span&gt;`</span> : nothing}</span>
+    `</span>;
+  }
+}
+</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">my-button</span> <span class="hljs-attr">disabled</span>&gt;</span>Don't click me<span class="hljs-tag">&lt;/<span class="hljs-name">my-button</span>&gt;</span></code></pre>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>attributeName: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a name of the attribute to bind.</p>
+									</div>
+								</li>
+								<li>
+									<h5>guard: <span class="tsd-signature-type">BooleanConstructor</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">NumberConstructor</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">StringConstructor</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a type of the property value that should be converted.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">PropertyDecorator</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
+					<a name="computer" class="tsd-anchor"></a>
+					<h3>computer</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
+						<li class="tsd-signature tsd-kind-icon">computer<span class="tsd-signature-symbol">(</span>token<span class="tsd-signature-symbol">: </span><a href="_corpuscule_utils_lib_tokenregistry.html#token" class="tsd-signature-type">Token</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">PropertyDecorator</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L196">element/src/index.d.ts:196</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>A decorator that transforms a class getter to a computed property. It is an
+										approach that can be used to reduce the number of expensive calculations by
+										remembering the latest result produced by the getter and providing it until
+									all the class properties the getter depends on are changed.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>token: <a href="_corpuscule_utils_lib_tokenregistry.html#token" class="tsd-signature-type">Token</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a token produced by a <a href="_corpuscule_element.html#createcomputingtoken">createComputingToken</a> to bind this
+										decorator with <a href="_corpuscule_element.html#observer">@observer</a>.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">PropertyDecorator</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
+					<a name="createcomputingtoken" class="tsd-anchor"></a>
+					<h3>create<wbr>Computing<wbr>Token</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
+						<li class="tsd-signature tsd-kind-icon">create<wbr>Computing<wbr>Token<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_corpuscule_utils_lib_tokenregistry.html#token" class="tsd-signature-type">Token</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L401">element/src/index.d.ts:401</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>By default, <a href="_corpuscule_element.html#computer">computed</a> and <a href="_corpuscule_element.html#observer">observed</a>
+										properties do not know that they are connected. To link them with each
+										other, you have to use a token created via this function and send it to the
+									decorators of computed and observed properties you want to connect.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="_corpuscule_utils_lib_tokenregistry.html#token" class="tsd-signature-type">Token</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
+					<a name="element" class="tsd-anchor"></a>
+					<h3>element</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
+						<li class="tsd-signature tsd-kind-icon">element<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/_corpuscule_element.elementdecoratoroptions.html" class="tsd-signature-type">ElementDecoratorOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ClassDecorator</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L240">element/src/index.d.ts:240</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>A decorator that converts a class declaration to a Custom Element and unites
+									all other decorators making a complete working system from them.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>note</dt>
+									<dd><p>new custom element definition with <code>@element</code> decorator is an
+											asynchronous operation. You cannot use it immediately. If you need to do
+											something with the element right after it is created, use the following
+										approach:</p>
+										<pre><code class="language-typescript"><span class="hljs-meta">@element</span>(<span class="hljs-string">'my-component'</span>, {renderer})
+<span class="hljs-keyword">class</span> MyComponent <span class="hljs-keyword">extends</span> HTMLElement {}
+
+customElements.whenDefined(<span class="hljs-string">'my-component'</span>).then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+ <span class="hljs-keyword">const</span> myComponent = <span class="hljs-keyword">new</span> MyComponent();
+});</code></pre>
+									</dd>
+									<dt>advice</dt>
+									<dd><p>to avoid setting <code>renderer</code> each time you can create a wrapper decorator:</p>
+										<pre><code class="language-javascript"><span class="hljs-keyword">import</span> {element <span class="hljs-keyword">as</span> elementUniversal} <span class="hljs-keyword">from</span> <span class="hljs-string">'@corpuscule/element'</span>;
+<span class="hljs-keyword">import</span> renderer <span class="hljs-keyword">from</span> <span class="hljs-string">'@coruscule/lit-html-renderer'</span>;
+
+<span class="hljs-keyword">const</span> element = <span class="hljs-function">(<span class="hljs-params">name, options</span>) =&gt;</span> elementUniversal(name, {...options, renderer});</code></pre>
+										<h3 id="example">Example</h3>
+										<pre><code class="language-typescript"><span class="hljs-keyword">import</span> {element, render} <span class="hljs-keyword">from</span> <span class="hljs-string">'@corpuscule/element'</span>;
+<span class="hljs-keyword">import</span> renderer <span class="hljs-keyword">from</span> <span class="hljs-string">'@coruscule/lit-html-renderer'</span>;
+
+<span class="hljs-meta">@element</span>(<span class="hljs-string">'my-component'</span>, {renderer})
+<span class="hljs-keyword">class</span> MyComponent <span class="hljs-keyword">extends</span> HTMLElement {
+  <span class="hljs-keyword">protected</span> [render](): TemplateResult {
+    <span class="hljs-keyword">return</span> html<span class="hljs-string">`&lt;div&gt;Hello, World!&lt;/div&gt;`</span>
+  }
+}</code></pre>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>name: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a name of the new Custom Element. According to the standard, it
+										should contain a dash symbol.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../interfaces/_corpuscule_element.elementdecoratoroptions.html" class="tsd-signature-type">ElementDecoratorOptions</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a list of options that tunes the custom element according to
+										the requirements.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">ClassDecorator</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
+					<a name="observer" class="tsd-anchor"></a>
+					<h3>observer</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
+						<li class="tsd-signature tsd-kind-icon">observer<span class="tsd-signature-symbol">(</span>token<span class="tsd-signature-symbol">: </span><a href="_corpuscule_utils_lib_tokenregistry.html#token" class="tsd-signature-type">Token</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">PropertyDecorator</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L298">element/src/index.d.ts:298</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>A decorator that makes a class property observed. It works together with the
+										computed property created via <a href="_corpuscule_element.html#computer">@computer</a> decorator to reset
+										the remembered getter result. When a value of one of the observed properties
+										is changed, the remembered result of the computed one is reset, and the next
+										call to the getter will start the recalculation which result will be
+									remembered again.</p>
+								</div>
+								<p>Each computed property will observe all the observed properties at once and
+								will drop the remembered result on any of their change.</p>
+								<dl class="tsd-comment-tags">
+									<dt>note</dt>
+									<dd><p>Be accurate with <a href="_corpuscule_element.html#internal">internal properties</a>, they will
+											change (and invalidate the computation result) even if they have the same
+										value.</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>token: <a href="_corpuscule_utils_lib_tokenregistry.html#token" class="tsd-signature-type">Token</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a token produced by a <a href="_corpuscule_element.html#createcomputingtoken">createComputingToken</a> to bind this
+										decorator with <a href="_corpuscule_element.html#computer">@computer</a>.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">PropertyDecorator</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
+					<a name="property" class="tsd-anchor"></a>
+					<h3>property</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
+						<li class="tsd-signature tsd-kind-icon">property<span class="tsd-signature-symbol">(</span>guard<span class="tsd-signature-symbol">?: </span><a href="_corpuscule_element.html#propertyguard" class="tsd-signature-type">PropertyGuard</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">PropertyDecorator</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L341">element/src/index.d.ts:341</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>A decorator that converts a class property to a component regular property.</p>
+								</div>
+								<p>A regular property of the component is a property that can be set only
+								imperatively by assigning the component instance filed.</p>
+								<h3 id="features-and-limitations">Features and limitations</h3>
+								<ul>
+									<li>Property can be guarded by a function that checks its type. Since a
+										property can have any type, guarding them is a user&#39;s responsibility. If you
+									don&#39;t care about checking property types, you can omit the guard.</li>
+									<li>Properties start the rendering only when the old and the new value are not
+									equal. To find it out the simple strict equality check is performed.</li>
+									<li>Each property update calls <a href="_corpuscule_element.html#propertychangedcallback">propertyChangedCallback</a> method with
+									property name, old and new value.</li>
+									<li>Each property update initiates rendering.</li>
+								</ul>
+								<h3 id="example">Example</h3>
+								<pre><code class="language-typescript"><span class="hljs-meta">@element</span>(<span class="hljs-string">'my-square-info'</span>, {renderer})
+<span class="hljs-keyword">class</span> MySquareInfo <span class="hljs-keyword">extends</span> HTMLElement {
+  <span class="hljs-meta">@property</span>(<span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="hljs-keyword">typeof</span> v === <span class="hljs-string">'object'</span> &amp;&amp; v.width &amp;&amp; v.height)
+  <span class="hljs-keyword">public</span> square = {width: <span class="hljs-number">10</span>, height: <span class="hljs-number">10</span>};
+
+  <span class="hljs-keyword">protected</span> [render](): TemplateResult {
+    <span class="hljs-keyword">return</span> html<span class="hljs-string">`
+      &lt;div&gt;Square width: <span class="hljs-subst">${this.square.width}</span>&lt;/div&gt;
+      &lt;div&gt;Square height: <span class="hljs-subst">${this.square.height}</span>&lt;/div&gt;
+    `</span>;
+  }
+}
+
+customElements.whenDefined(<span class="hljs-string">'my-component'</span>).then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">const</span> mySquareInfo = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">'my-square-info'</span>);
+  mySquareInfo.square = {width: <span class="hljs-number">40</span>, height: <span class="hljs-number">40</span>};
+  <span class="hljs-built_in">document</span>.body.append(mySquareInfo);
+});</code></pre>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> guard: <a href="_corpuscule_element.html#propertyguard" class="tsd-signature-type">PropertyGuard</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a function that checks the type of the assigned value; if it
+										returns <code>false</code>, the error will be thrown.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">PropertyDecorator</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
+					<a name="query" class="tsd-anchor"></a>
+					<h3>query</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
+						<li class="tsd-signature tsd-kind-icon">query<span class="tsd-signature-symbol">(</span>selector<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">PropertyDecorator</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L366">element/src/index.d.ts:366</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>A decorator that converts a property to a getter that finds an element with
+										the <code>selector</code> in the Light or Shadow DOM of your element using the
+									<code>querySelector</code> method.</p>
+								</div>
+								<h3 id="example">Example</h3>
+								<pre><code class="language-typescript"><span class="hljs-meta">@element</span>(<span class="hljs-string">'my-element'</span>, {renderer})
+<span class="hljs-keyword">class</span> MyElement <span class="hljs-keyword">extends</span> HTMLElement {
+  <span class="hljs-meta">@query</span>(<span class="hljs-string">'#target'</span>) <span class="hljs-keyword">private</span> target: HTMLSpanElement;
+
+  <span class="hljs-keyword">protected</span> [render](): TemplateResult {
+    <span class="hljs-keyword">return</span> html<span class="hljs-string">`
+      &lt;div class="wrapper"&gt;
+        &lt;span id="target"&gt;&lt;/span&gt;
+      &lt;/div&gt;
+    `</span>;
+  }
+}</code></pre>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>selector: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a selector of the desired element.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">PropertyDecorator</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
+					<a name="queryall" class="tsd-anchor"></a>
+					<h3>query<wbr>All</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
+						<li class="tsd-signature tsd-kind-icon">query<wbr>All<span class="tsd-signature-symbol">(</span>selector<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">PropertyDecorator</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L393">element/src/index.d.ts:393</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>A decorator that converts a property to a getter that finds all elements
+										with the <code>selector</code> in the Light or Shadow DOM of your element using the
+									<code>querySelectorAll</code> method.</p>
+								</div>
+								<h3 id="example">Example</h3>
+								<pre><code class="language-typescript"><span class="hljs-meta">@element</span>(<span class="hljs-string">'my-element'</span>, {renderer})
+<span class="hljs-keyword">class</span> MyElement <span class="hljs-keyword">extends</span> HTMLElement {
+  <span class="hljs-meta">@queryAll</span>(<span class="hljs-string">'.target'</span>) <span class="hljs-keyword">private</span> targets: HTMLCollectionOf&lt;HTMLSpanElement&gt;;
+
+  <span class="hljs-keyword">protected</span> [render](): TemplateResult {
+    <span class="hljs-keyword">return</span> html<span class="hljs-string">`
+      &lt;div class="wrapper"&gt;
+        &lt;span class="target"&gt;&lt;/span&gt;
+        &lt;span class="target"&gt;&lt;/span&gt;
+        &lt;span class="target"&gt;&lt;/span&gt;
+      &lt;/div&gt;
+    `</span>;
+  }
+}</code></pre>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>selector: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a selector of the desired set of elements.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">PropertyDecorator</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="_corpuscule_context.html">@corpuscule/context</a>
+					</li>
+					<li class="current tsd-kind-external-module">
+						<a href="_corpuscule_element.html">@corpuscule/element</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="_corpuscule_form.html">@corpuscule/form</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="_corpuscule_lit_html_renderer.html">@corpuscule/lit-<wbr>html-<wbr>renderer</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="_corpuscule_lit_html_renderer_lib_init.html">@corpuscule/lit-<wbr>html-<wbr>renderer/lib/init</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="_corpuscule_lit_html_renderer_lib_shady.html">@corpuscule/lit-<wbr>html-<wbr>renderer/lib/shady</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="_corpuscule_lit_html_renderer_lib_withcustomelement.html">@corpuscule/lit-<wbr>html-<wbr>renderer/lib/with<wbr>Custom<wbr>Element</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="_corpuscule_redux.html">@corpuscule/redux</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="_corpuscule_router.html">@corpuscule/router</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="_corpuscule_storeon.html">@corpuscule/storeon</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="_corpuscule_styles.html">@corpuscule/styles</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="_corpuscule_utils_lib_asserts.html">@corpuscule/utils/lib/asserts</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="_corpuscule_utils_lib_defineextendable.html">@corpuscule/utils/lib/define<wbr>Extendable</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="_corpuscule_utils_lib_makeaccessor.html">@corpuscule/utils/lib/make<wbr>Accessor</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="_corpuscule_utils_lib_propertyutils.html">@corpuscule/utils/lib/property<wbr>Utils</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="_corpuscule_utils_lib_reflectclassmethods.html">@corpuscule/utils/lib/reflect<wbr>Class<wbr>Methods</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="_corpuscule_utils_lib_scheduler.html">@corpuscule/utils/lib/scheduler</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="_corpuscule_utils_lib_setters.html">@corpuscule/utils/lib/setters</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="_corpuscule_utils_lib_shallowequal.html">@corpuscule/utils/lib/shallow<wbr>Equal</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="_corpuscule_utils_lib_tokenregistry.html">@corpuscule/utils/lib/token<wbr>Registry</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+						<a href="../interfaces/_corpuscule_element.elementdecoratoroptions.html" class="tsd-kind-icon">Element<wbr>Decorator<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
+						<a href="_corpuscule_element.html#propertyguard" class="tsd-kind-icon">Property<wbr>Guard</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module">
+						<a href="_corpuscule_element.html#internal" class="tsd-kind-icon">internal</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module">
+						<a href="_corpuscule_element.html#internalchangedcallback" class="tsd-kind-icon">internal<wbr>Changed<wbr>Callback</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module">
+						<a href="_corpuscule_element.html#propertychangedcallback" class="tsd-kind-icon">property<wbr>Changed<wbr>Callback</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module">
+						<a href="_corpuscule_element.html#render" class="tsd-kind-icon">render</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module">
+						<a href="_corpuscule_element.html#updatedcallback" class="tsd-kind-icon">updated<wbr>Callback</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="_corpuscule_element.html#attribute" class="tsd-kind-icon">attribute</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="_corpuscule_element.html#computer" class="tsd-kind-icon">computer</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="_corpuscule_element.html#createcomputingtoken" class="tsd-kind-icon">create<wbr>Computing<wbr>Token</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="_corpuscule_element.html#element" class="tsd-kind-icon">element</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="_corpuscule_element.html#observer" class="tsd-kind-icon">observer</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="_corpuscule_element.html#property" class="tsd-kind-icon">property</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="_corpuscule_element.html#query" class="tsd-kind-icon">query</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="_corpuscule_element.html#queryall" class="tsd-kind-icon">query<wbr>All</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>

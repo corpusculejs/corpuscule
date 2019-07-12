@@ -1,8 +1,8 @@
 // tslint:disable:no-unbound-method
-import getSupers from '../src/getSupers';
+import reflectClassMethods from '../src/reflectClassMethods';
 
 describe('@corpuscule/utils', () => {
-  describe('getSupers', () => {
+  describe('reflectClassMethods', () => {
     it('creates an object with specified target methods if exist', () => {
       class Test {
         public method(): void {}
@@ -12,7 +12,7 @@ describe('@corpuscule/utils', () => {
         public method3(): void {}
       }
 
-      expect(getSupers(Test.prototype, ['method', 'method2'])).toEqual({
+      expect(reflectClassMethods(Test.prototype, ['method', 'method2'])).toEqual({
         method: Test.prototype.method,
         method2: Test.prototype.method2,
       });
@@ -26,7 +26,7 @@ describe('@corpuscule/utils', () => {
       const fallbackForMethod2 = () => {};
 
       expect(
-        getSupers(Test.prototype, ['method', 'method2'], {method2: fallbackForMethod2}),
+        reflectClassMethods(Test.prototype, ['method', 'method2'], {method2: fallbackForMethod2}),
       ).toEqual({
         method: Test.prototype.method,
         method2: fallbackForMethod2,
@@ -38,7 +38,7 @@ describe('@corpuscule/utils', () => {
         public method(): void {}
       }
 
-      expect(getSupers(Test.prototype, ['method', 'method2'])).toEqual({
+      expect(reflectClassMethods(Test.prototype, ['method', 'method2'])).toEqual({
         method: Test.prototype.method,
         method2: jasmine.any(Function),
       });

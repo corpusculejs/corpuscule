@@ -1,7 +1,7 @@
 const utils = [
   'asserts',
   'defineExtendable',
-  'getSupers',
+  'reflectClassMethods',
   'makeAccessor',
   'propertyUtils',
   'scheduler',

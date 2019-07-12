@@ -6,16 +6,16 @@ const [createComputingToken, tokenRegistry] = createTokenRegistry(() => new Weak
 
 export {createComputingToken};
 
-export const computer = token => ({constructor: target}, _, {get}) => {
+export const computer = token => ({constructor: klass}, _, {get}) => {
   const correct = Symbol();
   const memoized = Symbol();
 
-  target.__initializers.push(self => {
+  klass.__initializers.push(self => {
     self[correct] = false;
     self[memoized] = null;
   });
 
-  setArray(tokenRegistry.get(token), target, correct);
+  setArray(tokenRegistry.get(token), klass, [correct]);
 
   return {
     configurable: true,

@@ -1,7 +1,7 @@
 import {
   isProvider as isProviderAdvanced,
   provider as providerAdvanced,
-  value as apiAdvanced,
+  value as gearAdvanced,
 } from '@corpuscule/context';
 import dispatcherAdvanced from './dispatcher';
 import storeonAdvanced from './storeon';
@@ -9,7 +9,7 @@ import unitAdvanced from './unit';
 import {createStoreonToken} from './utils';
 
 export {
-  apiAdvanced,
+  gearAdvanced,
   createStoreonToken,
   dispatcherAdvanced,
   isProviderAdvanced,
@@ -20,9 +20,9 @@ export {
 
 const defaultToken = createStoreonToken();
 
-export const api = apiAdvanced(defaultToken);
+export const gear = gearAdvanced(defaultToken);
 export const dispatcher = eventKey => dispatcherAdvanced(defaultToken, eventKey);
-export const isProvider = target => isProviderAdvanced(defaultToken, target);
+export const isProvider = klass => isProviderAdvanced(defaultToken, klass);
 export const provider = providerAdvanced(defaultToken);
 export const storeon = storeonAdvanced(defaultToken);
-export const unit = getter => unitAdvanced(defaultToken, getter);
+export const unit = storeKey => unitAdvanced(defaultToken, storeKey);

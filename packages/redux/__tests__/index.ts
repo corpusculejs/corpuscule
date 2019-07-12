@@ -1,7 +1,7 @@
 // tslint:disable:max-classes-per-file
 import {AnyAction, Store} from 'redux';
 import {createSimpleContext, CustomElement} from '../../../test/utils';
-import {api, dispatcher, provider, redux, unit} from '../src';
+import {dispatcher, gear, provider, redux, unit} from '../src';
 
 describe('@corpuscule/redux', () => {
   let reduxState: {test: number};
@@ -22,7 +22,7 @@ describe('@corpuscule/redux', () => {
     it('creates element that subscribes to a store', async () => {
       @provider
       class Provider extends CustomElement {
-        @api public store: Store = reduxStore;
+        @gear public store: Store = reduxStore;
       }
 
       @redux
@@ -39,7 +39,7 @@ describe('@corpuscule/redux', () => {
     it('unsubscribes from store before subscribing to a new one', async () => {
       @provider
       class Provider extends CustomElement {
-        @api public store: Store = reduxStore;
+        @gear public store: Store = reduxStore;
       }
 
       @redux
@@ -65,7 +65,7 @@ describe('@corpuscule/redux', () => {
     it('unsubscribes on disconnect', async () => {
       @provider
       class Provider extends CustomElement {
-        @api public store: Store = reduxStore;
+        @gear public store: Store = reduxStore;
       }
 
       @redux
@@ -84,7 +84,7 @@ describe('@corpuscule/redux', () => {
     it('does nothing during update if no @unit is defined', async () => {
       @provider
       class Provider extends CustomElement {
-        @api public store: Store = reduxStore;
+        @gear public store: Store = reduxStore;
       }
 
       @redux
@@ -100,7 +100,7 @@ describe('@corpuscule/redux', () => {
 
       @provider
       class Provider extends CustomElement {
-        @api public store: Store = reduxStore;
+        @gear public store: Store = reduxStore;
       }
 
       @redux
@@ -123,7 +123,7 @@ describe('@corpuscule/redux', () => {
     it('allows to declare properties connected with store', async () => {
       @provider
       class Provider extends CustomElement {
-        @api public store: Store = reduxStore;
+        @gear public store: Store = reduxStore;
       }
 
       @redux
@@ -141,7 +141,7 @@ describe('@corpuscule/redux', () => {
     it('updates properties when store is updated', async () => {
       @provider
       class Provider extends CustomElement {
-        @api public store: Store = reduxStore;
+        @gear public store: Store = reduxStore;
       }
 
       @redux
@@ -164,7 +164,7 @@ describe('@corpuscule/redux', () => {
 
       @provider
       class Provider extends CustomElement {
-        @api public store: Store = reduxStore;
+        @gear public store: Store = reduxStore;
       }
 
       @redux
@@ -202,7 +202,7 @@ describe('@corpuscule/redux', () => {
 
       @provider
       class Provider extends CustomElement {
-        @api public store: Store = reduxStore;
+        @gear public store: Store = reduxStore;
       }
 
       @redux

@@ -1,0 +1,11 @@
+{
+  "exclude": ["**/+(__tests__|lib|node_modules)/**"],
+  "excludeNotExported": true,
+  "excludePrivate": true,
+  "ignoreCompilerErrors": true,
+  "includeDeclarations": true,
+  "mode": "modules",
+  "name": "Corpuscule API",
+  "out":"./docs",
+  "readme": "./README.md"
+}

@@ -8,8 +8,8 @@ import {fieldOptions, formOptions, tokenRegistry} from './utils';
 
 const optionsList = new Set([...fieldOptions, ...formOptions]);
 
-const option = token => ({constructor: target}, key, descriptor) => {
-  const name = getName(key);
+const option = token => ({constructor: klass}, propertyKey, descriptor) => {
+  const name = getName(propertyKey);
   const [sharedPropertiesRegistry, formOptionsRegistry] = tokenRegistry.get(token);
 
   if (!optionsList.has(name)) {
@@ -18,17 +18,17 @@ const option = token => ({constructor: target}, key, descriptor) => {
 
   const isCompareInitialValues = name === 'compareInitialValues';
   if (isCompareInitialValues) {
-    setObject(sharedPropertiesRegistry, target, {
-      compare: key,
+    setObject(sharedPropertiesRegistry, klass, {
+      compare: propertyKey,
     });
   } else {
     // Executes after the distinction between providers and consumers are set.
-    target.__registrations.push(() => {
-      if (isProvider(token, target)) {
-        setArray(formOptionsRegistry, target, key);
+    klass.__registrations.push(() => {
+      if (isProvider(token, klass)) {
+        setArray(formOptionsRegistry, klass, [propertyKey]);
       } else {
-        setObject(sharedPropertiesRegistry, target, {
-          [name]: key,
+        setObject(sharedPropertiesRegistry, klass, {
+          [name]: propertyKey,
         });
       }
     });
@@ -37,13 +37,13 @@ const option = token => ({constructor: target}, key, descriptor) => {
   if ('initializer' in descriptor || ('get' in descriptor && 'set' in descriptor)) {
     let setter;
 
-    const {get, set} = makeAccessor(descriptor, target.__initializers);
+    const {get, set} = makeAccessor(descriptor, klass.__initializers);
 
     // Executes after $formApi, $compareInitialValues and $scheduleSubscription are set.
-    target.__registrations.push(() => {
-      if (isProvider(token, target)) {
+    klass.__registrations.push(() => {
+      if (isProvider(token, klass)) {
         const {formApi: $formApi, compare: $compareInitialValues} = sharedPropertiesRegistry.get(
-          target,
+          klass,
         );
 
         setter =
@@ -52,7 +52,7 @@ const option = token => ({constructor: target}, key, descriptor) => {
                 if (
                   !(($compareInitialValues && self[$compareInitialValues]) || shallowEqual).call(
                     self,
-                    self[key],
+                    self[propertyKey],
                     initialValues,
                   )
                 ) {
@@ -60,12 +60,12 @@ const option = token => ({constructor: target}, key, descriptor) => {
                 }
               }
             : (self, v) => {
-                if (self[key] !== v) {
+                if (self[propertyKey] !== v) {
                   self[$formApi].setConfig(name, v);
                 }
               };
       } else {
-        const {schedule: $scheduleSubscription} = sharedPropertiesRegistry.get(target);
+        const {schedule: $scheduleSubscription} = sharedPropertiesRegistry.get(klass);
 
         const areEqual =
           name === 'subscription'
@@ -93,8 +93,8 @@ const option = token => ({constructor: target}, key, descriptor) => {
     };
   }
 
-  target.__initializers.push(self => {
-    self[key] = descriptor.value.bind(self);
+  klass.__initializers.push(self => {
+    self[propertyKey] = descriptor.value.bind(self);
   });
 
   return descriptor;

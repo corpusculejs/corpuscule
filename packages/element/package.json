@@ -22,7 +22,6 @@
     "url": "git+https://github.com/corpusculejs/corpuscule.git"
   },
   "dependencies": {
-    "@corpuscule/typings": "^0.13.0",
     "@corpuscule/utils": "^0.13.0"
   },
   "publishConfig": {

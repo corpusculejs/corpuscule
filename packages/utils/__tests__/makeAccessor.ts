@@ -19,7 +19,7 @@ describe('@corpuscule/utils', () => {
 
       const descriptor = Object.getOwnPropertyDescriptor(Test.prototype, 'foo')!;
 
-      const accessorParts = makeAccessor<number>(descriptor, initializers);
+      const accessorParts = makeAccessor(descriptor, initializers);
 
       expect(accessorParts).toEqual({
         configurable: true,
@@ -51,7 +51,7 @@ describe('@corpuscule/utils', () => {
         writable: true,
       };
 
-      const accessorParts = makeAccessor<number>(descriptor, initializers);
+      const accessorParts = makeAccessor(descriptor, initializers);
 
       expect(accessorParts).toEqual({
         get: jasmine.any(Function),

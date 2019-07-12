@@ -1,4 +1,4 @@
 import './context';
 import './createRouter';
 import './Link';
-import './push';
+import './navigate';

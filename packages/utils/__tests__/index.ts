@@ -1,8 +1,8 @@
 import './asserts';
 import './defineExtendable';
-import './getSupers';
 import './makeAccessor';
 import './propertyUtils';
+import './reflectClassMethods';
 import './scheduler';
 import './setters';
 import './shallowEqual';

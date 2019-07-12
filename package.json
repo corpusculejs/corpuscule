@@ -4,6 +4,7 @@
   "scripts": {
     "bootstrap": "lerna bootstrap",
     "build": "lerna run build --parallel",
+    "docs": "typedoc --tsconfig ../../tsconfig.json packages && node scripts/fixDocs.js",
     "lint": "run-p lint:es lint:ts",
     "lint-staged": "lint-staged",
     "lint:es": "eslint packages/**/*.js",
@@ -68,6 +69,9 @@
     "tslint-config-poetez": "^2.0.0",
     "tslint-config-prettier": "^1.18.0",
     "tslint-plugin-prettier": "^2.0.1",
+    "typedoc": "^0.14.2",
+    "typedoc-plugin-external-module-name": "^2.1.0",
+    "typedoc-plugin-no-inherit": "^1.1.8",
     "typescript": "^3.5.2",
     "universal-router": "^8.2.0",
     "uuid": "^3.3.2",

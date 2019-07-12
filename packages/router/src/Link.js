@@ -1,4 +1,4 @@
-import push from './push';
+import navigate from './navigate';
 
 const $$handleClick = Symbol();
 
@@ -22,7 +22,7 @@ export default class Link extends HTMLAnchorElement {
 
   [$$handleClick](e) {
     e.preventDefault();
-    push(`${this.pathname}${this.search}${this.hash}`);
+    navigate(`${this.pathname}${this.search}${this.hash}`);
   }
 }
 

@@ -1,9 +1,9 @@
 import {tokenRegistry} from './utils';
 
-const isProvider = (token, target) => {
+const isProvider = (token, klass) => {
   const [, , providers] = tokenRegistry.get(token);
 
-  return providers.has(target);
+  return providers.has(klass);
 };
 
 export default isProvider;

@@ -1,7 +1,7 @@
 import {provider} from '@corpuscule/context';
 import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
 import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
-import getSupers from '@corpuscule/utils/lib/getSupers';
+import reflectClassMethods from '@corpuscule/utils/lib/reflectClassMethods';
 import {getName} from '@corpuscule/utils/lib/propertyUtils';
 import {createForm, formSubscriptionItems} from 'final-form';
 import {tokenRegistry} from './utils';
@@ -12,25 +12,25 @@ export const all = formSubscriptionItems.reduce((result, key) => {
   return result;
 }, {});
 
-const form = (token, {decorators = [], subscription = all} = {}) => target => {
+const form = (token, {decorators = [], subscription = all} = {}) => klass => {
   let $formApi;
   let $state;
   let formOptions;
 
-  const {prototype} = target;
+  const {prototype} = klass;
   const [sharedPropertiesRegistry, formOptionsRegistry] = tokenRegistry.get(token);
 
   const $$reset = Symbol();
   const $$submit = Symbol();
   const $$unsubscriptions = Symbol();
 
-  const supers = getSupers(prototype, ['connectedCallback', 'disconnectedCallback']);
+  const supers = reflectClassMethods(prototype, ['connectedCallback', 'disconnectedCallback']);
 
-  target.__registrations.push(() => {
-    ({formApi: $formApi, state: $state} = sharedPropertiesRegistry.get(target) || {});
-    formOptions = formOptionsRegistry.get(target) || [];
-    assertRequiredProperty('form', 'api', 'form', $formApi);
-    assertRequiredProperty('form', 'api', 'state', $state);
+  klass.__registrations.push(() => {
+    ({formApi: $formApi, state: $state} = sharedPropertiesRegistry.get(klass) || {});
+    formOptions = formOptionsRegistry.get(klass) || [];
+    assertRequiredProperty('form', 'gear', 'form', $formApi);
+    assertRequiredProperty('form', 'gear', 'state', $state);
     assertRequiredProperty(
       'form',
       'option',
@@ -40,7 +40,7 @@ const form = (token, {decorators = [], subscription = all} = {}) => target => {
   });
 
   defineExtendable(
-    target,
+    klass,
     {
       connectedCallback() {
         const instance = this[$formApi];
@@ -74,12 +74,12 @@ const form = (token, {decorators = [], subscription = all} = {}) => target => {
       },
     },
     supers,
-    target.__initializers,
+    klass.__initializers,
   );
 
-  provider(token)(target);
+  provider(token)(klass);
 
-  target.__initializers.push(self => {
+  klass.__initializers.push(self => {
     Object.assign(self, {
       // Fields
       [$formApi]: createForm(

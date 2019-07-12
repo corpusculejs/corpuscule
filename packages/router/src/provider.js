@@ -1,27 +1,27 @@
 import {provider as contextProvider, value} from '@corpuscule/context';
 import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
 import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
-import getSupers from '@corpuscule/utils/lib/getSupers';
+import reflectClassMethods from '@corpuscule/utils/lib/reflectClassMethods';
 import {tokenRegistry} from './utils';
 
-const provider = (token, {initial = location.pathname} = {}) => target => {
+const provider = (token, {initialPath = location.pathname} = {}) => klass => {
   let $router;
 
-  const {prototype} = target;
+  const {prototype} = klass;
 
   const $$providingValue = Symbol();
   const $$updateRoute = Symbol();
 
-  target.__registrations.push(() => {
-    ({value: $router} = tokenRegistry.get(token).get(target));
-    assertRequiredProperty('provider', 'api', $router);
+  klass.__registrations.push(() => {
+    ({value: $router} = tokenRegistry.get(token).get(klass));
+    assertRequiredProperty('provider', 'gear', $router);
   });
 
-  const supers = getSupers(prototype, ['connectedCallback', 'disconnectedCallback']);
+  const supers = reflectClassMethods(prototype, ['connectedCallback', 'disconnectedCallback']);
   const valueDescriptor = value(token)(prototype, $$providingValue);
 
   defineExtendable(
-    target,
+    klass,
     {
       connectedCallback() {
         window.addEventListener('popstate', this[$$updateRoute]);
@@ -35,21 +35,23 @@ const provider = (token, {initial = location.pathname} = {}) => target => {
       },
     },
     supers,
-    target.__initializers,
+    klass.__initializers,
   );
 
   Object.defineProperty(prototype, $$providingValue, valueDescriptor);
 
-  target.__initializers.push(self => {
-    self[$$updateRoute] = async ({state: pathname = initial} = {}) => {
+  klass.__initializers.push(self => {
+    self[$$updateRoute] = async ({state: pathname = initialPath} = {}) => {
       self[$$providingValue] = await self[$router].resolve({
+        // This array goes to the resolveRoute function and fills with the
+        // passed routes.
         chain: [],
         pathname,
       });
     };
   });
 
-  contextProvider(token)(target);
+  contextProvider(token)(klass);
 };
 
 export default provider;

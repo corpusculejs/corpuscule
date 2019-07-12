@@ -1,0 +1,480 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>ElementDecoratorOptions | Corpuscule API</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">Corpuscule API</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="../modules/_corpuscule_element.html">@corpuscule/element</a>
+				</li>
+				<li>
+					<a href="_corpuscule_element.elementdecoratoroptions.html">ElementDecoratorOptions</a>
+				</li>
+			</ul>
+			<h1>Interface ElementDecoratorOptions</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">ElementDecoratorOptions</span>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_corpuscule_element.elementdecoratoroptions.html#extends" class="tsd-kind-icon">extends</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_corpuscule_element.elementdecoratoroptions.html#lightdom" class="tsd-kind-icon">lightDOM</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_corpuscule_element.elementdecoratoroptions.html#renderer" class="tsd-kind-icon">renderer</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_corpuscule_element.elementdecoratoroptions.html#scheduler" class="tsd-kind-icon">scheduler</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="extends" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> extends</h3>
+					<div class="tsd-signature tsd-kind-icon">extends<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">keyof HTMLElementTagNameMap</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L80">element/src/index.d.ts:80</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>This option allows constructing the <a href="https://developers.google.com/web/fundamentals/web-components/customelements#extendhtml">Customized built-in
+								element</a>.
+								Customized built-in elements differ from regular custom elements in many
+								ways. E.g., many native elements cannot be extended by creating Shadow
+							Root on them; by default, LightDOM will be created for these elements.</p>
+						</div>
+						<p>To create a customized built-in element, you also have to extend a proper
+						class (e.g. <code>HTMLAnchorElement</code> for <code>&lt;a&gt;</code>).</p>
+						<dl class="tsd-comment-tags">
+							<dt>note</dt>
+							<dd><p>Do not forget that using a customized built-in element requires a
+								polyfill for Safari that does not support this part of the specification.</p>
+								<pre><code class="language-typescript"><span class="hljs-meta">@element</span>(<span class="hljs-string">'my-anchor'</span>, {<span class="hljs-keyword">extends</span>: <span class="hljs-string">'a'</span>})
+<span class="hljs-keyword">class</span> MyAnchor <span class="hljs-keyword">extends</span> HTMLAnchorElement {}</code></pre>
+								<h3 id="list-of-native-elements-allowed-to-create-the-shadow-root">List of native elements allowed to create the Shadow Root</h3>
+								<ul>
+									<li><code>&lt;article&gt;</code></li>
+									<li><code>&lt;aside&gt;</code></li>
+									<li><code>&lt;blockquote&gt;</code></li>
+									<li><code>&lt;body&gt;</code></li>
+									<li><code>&lt;div&gt;</code></li>
+									<li><code>&lt;footer&gt;</code></li>
+									<li><code>&lt;header&gt;</code></li>
+									<li><code>&lt;main&gt;</code></li>
+									<li><code>&lt;nav&gt;</code></li>
+									<li><code>&lt;p&gt;</code></li>
+									<li><code>&lt;section&gt;</code></li>
+									<li><code>&lt;span&gt;</code></li>
+								</ul>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="lightdom" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> lightDOM</h3>
+					<div class="tsd-signature tsd-kind-icon">lightDOM<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L95">element/src/index.d.ts:95</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>If this option is enabled, the <a href="https://developers.google.com/web/fundamentals/web-components/shadowdom#lightdom">Light
+								DOM</a>
+								will be used instead of the Shadow DOM; a result of the <a href="../modules/_corpuscule_element.html#render">render</a>
+							function will be written directly to the element.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>warning</dt>
+							<dd><p>Be careful, rendering to the Light DOM will erase any existing
+								markup and make setting it from the outside buggy.</p>
+							</dd>
+							<dt>note</dt>
+							<dd><p>This option is enabled automatically if Shadow Root is not allowed
+									for this element. See <a href="_corpuscule_element.elementdecoratoroptions.html#extends">extends</a>
+								option.</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="renderer" class="tsd-anchor"></a>
+					<h3>renderer</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">renderer<span class="tsd-signature-symbol">(</span>renderingResult<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span>, container<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Element</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">DocumentFragment</span>, context<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L111">element/src/index.d.ts:111</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>This option defines the rendering function that applies result returned
+									from the <a href="../modules/_corpuscule_element.html#render">render</a> function to the component body.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>renderingResult: <span class="tsd-signature-type">unknown</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a result returned by a <a href="../modules/_corpuscule_element.html#render">render</a> function.</p>
+									</div>
+								</li>
+								<li>
+									<h5>container: <span class="tsd-signature-type">Element</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">DocumentFragment</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a component root to which result should be applied. It
+											can be either the component shadow root or a component itself if the
+										<a href="_corpuscule_element.elementdecoratoroptions.html#lightdom">lightDOM</a> is enabled.</p>
+									</div>
+								</li>
+								<li>
+									<h5>context: <span class="tsd-signature-type">unknown</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a component instance; it can be used in specific cases like
+											setting the <a href="https://lit-html.polymer-project.org/api/interfaces/lit_html.renderoptions.html#eventcontext">eventContext</a>
+										of lit-html.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="scheduler" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> scheduler</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">scheduler<span class="tsd-signature-symbol">(</span>task<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L125">element/src/index.d.ts:125</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>This option defines the function that schedules the rendering process.
+										Since each component renders independently and synchronously, it requires
+										a scheduling system to run the update at the right time and not freeze the
+										user interface. Using this option you can specify your own scheduling
+									function instead of the default one.</p>
+								</div>
+								<p>By default, the <a href="../modules/_corpuscule_utils_lib_scheduler.html#schedule">schedule</a>
+								is used.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>task: <span class="tsd-signature-type">function</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a callback that will be run at the scheduled time.</p>
+									</div>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-siganture">
+											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_context.html">@corpuscule/context</a>
+					</li>
+					<li class="current tsd-kind-external-module">
+						<a href="../modules/_corpuscule_element.html">@corpuscule/element</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_form.html">@corpuscule/form</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_lit_html_renderer.html">@corpuscule/lit-<wbr>html-<wbr>renderer</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_lit_html_renderer_lib_init.html">@corpuscule/lit-<wbr>html-<wbr>renderer/lib/init</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_lit_html_renderer_lib_shady.html">@corpuscule/lit-<wbr>html-<wbr>renderer/lib/shady</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_lit_html_renderer_lib_withcustomelement.html">@corpuscule/lit-<wbr>html-<wbr>renderer/lib/with<wbr>Custom<wbr>Element</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_redux.html">@corpuscule/redux</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_router.html">@corpuscule/router</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_storeon.html">@corpuscule/storeon</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_styles.html">@corpuscule/styles</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_utils_lib_asserts.html">@corpuscule/utils/lib/asserts</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_utils_lib_defineextendable.html">@corpuscule/utils/lib/define<wbr>Extendable</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_utils_lib_makeaccessor.html">@corpuscule/utils/lib/make<wbr>Accessor</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_utils_lib_propertyutils.html">@corpuscule/utils/lib/property<wbr>Utils</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_utils_lib_reflectclassmethods.html">@corpuscule/utils/lib/reflect<wbr>Class<wbr>Methods</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_utils_lib_scheduler.html">@corpuscule/utils/lib/scheduler</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_utils_lib_setters.html">@corpuscule/utils/lib/setters</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_utils_lib_shallowequal.html">@corpuscule/utils/lib/shallow<wbr>Equal</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_utils_lib_tokenregistry.html">@corpuscule/utils/lib/token<wbr>Registry</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-interface tsd-parent-kind-external-module">
+						<a href="_corpuscule_element.elementdecoratoroptions.html" class="tsd-kind-icon">Element<wbr>Decorator<wbr>Options</a>
+						<ul>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_corpuscule_element.elementdecoratoroptions.html#extends" class="tsd-kind-icon">extends</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_corpuscule_element.elementdecoratoroptions.html#lightdom" class="tsd-kind-icon">lightDOM</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="_corpuscule_element.elementdecoratoroptions.html#renderer" class="tsd-kind-icon">renderer</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="_corpuscule_element.elementdecoratoroptions.html#scheduler" class="tsd-kind-icon">scheduler</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#propertyguard" class="tsd-kind-icon">Property<wbr>Guard</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#internal" class="tsd-kind-icon">internal</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#internalchangedcallback" class="tsd-kind-icon">internal<wbr>Changed<wbr>Callback</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#propertychangedcallback" class="tsd-kind-icon">property<wbr>Changed<wbr>Callback</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#render" class="tsd-kind-icon">render</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#updatedcallback" class="tsd-kind-icon">updated<wbr>Callback</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#attribute" class="tsd-kind-icon">attribute</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#computer" class="tsd-kind-icon">computer</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#createcomputingtoken" class="tsd-kind-icon">create<wbr>Computing<wbr>Token</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#element" class="tsd-kind-icon">element</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#observer" class="tsd-kind-icon">observer</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#property" class="tsd-kind-icon">property</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#query" class="tsd-kind-icon">query</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#queryall" class="tsd-kind-icon">query<wbr>All</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>
