@@ -100,7 +100,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/7a3ecdd/packages/lit-html-renderer/src/withCustomElement.d.ts#L59">lit-html-renderer/src/withCustomElement.d.ts:59</a></li>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/0158f90/packages/lit-html-renderer/src/withCustomElement.d.ts#L59">lit-html-renderer/src/withCustomElement.d.ts:59</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -138,7 +138,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/7a3ecdd/packages/lit-html-renderer/src/withCustomElement.d.ts#L81">lit-html-renderer/src/withCustomElement.d.ts:81</a></li>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/0158f90/packages/lit-html-renderer/src/withCustomElement.d.ts#L104">lit-html-renderer/src/withCustomElement.d.ts:104</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -155,6 +155,26 @@
 								<p>You can also send any custom element class as a value and its registered name
 									will be used as a tag name. The behavior of custom elements classes are equal
 								to the unsafe static values behavior.</p>
+								<h3 id="example">Example</h3>
+								<pre><code class="language-typescript"><span class="hljs-comment">// index.js</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">'@corpuscule/lit-html-renderer/lib/init'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'./app.js'</span>;
+
+<span class="hljs-comment">// app.js</span>
+<span class="hljs-keyword">import</span> withCustomElement, {unsafeStatic} <span class="hljs-keyword">from</span> <span class="hljs-string">'@corpuscule/lit-html-renderer'</span>;
+<span class="hljs-keyword">import</span> {html, render} <span class="hljs-keyword">from</span> <span class="hljs-string">'lit-html'</span>;
+
+<span class="hljs-keyword">class</span> Foo <span class="hljs-keyword">extends</span> HTMLElement {}
+customElements.define(<span class="hljs-string">'x-foo'</span>, Foo);
+
+<span class="hljs-keyword">const</span> shtml = withCustomElement(html);
+<span class="hljs-keyword">const</span> barTag = unsafeStatic(<span class="hljs-string">'x-bar'</span>);
+
+render(shtml<span class="hljs-string">`
+  &lt;<span class="hljs-subst">${Foo}</span>&gt;
+    &lt;<span class="hljs-subst">${barTag}</span>&gt;&lt;/<span class="hljs-subst">${barTag}</span>&gt;
+  &lt;/<span class="hljs-subst">${Foo}</span>&gt;
+`</span>); <span class="hljs-comment">// Will render &lt;x-foo&gt;&lt;x-bar&gt;&lt;/x-bar&gt;&lt;/x-foo&gt;</span></code></pre>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
