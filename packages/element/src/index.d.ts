@@ -98,7 +98,7 @@ export interface ElementDecoratorOptions {
    * This option defines the rendering function that applies result returned
    * from the [[render]] function to the component body.
    *
-   * If you omit this property, re-rendering won't ever happen on your element.
+   * If you omit this property, rendering won't ever happen on your element.
    *
    * @param renderingResult a result returned by a [[render]] function.
    *
@@ -440,7 +440,7 @@ export const propertyChangedCallback: unique symbol;
  * will be handled by a [renderer]{@link ElementDecoratorOptions.renderer}
  * function.
  *
- * If you do not specify this method, re-rendering won't ever happen on your
+ * If you do not define this method, rendering won't ever happen on your
  * element.
  *
  * ### Method signature
