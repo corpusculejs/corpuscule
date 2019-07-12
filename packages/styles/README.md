@@ -26,4 +26,4 @@ $ yarn add @corpuscule/styles
 
 ## Documentation
 API documentation is available for the following modules:
-* [@corpuscule/styles](https://corpusculejs.github.com/corpuscule/modules/_corpuscule_styles.html).
+* [@corpuscule/styles](https://corpusculejs.github.io/corpuscule/modules/_corpuscule_styles.html).

@@ -26,4 +26,4 @@ $ yarn add final-form @corpuscule/form
 
 ## Documentation
 API documentation is available for the following modules:
-* [@corpuscule/form](https://corpusculejs.github.com/corpuscule/modules/_corpuscule_form.html).
+* [@corpuscule/form](https://corpusculejs.github.io/corpuscule/modules/_corpuscule_form.html).

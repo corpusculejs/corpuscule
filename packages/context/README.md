@@ -37,4 +37,4 @@ $ yarn add @corupuscule/context
 
 ## Documentation
 API documentation is available for the following modules:
-* [@corpuscule/context](https://corpusculejs.github.com/corpuscule/modules/_corpuscule_context.html).
+* [@corpuscule/context](https://corpusculejs.github.io/corpuscule/modules/_corpuscule_context.html).

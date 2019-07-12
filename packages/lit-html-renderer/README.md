@@ -20,7 +20,7 @@ $ yarn add lit-html @corpuscule/lit-html-renderer
 
 ## Documentation
 API documentation is available for the following modules:
-* [@corpuscule/lit-html-renderer](https://corpusculejs.github.com/corpuscule/modules/_corpuscule_lit_html_renderer.html).
-* [@corpuscule/lit-html-renderer/lib/init](https://corpusculejs.github.com/corpuscule/modules/_corpuscule_lit_html_renderer_lib_init.html).
-* [@corpuscule/lit-html-renderer/lib/shady](https://corpusculejs.github.com/corpuscule/modules/_corpuscule_lit_html_renderer_lib_shady.html).
-* [@corpuscule/lit-html-renderer/lib/withCustomElement](https://corpusculejs.github.com/corpuscule/modules/_corpuscule_lit_html_renderer_lib_withcustomelement.html).
+* [@corpuscule/lit-html-renderer](https://corpusculejs.github.io/corpuscule/modules/_corpuscule_lit_html_renderer.html).
+* [@corpuscule/lit-html-renderer/lib/init](https://corpusculejs.github.io/corpuscule/modules/_corpuscule_lit_html_renderer_lib_init.html).
+* [@corpuscule/lit-html-renderer/lib/shady](https://corpusculejs.github.io/corpuscule/modules/_corpuscule_lit_html_renderer_lib_shady.html).
+* [@corpuscule/lit-html-renderer/lib/withCustomElement](https://corpusculejs.github.io/corpuscule/modules/_corpuscule_lit_html_renderer_lib_withcustomelement.html).

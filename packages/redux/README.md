@@ -26,4 +26,4 @@ $ yarn add redux @corpuscule/redux
 
 ## Documentation
 API documentation is available for the following modules:
-* [@corpuscule/redux](https://corpusculejs.github.com/corpuscule/modules/_corpuscule_redux.html).
+* [@corpuscule/redux](https://corpusculejs.github.io/corpuscule/modules/_corpuscule_redux.html).
