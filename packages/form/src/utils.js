@@ -3,20 +3,17 @@ import createTokenRegistry from '@corpuscule/utils/lib/tokenRegistry';
 import {configOptions} from 'final-form';
 
 export const [createFormToken, tokenRegistry] = createTokenRegistry(
-  () => [
-    new WeakMap(), // Shared properties list
-    new WeakMap(), // Form configuration options list
-  ],
+  () => new WeakMap(), // Shared properties list
   createContextToken,
 );
 
 export const noop = () => {}; // eslint-disable-line no-empty-function
 
-export const formOptions = [...configOptions, 'compareInitialValues'];
+export const formOptionResponsibilityKeys = [...configOptions, 'compareInitialValues'];
 
-export const gears = ['formApi', 'input', 'meta', 'refs', 'state'];
+export const gearsResponsibilityKeys = ['formApi', 'input', 'meta', 'refs', 'state'];
 
-export const fieldOptions = [
+export const fieldOptionResponsibilityKeys = [
   'format',
   'formatOnBlur',
   'isEqual',

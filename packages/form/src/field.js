@@ -30,7 +30,7 @@ const field = (
   let $validate;
   let $validateFields;
 
-  const [sharedPropertiesRegistry] = tokenRegistry.get(token);
+  const sharedPropertiesRegistry = tokenRegistry.get(token);
   const isNativeField = isNativeElement(klass.prototype);
 
   const $$connected = Symbol();

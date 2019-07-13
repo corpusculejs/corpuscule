@@ -2,9 +2,8 @@ import {provider} from '@corpuscule/context';
 import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
 import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
 import reflectClassMethods from '@corpuscule/utils/lib/reflectClassMethods';
-import {getName} from '@corpuscule/utils/lib/propertyUtils';
 import {createForm, formSubscriptionItems} from 'final-form';
-import {tokenRegistry} from './utils';
+import {formOptionResponsibilityKeys, tokenRegistry} from './utils';
 
 export const all = formSubscriptionItems.reduce((result, key) => {
   result[key] = true;
@@ -15,10 +14,11 @@ export const all = formSubscriptionItems.reduce((result, key) => {
 const form = (token, {decorators = [], subscription = all} = {}) => klass => {
   let $formApi;
   let $state;
-  let formOptions;
+  let $onSubmit;
+  let sharedProperties;
 
   const {prototype} = klass;
-  const [sharedPropertiesRegistry, formOptionsRegistry] = tokenRegistry.get(token);
+  const sharedPropertiesRegistry = tokenRegistry.get(token);
 
   const $$reset = Symbol();
   const $$submit = Symbol();
@@ -27,16 +27,11 @@ const form = (token, {decorators = [], subscription = all} = {}) => klass => {
   const supers = reflectClassMethods(prototype, ['connectedCallback', 'disconnectedCallback']);
 
   klass.__registrations.push(() => {
-    ({formApi: $formApi, state: $state} = sharedPropertiesRegistry.get(klass) || {});
-    formOptions = formOptionsRegistry.get(klass) || [];
+    sharedProperties = sharedPropertiesRegistry.get(klass) || {};
+    ({formApi: $formApi, state: $state, onSubmit: $onSubmit} = sharedProperties);
     assertRequiredProperty('form', 'gear', 'form', $formApi);
     assertRequiredProperty('form', 'gear', 'state', $state);
-    assertRequiredProperty(
-      'form',
-      'option',
-      'onSubmit',
-      formOptions.find(key => getName(key) === 'onSubmit'),
-    );
+    assertRequiredProperty('form', 'option', 'onSubmit', $onSubmit);
   });
 
   defineExtendable(
@@ -83,8 +78,10 @@ const form = (token, {decorators = [], subscription = all} = {}) => klass => {
     Object.assign(self, {
       // Fields
       [$formApi]: createForm(
-        formOptions.reduce((acc, key) => {
-          acc[key] = self[key];
+        formOptionResponsibilityKeys.reduce((acc, key) => {
+          if (sharedProperties[key]) {
+            acc[key] = self[sharedProperties[key]];
+          }
 
           return acc;
         }, {}),
