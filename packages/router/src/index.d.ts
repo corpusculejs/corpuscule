@@ -53,6 +53,12 @@ export class Link extends HTMLAnchorElement implements CustomElement {
    */
   public static readonly is: 'corpuscule-link';
 
+  /**
+   * A custom context data that will be send as a second parameter to the
+   * [[navigate]] function.
+   */
+  public contextData: any;
+
   public connectedCallback(): void;
 
   public disconnectedCallback(): void;

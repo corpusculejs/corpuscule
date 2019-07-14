@@ -50,5 +50,23 @@ describe('@corpuscule/router', () => {
 
       link.click();
     });
+
+    it('allows changing the context for the link', done => {
+      const data = {};
+      document.body.appendChild(link);
+
+      const listener = (e: PopStateEvent) => {
+        expect(e.state).toEqual({data, path: '/test'});
+
+        window.removeEventListener('popstate', listener);
+        done();
+      };
+
+      window.addEventListener('popstate', listener);
+
+      link.contextData = data;
+
+      link.click();
+    });
   });
 });
