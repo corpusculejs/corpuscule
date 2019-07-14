@@ -1,19 +1,19 @@
 import {value} from '@corpuscule/context';
 import {getName} from '@corpuscule/utils/lib/propertyUtils';
 import {setObject} from '@corpuscule/utils/lib/setters';
-import {gears, tokenRegistry} from './utils';
+import {gearResponsibilityKeys, tokenRegistry} from './utils';
 
-const gear = token => (prototype, propertyKey, descriptor) => {
+const gear = (token, responsibilityKey) => (prototype, propertyKey, descriptor) => {
   const {constructor: klass} = prototype;
-  const name = getName(propertyKey);
+  const finalResponsibilityKey = responsibilityKey || getName(propertyKey);
 
-  if (!gears.includes(name)) {
-    throw new TypeError(`Property name ${name} is not allowed`);
+  if (!gearResponsibilityKeys.includes(finalResponsibilityKey)) {
+    throw new TypeError(`Property name ${finalResponsibilityKey} is not allowed`);
   }
 
-  const [sharedPropertiesRegistry] = tokenRegistry.get(token);
+  const sharedPropertiesRegistry = tokenRegistry.get(token);
 
-  if (name === 'refs') {
+  if (finalResponsibilityKey === 'refs') {
     let $ref;
 
     klass.__registrations.push(() => {
@@ -29,10 +29,12 @@ const gear = token => (prototype, propertyKey, descriptor) => {
   }
 
   setObject(sharedPropertiesRegistry, klass, {
-    [name]: propertyKey,
+    [finalResponsibilityKey]: propertyKey,
   });
 
-  return name === 'formApi' ? value(token)(prototype, propertyKey, descriptor) : descriptor;
+  return finalResponsibilityKey === 'formApi'
+    ? value(token)(prototype, propertyKey, descriptor)
+    : descriptor;
 };
 
 export default gear;

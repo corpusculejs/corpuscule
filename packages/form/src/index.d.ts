@@ -44,7 +44,7 @@ export interface FormDecoratorOptions {
  * one case when all your properties are string and you do not plan to use
  * specific property names.
  */
-export interface FormGears<TFormValues> {
+export interface FormGears<TFormValues = object> {
   /**
    * Contains a form instance and allows working with the
    * [🏁 FinalForm API](https://github.com/final-form/final-form#formapi).
@@ -150,7 +150,7 @@ export interface FieldGears<TFieldValue> {
  */
 export type FieldOptions<TFieldValue> = Omit<
   FieldState<TFieldValue>,
-  'blur' | 'change' | 'focus' | 'length' | 'name' | 'value'
+  'blur' | 'change' | 'focus' | 'length'
 >;
 
 export interface FieldInputProps<TFieldValue> {
@@ -165,7 +165,7 @@ export interface FieldInputProps<TFieldValue> {
   readonly value: TFieldValue;
 }
 
-export type FieldMetaProps<TFieldValue> = FieldOptions<TFieldValue>;
+export type FieldMetaProps<TFieldValue> = Omit<FieldOptions<TFieldValue>, 'name' | 'value'>;
 
 /**
  * Creates tokens to bind decorators with each other.
@@ -176,7 +176,9 @@ export function createFormToken(): Token;
  * A default version of the [@gearAdvanced]{@link @corpuscule/form.gearAdvanced}
  * with the token already provided.
  */
-export const gear: PropertyDecorator;
+export function gear(
+  responsibilityKey?: keyof FormGears | keyof FieldGears<unknown>,
+): PropertyDecorator;
 
 /**
  * A default version of the [@fieldAdvanced]{@link @corpuscule/form.fieldAdvanced}
@@ -200,7 +202,9 @@ export function isForm(klass: unknown): boolean;
  * A default version of the [@optionAdvanced]{@link @corpuscule/form.optionAdvanced}
  * with the token already provided.
  */
-export const option: PropertyDecorator;
+export function option(
+  responsibilityKey?: keyof FormOptions | keyof FieldOptions<unknown>,
+): PropertyDecorator;
 
 /**
  * A decorator that converts a class property to a part of the 🏁 Final Form
@@ -216,8 +220,16 @@ export const option: PropertyDecorator;
  *
  * @param token a token issued by a [[createFormToken]] function that connects
  * all decorators in a single working system.
+ *
+ * @param responsibilityKey a specific name of a gear that describes the
+ * responsibility of the property this decorator is applied to. If it is
+ * omitted, the name (or the description if it is a symbol) of the property will
+ * be used.
  */
-export function gearAdvanced(token: Token): PropertyDecorator;
+export function gearAdvanced(
+  token: Token,
+  responsibilityKey?: keyof FormGears | keyof FieldGears<unknown>,
+): PropertyDecorator;
 
 /**
  * A decorator that makes a class declaration a 🏁 FinalForm field with a form
@@ -264,5 +276,13 @@ export const isFormAdvanced: typeof isProvider;
  *
  * @param token a token issued by a [[createFormToken]] function that connects
  * all decorators in a single working system.
+ *
+ * @param responsibilityKey a specific name of an option that describes the
+ * responsibility of the property this decorator is applied to. If it is
+ * omitted, the name (or the description if it is a symbol) of the property will
+ * be used.
  */
-export function optionAdvanced(token: Token): PropertyDecorator;
+export function optionAdvanced(
+  token: Token,
+  responsibilityKey?: keyof FormOptions | keyof FieldOptions<unknown>,
+): PropertyDecorator;
