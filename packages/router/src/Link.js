@@ -22,7 +22,7 @@ export default class Link extends HTMLAnchorElement {
 
   [$$handleClick](e) {
     e.preventDefault();
-    navigate(`${this.pathname}${this.search}${this.hash}`);
+    navigate(`${this.pathname}${this.search}${this.hash}`, this.contextData);
   }
 }
 

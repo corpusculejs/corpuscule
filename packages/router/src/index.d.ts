@@ -53,6 +53,12 @@ export class Link extends HTMLAnchorElement implements CustomElement {
    */
   public static readonly is: 'corpuscule-link';
 
+  /**
+   * A custom context data that will be send as a second parameter to the
+   * [[navigate]] function.
+   */
+  public contextData: any;
+
   public connectedCallback(): void;
 
   public disconnectedCallback(): void;
@@ -62,8 +68,18 @@ export class Link extends HTMLAnchorElement implements CustomElement {
  * A function that navigates the browser to the new URL.
  *
  * @param path a new URL to navigate to.
+ *
+ * @param contextData some data you want to use in the route action. It will be
+ * accessible as a part of the `context` parameter:
+ * ```typescript
+ * const route: Route<any, any> = {
+ *   action({data}: RouteContext<any, any>) {
+ *     // use `data` in some way
+ *   }
+ * }
+ * ```
  */
-export function navigate(path: string): void;
+export function navigate(path: string, contextData?: unknown): void;
 
 /**
  * Creates tokens to bind decorators with each other.

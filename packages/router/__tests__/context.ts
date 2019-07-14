@@ -2,21 +2,17 @@ import UniversalRouter, {Route} from 'universal-router';
 import {createSimpleContext} from '../../../test/utils';
 import {gear, outlet, provider} from '../src';
 
-interface RoutingChainElement {
-  readonly result: unknown;
-  readonly route: Route;
-}
-
 describe('@corpuscule/router', () => {
   describe('context', () => {
+    let data: object;
     let route: Route;
     let router: jasmine.SpyObj<UniversalRouter>;
-    let resolvedChain: readonly RoutingChainElement[];
 
     beforeEach(() => {
+      data = {};
       route = {};
       router = jasmine.createSpyObj('router', ['resolve']);
-      resolvedChain = [{result: 'Foo', route}];
+      const resolvedChain = [{result: 'Foo', route}];
       router.resolve.and.callFake(async () => resolvedChain);
     });
 
@@ -35,6 +31,7 @@ describe('@corpuscule/router', () => {
 
       expect(router.resolve).toHaveBeenCalledWith({
         chain: [],
+        data: undefined,
         pathname: '/',
       });
 
@@ -55,10 +52,11 @@ describe('@corpuscule/router', () => {
       await createSimpleContext(Provider, Outlet);
       router.resolve.calls.reset();
 
-      window.dispatchEvent(new PopStateEvent('popstate', {state: '/foo/bar'}));
+      window.dispatchEvent(new PopStateEvent('popstate', {state: {data, path: '/foo/bar'}}));
 
       expect(router.resolve).toHaveBeenCalledWith({
         chain: [],
+        data,
         pathname: '/foo/bar',
       });
     });
@@ -87,7 +85,7 @@ describe('@corpuscule/router', () => {
       }
 
       await createSimpleContext(Provider, Outlet);
-      window.dispatchEvent(new PopStateEvent('popstate', {state: '/foo/bar'}));
+      window.dispatchEvent(new PopStateEvent('popstate', {state: {data, path: '/foo/bar'}}));
 
       expect(outputSpy).not.toHaveBeenCalled();
     });
