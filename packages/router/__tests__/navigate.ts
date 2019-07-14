@@ -3,28 +3,26 @@ import {navigate} from '../src';
 describe('@corpuscule/router', () => {
   describe('navigate', () => {
     let historyPushStateSpy: jasmine.Spy;
-    let historyStateSpy: jasmine.Spy;
+    let data: object;
 
     afterAll(() => {
-      historyStateSpy.and.callThrough();
       historyPushStateSpy.and.callThrough();
     });
 
     beforeEach(() => {
+      data = {};
       historyPushStateSpy = spyOn(history, 'pushState');
-      historyStateSpy = spyOnProperty(history, 'state').and.returnValue('/test');
     });
 
-    it('should push new state to history', () => {
-      navigate('/test');
+    it('pushes the new state to the history', () => {
+      navigate('/test', data);
       // tslint:disable-next-line:no-unbound-method
-      expect(history.pushState).toHaveBeenCalledWith('/test', null, '/test');
-      expect(historyStateSpy).toHaveBeenCalled();
+      expect(history.pushState).toHaveBeenCalledWith({data, path: '/test'}, null, '/test');
     });
 
-    it("should dispatch 'popstate' event", done => {
+    it("dispatches the 'popstate' event", done => {
       const listener = (e: PopStateEvent) => {
-        expect(e.state).toEqual('/test');
+        expect(e.state).toEqual({data, path: '/test'});
 
         window.removeEventListener('popstate', listener);
         done();
@@ -32,7 +30,7 @@ describe('@corpuscule/router', () => {
 
       window.addEventListener('popstate', listener);
 
-      navigate('/test');
+      navigate('/test', data);
     });
   });
 });

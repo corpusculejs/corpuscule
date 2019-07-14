@@ -22,14 +22,15 @@ describe('@corpuscule/router', () => {
       historyStateSpy = spyOnProperty(history, 'state').and.returnValue('/test');
     });
 
-    it("should be accessible through 'document.createElement'", () => {
+    it("accessible through 'document.createElement'", () => {
       expect(link).toEqual(jasmine.any(Link));
     });
 
-    it('should dispatch PopStateEvent with current history state by click', done => {
+    it('dispatches PopStateEvent with current history state by click', done => {
       document.body.appendChild(link);
+
       const listener = (e: PopStateEvent) => {
-        expect(e.state).toEqual('/test');
+        expect(e.state).toEqual({data: undefined, path: '/test'});
 
         window.removeEventListener('popstate', listener);
         done();
@@ -40,7 +41,7 @@ describe('@corpuscule/router', () => {
       link.click();
     });
 
-    it('should prevent default action for a anchor element', done => {
+    it('prevents default action for a anchor element', done => {
       document.body.appendChild(link);
       link.addEventListener('click', e => {
         expect(e.defaultPrevented).toBeTruthy();
