@@ -11,7 +11,7 @@ export const noop = () => {}; // eslint-disable-line no-empty-function
 
 export const formOptionResponsibilityKeys = [...configOptions, 'compareInitialValues'];
 
-export const gearsResponsibilityKeys = ['formApi', 'input', 'meta', 'refs', 'state'];
+export const gearResponsibilityKeys = ['formApi', 'input', 'meta', 'refs', 'state'];
 
 export const fieldOptionResponsibilityKeys = [
   'format',

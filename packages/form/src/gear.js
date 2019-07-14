@@ -1,13 +1,13 @@
 import {value} from '@corpuscule/context';
 import {getName} from '@corpuscule/utils/lib/propertyUtils';
 import {setObject} from '@corpuscule/utils/lib/setters';
-import {gearsResponsibilityKeys, tokenRegistry} from './utils';
+import {gearResponsibilityKeys, tokenRegistry} from './utils';
 
 const gear = (token, responsibilityKey) => (prototype, propertyKey, descriptor) => {
   const {constructor: klass} = prototype;
   const finalResponsibilityKey = responsibilityKey || getName(propertyKey);
 
-  if (!gearsResponsibilityKeys.includes(finalResponsibilityKey)) {
+  if (!gearResponsibilityKeys.includes(finalResponsibilityKey)) {
     throw new TypeError(`Property name ${finalResponsibilityKey} is not allowed`);
   }
 
