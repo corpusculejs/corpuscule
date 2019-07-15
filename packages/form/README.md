@@ -27,3 +27,15 @@ $ yarn add final-form @corpuscule/form
 ## Documentation
 API documentation is available for the following modules:
 * [@corpuscule/form](https://corpusculejs.github.io/corpuscule/modules/_corpuscule_form.html).
+
+## Examples
+### [Simple Form](https://codesandbox.io/s/9j90pjrprw)
+Uses the default inputs: `input`, `select`, and `textarea` to build a form with no validation.
+
+### [Synchronous Record-Level Validation](https://codesandbox.io/s/ol86m353kq)
+Introduces a whole-record validation function and demonstrates how to use Field component to display
+errors next to fields.
+
+### [Synchronous Field-Level Validation](https://codesandbox.io/s/wyx5l5vxlw)
+Introduces field-level validation functions and demonstrates how to use Field component to display
+errors next to fields.
