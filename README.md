@@ -91,32 +91,42 @@ Along with the Babel you have to install [`@corpuscule/babel-preset`](https://gi
 that should be used in Babel configuration. This preset contains everything to compile decorators in
 a way Corpuscule need to work.
 
+## Documentation
+API documentation is available [here](https://corpusculejs.github.io/corpuscule).
+
+
 ## List of tools
 Corpuscule consists of following tools:
 
-* [`@corpuscule/context`](./packages/context). This package allows creating a context that sends
-data top-down, from parents to children. Context is DOM-dependent, so using it on different DOM
-branches with different values you will get different results. It is also a base for many other
-Corpuscule tools like `router` or `redux`. 
-* [`@corpuscule/element`](./packages/element). This package provides a set of decorators for
-creating web components. It is decorator-based analogue for Polymer's [LitElement](https://github.com/Polymer/lit-element)
-or [React](https://reactjs.org/).
-* [`@corpuscule/form`](./packages/form). Connector for the [🏁 final-form](https://github.com/final-form/final-form)
-package that provides Corpuscule solution for forms.
-* [`@corpuscule/lit-html-renderer`](./packages/lit-html-renderer). [lit-html](https://github.com/Polymer/lit-html) 
-based renderer for [`@corpuscule/element`](./packages/element). Also includes solution for using
-custom element class definition as a source for custom element name (`MyElement` -> `my-element`)
-that makes `lit-html` usage similar to React. 
-* [`@corpuscule/redux`](./packages/redux). A connector for the [Redux](https://redux.js.org/)
-library. It is `react-redux` for Corpuscule.
-* [`@corpuscule/router`](./packages/router). A connector for the [Universal Router](https://github.com/kriasoft/universal-router)
-package, provides Corpuscule solution for routing.
-* [`@corpuscule/storeon`](./packages/storeon). A connector for the [Storeon](https://github.com/ai/storeon)
-package, a tiny Redux-like state manager. 
-* [`@corpuscule/styles`](./packages/styles). A solution for loading CSS stylesheets.
-* [`@corpuscule/typings`](./packages/typings). Typescript common typings for the Corpuscule.
-* [`@corpuscule/utils`](./packages/utils). This package contains a lot of utilities used in almost
-all Corpuscule packages. Doesn't have single entrypoint; each util should be loaded separately.
+* [@corpuscule/context](https://github.com/corpusculejs/corpuscule/tree/master/packages/context).
+This package allows creating a context that sends data top-down, from parents to children. Context
+is DOM-dependent, so using it on different DOM branches with different values you will get different
+results. It is also a base for many other Corpuscule tools like `router` or `redux`.
+* [@corpuscule/element](https://github.com/corpusculejs/corpuscule/tree/master/packages/element).
+This package provides a set of decorators for creating web components. It is decorator-based
+analogue for Polymer's [LitElement](https://github.com/Polymer/lit-element) or [React](https://reactjs.org/).
+* [@corpuscule/form](https://github.com/corpusculejs/corpuscule/tree/master/packages/form).
+Connector for the [🏁 final-form](https://github.com/final-form/final-form) package that provides
+Corpuscule solution for forms.
+* [@corpuscule/lit-html-renderer](https://github.com/corpusculejs/corpuscule/tree/master/packages/lit-html-renderer).
+[lit-html](https://github.com/Polymer/lit-html) based renderer for [`@corpuscule/element`](./packages/element).
+Also includes solution for using custom element class definition as a source for custom element name
+(`MyElement` -> `my-element`) that makes `lit-html` usage similar to React. 
+* [@corpuscule/redux](https://github.com/corpusculejs/corpuscule/tree/master/packages/redux).
+A connector for the [Redux](https://redux.js.org/) library. It is `react-redux` for Corpuscule.
+* [@corpuscule/router](https://github.com/corpusculejs/corpuscule/tree/master/packages/router).
+A connector for the [Universal Router](https://github.com/kriasoft/universal-router) package,
+provides Corpuscule solution for routing.
+* [@corpuscule/storeon](https://github.com/corpusculejs/corpuscule/tree/master/packages/storeon).
+A connector for the [Storeon](https://github.com/ai/storeon) package, a tiny Redux-like state
+manager. 
+* [@corpuscule/styles](https://github.com/corpusculejs/corpuscule/tree/master/packages/styles).
+A solution for loading CSS stylesheets.
+* [@corpuscule/typings](https://github.com/corpusculejs/corpuscule/tree/master/packages/typings).
+Typescript common typings for the Corpuscule.
+* [@corpuscule/utils](https://github.com/corpusculejs/corpuscule/tree/master/packages/utils).
+This package contains a lot of utilities used in almost all Corpuscule packages. Doesn't have single
+entrypoint; each util should be loaded separately.
 
 ## Future
 When the [static decorator specification]((https://github.com/tc39/proposal-decorators)) reaches
