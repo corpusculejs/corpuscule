@@ -9,21 +9,35 @@
  */
 
 /**
- * A symbolic name of the method that is called when all styles are properly
- * added. There are three different timings it can fire:
- * * If the `URL` instance is used, it will fire after all CSS files are
- * loaded.
- * * If the `HTMLStyleElement` is used and no `URL` instance exists, it will
- * fire after the `<style>` tag is mounted.
- * * If nothing above is used, it will fire immediately after the
- * `attachShadow` is called.
- *
- * ### Method signature
+ * A symbolic name of the [[StylesGears.stylesAttachedCallback]]. Use it to
+ * declare the method.
  * ```typescript
- * [stylesAttachedCallback](): void;
+ * class Foo extends HTMLElement {
+ *   [stylesAttachedCallback](): void {
+ *     // method body
+ *   }
+ * }
  * ```
  */
 export const stylesAttachedCallback: unique symbol;
+
+/**
+ * This interface is only for documentation purposes. It cannot be implemented
+ * since all methods have symbolic names.
+ */
+export interface StylesGears {
+  /**
+   * A method that is called when all styles are properly added. There are three
+   * different timings it can fire:
+   * * If the `URL` instance is used, it will fire after all CSS files are
+   * loaded.
+   * * If the `HTMLStyleElement` is used and no `URL` instance exists, it will
+   * fire after the `<style>` tag is mounted.
+   * * If nothing above is used, it will fire immediately after the
+   * `attachShadow` is called.
+   */
+  stylesAttachedCallback(): void;
+}
 
 export interface StylesDecoratorOptions {
   /**

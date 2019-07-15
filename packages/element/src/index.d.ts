@@ -29,10 +29,10 @@
  * | connectedCallback           | Custom Element | Connecting | This callback is invoked whenever the element is connected to the DOM. During the connection, Corpuscule performs the initial rendering, and then user-defined `connectedCallback` is fired. Can be invoked multiple times for the single element. |
  * | disconnectedCallback        | Custom Element | Connecting | This callback is invoked after the element is disconnected from DOM. Since there is nothing for Corpuscule to do at this time, user-defined `disconnectedCallback` will be invoked directly. Can be invoked multiple times for the single element. |
  * | attributeChangedCallback    | Custom Element | Update     | This callback is invoked each time the [attribute](#attribute-property) property is changed. The method receives a string name of the changed property, its old and new value (in a string form).                                                  |
- * | [[propertyChangedCallback]] | Corpuscule     | Update     | see the description by the link.                                                                                                                                                                                                                   |
- * | [[internalChangedCallback]] | Corpuscule     | Update     | see the description by the link.                                                                                                                                                                                                                   |
- * | [[updatedCallback]]         | Corpuscule     | Update     | see the description by the link.                                                                                                                                                                                                                   |
- * | [[render]]                  | Corpuscule     | Rendering  | see the description by the link.                                                                                                                                                                                                                   |
+ * | [[propertyChangedCallback]] | Corpuscule     | Update     | See the [[ElementGears]] interface.                                                                                                                                                                                                                |
+ * | [[internalChangedCallback]] | Corpuscule     | Update     | See the [[ElementGears]] interface.                                                                                                                                                                                                                |
+ * | [[updatedCallback]]         | Corpuscule     | Update     | See the [[ElementGears]] interface.                                                                                                                                                                                                                |
+ * | [[render]]                  | Corpuscule     | Rendering  | See the [[ElementGears]] interface.                                                                                                                                                                                                                |
  *
  * @module @corpuscule/element
  */
@@ -43,6 +43,106 @@
  */
 
 import {Token} from '@corpuscule/utils/lib/tokenRegistry';
+
+/**
+ * A symbolic name of the [[ElementGears.internalChangedCallback]]. Use it to
+ * declare the method.
+ * ```typescript
+ * class Foo extends HTMLElement {
+ *   [internalChangedCallback](propertyName: PropertyKey, oldValue: unknown, newValue: unknown): void {
+ *     // method body
+ *   }
+ * }
+ * ```
+ */
+export const internalChangedCallback: unique symbol;
+
+/**
+ * A symbolic name of the [[ElementGears.propertyChangedCallback]]. Use it to
+ * declare the method.
+ * ```typescript
+ * class Foo extends HTMLElement {
+ *   [propertyChangedCallback](propertyName: PropertyKey, oldValue: unknown, newValue: unknown): void {
+ *     // method body
+ *   }
+ * }
+ * ```
+ */
+export const propertyChangedCallback: unique symbol;
+
+/**
+ * A symbolic name of the [[ElementGears.render]]. Use it to declare the method.
+ * ```typescript
+ * class Foo extends HTMLElement {
+ *   [render](): unknown {
+ *     // method body
+ *   }
+ * }
+ * ```
+ */
+export const render: unique symbol;
+
+/**
+ * A symbolic name of the [[ElementGears.updatedCallback]]. Use it to declare
+ * the method.
+ * ```typescript
+ * class Foo extends HTMLElement {
+ *   [updatedCallback](): void {
+ *     // method body
+ *   }
+ * }
+ * ```
+ */
+export const updatedCallback: unique symbol;
+
+/**
+ * This interface is only for documentation purposes. It cannot be implemented
+ * since all methods have symbolic names.
+ */
+export interface ElementGears {
+  /**
+   * A method that is invoked when an [internal]{@link @corpuscule/element.internal}
+   * property is assigned. The behavior is identical to
+   * `attributeChangedCallback`. It does trigger an update each time it is
+   * invoked.
+   *
+   * @param propertyName a property name (either string or symbolic).
+   * @param oldValue a value of the property that was before the update started.
+   * @param newValue a new value to set to the property.
+   */
+  internalChangedCallback?(propertyName: PropertyKey, oldValue: unknown, newValue: unknown): void;
+
+  /**
+   * A method that is invoked when a [regular]{@link @corpuscule/element.property}
+   * property is assigned. The behavior is identical to
+   * `attributeChangedCallback`. It does not trigger a re-rendering if the
+   * `oldValue` is equal to `newValue` (by the strict equality check `===`).
+   *
+   * @param propertyName a property name (either string or symbolic).
+   * @param oldValue a value of the property that was before the update started.
+   * @param newValue a new value to set to the property.
+   */
+  propertyChangedCallback?(propertyName: PropertyKey, oldValue: unknown, newValue: unknown): void;
+
+  /**
+   * A method that is invoked each time any of the component properties (either
+   * [attribute]{@link @corpuscule/element.attribute}, [regular]{@link @corpuscule/element.property}
+   * or [internal]{@link @corpuscule/element.internal}) causes re-rendering. The
+   * method work synchronously; returned result of its work will be handled by a
+   * [renderer]{@link ElementDecoratorOptions.renderer} function.
+   *
+   * If you do not define this method, rendering won't ever happen on your
+   * element.
+   */
+  render?(): unknown;
+
+  /**
+   * A method that is invoked each time the rendering is over and the component
+   * acquires the new state. This method is not called during the initial render
+   * (`connectedCallback` is invoked instead).
+   */
+  updatedCallback?(): void;
+}
 
 export interface ElementDecoratorOptions {
   /**
@@ -405,59 +505,3 @@ export function queryAll(selector: string): PropertyDecorator;
  * decorators of computed and observed properties you want to connect.
  */
 export function createComputingToken(): Token;
-
-/**
- * A symbolic name of a method that is invoked when an [internal](#internal-property)
- * property is assigned. The method receives the name of the changed property
- * (either symbolic or string), its old and new value. The behavior is
- * identical to `attributeChangedCallback`.
- *
- * ### Method signature
- * ```typescript
- * protected [internalChangedCallback](propertyName: PropertyKey, oldValue: unknown, newValue: unknown): void;
- * ```
- */
-export const internalChangedCallback: unique symbol;
-
-/**
- * A symbolic name of a method that is invoked when a [regular](#regular-property)
- * property is assigned. The method receives the name of the changed property
- * (either symbolic or string), its old and new value. The behavior is
- * identical to `attributeChangedCallback`.
- *
- * ### Method signature
- * ```typescript
- * protected [propertyChangedCallback](propertyName: PropertyKey, oldValue: unknown, newValue: unknown): void;
- * ```
- */
-export const propertyChangedCallback: unique symbol;
-
-/**
- * A symbolic name of a method that is invoked each time any of the component
- * properties (either [attribute](#attribute-property),
- * [regular](#regular-property) or [internal](#internal-property)) causes
- * re-rendering. The method work synchronously; returned result of its work
- * will be handled by a [renderer]{@link ElementDecoratorOptions.renderer}
- * function.
- *
- * If you do not define this method, rendering won't ever happen on your
- * element.
- *
- * ### Method signature
- * ```typescript
- * protected [render](): unknown;
- * ```
- */
-export const render: unique symbol;
-
-/**
- * A symbolic name of a method that is invoked each time the rendering is over
- * and the component acquires the new state. This method is not called during
- * the initial render (`connectedCallback` is invoked instead).
- *
- * ### Method signature
- * ```typescript
- * protected [updatedCallback](): void;
- * ```
- */
-export const updatedCallback: unique symbol;
