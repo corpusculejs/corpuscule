@@ -138,32 +138,40 @@
 				<p>Along with the Babel you have to install <a href="https://github.com/corpusculejs/babel-preset"><code>@corpuscule/babel-preset</code></a>
 					that should be used in Babel configuration. This preset contains everything to compile decorators in
 				a way Corpuscule need to work.</p>
+				<h2 id="documentation">Documentation</h2>
+				<p>API documentation is available <a href="https://corpusculejs.github.io/corpuscule">here</a>.</p>
 				<h2 id="list-of-tools">List of tools</h2>
 				<p>Corpuscule consists of following tools:</p>
 				<ul>
-					<li><a href="./packages/context"><code>@corpuscule/context</code></a>. This package allows creating a context that sends
-						data top-down, from parents to children. Context is DOM-dependent, so using it on different DOM
-						branches with different values you will get different results. It is also a base for many other
-					Corpuscule tools like <code>router</code> or <code>redux</code>. </li>
-					<li><a href="./packages/element"><code>@corpuscule/element</code></a>. This package provides a set of decorators for
-						creating web components. It is decorator-based analogue for Polymer&#39;s <a href="https://github.com/Polymer/lit-element">LitElement</a>
-					or <a href="https://reactjs.org/">React</a>.</li>
-					<li><a href="./packages/form"><code>@corpuscule/form</code></a>. Connector for the <a href="https://github.com/final-form/final-form">🏁 final-form</a>
-					package that provides Corpuscule solution for forms.</li>
-					<li><a href="./packages/lit-html-renderer"><code>@corpuscule/lit-html-renderer</code></a>. <a href="https://github.com/Polymer/lit-html">lit-html</a>
-						based renderer for <a href="./packages/element"><code>@corpuscule/element</code></a>. Also includes solution for using
-						custom element class definition as a source for custom element name (<code>MyElement</code> -&gt; <code>my-element</code>)
-					that makes <code>lit-html</code> usage similar to React. </li>
-					<li><a href="./packages/redux"><code>@corpuscule/redux</code></a>. A connector for the <a href="https://redux.js.org/">Redux</a>
-					library. It is <code>react-redux</code> for Corpuscule.</li>
-					<li><a href="./packages/router"><code>@corpuscule/router</code></a>. A connector for the <a href="https://github.com/kriasoft/universal-router">Universal Router</a>
-					package, provides Corpuscule solution for routing.</li>
-					<li><a href="./packages/storeon"><code>@corpuscule/storeon</code></a>. A connector for the <a href="https://github.com/ai/storeon">Storeon</a>
-					package, a tiny Redux-like state manager. </li>
-					<li><a href="./packages/styles"><code>@corpuscule/styles</code></a>. A solution for loading CSS stylesheets.</li>
-					<li><a href="./packages/typings"><code>@corpuscule/typings</code></a>. Typescript common typings for the Corpuscule.</li>
-					<li><a href="./packages/utils"><code>@corpuscule/utils</code></a>. This package contains a lot of utilities used in almost
-					all Corpuscule packages. Doesn&#39;t have single entrypoint; each util should be loaded separately.</li>
+					<li><a href="https://github.com/corpusculejs/corpuscule/tree/master/packages/context">@corpuscule/context</a>.
+						This package allows creating a context that sends data top-down, from parents to children. Context
+						is DOM-dependent, so using it on different DOM branches with different values you will get different
+					results. It is also a base for many other Corpuscule tools like <code>router</code> or <code>redux</code>.</li>
+					<li><a href="https://github.com/corpusculejs/corpuscule/tree/master/packages/element">@corpuscule/element</a>.
+						This package provides a set of decorators for creating web components. It is decorator-based
+					analogue for Polymer&#39;s <a href="https://github.com/Polymer/lit-element">LitElement</a> or <a href="https://reactjs.org/">React</a>.</li>
+					<li><a href="https://github.com/corpusculejs/corpuscule/tree/master/packages/form">@corpuscule/form</a>.
+						Connector for the <a href="https://github.com/final-form/final-form">🏁 final-form</a> package that provides
+					Corpuscule solution for forms.</li>
+					<li><a href="https://github.com/corpusculejs/corpuscule/tree/master/packages/lit-html-renderer">@corpuscule/lit-html-renderer</a>.
+						<a href="https://github.com/Polymer/lit-html">lit-html</a> based renderer for <a href="./packages/element"><code>@corpuscule/element</code></a>.
+						Also includes solution for using custom element class definition as a source for custom element name
+					(<code>MyElement</code> -&gt; <code>my-element</code>) that makes <code>lit-html</code> usage similar to React. </li>
+					<li><a href="https://github.com/corpusculejs/corpuscule/tree/master/packages/redux">@corpuscule/redux</a>.
+					A connector for the <a href="https://redux.js.org/">Redux</a> library. It is <code>react-redux</code> for Corpuscule.</li>
+					<li><a href="https://github.com/corpusculejs/corpuscule/tree/master/packages/router">@corpuscule/router</a>.
+						A connector for the <a href="https://github.com/kriasoft/universal-router">Universal Router</a> package,
+					provides Corpuscule solution for routing.</li>
+					<li><a href="https://github.com/corpusculejs/corpuscule/tree/master/packages/storeon">@corpuscule/storeon</a>.
+						A connector for the <a href="https://github.com/ai/storeon">Storeon</a> package, a tiny Redux-like state
+					manager. </li>
+					<li><a href="https://github.com/corpusculejs/corpuscule/tree/master/packages/styles">@corpuscule/styles</a>.
+					A solution for loading CSS stylesheets.</li>
+					<li><a href="https://github.com/corpusculejs/corpuscule/tree/master/packages/typings">@corpuscule/typings</a>.
+					Typescript common typings for the Corpuscule.</li>
+					<li><a href="https://github.com/corpusculejs/corpuscule/tree/master/packages/utils">@corpuscule/utils</a>.
+						This package contains a lot of utilities used in almost all Corpuscule packages. Doesn&#39;t have single
+					entrypoint; each util should be loaded separately.</li>
 				</ul>
 				<h2 id="future">Future</h2>
 				<p>When the <a href="(https://github.com/tc39/proposal-decorators)">static decorator specification</a> reaches

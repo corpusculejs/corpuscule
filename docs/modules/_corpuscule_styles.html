@@ -80,6 +80,7 @@
 							<h3>Interfaces</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-interface tsd-parent-kind-external-module"><a href="../interfaces/_corpuscule_styles.stylesdecoratoroptions.html" class="tsd-kind-icon">Styles<wbr>Decorator<wbr>Options</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-external-module"><a href="../interfaces/_corpuscule_styles.stylesgears.html" class="tsd-kind-icon">Styles<wbr>Gears</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -106,24 +107,19 @@
 					<div class="tsd-signature tsd-kind-icon">styles<wbr>Attached<wbr>Callback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">keyof symbol</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/styles/src/index.d.ts#L26">styles/src/index.d.ts:26</a></li>
+							<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/cee1036/packages/styles/src/index.d.ts#L22">styles/src/index.d.ts:22</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>A symbolic name of the method that is called when all styles are properly
-							added. There are three different timings it can fire:</p>
-							<ul>
-								<li>If the <code>URL</code> instance is used, it will fire after all CSS files are
-								loaded.</li>
-								<li>If the <code>HTMLStyleElement</code> is used and no <code>URL</code> instance exists, it will
-								fire after the <code>&lt;style&gt;</code> tag is mounted.</li>
-								<li>If nothing above is used, it will fire immediately after the
-								<code>attachShadow</code> is called.</li>
-							</ul>
+							<p>A symbolic name of the <a href="../interfaces/_corpuscule_styles.stylesgears.html#stylesattachedcallback">StylesGears.stylesAttachedCallback</a>. Use it to
+							declare the method.</p>
+							<pre><code class="language-typescript"><span class="hljs-keyword">class</span> Foo <span class="hljs-keyword">extends</span> HTMLElement {
+  [stylesAttachedCallback](): <span class="hljs-built_in">void</span> {
+    <span class="hljs-comment">// method body</span>
+  }
+}</code></pre>
 						</div>
-						<h3 id="method-signature">Method signature</h3>
-						<pre><code class="language-typescript">[stylesAttachedCallback](): <span class="hljs-built_in">void</span>;</code></pre>
 					</div>
 				</section>
 			</section>
@@ -139,7 +135,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/styles/src/index.d.ts#L139">styles/src/index.d.ts:139</a></li>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/cee1036/packages/styles/src/index.d.ts#L153">styles/src/index.d.ts:153</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -176,7 +172,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/styles/src/index.d.ts#L123">styles/src/index.d.ts:123</a></li>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/cee1036/packages/styles/src/index.d.ts#L137">styles/src/index.d.ts:137</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -340,6 +336,9 @@ customElements.define(<span class="hljs-string">'styled-component'</span>, Style
 				<ul class="before-current">
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
 						<a href="../interfaces/_corpuscule_styles.stylesdecoratoroptions.html" class="tsd-kind-icon">Styles<wbr>Decorator<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+						<a href="../interfaces/_corpuscule_styles.stylesgears.html" class="tsd-kind-icon">Styles<wbr>Gears</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-parent-kind-external-module">
 						<a href="_corpuscule_styles.html#stylesattachedcallback" class="tsd-kind-icon">styles<wbr>Attached<wbr>Callback</a>

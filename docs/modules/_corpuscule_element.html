@@ -128,25 +128,25 @@
 										<td><a href="_corpuscule_element.html#propertychangedcallback">propertyChangedCallback</a></td>
 										<td>Corpuscule</td>
 										<td>Update</td>
-										<td>see the description by the link.</td>
+										<td>See the <a href="../interfaces/_corpuscule_element.elementgears.html">ElementGears</a> interface.</td>
 									</tr>
 									<tr>
 										<td><a href="_corpuscule_element.html#internalchangedcallback">internalChangedCallback</a></td>
 										<td>Corpuscule</td>
 										<td>Update</td>
-										<td>see the description by the link.</td>
+										<td>See the <a href="../interfaces/_corpuscule_element.elementgears.html">ElementGears</a> interface.</td>
 									</tr>
 									<tr>
 										<td><a href="_corpuscule_element.html#updatedcallback">updatedCallback</a></td>
 										<td>Corpuscule</td>
 										<td>Update</td>
-										<td>see the description by the link.</td>
+										<td>See the <a href="../interfaces/_corpuscule_element.elementgears.html">ElementGears</a> interface.</td>
 									</tr>
 									<tr>
 										<td><a href="_corpuscule_element.html#render">render</a></td>
 										<td>Corpuscule</td>
 										<td>Rendering</td>
-										<td>see the description by the link.</td>
+										<td>See the <a href="../interfaces/_corpuscule_element.elementgears.html">ElementGears</a> interface.</td>
 									</tr>
 							</tbody></table>
 						</dd>
@@ -161,6 +161,7 @@
 							<h3>Interfaces</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-interface tsd-parent-kind-external-module"><a href="../interfaces/_corpuscule_element.elementdecoratoroptions.html" class="tsd-kind-icon">Element<wbr>Decorator<wbr>Options</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-external-module"><a href="../interfaces/_corpuscule_element.elementgears.html" class="tsd-kind-icon">Element<wbr>Gears</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -203,7 +204,7 @@
 					<div class="tsd-signature tsd-kind-icon">Property<wbr>Guard<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L128">element/src/index.d.ts:128</a></li>
+							<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/cee1036/packages/element/src/index.d.ts#L234">element/src/index.d.ts:234</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -237,7 +238,7 @@
 					<div class="tsd-signature tsd-kind-icon">internal<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">PropertyDecorator</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L278">element/src/index.d.ts:278</a></li>
+							<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/cee1036/packages/element/src/index.d.ts#L384">element/src/index.d.ts:384</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -281,18 +282,19 @@
 					<div class="tsd-signature tsd-kind-icon">internal<wbr>Changed<wbr>Callback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">keyof symbol</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L414">element/src/index.d.ts:414</a></li>
+							<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/cee1036/packages/element/src/index.d.ts#L58">element/src/index.d.ts:58</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>A symbolic name of a method that is invoked when an <a href="#internal-property">internal</a>
-								property is assigned. The method receives the name of the changed property
-								(either symbolic or string), its old and new value. The behavior is
-							identical to <code>attributeChangedCallback</code>.</p>
+							<p>A symbolic name of the <a href="../interfaces/_corpuscule_element.elementgears.html#internalchangedcallback">ElementGears.internalChangedCallback</a>. Use it to
+							declare the method.</p>
+							<pre><code class="language-typescript"><span class="hljs-keyword">class</span> Foo <span class="hljs-keyword">extends</span> HTMLElement {
+  [internalChangedCallback](propertyName: PropertyKey, oldValue: unknown, newValue: unknown): <span class="hljs-built_in">void</span> {
+    <span class="hljs-comment">// method body</span>
+  }
+}</code></pre>
 						</div>
-						<h3 id="method-signature">Method signature</h3>
-						<pre><code class="language-typescript"><span class="hljs-keyword">protected</span> [internalChangedCallback](propertyName: PropertyKey, oldValue: unknown, newValue: unknown): <span class="hljs-built_in">void</span>;</code></pre>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module">
@@ -301,18 +303,19 @@
 					<div class="tsd-signature tsd-kind-icon">property<wbr>Changed<wbr>Callback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">keyof symbol</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L427">element/src/index.d.ts:427</a></li>
+							<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/cee1036/packages/element/src/index.d.ts#L71">element/src/index.d.ts:71</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>A symbolic name of a method that is invoked when a <a href="#regular-property">regular</a>
-								property is assigned. The method receives the name of the changed property
-								(either symbolic or string), its old and new value. The behavior is
-							identical to <code>attributeChangedCallback</code>.</p>
+							<p>A symbolic name of the <a href="../interfaces/_corpuscule_element.elementgears.html#propertychangedcallback">ElementGears.propertyChangedCallback</a>. Use it to
+							declare the method.</p>
+							<pre><code class="language-typescript"><span class="hljs-keyword">class</span> Foo <span class="hljs-keyword">extends</span> HTMLElement {
+  [propertyChangedCallback](propertyName: PropertyKey, oldValue: unknown, newValue: unknown): <span class="hljs-built_in">void</span> {
+    <span class="hljs-comment">// method body</span>
+  }
+}</code></pre>
 						</div>
-						<h3 id="method-signature">Method signature</h3>
-						<pre><code class="language-typescript"><span class="hljs-keyword">protected</span> [propertyChangedCallback](propertyName: PropertyKey, oldValue: unknown, newValue: unknown): <span class="hljs-built_in">void</span>;</code></pre>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module">
@@ -321,22 +324,18 @@
 					<div class="tsd-signature tsd-kind-icon">render<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">keyof symbol</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L445">element/src/index.d.ts:445</a></li>
+							<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/cee1036/packages/element/src/index.d.ts#L83">element/src/index.d.ts:83</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>A symbolic name of a method that is invoked each time any of the component
-								properties (either <a href="#attribute-property">attribute</a>,
-								<a href="#regular-property">regular</a> or <a href="#internal-property">internal</a>) causes
-								re-rendering. The method work synchronously; returned result of its work
-								will be handled by a <a href="../interfaces/_corpuscule_element.elementdecoratoroptions.html#renderer">renderer</a>
-							function.</p>
+							<p>A symbolic name of the <a href="../interfaces/_corpuscule_element.elementgears.html#render">ElementGears.render</a>. Use it to declare the method.</p>
+							<pre><code class="language-typescript"><span class="hljs-keyword">class</span> Foo <span class="hljs-keyword">extends</span> HTMLElement {
+  [render](): unknown {
+    <span class="hljs-comment">// method body</span>
+  }
+}</code></pre>
 						</div>
-						<p>If you do not specify this method, re-rendering won&#39;t ever happen on your
-						element.</p>
-						<h3 id="method-signature">Method signature</h3>
-						<pre><code class="language-typescript"><span class="hljs-keyword">protected</span> [render](): unknown;</code></pre>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module">
@@ -345,17 +344,19 @@
 					<div class="tsd-signature tsd-kind-icon">updated<wbr>Callback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">keyof symbol</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L457">element/src/index.d.ts:457</a></li>
+							<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/cee1036/packages/element/src/index.d.ts#L96">element/src/index.d.ts:96</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>A symbolic name of a method that is invoked each time the rendering is over
-								and the component acquires the new state. This method is not called during
-							the initial render (<code>connectedCallback</code> is invoked instead).</p>
+							<p>A symbolic name of the <a href="../interfaces/_corpuscule_element.elementgears.html#updatedcallback">ElementGears.updatedCallback</a>. Use it to declare
+							the method.</p>
+							<pre><code class="language-typescript"><span class="hljs-keyword">class</span> Foo <span class="hljs-keyword">extends</span> HTMLElement {
+  [updatedCallback](): <span class="hljs-built_in">void</span> {
+    <span class="hljs-comment">// method body</span>
+  }
+}</code></pre>
 						</div>
-						<h3 id="method-signature">Method signature</h3>
-						<pre><code class="language-typescript"><span class="hljs-keyword">protected</span> [updatedCallback](): <span class="hljs-built_in">void</span>;</code></pre>
 					</div>
 				</section>
 			</section>
@@ -371,7 +372,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L182">element/src/index.d.ts:182</a></li>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/cee1036/packages/element/src/index.d.ts#L288">element/src/index.d.ts:288</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -450,7 +451,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L196">element/src/index.d.ts:196</a></li>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/cee1036/packages/element/src/index.d.ts#L302">element/src/index.d.ts:302</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -485,7 +486,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L401">element/src/index.d.ts:401</a></li>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/cee1036/packages/element/src/index.d.ts#L507">element/src/index.d.ts:507</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -510,7 +511,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L240">element/src/index.d.ts:240</a></li>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/cee1036/packages/element/src/index.d.ts#L346">element/src/index.d.ts:346</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -581,7 +582,7 @@ customElements.whenDefined(<span class="hljs-string">'my-component'</span>).then
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L298">element/src/index.d.ts:298</a></li>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/cee1036/packages/element/src/index.d.ts#L404">element/src/index.d.ts:404</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -627,7 +628,7 @@ customElements.whenDefined(<span class="hljs-string">'my-component'</span>).then
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L341">element/src/index.d.ts:341</a></li>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/cee1036/packages/element/src/index.d.ts#L447">element/src/index.d.ts:447</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -691,7 +692,7 @@ customElements.whenDefined(<span class="hljs-string">'my-component'</span>).then
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L366">element/src/index.d.ts:366</a></li>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/cee1036/packages/element/src/index.d.ts#L472">element/src/index.d.ts:472</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -737,7 +738,7 @@ customElements.whenDefined(<span class="hljs-string">'my-component'</span>).then
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/64ba781/packages/element/src/index.d.ts#L393">element/src/index.d.ts:393</a></li>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/cee1036/packages/element/src/index.d.ts#L499">element/src/index.d.ts:499</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -849,6 +850,9 @@ customElements.whenDefined(<span class="hljs-string">'my-component'</span>).then
 				<ul class="before-current">
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
 						<a href="../interfaces/_corpuscule_element.elementdecoratoroptions.html" class="tsd-kind-icon">Element<wbr>Decorator<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+						<a href="../interfaces/_corpuscule_element.elementgears.html" class="tsd-kind-icon">Element<wbr>Gears</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
 						<a href="_corpuscule_element.html#propertyguard" class="tsd-kind-icon">Property<wbr>Guard</a>
