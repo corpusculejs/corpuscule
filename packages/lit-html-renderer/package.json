@@ -1,6 +1,6 @@
 {
   "name": "@corpuscule/lit-html-renderer",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "description": "Lit-html renderer for Corpuscule",
   "main": "lib/index.js",
   "module": "lib/index.js",

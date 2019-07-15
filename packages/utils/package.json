@@ -1,6 +1,6 @@
 {
   "name": "@corpuscule/utils",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "description": "Common utils for Corpuscule",
   "files": [
     "lib"
@@ -19,7 +19,7 @@
     "url": "git+https://github.com/corpusculejs/corpuscule.git"
   },
   "dependencies": {
-    "@corpuscule/typings": "^0.13.0"
+    "@corpuscule/typings": "^0.14.0"
   },
   "publishConfig": {
     "access": "public"

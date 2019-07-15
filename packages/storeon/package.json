@@ -1,6 +1,6 @@
 {
   "name": "@corpuscule/storeon",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "description": "Storeon connector for Corpuscule",
   "main": "lib/index.js",
   "module": "lib/index.js",
@@ -22,8 +22,8 @@
     "url": "git+https://github.com/corpusculejs/corpuscule.git"
   },
   "dependencies": {
-    "@corpuscule/context": "^0.13.0",
-    "@corpuscule/utils": "^0.13.0"
+    "@corpuscule/context": "^0.14.0",
+    "@corpuscule/utils": "^0.14.0"
   },
   "peerDependencies": {
     "storeon": "^0.8.0"
