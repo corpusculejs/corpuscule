@@ -91,6 +91,10 @@ Along with the Babel you have to install [`@corpuscule/babel-preset`](https://gi
 that should be used in Babel configuration. This preset contains everything to compile decorators in
 a way Corpuscule need to work.
 
+## Documentation
+API documentation is available [here](https://corpusculejs.github.io/corpuscule).
+
+
 ## List of tools
 Corpuscule consists of following tools:
 
