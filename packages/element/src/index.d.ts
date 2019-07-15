@@ -44,6 +44,56 @@
 
 import {Token} from '@corpuscule/utils/lib/tokenRegistry';
 
+/**
+ * This interface is not necessary to be implemented because it covers only the
+ * one case when all your properties are string and you do not plan to use
+ * specific property names.
+ */
+export interface ElementGears {
+  /**
+   * A method that is invoked when an [internal]{@link @corpuscule/element.internal}
+   * property is assigned. The behavior is identical to
+   * `attributeChangedCallback`. It does trigger an update each time it is
+   * invoked.
+   *
+   * @param propertyName a property name (either string or symbolic).
+   * @param oldValue a value of the property that was before the update started.
+   * @param newValue a new value to set to the property.
+   */
+  internalChangedCallback?(propertyName: PropertyKey, oldValue: unknown, newValue: unknown): void;
+
+  /**
+   * A method that is invoked when a [regular]{@link @corpuscule/element.property}
+   * property is assigned. The behavior is identical to
+   * `attributeChangedCallback`. It does not trigger a re-rendering if the
+   * `oldValue` is equal to `newValue` (by the strict equality check `===`).
+   *
+   * @param propertyName a property name (either string or symbolic).
+   * @param oldValue a value of the property that was before the update started.
+   * @param newValue a new value to set to the property.
+   */
+  propertyChangedCallback?(propertyName: PropertyKey, oldValue: unknown, newValue: unknown): void;
+
+  /**
+   * A method that is invoked each time any of the component properties (either
+   * [attribute]{@link @corpuscule/element.attribute}, [regular]{@link @corpuscule/element.property}
+   * or [internal]{@link @corpuscule/element.internal}) causes re-rendering. The
+   * method work synchronously; returned result of its work will be handled by a
+   * [renderer]{@link ElementDecoratorOptions.renderer} function.
+   *
+   * If you do not define this method, rendering won't ever happen on your
+   * element.
+   */
+  render?(): unknown;
+
+  /**
+   * A method that is invoked each time the rendering is over and the component
+   * acquires the new state. This method is not called during the initial render
+   * (`connectedCallback` is invoked instead).
+   */
+  updatedCallback?(): void;
+}
+
 export interface ElementDecoratorOptions {
   /**
    * This option allows constructing the [Customized built-in
@@ -246,6 +296,17 @@ export function computer(token: Token): PropertyDecorator;
 export function element(name: string, options?: ElementDecoratorOptions): ClassDecorator;
 
 /**
+ * A decorator that converts a class property to a part of the Corpuscule
+ * Element mechanism and allows defining [[ElementGears]] functions.
+ *
+ * If you do not plan to use the specific properties names, you can implement
+ * the [[ElementGears]] interface.
+ *
+ * @param responsibilityKey
+ */
+export function gear(responsibilityKey?: keyof ElementGears): PropertyDecorator;
+
+/**
  * A decorator that transforms a class property to a component internal
  * property.
  *
@@ -405,59 +466,3 @@ export function queryAll(selector: string): PropertyDecorator;
  * decorators of computed and observed properties you want to connect.
  */
 export function createComputingToken(): Token;
-
-/**
- * A symbolic name of a method that is invoked when an [internal](#internal-property)
- * property is assigned. The method receives the name of the changed property
- * (either symbolic or string), its old and new value. The behavior is
- * identical to `attributeChangedCallback`.
- *
- * ### Method signature
- * ```typescript
- * protected [internalChangedCallback](propertyName: PropertyKey, oldValue: unknown, newValue: unknown): void;
- * ```
- */
-export const internalChangedCallback: unique symbol;
-
-/**
- * A symbolic name of a method that is invoked when a [regular](#regular-property)
- * property is assigned. The method receives the name of the changed property
- * (either symbolic or string), its old and new value. The behavior is
- * identical to `attributeChangedCallback`.
- *
- * ### Method signature
- * ```typescript
- * protected [propertyChangedCallback](propertyName: PropertyKey, oldValue: unknown, newValue: unknown): void;
- * ```
- */
-export const propertyChangedCallback: unique symbol;
-
-/**
- * A symbolic name of a method that is invoked each time any of the component
- * properties (either [attribute](#attribute-property),
- * [regular](#regular-property) or [internal](#internal-property)) causes
- * re-rendering. The method work synchronously; returned result of its work
- * will be handled by a [renderer]{@link ElementDecoratorOptions.renderer}
- * function.
- *
- * If you do not define this method, rendering won't ever happen on your
- * element.
- *
- * ### Method signature
- * ```typescript
- * protected [render](): unknown;
- * ```
- */
-export const render: unique symbol;
-
-/**
- * A symbolic name of a method that is invoked each time the rendering is over
- * and the component acquires the new state. This method is not called during
- * the initial render (`connectedCallback` is invoked instead).
- *
- * ### Method signature
- * ```typescript
- * protected [updatedCallback](): void;
- * ```
- */
-export const updatedCallback: unique symbol;

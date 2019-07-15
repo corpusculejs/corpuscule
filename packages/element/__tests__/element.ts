@@ -1,35 +1,8 @@
 // tslint:disable:no-unbound-method
 import {fixture, fixtureSync} from '@open-wc/testing-helpers';
-import {Constructor, createTestingPromise, CustomElement, genName} from '../../../test/utils';
-import {
-  element as basicElement,
-  ElementDecoratorOptions,
-  internalChangedCallback,
-  propertyChangedCallback,
-  render,
-  updatedCallback,
-} from '../src';
-
-const fixtureMixin = <T extends Constructor<Element>>(base: T) =>
-  class extends base {
-    public updateComplete: Promise<void>; // tslint:disable-line:prefer-readonly
-    private resolve: () => void; // tslint:disable-line:prefer-readonly
-
-    public constructor(...args: any[]) {
-      super(...args);
-      [this.updateComplete, this.resolve] = createTestingPromise();
-    }
-
-    public connectedCallback(): void {
-      this.resolve();
-      [this.updateComplete, this.resolve] = createTestingPromise();
-    }
-
-    public [updatedCallback](): void {
-      this.resolve();
-      [this.updateComplete, this.resolve] = createTestingPromise();
-    }
-  };
+import {CustomElement, genName} from '../../../test/utils';
+import {element as basicElement, ElementDecoratorOptions, ElementGears, gear} from '../src';
+import {fixtureMixin} from './utils';
 
 type SimplifiedElementDecorator = (
   name: string,
@@ -38,12 +11,14 @@ type SimplifiedElementDecorator = (
 
 describe('@corpuscule/element', () => {
   describe('@element', () => {
+    let tag: string;
     let define: jasmine.Spy;
     let element: SimplifiedElementDecorator;
     let rendererSpy: jasmine.Spy;
     let schedulerSpy: jasmine.Spy;
 
     beforeEach(() => {
+      tag = genName();
       rendererSpy = jasmine.createSpy('onTemplateRender');
       schedulerSpy = jasmine.createSpy('onSchedule');
 
@@ -57,38 +32,34 @@ describe('@corpuscule/element', () => {
     });
 
     it('adds element to a custom elements registry', async () => {
-      const name = genName();
-
-      @element(name)
+      @element(tag)
       class Test extends fixtureMixin(CustomElement) {
-        protected [render](): null {
+        @gear()
+        public render(): null {
           return null;
         }
       }
 
-      await customElements.whenDefined(name);
+      await customElements.whenDefined(tag);
 
-      expect(define).toHaveBeenCalledWith(name, Test, undefined);
+      expect(define).toHaveBeenCalledWith(tag, Test, undefined);
     });
 
     it('adds "is" readonly field with name to element', () => {
-      const name = genName();
-
-      @element(name)
-      class Test extends fixtureMixin(CustomElement) {
+      @element(tag)
+      class Test extends fixtureMixin(CustomElement) implements ElementGears {
         public static readonly is: string;
 
-        protected [render](): null {
+        @gear()
+        public render(): null {
           return null;
         }
       }
 
-      expect(Test.is).toBe(name);
+      expect(Test.is).toBe(tag);
     });
 
     it('defines invalidate function only if [render] is present', async () => {
-      const tag = genName();
-
       @element(tag)
       // @ts-ignore
       class Test extends fixtureMixin(CustomElement) {}
@@ -101,8 +72,6 @@ describe('@corpuscule/element', () => {
     it('renders on element connection', async () => {
       const connectedCallbackSpy = jasmine.createSpy('onConnect');
 
-      const tag = genName();
-
       @element(tag)
       // @ts-ignore
       class Test extends fixtureMixin(CustomElement) {
@@ -111,7 +80,8 @@ describe('@corpuscule/element', () => {
           connectedCallbackSpy();
         }
 
-        protected [render](): null {
+        @gear()
+        public render(): null {
           return null;
         }
       }
@@ -125,15 +95,14 @@ describe('@corpuscule/element', () => {
     it('re-renders on each attribute change', async () => {
       const attributeChangedCallbackSpy = jasmine.createSpy('onAttributeChange');
 
-      const tag = genName();
-
       @element(tag)
       class Test extends fixtureMixin(CustomElement) {
         public attributeChangedCallback(...args: unknown[]): void {
           attributeChangedCallbackSpy(...args);
         }
 
-        protected [render](): null {
+        @gear()
+        public render(): null {
           return null;
         }
       }
@@ -145,48 +114,48 @@ describe('@corpuscule/element', () => {
       expect(schedulerSpy).toHaveBeenCalledTimes(2);
     });
 
-    it('re-renders on each [propertyChangedCallback]', async () => {
+    it('re-renders on each propertyChangedCallback', async () => {
       const propertyChangedCallbackSpy = jasmine.createSpy('onPropertyChange');
 
-      const tag = genName();
-
       @element(tag)
-      class Test extends fixtureMixin(CustomElement) {
-        public [propertyChangedCallback](...args: unknown[]): void {
+      class Test extends fixtureMixin(CustomElement) implements ElementGears {
+        @gear()
+        public propertyChangedCallback(...args: unknown[]): void {
           propertyChangedCallbackSpy(...args);
         }
 
-        protected [render](): null {
+        @gear()
+        public render(): null {
           return null;
         }
       }
 
       const test = await fixture<Test>(`<${tag}></${tag}>`);
 
-      test[propertyChangedCallback]('test', 'old', 'new');
+      test.propertyChangedCallback('test', 'old', 'new');
       expect(propertyChangedCallbackSpy).toHaveBeenCalledWith('test', 'old', 'new');
       expect(schedulerSpy).toHaveBeenCalledTimes(2);
     });
 
-    it('re-renders on each [internalChangedCallback]', async () => {
+    it('re-renders on each internalChangedCallback', async () => {
       const internalChangedCallbackSpy = jasmine.createSpy('onInternalChange');
 
-      const tag = genName();
-
       @element(tag)
-      class Test extends fixtureMixin(CustomElement) {
-        public [internalChangedCallback](...args: unknown[]): void {
+      class Test extends fixtureMixin(CustomElement) implements ElementGears {
+        @gear()
+        public internalChangedCallback(...args: unknown[]): void {
           internalChangedCallbackSpy(...args);
         }
 
-        protected [render](): null {
+        @gear()
+        public render(): null {
           return null;
         }
       }
 
       const test = await fixture<Test>(`<${tag}></${tag}>`);
 
-      test[internalChangedCallback]('test', 'old', 'new');
+      test.internalChangedCallback('test', 'old', 'new');
       expect(internalChangedCallbackSpy).toHaveBeenCalledWith('test', 'old', 'new');
       expect(schedulerSpy).toHaveBeenCalledTimes(2);
     });
@@ -194,16 +163,16 @@ describe('@corpuscule/element', () => {
     it('calls [updatedCallback] on each re-render', async () => {
       const updatedCallbackSpy = jasmine.createSpy('onUpdate');
 
-      const tag = genName();
-
       @element(tag)
-      class Test extends fixtureMixin(CustomElement) {
-        public [updatedCallback](): void {
-          super[updatedCallback]();
+      class Test extends fixtureMixin(CustomElement) implements ElementGears {
+        @gear()
+        public updatedCallback(): void {
+          super.updatedCallback();
           updatedCallbackSpy();
         }
 
-        public [render](): null {
+        @gear()
+        public render(): null {
           return null;
         }
       }
@@ -219,11 +188,10 @@ describe('@corpuscule/element', () => {
     });
 
     it('sends to the renderer function result of [render]', async () => {
-      const tag = genName();
-
       @element(tag)
       class Test extends fixtureMixin(CustomElement) {
-        public [render](): string {
+        @gear()
+        public render(): string {
           return 'rendered string';
         }
       }
@@ -238,23 +206,24 @@ describe('@corpuscule/element', () => {
       const propertyChangedCallbackSpy = jasmine.createSpy('onPropertyChange');
       const internalChangedCallbackSpy = jasmine.createSpy('onInternalChange');
 
-      const tag = genName();
-
       @element(tag)
-      class Test extends fixtureMixin(CustomElement) {
+      class Test extends fixtureMixin(CustomElement) implements ElementGears {
         public attributeChangedCallback(...args: unknown[]): void {
           attributeChangedCallbackSpy(...args);
         }
 
-        public [propertyChangedCallback](...args: unknown[]): void {
+        @gear()
+        public propertyChangedCallback(...args: unknown[]): void {
           propertyChangedCallbackSpy(...args);
         }
 
-        public [internalChangedCallback](...args: unknown[]): void {
+        @gear()
+        public internalChangedCallback(...args: unknown[]): void {
           internalChangedCallbackSpy(...args);
         }
 
-        protected [render](): null {
+        @gear()
+        public render(): null {
           return null;
         }
       }
@@ -264,8 +233,8 @@ describe('@corpuscule/element', () => {
       schedulerSpy.calls.reset();
 
       test.attributeChangedCallback('attr', 'same', 'same');
-      test[propertyChangedCallback]('prop', 'same', 'same');
-      test[internalChangedCallback]('internal', 'same', 'same');
+      test.propertyChangedCallback('prop', 'same', 'same');
+      test.internalChangedCallback('internal', 'same', 'same');
 
       expect(attributeChangedCallbackSpy).not.toHaveBeenCalled();
       expect(propertyChangedCallbackSpy).not.toHaveBeenCalled();
@@ -274,28 +243,29 @@ describe('@corpuscule/element', () => {
       expect(schedulerSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('does not allow to use [updatedCallback] and changed callbacks when not connected', async () => {
+    it('does not allow to use updatedCallback and changed callbacks when not connected', async () => {
       const attributeChangedCallbackSpy = jasmine.createSpy('onAttributeChange');
       const propertyChangedCallbackSpy = jasmine.createSpy('onPropertyChange');
       const internalChangedCallbackSpy = jasmine.createSpy('onInternalChange');
 
-      const tag = genName();
-
       @element(tag)
-      class Test extends fixtureMixin(CustomElement) {
+      class Test extends fixtureMixin(CustomElement) implements ElementGears {
         public attributeChangedCallback(...args: unknown[]): void {
           attributeChangedCallbackSpy(...args);
         }
 
-        public [propertyChangedCallback](...args: unknown[]): void {
+        @gear()
+        public propertyChangedCallback(...args: unknown[]): void {
           propertyChangedCallbackSpy(...args);
         }
 
-        public [internalChangedCallback](...args: unknown[]): void {
+        @gear()
+        public internalChangedCallback(...args: unknown[]): void {
           internalChangedCallbackSpy(...args);
         }
 
-        protected [render](): null {
+        @gear()
+        public render(): null {
           return null;
         }
       }
@@ -305,8 +275,8 @@ describe('@corpuscule/element', () => {
       const test = fixtureSync<Test>(`<${tag}></${tag}>`);
 
       test.attributeChangedCallback('attr', 'old', 'new');
-      test[propertyChangedCallback]('attr', 'old', 'new');
-      test[internalChangedCallback]('attr', 'old', 'new');
+      test.propertyChangedCallback('attr', 'old', 'new');
+      test.internalChangedCallback('attr', 'old', 'new');
 
       await test.updateComplete;
 
@@ -320,15 +290,14 @@ describe('@corpuscule/element', () => {
     it('makes only one render on multiple property change', async () => {
       const attributeChangedCallbackSpy = jasmine.createSpy('onAttributeChange');
 
-      const tag = genName();
-
       @element(tag)
       class Test extends fixtureMixin(CustomElement) {
         public attributeChangedCallback(...args: unknown[]): void {
           attributeChangedCallbackSpy(...args);
         }
 
-        protected [render](): null {
+        @gear()
+        public render(): null {
           return null;
         }
       }
@@ -348,12 +317,11 @@ describe('@corpuscule/element', () => {
     });
 
     it('allows to use light DOM', async () => {
-      const tag = genName();
-
       @element(tag, {lightDOM: true})
       // @ts-ignore
-      class Test extends fixtureMixin(CustomElement) {
-        public [render](): string {
+      class Test extends fixtureMixin(CustomElement) implements ElementGears {
+        @gear()
+        public render(): string {
           return 'render';
         }
       }
@@ -378,7 +346,8 @@ describe('@corpuscule/element', () => {
 
           public attributeChangedCallback(): void {}
 
-          public [render](): string {
+          @gear()
+          public render(): string {
             return 'render';
           }
         }
@@ -386,12 +355,11 @@ describe('@corpuscule/element', () => {
     });
 
     it('allows omitting renderer option', async () => {
-      const tag = genName();
-
       @basicElement(tag, {scheduler: schedulerSpy})
       // @ts-ignore
       class Test extends fixtureMixin(CustomElement) {
-        public [render](): string {
+        @gear()
+        public render(): string {
           return 'render';
         }
       }
@@ -403,12 +371,12 @@ describe('@corpuscule/element', () => {
 
     describe('elements extending', () => {
       it('allows extending existing element', async () => {
-        const tag1 = genName();
         const tag2 = genName();
 
-        @element(tag1)
+        @element(tag)
         class Parent extends fixtureMixin(CustomElement) {
-          public [render](): null {
+          @gear()
+          public render(): null {
             return null;
           }
         }
@@ -416,12 +384,13 @@ describe('@corpuscule/element', () => {
         @element(tag2)
         // @ts-ignore
         class Child extends Parent {
-          public [render](): null {
+          @gear()
+          public render(): null {
             return null;
           }
         }
 
-        await Promise.all([customElements.whenDefined(tag1), customElements.whenDefined(tag2)]);
+        await Promise.all([customElements.whenDefined(tag), customElements.whenDefined(tag2)]);
 
         expect(customElements.define).toHaveBeenCalledTimes(2);
       });
@@ -437,12 +406,11 @@ describe('@corpuscule/element', () => {
             connectedSpyParent();
           }
 
-          public [render](): null {
+          @gear()
+          public render(): null {
             return null;
           }
         }
-
-        const tag = genName();
 
         @element(tag)
         // @ts-ignore
@@ -452,7 +420,8 @@ describe('@corpuscule/element', () => {
             connectedSpyChild();
           }
 
-          public [render](): null {
+          @gear()
+          public render(): null {
             return null;
           }
         }
@@ -467,19 +436,15 @@ describe('@corpuscule/element', () => {
 
     describe('customized built-in elements', () => {
       it('allows to create', async () => {
-        const name = genName();
-
-        @element(name, {extends: 'a'})
+        @element(tag, {extends: 'a'})
         class Test extends fixtureMixin(HTMLAnchorElement) {}
 
-        await customElements.whenDefined(name);
+        await customElements.whenDefined(tag);
 
-        expect(customElements.define).toHaveBeenCalledWith(name, Test, {extends: 'a'});
+        expect(customElements.define).toHaveBeenCalledWith(tag, Test, {extends: 'a'});
       });
 
       it('does not re-render', async () => {
-        const tag = genName();
-
         @element(tag, {extends: 'a'})
         // @ts-ignore
         class Test extends fixtureMixin(HTMLAnchorElement) {}
@@ -490,8 +455,6 @@ describe('@corpuscule/element', () => {
       });
 
       it('creates ShadowRoot for allowed elements', async () => {
-        const tag = genName();
-
         @element(tag, {extends: 'span'})
         class Test extends fixtureMixin(HTMLSpanElement) {}
 
@@ -501,8 +464,6 @@ describe('@corpuscule/element', () => {
       });
 
       it('creates LightDOM for other elements', async () => {
-        const tag = genName();
-
         @element(tag, {extends: 'a'})
         class Test extends fixtureMixin(HTMLAnchorElement) {}
 
@@ -513,7 +474,6 @@ describe('@corpuscule/element', () => {
 
       it('defines that element is connected for light DOM elements', async () => {
         const attributeChangedCallbackSpy = jasmine.createSpy('attributeChangedCallback');
-        const tag = genName();
 
         @element(tag, {extends: 'a'})
         class Test extends fixtureMixin(HTMLAnchorElement) {

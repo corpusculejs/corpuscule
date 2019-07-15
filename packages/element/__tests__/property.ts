@@ -1,20 +1,20 @@
 // tslint:disable:max-classes-per-file
-import {property, propertyChangedCallback} from '../src';
-
-class CorpusculeElementMock {
-  public [propertyChangedCallback](
-    _key: PropertyKey,
-    _oldValue: unknown,
-    _newValue: unknown,
-  ): void {
-    // tslint:disable-line:no-empty
-  }
-}
+import {fixture} from '@open-wc/testing-helpers/src/fixture-no-side-effect';
+import {genName} from '../../../test/utils';
+import {element, gear, property} from '../src';
+import {fixtureMixin} from './utils';
 
 describe('@corpuscule/element', () => {
   describe('@property', () => {
-    it('initializes, gets and sets property', () => {
-      class Test extends CorpusculeElementMock {
+    let tag: string;
+
+    beforeEach(() => {
+      tag = genName();
+    });
+
+    it('initializes, gets and sets property', async () => {
+      @element(tag)
+      class Test extends fixtureMixin(HTMLElement) {
         @property()
         public prop: number = 10;
 
@@ -30,7 +30,7 @@ describe('@corpuscule/element', () => {
         private storage: string = 'str';
       }
 
-      const test = new Test();
+      const test = await fixture<Test>(`<${tag}></${tag}>`);
 
       expect(test.prop).toBe(10);
       expect(test.accessor).toBe('str');
@@ -42,21 +42,23 @@ describe('@corpuscule/element', () => {
       expect(test.accessor).toBe('test');
     });
 
-    it('initializes property to an undefined if no data is set', () => {
-      class Test extends CorpusculeElementMock {
+    it('initializes property to an undefined if no data is set', async () => {
+      @element(tag)
+      class Test extends fixtureMixin(HTMLElement) {
         @property()
         public prop?: number;
       }
 
-      const test = new Test();
+      const test = await fixture<Test>(`<${tag}></${tag}>`);
 
       expect(test.prop).toBeUndefined();
     });
 
-    it('runs [propertyChangedCallback] on property change', () => {
+    it('runs [propertyChangedCallback] on property change', async () => {
       const propertyChangedCallbackSpy = jasmine.createSpy('onPropertyChanged');
 
-      class Test extends CorpusculeElementMock {
+      @element(tag)
+      class Test extends fixtureMixin(HTMLElement) {
         @property()
         public prop: number = 10;
 
@@ -71,12 +73,13 @@ describe('@corpuscule/element', () => {
 
         private storage: string = 'str';
 
-        public [propertyChangedCallback](...args: unknown[]): void {
+        @gear()
+        public propertyChangedCallback(...args: unknown[]): void {
           propertyChangedCallbackSpy(...args);
         }
       }
 
-      const test = new Test();
+      const test = await fixture<Test>(`<${tag}></${tag}>`);
 
       test.prop = 20;
 
@@ -91,13 +94,14 @@ describe('@corpuscule/element', () => {
       expect(propertyChangedCallbackSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('throws an error if value does not fit guard', () => {
-      class Test extends CorpusculeElementMock {
+    it('throws an error if value does not fit guard', async () => {
+      @element(tag)
+      class Test extends fixtureMixin(HTMLElement) {
         @property((v: any) => typeof v === 'number')
         public prop: any = 10;
       }
 
-      const test = new Test();
+      const test = await fixture<Test>(`<${tag}></${tag}>`);
 
       expect(() => {
         test.prop = 'string';

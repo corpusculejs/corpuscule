@@ -2,13 +2,8 @@
 import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
 import reflectClassMethods from '@corpuscule/utils/lib/reflectClassMethods';
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
-import {
-  internalChangedCallback as $internalChangedCallback,
-  propertyChangedCallback as $propertyChangedCallback,
-  render as $render,
-  updatedCallback as $updatedCallback,
-} from './tokens';
-import {noop, shadowElements} from './utils';
+import {setObject} from '@corpuscule/utils/lib/setters';
+import {noop, shadowElements, sharedPropertiesRegistry} from './utils';
 
 const readonlyPropertyDescriptor = {
   configurable: true,
@@ -23,18 +18,82 @@ const element = (
   const {prototype} = klass;
   const isLight = lightDOM || (builtin && !shadowElements.includes(builtin));
 
+  let $internalChangedCallback;
+  let $propertyChangedCallback;
+  let $render;
+  let $updatedCallback;
+
   const $$connected = Symbol();
+  const $$internalChangedCallback = Symbol();
   const $$invalidate = Symbol();
+  const $$noop = Symbol();
+  const $$propertyChangedCallback = Symbol();
   const $$root = Symbol();
   const $$valid = Symbol();
 
-  const supers = reflectClassMethods(prototype, [
-    'attributeChangedCallback',
-    'connectedCallback',
-    $internalChangedCallback,
-    $propertyChangedCallback,
-    $updatedCallback,
-  ]);
+  // Sharing fallback property names; they will be used internally if the user
+  // did not define any of them.
+  setObject(sharedPropertiesRegistry, klass, {
+    $$internalChangedCallback,
+    $$propertyChangedCallback,
+  });
+
+  klass.__registrations.push(() => {
+    // Fallback property names will be used if user did not define one of the
+    // following properties.
+    ({
+      internalChangedCallback: $internalChangedCallback = $$internalChangedCallback,
+      propertyChangedCallback: $propertyChangedCallback = $$propertyChangedCallback,
+      render: $render,
+      // If the user did not define the `updatedCallback`, noop will be used.
+      updatedCallback: $updatedCallback = $$noop,
+    } = sharedPropertiesRegistry.get(klass) || {});
+
+    // If there are undefined properties, `noop` will be used as a reflection.
+    const internalMethods = reflectClassMethods(prototype, [
+      $internalChangedCallback,
+      $propertyChangedCallback,
+    ]);
+
+    Object.assign(prototype, {
+      [$$invalidate]:
+        $render && renderer
+          ? async function() {
+              if (!this[$$valid]) {
+                return;
+              }
+
+              this[$$valid] = false;
+
+              await scheduler(() => {
+                renderer(this[$render](), this[$$root], this);
+                this[$$valid] = true;
+              });
+
+              if (this[$$connected]) {
+                this[$updatedCallback]();
+              }
+            }
+          : noop,
+      [$$noop]: noop,
+      async [$internalChangedCallback](internalName, oldValue, newValue) {
+        if (!this[$$connected]) {
+          return;
+        }
+
+        internalMethods[$internalChangedCallback].call(this, internalName, oldValue, newValue);
+        await this[$$invalidate]();
+      },
+      async [$propertyChangedCallback](propertyName, oldValue, newValue) {
+        if (oldValue === newValue || !this[$$connected]) {
+          return;
+        }
+
+        internalMethods[$propertyChangedCallback].call(this, propertyName, oldValue, newValue);
+        await this[$$invalidate]();
+      },
+    });
+  });
 
   Object.defineProperties(klass, {
     is: {
@@ -47,6 +106,11 @@ const element = (
     },
   });
 
+  const regularMethods = reflectClassMethods(prototype, [
+    'attributeChangedCallback',
+    'connectedCallback',
+  ]);
+
   defineExtendable(
     klass,
     {
@@ -55,57 +119,18 @@ const element = (
           return;
         }
 
-        supers.attributeChangedCallback.call(this, attributeName, oldValue, newValue);
+        regularMethods.attributeChangedCallback.call(this, attributeName, oldValue, newValue);
         await this[$$invalidate]();
       },
       async connectedCallback() {
         await this[$$invalidate]();
         this[$$connected] = true;
-        supers.connectedCallback.call(this);
+        regularMethods.connectedCallback.call(this);
       },
     },
-    supers,
+    regularMethods,
     klass.__initializers,
   );
-
-  Object.assign(prototype, {
-    [$$invalidate]:
-      $render in prototype && renderer
-        ? async function() {
-            if (!this[$$valid]) {
-              return;
-            }
-
-            this[$$valid] = false;
-
-            await scheduler(() => {
-              renderer(this[$render](), this[$$root], this);
-              this[$$valid] = true;
-            });
-
-            if (this[$$connected]) {
-              this[$updatedCallback]();
-            }
-          }
-        : noop,
-    async [$internalChangedCallback](internalName, oldValue, newValue) {
-      if (!this[$$connected]) {
-        return;
-      }
-
-      supers[$internalChangedCallback].call(this, internalName, oldValue, newValue);
-      await this[$$invalidate]();
-    },
-    async [$propertyChangedCallback](propertyName, oldValue, newValue) {
-      if (oldValue === newValue || !this[$$connected]) {
-        return;
-      }
-
-      supers[$propertyChangedCallback].call(this, propertyName, oldValue, newValue);
-      await this[$$invalidate]();
-    },
-    [$updatedCallback]: supers[$updatedCallback],
-  });
 
   klass.__initializers.push(self => {
     self[$$connected] = false;

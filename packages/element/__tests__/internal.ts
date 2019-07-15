@@ -1,20 +1,20 @@
 // tslint:disable:max-classes-per-file
-import {internal, internalChangedCallback} from '../src';
-
-class CorpusculeElementMock {
-  public [internalChangedCallback](
-    _key: PropertyKey,
-    _oldValue: unknown,
-    _newValue: unknown,
-  ): void {
-    // tslint:disable-line:no-empty
-  }
-}
+import {fixture} from '@open-wc/testing-helpers/src/fixture-no-side-effect';
+import {genName} from '../../../test/utils';
+import {element, gear, internal} from '../src';
+import {fixtureMixin} from './utils';
 
 describe('@corpuscule/element', () => {
   describe('@internal', () => {
-    it('initializes, gets and sets internal properties', () => {
-      class Test extends CorpusculeElementMock {
+    let tag: string;
+
+    beforeEach(() => {
+      tag = genName();
+    });
+
+    it('initializes, gets and sets internal properties', async () => {
+      @element(tag)
+      class Test extends HTMLElement {
         @internal
         public prop: number = 10;
 
@@ -30,7 +30,7 @@ describe('@corpuscule/element', () => {
         private storage: string = 'str';
       }
 
-      const test = new Test();
+      const test = await fixture<Test>(`<${tag}></${tag}>`);
 
       expect(test.prop).toBe(10);
       expect(test.accessor).toBe('str');
@@ -42,10 +42,11 @@ describe('@corpuscule/element', () => {
       expect(test.accessor).toBe('test');
     });
 
-    it('runs [internalChangedCallback] on internal property change', () => {
+    it('runs internalChangedCallback on internal property change', async () => {
       const internalChangedCallbackSpy = jasmine.createSpy('onInternalChanged');
 
-      class Test extends CorpusculeElementMock {
+      @element(tag)
+      class Test extends fixtureMixin(HTMLElement) {
         @internal
         public prop: number = 10;
 
@@ -60,12 +61,14 @@ describe('@corpuscule/element', () => {
 
         private storage: string = 'str';
 
-        public [internalChangedCallback](...args: unknown[]): void {
+        @gear()
+        public internalChangedCallback(...args: unknown[]): void {
           internalChangedCallbackSpy(...args);
         }
       }
 
-      const test = new Test();
+      const test = await fixture<Test>(`<${tag}></${tag}>`);
+
       test.prop = 20;
 
       expect(internalChangedCallbackSpy).toHaveBeenCalledWith('prop', 10, 20);
