@@ -50,27 +50,25 @@ describe('@corpuscule/styles', () => {
   });
 
   describe('Constructable Style Sheets', () => {
-    let sheetSpyObj: jasmine.SpyObj<{replaceSync: (styles: string) => void}>;
-    let sheetSpy: jasmine.Spy;
-    let adoptedStyleSheets: jasmine.Spy;
+    let replaceSyncSpy: jasmine.Spy;
+    let adoptedStyleSheetsSpy: jasmine.Spy;
 
     beforeEach(() => {
       styles = (...pathsOrStyles) =>
         stylesAdvanced(pathsOrStyles, {adoptedStyleSheets: true, shadyCSS: false});
-      sheetSpyObj = jasmine.createSpyObj('CSSStyleSheet', ['replaceSync']);
-      sheetSpy = spyOn(window as any, 'CSSStyleSheet').and.returnValue(sheetSpyObj);
+      replaceSyncSpy = spyOn(CSSStyleSheet.prototype as any, 'replaceSync');
 
-      adoptedStyleSheets = jasmine.createSpy('adoptedStyleSheets');
+      adoptedStyleSheetsSpy = jasmine.createSpy('adoptedStyleSheets');
 
       Object.defineProperty((window as any).ShadowRoot.prototype, 'adoptedStyleSheets', {
         configurable: true,
         enumerable: true,
-        set: adoptedStyleSheets,
+        set: adoptedStyleSheetsSpy,
       });
     });
 
     afterEach(() => {
-      sheetSpy.and.callThrough();
+      replaceSyncSpy.and.callThrough();
     });
 
     it('properly appends constructed style sheet', async () => {
@@ -96,9 +94,39 @@ describe('@corpuscule/styles', () => {
 
       await promise;
 
-      expect(sheetSpy).toHaveBeenCalled();
-      expect(sheetSpyObj.replaceSync).toHaveBeenCalledWith(rawStyles);
-      expect(adoptedStyleSheets).toHaveBeenCalledWith([sheetSpyObj]);
+      expect(replaceSyncSpy).toHaveBeenCalledWith(rawStyles);
+      expect(adoptedStyleSheetsSpy).toHaveBeenCalledWith([jasmine.any(Object)]);
+
+      const [[constructedStyleSheet]] = adoptedStyleSheetsSpy.calls.mostRecent().args;
+      expect(constructedStyleSheet instanceof CSSStyleSheet).toBeTruthy();
+    });
+
+    it('appends existing stylesheet', async () => {
+      const [promise, resolve] = createTestingPromise();
+
+      const constructedStyleSheet = new CSSStyleSheet();
+
+      @styles(constructedStyleSheet)
+      class Test extends HTMLElement {
+        public constructor() {
+          super();
+          this.attachShadow({mode: 'open'});
+        }
+
+        public connectedCallback(): void {
+          this.shadowRoot!.innerHTML = '<div>Bar</div>';
+        }
+
+        public [stylesAttachedCallback](): void {
+          resolve();
+        }
+      }
+
+      createSimpleElement(Test);
+
+      await promise;
+
+      expect(adoptedStyleSheetsSpy).toHaveBeenCalledWith([constructedStyleSheet]);
     });
   });
 
