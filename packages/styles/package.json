@@ -1,6 +1,6 @@
 {
   "name": "@corpuscule/styles",
-  "version": "0.14.0",
+  "version": "0.14.1",
   "description": "Styling utils for Corpuscule",
   "main": "lib/index.js",
   "module": "lib/index.js",
