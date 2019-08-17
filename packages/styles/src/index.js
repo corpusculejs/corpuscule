@@ -15,7 +15,7 @@ export const stylesAdvanced = (
   const {prototype} = klass;
   const linkNodes = document.createDocumentFragment();
   const styleNodes = document.createDocumentFragment();
-  const constructableStyles = [];
+  const constructedStyles = [];
 
   for (const pathOrStyle of pathsOrStyles) {
     if (pathOrStyle instanceof URL) {
@@ -28,14 +28,18 @@ export const stylesAdvanced = (
           ? pathOrStyle.pathname + pathOrStyle.search
           : pathOrStyle;
       linkNodes.append(link);
+    } else if (pathOrStyle instanceof CSSStyleSheet) {
+      // If there is support for CSS Modules or emulation like with the
+      // @corpuscule/construct-stylesheet-loader
+      constructedStyles.push(pathOrStyle);
     } else if (shadyCSS) {
       // If ShadyCSS
-      constructableStyles.push(pathOrStyle);
+      constructedStyles.push(pathOrStyle);
     } else if (adoptedStyleSheets) {
-      // If there is support for Constructable Style Sheets proposal
+      // If there is support for Constructible Style Sheets proposal
       const sheet = new CSSStyleSheet();
       sheet.replaceSync(pathOrStyle);
-      constructableStyles.push(sheet);
+      constructedStyles.push(sheet);
     } else {
       // Otherwise, just create a style tag
       const style = document.createElement('style');
@@ -49,11 +53,11 @@ export const stylesAdvanced = (
   klass.prototype.attachShadow = function attachShadow(options) {
     const root = supers.attachShadow.call(this, options);
 
-    if (constructableStyles.length > 0) {
+    if (constructedStyles.length > 0) {
       if (shadyCSS) {
-        window.ShadyCSS.prepareAdoptedCssText(constructableStyles, this.localName);
+        window.ShadyCSS.prepareAdoptedCssText(constructedStyles, this.localName);
       } else {
-        root.adoptedStyleSheets = constructableStyles;
+        root.adoptedStyleSheets = constructedStyles;
       }
     }
 

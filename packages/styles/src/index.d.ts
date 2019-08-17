@@ -98,9 +98,21 @@ export interface StylesDecoratorOptions {
  * component `ShadowRoot` as if a browser defined it. No intermediate `<style>`
  * tag is required.
  *
- * This approach is used if the element is a string and
- * [adoptedStyleSheets]{@link StylesDecoratorOptions.adoptedStyleSheets} is
- * enabled.
+ * There are two approaches this function supports.
+ *
+ * #### Adopt existing stylesheet
+ * If you provide a `CSSStyleSheet` object as an element of the `pathsOrStyles`
+ * array, it will just be adopted.
+ *
+ * This approach will be used whether the [adoptedStyleSheets]{@link StylesDecoratorOptions.adoptedStyleSheets}
+ * is enabled or not. Providing `CSSStyleSheet` object is enough.
+ *
+ * #### Create new stylesheet
+ * If you provide a string as an element of the `pathsOrStyles` array, the new
+ * `CSSStyleSheet` object will be created and adopted.
+ *
+ * This approach will be used if [adoptedStyleSheets]{@link StylesDecoratorOptions.adoptedStyleSheets}
+ * is enabled.
  *
  * ### ShadyCSS
  * `ShadyCSS` provides support for a Constructible Stylesheets proposal, so
@@ -129,13 +141,13 @@ export interface StylesDecoratorOptions {
  * ```
  *
  * @param pathsOrStyles an array with paths to the CSS files (as `URL`
- * instances) or strings with CSS code.
+ * instances), `CSSStyleSheet` objects or strings with CSS code.
  *
  * @param options an object that contains options to change the default
  * behavior of the decorator.
  */
 export function stylesAdvanced(
-  pathsOrStyles: Array<string | URL>,
+  pathsOrStyles: Array<string | URL | CSSStyleSheet>,
   options?: StylesDecoratorOptions,
 ): ClassDecorator;
 
@@ -150,4 +162,6 @@ export function stylesAdvanced(
  * ShadyCSS polyfill is used, and its support for the native shadow root is not
  * activated.
  */
-export default function styles(...pathsOrStyles: Array<string | URL>): ClassDecorator;
+export default function styles(
+  ...pathsOrStyles: Array<string | URL | CSSStyleSheet>
+): ClassDecorator;
