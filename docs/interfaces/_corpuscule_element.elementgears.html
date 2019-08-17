@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Link | Corpuscule API</title>
+	<title>ElementGears | Corpuscule API</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -54,13 +54,13 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/_corpuscule_router.html">@corpuscule/router</a>
+					<a href="../modules/_corpuscule_element.html">@corpuscule/element</a>
 				</li>
 				<li>
-					<a href="_corpuscule_router.link.html">Link</a>
+					<a href="_corpuscule_element.elementgears.html">ElementGears</a>
 				</li>
 			</ul>
-			<h1>Class Link</h1>
+			<h1>Interface ElementGears</h1>
 		</div>
 	</div>
 </header>
@@ -70,9 +70,8 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>A customized <code>&lt;a&gt;</code> element that provides declarative navigation around the
-							application. It should be used for all internal links to make the router
-						working correctly.</p>
+						<p>This interface is only for documentation purposes. It cannot be implemented
+						since all methods have symbolic names.</p>
 					</div>
 				</div>
 			</section>
@@ -80,19 +79,8 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="tsd-signature-type">HTMLAnchorElement</span>
-						<ul class="tsd-hierarchy">
-							<li>
-								<span class="target">Link</span>
-							</li>
-						</ul>
+						<span class="target">ElementGears</span>
 					</li>
-				</ul>
-			</section>
-			<section class="tsd-panel">
-				<h3>Implements</h3>
-				<ul class="tsd-hierarchy">
-					<li><span class="tsd-signature-type">CustomElement</span></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -100,104 +88,159 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Properties</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_corpuscule_router.link.html#contextdata" class="tsd-kind-icon">context<wbr>Data</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="_corpuscule_router.link.html#htmlanchorelement" class="tsd-kind-icon">HTMLAnchor<wbr>Element</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="_corpuscule_router.link.html#is" class="tsd-kind-icon">is</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_corpuscule_router.link.html#connectedcallback" class="tsd-kind-icon">connected<wbr>Callback</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_corpuscule_router.link.html#disconnectedcallback" class="tsd-kind-icon">disconnected<wbr>Callback</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_corpuscule_element.elementgears.html#internalchangedcallback" class="tsd-kind-icon">internal<wbr>Changed<wbr>Callback</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_corpuscule_element.elementgears.html#propertychangedcallback" class="tsd-kind-icon">property<wbr>Changed<wbr>Callback</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_corpuscule_element.elementgears.html#render" class="tsd-kind-icon">render</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_corpuscule_element.elementgears.html#updatedcallback" class="tsd-kind-icon">updated<wbr>Callback</a></li>
 							</ul>
 						</section>
-					</div>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="contextdata" class="tsd-anchor"></a>
-					<h3>context<wbr>Data</h3>
-					<div class="tsd-signature tsd-kind-icon">context<wbr>Data<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/b920534/packages/router/src/index.d.ts#L60">router/src/index.d.ts:60</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>A custom context data that will be send as a second parameter to the
-							<a href="../modules/_corpuscule_router.html#navigate">navigate</a> function.</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static">
-					<a name="htmlanchorelement" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> HTMLAnchor<wbr>Element</h3>
-					<div class="tsd-signature tsd-kind-icon">HTMLAnchor<wbr>Element<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in external library</li>
-						</ul>
-					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-						</ul>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static">
-					<a name="is" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> is</h3>
-					<div class="tsd-signature tsd-kind-icon">is<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"corpuscule-link"</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/b920534/packages/router/src/index.d.ts#L54">router/src/index.d.ts:54</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>A name of the element registered in the custom element registry.</p>
-						</div>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="connectedcallback" class="tsd-anchor"></a>
-					<h3>connected<wbr>Callback</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">connected<wbr>Callback<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="internalchangedcallback" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> internal<wbr>Changed<wbr>Callback</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">internal<wbr>Changed<wbr>Callback<span class="tsd-signature-symbol">(</span>propertyName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">PropertyKey</span>, oldValue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span>, newValue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/b920534/packages/router/src/index.d.ts#L62">router/src/index.d.ts:62</a></li>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/b920534/packages/element/src/index.d.ts#L113">element/src/index.d.ts:113</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>A method that is invoked when an <a href="../modules/_corpuscule_element.html#internal">internal</a>
+										property is assigned. The behavior is identical to
+										<code>attributeChangedCallback</code>. It does trigger an update each time it is
+									invoked.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>propertyName: <span class="tsd-signature-type">PropertyKey</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a property name (either string or symbolic).</p>
+									</div>
+								</li>
+								<li>
+									<h5>oldValue: <span class="tsd-signature-type">unknown</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a value of the property that was before the update started.</p>
+									</div>
+								</li>
+								<li>
+									<h5>newValue: <span class="tsd-signature-type">unknown</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a new value to set to the property.</p>
+									</div>
+								</li>
+							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="disconnectedcallback" class="tsd-anchor"></a>
-					<h3>disconnected<wbr>Callback</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">disconnected<wbr>Callback<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="propertychangedcallback" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> property<wbr>Changed<wbr>Callback</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">property<wbr>Changed<wbr>Callback<span class="tsd-signature-symbol">(</span>propertyName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">PropertyKey</span>, oldValue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span>, newValue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/b920534/packages/router/src/index.d.ts#L64">router/src/index.d.ts:64</a></li>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/b920534/packages/element/src/index.d.ts#L125">element/src/index.d.ts:125</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>A method that is invoked when a <a href="../modules/_corpuscule_element.html#property">regular</a>
+										property is assigned. The behavior is identical to
+										<code>attributeChangedCallback</code>. It does not trigger a re-rendering if the
+									<code>oldValue</code> is equal to <code>newValue</code> (by the strict equality check <code>===</code>).</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>propertyName: <span class="tsd-signature-type">PropertyKey</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a property name (either string or symbolic).</p>
+									</div>
+								</li>
+								<li>
+									<h5>oldValue: <span class="tsd-signature-type">unknown</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a value of the property that was before the update started.</p>
+									</div>
+								</li>
+								<li>
+									<h5>newValue: <span class="tsd-signature-type">unknown</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a new value to set to the property.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="render" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> render</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">render<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/b920534/packages/element/src/index.d.ts#L137">element/src/index.d.ts:137</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>A method that is invoked each time any of the component properties (either
+										<a href="../modules/_corpuscule_element.html#attribute">attribute</a>, <a href="../modules/_corpuscule_element.html#property">regular</a>
+										or <a href="../modules/_corpuscule_element.html#internal">internal</a>) causes re-rendering. The
+										method work synchronously; returned result of its work will be handled by a
+									<a href="_corpuscule_element.elementdecoratoroptions.html#renderer">renderer</a> function.</p>
+								</div>
+								<p>If you do not define this method, rendering won&#39;t ever happen on your
+								element.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">unknown</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="updatedcallback" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> updated<wbr>Callback</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">updated<wbr>Callback<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/b920534/packages/element/src/index.d.ts#L144">element/src/index.d.ts:144</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>A method that is invoked each time the rendering is over and the component
+										acquires the new state. This method is not called during the initial render
+									(<code>connectedCallback</code> is invoked instead).</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -213,7 +256,7 @@
 					<li class=" tsd-kind-external-module">
 						<a href="../modules/_corpuscule_context.html">@corpuscule/context</a>
 					</li>
-					<li class=" tsd-kind-external-module">
+					<li class="current tsd-kind-external-module">
 						<a href="../modules/_corpuscule_element.html">@corpuscule/element</a>
 					</li>
 					<li class=" tsd-kind-external-module">
@@ -234,7 +277,7 @@
 					<li class=" tsd-kind-external-module">
 						<a href="../modules/_corpuscule_redux.html">@corpuscule/redux</a>
 					</li>
-					<li class="current tsd-kind-external-module">
+					<li class=" tsd-kind-external-module">
 						<a href="../modules/_corpuscule_router.html">@corpuscule/router</a>
 					</li>
 					<li class=" tsd-kind-external-module">
@@ -274,65 +317,71 @@
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+						<a href="_corpuscule_element.elementdecoratoroptions.html" class="tsd-kind-icon">Element<wbr>Decorator<wbr>Options</a>
+					</li>
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-class tsd-parent-kind-external-module">
-						<a href="_corpuscule_router.link.html" class="tsd-kind-icon">Link</a>
+					<li class="current tsd-kind-interface tsd-parent-kind-external-module">
+						<a href="_corpuscule_element.elementgears.html" class="tsd-kind-icon">Element<wbr>Gears</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="_corpuscule_router.link.html#contextdata" class="tsd-kind-icon">context<wbr>Data</a>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="_corpuscule_element.elementgears.html#internalchangedcallback" class="tsd-kind-icon">internal<wbr>Changed<wbr>Callback</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static">
-								<a href="_corpuscule_router.link.html#htmlanchorelement" class="tsd-kind-icon">HTMLAnchor<wbr>Element</a>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="_corpuscule_element.elementgears.html#propertychangedcallback" class="tsd-kind-icon">property<wbr>Changed<wbr>Callback</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static">
-								<a href="_corpuscule_router.link.html#is" class="tsd-kind-icon">is</a>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="_corpuscule_element.elementgears.html#render" class="tsd-kind-icon">render</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="_corpuscule_router.link.html#connectedcallback" class="tsd-kind-icon">connected<wbr>Callback</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="_corpuscule_router.link.html#disconnectedcallback" class="tsd-kind-icon">disconnected<wbr>Callback</a>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="_corpuscule_element.elementgears.html#updatedcallback" class="tsd-kind-icon">updated<wbr>Callback</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
-						<a href="../interfaces/_corpuscule_router.routerprovideroptions.html" class="tsd-kind-icon">Router<wbr>Provider<wbr>Options</a>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#propertyguard" class="tsd-kind-icon">Property<wbr>Guard</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-parent-kind-external-module">
-						<a href="../modules/_corpuscule_router.html#gear" class="tsd-kind-icon">gear</a>
+						<a href="../modules/_corpuscule_element.html#internal" class="tsd-kind-icon">internal</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-parent-kind-external-module">
-						<a href="../modules/_corpuscule_router.html#isprovideradvanced" class="tsd-kind-icon">is<wbr>Provider<wbr>Advanced</a>
+						<a href="../modules/_corpuscule_element.html#internalchangedcallback" class="tsd-kind-icon">internal<wbr>Changed<wbr>Callback</a>
 					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter">
-						<a href="../modules/_corpuscule_router.html#createrouter" class="tsd-kind-icon">create<wbr>Router</a>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#propertychangedcallback" class="tsd-kind-icon">property<wbr>Changed<wbr>Callback</a>
 					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module">
-						<a href="../modules/_corpuscule_router.html#createroutertoken" class="tsd-kind-icon">create<wbr>Router<wbr>Token</a>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#render" class="tsd-kind-icon">render</a>
 					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module">
-						<a href="../modules/_corpuscule_router.html#gearadvanced" class="tsd-kind-icon">gear<wbr>Advanced</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module">
-						<a href="../modules/_corpuscule_router.html#isprovider" class="tsd-kind-icon">is<wbr>Provider</a>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#updatedcallback" class="tsd-kind-icon">updated<wbr>Callback</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module">
-						<a href="../modules/_corpuscule_router.html#navigate" class="tsd-kind-icon">navigate</a>
+						<a href="../modules/_corpuscule_element.html#attribute" class="tsd-kind-icon">attribute</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module">
-						<a href="../modules/_corpuscule_router.html#outlet" class="tsd-kind-icon">outlet</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter">
-						<a href="../modules/_corpuscule_router.html#outletadvanced" class="tsd-kind-icon">outlet<wbr>Advanced</a>
+						<a href="../modules/_corpuscule_element.html#computer" class="tsd-kind-icon">computer</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module">
-						<a href="../modules/_corpuscule_router.html#provider" class="tsd-kind-icon">provider</a>
+						<a href="../modules/_corpuscule_element.html#createcomputingtoken" class="tsd-kind-icon">create<wbr>Computing<wbr>Token</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module">
-						<a href="../modules/_corpuscule_router.html#provideradvanced" class="tsd-kind-icon">provider<wbr>Advanced</a>
+						<a href="../modules/_corpuscule_element.html#element" class="tsd-kind-icon">element</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#observer" class="tsd-kind-icon">observer</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#property" class="tsd-kind-icon">property</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#query" class="tsd-kind-icon">query</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#queryall" class="tsd-kind-icon">query<wbr>All</a>
 					</li>
 				</ul>
 			</nav>

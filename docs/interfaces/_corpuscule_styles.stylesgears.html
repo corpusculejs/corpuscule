@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>@corpuscule/utils/lib/scheduler | Corpuscule API</title>
+	<title>StylesGears | Corpuscule API</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -54,10 +54,13 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="_corpuscule_utils_lib_scheduler.html">@corpuscule/utils/lib/scheduler</a>
+					<a href="../modules/_corpuscule_styles.html">@corpuscule/styles</a>
+				</li>
+				<li>
+					<a href="_corpuscule_styles.stylesgears.html">StylesGears</a>
 				</li>
 			</ul>
-			<h1>External module @corpuscule/utils/lib/scheduler</h1>
+			<h1>Interface StylesGears</h1>
 		</div>
 	</div>
 </header>
@@ -67,79 +70,62 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>This module provides a solution for scheduling tree-structured tasks where
-						one task could spawn a number of new tasks to complete.</p>
+						<p>This interface is only for documentation purposes. It cannot be implemented
+						since all methods have symbolic names.</p>
 					</div>
-					<p>The default purpose of this module is to provide a scheduling system for the
-					web components that could schedule rendering of nested components recursively.</p>
-					<h3 id="usage">Usage</h3>
-					<pre><code class="language-typescript"><span class="hljs-keyword">import</span> schedule <span class="hljs-keyword">from</span> <span class="hljs-string">'@corpuscule/utils/lib/scheduler'</span></code></pre>
 				</div>
+			</section>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">StylesGears</span>
+					</li>
+				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Functions</h3>
+							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_corpuscule_utils_lib_scheduler.html#schedule" class="tsd-kind-icon">schedule</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_corpuscule_styles.stylesgears.html#stylesattachedcallback" class="tsd-kind-icon">styles<wbr>Attached<wbr>Callback</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Functions</h2>
-				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
-					<a name="schedule" class="tsd-anchor"></a>
-					<h3>schedule</h3>
-					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
-						<li class="tsd-signature tsd-kind-icon">schedule<span class="tsd-signature-symbol">(</span>task<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="stylesattachedcallback" class="tsd-anchor"></a>
+					<h3>styles<wbr>Attached<wbr>Callback</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">styles<wbr>Attached<wbr>Callback<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/b920534/packages/utils/src/scheduler.d.ts#L32">utils/src/scheduler.d.ts:32</a></li>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/b920534/packages/styles/src/index.d.ts#L39">styles/src/index.d.ts:39</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Schedules tree-structured tasks where one task could generate a number of
-										children which execution is also scheduled. Each task is connected to a
-										parent one, and also can have a child and a sibling. Traversing algorithm is
-										depth-first. There are two visits to the node: the first one occurs when the
-										task is going to be performed, and the second one is when we need to resolve
-									or reject the scheduled promise.</p>
-								</div>
-								<p>If task execution runs into an error, it rejects all promises from bottom to
-								top.</p>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>task: <span class="tsd-signature-type">function</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>function to schedule.</p>
-									</div>
-									<ul class="tsd-parameters">
-										<li class="tsd-parameter-siganture">
-											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-											</ul>
-											<ul class="tsd-descriptions">
-												<li class="tsd-description">
-													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-												</li>
-											</ul>
-										</li>
+									<p>A method that is called when all styles are properly added. There are three
+									different timings it can fire:</p>
+									<ul>
+										<li>If the <code>URL</code> instance is used, it will fire after all CSS files are
+										loaded.</li>
+										<li>If the <code>HTMLStyleElement</code> is used and no <code>URL</code> instance exists, it will
+										fire after the <code>&lt;style&gt;</code> tag is mounted.</li>
+										<li>If nothing above is used, it will fire immediately after the
+										<code>attachShadow</code> is called.</li>
 									</ul>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
-							<p>a Promise which resolves when the task is completed or rejects if
-							there is any error.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -152,71 +138,92 @@
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_context.html">@corpuscule/context</a>
+						<a href="../modules/_corpuscule_context.html">@corpuscule/context</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_element.html">@corpuscule/element</a>
+						<a href="../modules/_corpuscule_element.html">@corpuscule/element</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_form.html">@corpuscule/form</a>
+						<a href="../modules/_corpuscule_form.html">@corpuscule/form</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_lit_html_renderer.html">@corpuscule/lit-<wbr>html-<wbr>renderer</a>
+						<a href="../modules/_corpuscule_lit_html_renderer.html">@corpuscule/lit-<wbr>html-<wbr>renderer</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_lit_html_renderer_lib_init.html">@corpuscule/lit-<wbr>html-<wbr>renderer/lib/init</a>
+						<a href="../modules/_corpuscule_lit_html_renderer_lib_init.html">@corpuscule/lit-<wbr>html-<wbr>renderer/lib/init</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_lit_html_renderer_lib_shady.html">@corpuscule/lit-<wbr>html-<wbr>renderer/lib/shady</a>
+						<a href="../modules/_corpuscule_lit_html_renderer_lib_shady.html">@corpuscule/lit-<wbr>html-<wbr>renderer/lib/shady</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_lit_html_renderer_lib_withcustomelement.html">@corpuscule/lit-<wbr>html-<wbr>renderer/lib/with<wbr>Custom<wbr>Element</a>
+						<a href="../modules/_corpuscule_lit_html_renderer_lib_withcustomelement.html">@corpuscule/lit-<wbr>html-<wbr>renderer/lib/with<wbr>Custom<wbr>Element</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_redux.html">@corpuscule/redux</a>
+						<a href="../modules/_corpuscule_redux.html">@corpuscule/redux</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_router.html">@corpuscule/router</a>
+						<a href="../modules/_corpuscule_router.html">@corpuscule/router</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_storeon.html">@corpuscule/storeon</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_styles.html">@corpuscule/styles</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_utils_lib_asserts.html">@corpuscule/utils/lib/asserts</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_utils_lib_defineextendable.html">@corpuscule/utils/lib/define<wbr>Extendable</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_utils_lib_makeaccessor.html">@corpuscule/utils/lib/make<wbr>Accessor</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_utils_lib_propertyutils.html">@corpuscule/utils/lib/property<wbr>Utils</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_utils_lib_reflectclassmethods.html">@corpuscule/utils/lib/reflect<wbr>Class<wbr>Methods</a>
+						<a href="../modules/_corpuscule_storeon.html">@corpuscule/storeon</a>
 					</li>
 					<li class="current tsd-kind-external-module">
-						<a href="_corpuscule_utils_lib_scheduler.html">@corpuscule/utils/lib/scheduler</a>
+						<a href="../modules/_corpuscule_styles.html">@corpuscule/styles</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_utils_lib_setters.html">@corpuscule/utils/lib/setters</a>
+						<a href="../modules/_corpuscule_utils_lib_asserts.html">@corpuscule/utils/lib/asserts</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_utils_lib_shallowequal.html">@corpuscule/utils/lib/shallow<wbr>Equal</a>
+						<a href="../modules/_corpuscule_utils_lib_defineextendable.html">@corpuscule/utils/lib/define<wbr>Extendable</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_utils_lib_tokenregistry.html">@corpuscule/utils/lib/token<wbr>Registry</a>
+						<a href="../modules/_corpuscule_utils_lib_makeaccessor.html">@corpuscule/utils/lib/make<wbr>Accessor</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_utils_lib_propertyutils.html">@corpuscule/utils/lib/property<wbr>Utils</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_utils_lib_reflectclassmethods.html">@corpuscule/utils/lib/reflect<wbr>Class<wbr>Methods</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_utils_lib_scheduler.html">@corpuscule/utils/lib/scheduler</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_utils_lib_setters.html">@corpuscule/utils/lib/setters</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_utils_lib_shallowequal.html">@corpuscule/utils/lib/shallow<wbr>Equal</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_utils_lib_tokenregistry.html">@corpuscule/utils/lib/token<wbr>Registry</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+						<a href="_corpuscule_styles.stylesdecoratoroptions.html" class="tsd-kind-icon">Styles<wbr>Decorator<wbr>Options</a>
+					</li>
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-interface tsd-parent-kind-external-module">
+						<a href="_corpuscule_styles.stylesgears.html" class="tsd-kind-icon">Styles<wbr>Gears</a>
+						<ul>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="_corpuscule_styles.stylesgears.html#stylesattachedcallback" class="tsd-kind-icon">styles<wbr>Attached<wbr>Callback</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_styles.html#stylesattachedcallback" class="tsd-kind-icon">styles<wbr>Attached<wbr>Callback</a>
+					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module">
-						<a href="_corpuscule_utils_lib_scheduler.html#schedule" class="tsd-kind-icon">schedule</a>
+						<a href="../modules/_corpuscule_styles.html#styles" class="tsd-kind-icon">styles</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_styles.html#stylesadvanced" class="tsd-kind-icon">styles<wbr>Advanced</a>
 					</li>
 				</ul>
 			</nav>
