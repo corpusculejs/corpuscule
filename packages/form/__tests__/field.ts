@@ -760,11 +760,14 @@ describe('@corpuscule/form', () => {
 
           const [, fieldElement] = await createSimpleContext(Form, Field);
 
-          spyOn(fieldElement, 'format').and.callThrough();
+          const formatSpy: jasmine.Spy<(value: unknown, name: string) => unknown> = spyOn(
+            fieldElement,
+            'format',
+          ).and.callThrough();
 
           fieldElement.dispatchEvent(new Event('focusout', {bubbles: true}));
 
-          expect(fieldElement.format).toHaveBeenCalledWith(fieldValue, 'test');
+          expect(formatSpy).toHaveBeenCalledWith(fieldValue, 'test');
           expect(state.change).toHaveBeenCalledWith(fieldValue);
         });
 
@@ -822,13 +825,16 @@ describe('@corpuscule/form', () => {
 
           const [, fieldElement] = await createSimpleContext(Form, Field);
 
-          spyOn(fieldElement, 'parse').and.callThrough();
+          const parseSpy: jasmine.Spy<(value: string, name: string) => object> = spyOn(
+            fieldElement,
+            'parse',
+          ).and.callThrough();
 
           const newFieldValue = JSON.stringify({});
 
           fieldElement.dispatchEvent(new CustomEvent('input', {detail: newFieldValue}));
 
-          expect(fieldElement.parse).toHaveBeenCalledWith(newFieldValue, 'test');
+          expect(parseSpy).toHaveBeenCalledWith(newFieldValue, 'test');
           expect(state.change).toHaveBeenCalledWith({});
         });
 
