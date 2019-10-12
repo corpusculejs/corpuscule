@@ -75,6 +75,6 @@
     "typescript": "^3.6.4",
     "universal-router": "^8.3.0",
     "uuid": "^3.3.3",
-    "webpack": "^4.41.0"
+    "webpack": "^4.41.1"
   }
 }
