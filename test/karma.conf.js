@@ -1,6 +1,4 @@
 /* eslint-disable sort-keys */
-// Karma configuration
-// Generated on Sun Apr 29 2018 20:36:45 GMT+0300 (RTZ 2 (зима))
 const webpack = require('./webpack.config');
 
 const isCI = !!process.env.CI;
@@ -8,21 +6,19 @@ const watch = !!process.argv.find(arg => arg.includes('watch')) && !isCI;
 
 module.exports = config => {
   config.set({
-    // Base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '..',
 
     plugins: [
       require('karma-webpack'),
       require('karma-jasmine'),
+      require('karma-detect-browsers'),
       require('karma-chrome-launcher'),
+      require('karma-firefox-launcher'),
       require('karma-coverage-istanbul-reporter'),
     ],
 
-    // Frameworks to use
-    // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine'],
+    frameworks: ['jasmine', 'detectBrowsers'],
 
-    // List of files / patterns to load in the browser
     files: [
       'test/test.js',
       {
@@ -34,45 +30,16 @@ module.exports = config => {
       },
     ],
 
-    // List of files / patterns to exclude
     exclude: [],
 
-    // Preprocess matching files before serving them to the browser
-    // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {'test/test.js': ['webpack']},
-
-    // Test results reporter to use
-    // possible values: 'dots', 'progress'
-    // available reporters: https://npmjs.org/browse/keyword/karma-reporter
     reporters: ['progress', 'coverage-istanbul'],
 
-    // Web server port
     port: 9876,
-
-    // Enable / disable colors in the output (reporters and logs)
     colors: true,
-
-    // Level of logging. Possible values:
-    // config.LOG_DISABLE
-    // || config.LOG_ERROR
-    // || config.LOG_WARN
-    // || config.LOG_INFO
-    // || config.LOG_DEBUG
     logLevel: config.LOG_INFO,
-
-    // Enable / disable watching file and executing test whenever any file changes
     autoWatch: watch,
-
-    // Start these browsers
-    // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: isCI ? ['ChromeHeadlessNoSandbox'] : ['ChromeHeadless'],
-
-    // Continuous Integration mode
-    // if true, Karma captures browsers, runs the test and exits
     singleRun: !watch,
-
-    // Concurrency level
-    // how many browser should be started simultaneous
     concurrency: Infinity,
 
     webpack,
@@ -98,6 +65,25 @@ module.exports = config => {
         base: 'ChromeHeadless',
         flags: ['--no-sandbox'],
       },
+      Safari: {
+        base: 'SafariNative',
+      },
+    },
+
+    detectBrowsers: {
+      postDetection(availableBrowsers) {
+        if (isCI) {
+          const chromeIndex = availableBrowsers.indexOf('ChromeHeadless');
+
+          if (chromeIndex > -1) {
+            availableBrowsers[chromeIndex] = 'ChromeHeadlessNoSandbox';
+          }
+        }
+
+        return availableBrowsers;
+      },
+      preferHeadless: true,
+      usePhantomJS: false,
     },
 
     client: {captureConsole: true},
