@@ -197,7 +197,7 @@ describe('@corpuscule/storeon', () => {
       @storeon
       class Connected extends CustomElement {
         @dispatcher()
-        public dispatch!: Dispatch;
+        public dispatch!: Dispatch<{inc: number}>;
 
         @dispatcher('inc1')
         public increment!: (num: number) => void;

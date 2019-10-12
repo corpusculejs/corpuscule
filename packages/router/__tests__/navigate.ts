@@ -17,7 +17,7 @@ describe('@corpuscule/router', () => {
     it('pushes the new state to the history', () => {
       navigate('/test', data);
       // tslint:disable-next-line:no-unbound-method
-      expect(history.pushState).toHaveBeenCalledWith({data, path: '/test'}, null, '/test');
+      expect(history.pushState).toHaveBeenCalledWith({data, path: '/test'}, '', '/test');
     });
 
     it("dispatches the 'popstate' event", done => {
