@@ -15,6 +15,7 @@ module.exports = config => {
       require('karma-chrome-launcher'),
       require('karma-firefox-launcher'),
       require('karma-coverage-istanbul-reporter'),
+      require('karma-safarinative-launcher'),
     ],
 
     frameworks: ['jasmine', 'detectBrowsers'],
@@ -72,15 +73,19 @@ module.exports = config => {
 
     detectBrowsers: {
       postDetection(availableBrowsers) {
+        const browsers = availableBrowsers.filter(
+          browser => browser !== 'IE' && browser !== 'Edge',
+        );
+
         if (isCI) {
-          const chromeIndex = availableBrowsers.indexOf('ChromeHeadless');
+          const chromeIndex = browsers.indexOf('ChromeHeadless');
 
           if (chromeIndex > -1) {
-            availableBrowsers[chromeIndex] = 'ChromeHeadlessNoSandbox';
+            browsers[chromeIndex] = 'ChromeHeadlessNoSandbox';
           }
         }
 
-        return availableBrowsers;
+        return browsers;
       },
       preferHeadless: true,
       usePhantomJS: false,

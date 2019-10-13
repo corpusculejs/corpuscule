@@ -54,6 +54,7 @@
     "karma-detect-browsers": "^2.3.3",
     "karma-firefox-launcher": "^1.2.0",
     "karma-jasmine": "^2.0.1",
+    "karma-safarinative-launcher": "^1.1.0",
     "karma-webpack": "^4.0.2",
     "lerna": "^3.17.0",
     "lint-staged": "^9.4.2",
