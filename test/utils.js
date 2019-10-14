@@ -37,3 +37,20 @@ export const createSimpleContext = async (Provider, Consumer) => {
 
   return [providerElement, providerElement.children[0]];
 };
+
+export const waitForMutationObserverChange = async (elementToObserve, options) =>
+  new Promise((resolve, reject) => {
+    try {
+      let observer;
+
+      const cb = () => {
+        observer.disconnect();
+        resolve();
+      };
+
+      observer = new MutationObserver(cb);
+      observer.observe(elementToObserve, options);
+    } catch (e) {
+      reject(e);
+    }
+  });
