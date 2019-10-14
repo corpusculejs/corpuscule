@@ -299,7 +299,7 @@ describe('@corpuscule/context', () => {
     const tag = defineCE(Consumer);
 
     window.onerror = message => {
-      expect(message).toEqual('Uncaught Error: No provider found for Consumer');
+      expect(message).toContain('No provider found for Consumer');
       done();
     };
 

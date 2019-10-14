@@ -20,3 +20,8 @@ export const createSimpleContext: <P extends Element, C extends Element>(
   Provider: Constructor<P>, // tslint:disable-line:naming-convention
   Consumer: Constructor<C>, // tslint:disable-line:naming-convention
 ) => Promise<[P, C]>;
+
+export const waitForMutationObserverChange: (
+  elementToObserve: HTMLElement,
+  options: MutationObserverInit,
+) => Promise<void>;

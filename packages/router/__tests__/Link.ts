@@ -1,7 +1,10 @@
+import {waitForMutationObserverChange} from '../../../test/utils';
 import {Link} from '../src';
 
 describe('@corpuscule/router', () => {
   describe('Link', () => {
+    const waitForDocumentUpdate = () =>
+      waitForMutationObserverChange(document.body, {childList: true, subtree: true});
     let historyPushStateSpy: jasmine.Spy;
     let historyStateSpy: jasmine.Spy;
     let link: Link;
@@ -26,8 +29,11 @@ describe('@corpuscule/router', () => {
       expect(link).toEqual(jasmine.any(Link));
     });
 
-    it('dispatches PopStateEvent with current history state by click', done => {
+    it('dispatches PopStateEvent with current history state by click', async done => {
+      const promise = waitForDocumentUpdate();
       document.body.appendChild(link);
+
+      await promise;
 
       const listener = (e: PopStateEvent) => {
         expect(e.state).toEqual({data: undefined, path: '/test'});
@@ -41,8 +47,12 @@ describe('@corpuscule/router', () => {
       link.click();
     });
 
-    it('prevents default action for a anchor element', done => {
+    it('prevents default action for a anchor element', async done => {
+      const promise = waitForDocumentUpdate();
       document.body.appendChild(link);
+
+      await promise;
+
       link.addEventListener('click', e => {
         expect(e.defaultPrevented).toBeTruthy();
         done();
@@ -51,9 +61,12 @@ describe('@corpuscule/router', () => {
       link.click();
     });
 
-    it('allows changing the context for the link', done => {
+    it('allows changing the context for the link', async done => {
       const data = {};
+      const promise = waitForDocumentUpdate();
       document.body.appendChild(link);
+
+      await promise;
 
       const listener = (e: PopStateEvent) => {
         expect(e.state).toEqual({data, path: '/test'});

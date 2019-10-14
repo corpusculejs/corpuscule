@@ -5,7 +5,7 @@ import reflectClassMethods from '@corpuscule/utils/lib/reflectClassMethods';
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
 import {setObject} from '@corpuscule/utils/lib/setters';
 import {fieldSubscriptionItems} from 'final-form';
-import {getTargetValue, isNativeElement, noop, setTargetValues, tokenRegistry} from './utils';
+import {getTargetValue, isNativeDefinition, noop, setTargetValues, tokenRegistry} from './utils';
 
 export const all = fieldSubscriptionItems.reduce((result, key) => {
   result[key] = true;
@@ -31,7 +31,7 @@ const field = (
   let $validateFields;
 
   const sharedPropertiesRegistry = tokenRegistry.get(token);
-  const isNativeField = isNativeElement(klass.prototype);
+  const isNativeField = isNativeDefinition(klass);
 
   const $$connected = Symbol();
   const $$isSubscriptionScheduled = Symbol();

@@ -25,10 +25,13 @@ export const fieldOptionResponsibilityKeys = [
   'value',
 ];
 
-export const isNativeElement = element =>
-  element instanceof HTMLInputElement ||
-  element instanceof HTMLSelectElement ||
-  element instanceof HTMLTextAreaElement;
+export const isNativeDefinition = klass =>
+  // eslint-disable-next-line no-prototype-builtins
+  HTMLInputElement.isPrototypeOf(klass) ||
+  // eslint-disable-next-line no-prototype-builtins
+  HTMLSelectElement.isPrototypeOf(klass) ||
+  // eslint-disable-next-line no-prototype-builtins
+  HTMLTextAreaElement.isPrototypeOf(klass);
 
 export const getTargetValue = (
   {checked, defaultValue, selectedOptions, type, value},
@@ -81,7 +84,7 @@ const setSingleValue = (target, formValue) => {
       break;
     default:
       target.value =
-        isNativeElement && (formValue === null || formValue === undefined) ? '' : formValue;
+        isNativeDefinition && (formValue === null || formValue === undefined) ? '' : formValue;
   }
 };
 

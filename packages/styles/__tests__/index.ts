@@ -54,6 +54,12 @@ describe('@corpuscule/styles', () => {
     let adoptedStyleSheetsSpy: jasmine.Spy;
 
     beforeEach(() => {
+      // TODO: remove after https://github.com/calebdwilliams/construct-style-sheets/pull/35
+      // is merged
+      if (!('adoptedStyleSheets' in document)) {
+        pending();
+      }
+
       styles = (...pathsOrStyles) =>
         stylesAdvanced(pathsOrStyles, {adoptedStyleSheets: true, shadyCSS: false});
       replaceSyncSpy = spyOn(CSSStyleSheet.prototype as any, 'replaceSync');
