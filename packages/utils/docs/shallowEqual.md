@@ -1,4 +1,4 @@
-# shallowEqual
+# @corpuscule/utils/lib/shallowEqual
 
 This module provides tools to compare object shallowly.
 

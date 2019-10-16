@@ -1,4 +1,4 @@
-# reflectClassMetadata
+# @corpuscule/utils/lib/reflectClassMetadata
 
 This module provides tools to extract existing methods of the class to the
 object to use later.

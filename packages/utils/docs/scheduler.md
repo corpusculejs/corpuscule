@@ -1,4 +1,4 @@
-# scheduler
+# @corpuscule/utils/lib/scheduler
 
 This module provides a solution for scheduling tree-structured tasks where
 one task could spawn a number of new tasks to complete.

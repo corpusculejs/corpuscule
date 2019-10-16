@@ -1,4 +1,4 @@
-# form
+# @corpuscule/form
 
 This module provides tools to handle web forms. Works as a connector to a
 [🏁 Final Form](https://final-form.org/).

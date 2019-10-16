@@ -1,4 +1,4 @@
-# setters
+# @corpuscule/utils/lib/setters
 
 This module provides tools to change complex values (like objects and arrays)
 in the `Map` or `WeakMap` store without explicit check for their existence.

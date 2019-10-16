@@ -1,4 +1,4 @@
-# context
+# @corpuscule/context
 
 This module provides an interface to create a context for web components.
 

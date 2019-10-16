@@ -1,4 +1,4 @@
-# element
+# @corpuscule/element
 
 This module provides tools to define web components in a declarative way.
 

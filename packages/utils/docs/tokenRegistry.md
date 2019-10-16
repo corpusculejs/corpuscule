@@ -1,4 +1,4 @@
-# tokenRegistry
+# @corpuscule/utils/lib/tokenRegistry
 
 This module provides tools to connect separate decorators together.
 

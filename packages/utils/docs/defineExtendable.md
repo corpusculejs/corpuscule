@@ -1,4 +1,4 @@
-# defineExtendable
+# @corpuscule/utils/lib/defineExtendable
 
 This module provides tools to work with restrictions of the Custom Elements
 spec.

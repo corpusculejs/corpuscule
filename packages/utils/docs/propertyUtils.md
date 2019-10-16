@@ -1,4 +1,4 @@
-# propertyUtils
+# @corpuscule/utils/lib/propertyUtils
 
 This module provides tools to work with different kinds of properties: string,
 symbolic, and private, — identically.

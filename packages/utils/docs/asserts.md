@@ -1,4 +1,4 @@
-# asserts
+# @corpuscule/utils/lib/asserts
 
 This module contains assertion functions that can be used to verify the
 correctness of the decorator application.

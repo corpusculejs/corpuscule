@@ -1,4 +1,4 @@
-# makeAccessors
+# @corpuscule/utils/lib/makeAccessors
 
 This module provides tools to transform property descriptors to accessor
 descriptors.
