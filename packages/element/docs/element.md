@@ -39,9 +39,10 @@ assignment.
 
 ### internalChangedCallback
 
+<!-- prettier-ignore -->
 ```typescript
 class {
-  protected [internalChangedCallback?](
+  protected [internalChangedCallback]?(
     propertyName: PropertyKey,
     oldValue: unknown,
     newValue: unknown,
@@ -65,9 +66,10 @@ Nothing.
 
 ### propertyChangedCallback
 
+<!-- prettier-ignore -->
 ```typescript
 class {
-  protected [propertyChangedCallback?](
+  protected [propertyChangedCallback]?(
     propertyName: PropertyKey,
     oldValue: unknown,
     newValue: unknown,
@@ -92,9 +94,10 @@ Nothing.
 
 ### render
 
+<!-- prettier-ignore -->
 ```typescript
 class {
-  protected [render?](): unknown;
+  protected [render]?(): unknown;
 }
 ```
 
@@ -115,9 +118,10 @@ Nothing.
 
 ### updatedCallback
 
+<!-- prettier-ignore -->
 ```typescript
-class {
-  protected [updatedCallback?](): void;
+class A {
+  protected [updatedCallback]?(): void;
 }
 ```
 
