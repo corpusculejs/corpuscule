@@ -16,7 +16,7 @@ There are the following decorators that makes the system work:
 
 ## Element Lifecycle
 
-Each custom element marked with an [@element](#element) decorator has the 
+Each custom element marked with an [@element](#element) decorator has the
 following lifecycle (including standard JS class and custom element lifecycle).
 
 @note A rendering system is able to wait until multiple properties are set
@@ -40,11 +40,13 @@ assignment.
 ### internalChangedCallback
 
 ```typescript
-protected [internalChangedCallback]?(
-  propertyName: PropertyKey,
-  oldValue: unknown,
-  newValue: unknown,
-): void;
+class {
+  protected [internalChangedCallback?](
+    propertyName: PropertyKey,
+    oldValue: unknown,
+    newValue: unknown,
+  ): void;
+}
 ```
 
 A method that is invoked when an [internal](#internal) property is assigned. The
@@ -64,11 +66,13 @@ Nothing.
 ### propertyChangedCallback
 
 ```typescript
-protected [propertyChangedCallback]?(
-  propertyName: PropertyKey,
-  oldValue: unknown,
-  newValue: unknown,
-): void;
+class {
+  protected [propertyChangedCallback?](
+    propertyName: PropertyKey,
+    oldValue: unknown,
+    newValue: unknown,
+  ): void;
+}
 ```
 
 A method that is invoked when a [regular](#property) property is assigned. The
@@ -89,7 +93,9 @@ Nothing.
 ### render
 
 ```typescript
-protected [render]?(): unknown;
+class {
+  protected [render?](): unknown;
+}
 ```
 
 A method that is invoked each time any of the component properties (either
@@ -110,7 +116,9 @@ Nothing.
 ### updatedCallback
 
 ```typescript
-protected [updatedCallback]?(): void;
+class {
+  protected [updatedCallback?](): void;
+}
 ```
 
 A method that is invoked each time the rendering is over and the component
@@ -130,7 +138,9 @@ Nothing.
 #### extends
 
 ```typescript
-readonly extends?: keyof HTMLElementTagNameMap;
+interface {
+  readonly extends?: keyof HTMLElementTagNameMap;
+}
 ```
 
 This option allows constructing the [Customized built-in element](https://developers.google.com/web/fundamentals/web-components/customelements#extendhtml).
@@ -169,7 +179,9 @@ class MyAnchor extends HTMLAnchorElement {}
 #### lightDOM
 
 ```typescript
-readonly lightDOM?: boolean;
+interface {
+  readonly lightDOM?: boolean;
+}
 ```
 
 If this option is enabled, the [Light
@@ -190,11 +202,13 @@ function will be written directly to the element.
 #### renderer
 
 ```typescript
-readonly renderer?: (
-  renderingResult: unknown,
-  container: Element | DocumentFragment,
-  context: unknown,
-) => void;
+interface {
+  readonly renderer?: (
+    renderingResult: unknown,
+    container: Element | DocumentFragment,
+    context: unknown,
+  ) => void;
+}
 ```
 
 This option defines the rendering function that applies result returned from the
@@ -219,7 +233,9 @@ Nothing.
 #### scheduler
 
 ```typescript
-readonly scheduler?: (task: () => void) => Promise<void>;
+interface {
+  readonly scheduler?: (task: () => void) => Promise<void>;
+}
 ```
 
 This option defines the function that schedules the rendering process.
