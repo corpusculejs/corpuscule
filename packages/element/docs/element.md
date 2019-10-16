@@ -1,3 +1,5 @@
+# element
+
 This module provides tools to define web components in a declarative way.
 
 ## How it works
@@ -38,6 +40,7 @@ assignment.
 ## API
 
 ### Lifecycle Hooks
+
 <!-- prettier-ignore -->
 ```typescript
 class extends HTMLElement {
@@ -150,7 +153,7 @@ Nothing.
 ### ElementDecoratorOptions
 
 ```typescript
-type ElementDecoratorOptions = {
+type ElementDecoratorOptions = ``{
   readonly extends?: keyof HTMLElementTagNameMap;
 
   readonly lightDOM?: boolean;
