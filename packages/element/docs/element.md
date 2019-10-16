@@ -37,17 +37,36 @@ assignment.
 
 ## API
 
-### internalChangedCallback
-
+### Lifecycle Hooks
 <!-- prettier-ignore -->
 ```typescript
-class {
+class extends HTMLElement {
   protected [internalChangedCallback]?(
     propertyName: PropertyKey,
     oldValue: unknown,
     newValue: unknown,
   ): void;
+
+  protected [propertyChangedCallback]?(
+    propertyName: PropertyKey,
+    oldValue: unknown,
+    newValue: unknown,
+  ): void;
+  
+  protected [render]?(): unknown;
+
+  protected [updatedCallback]?(): void;
 }
+```
+
+#### internalChangedCallback
+
+```
+protected [internalChangedCallback]?(
+  propertyName: PropertyKey,
+  oldValue: unknown,
+  newValue: unknown,
+): void;
 ```
 
 A method that is invoked when an [internal](#internal) property is assigned. The
@@ -64,17 +83,14 @@ each time it is invoked.
 
 Nothing.
 
-### propertyChangedCallback
+#### propertyChangedCallback
 
-<!-- prettier-ignore -->
-```typescript
-class {
-  protected [propertyChangedCallback]?(
-    propertyName: PropertyKey,
-    oldValue: unknown,
-    newValue: unknown,
-  ): void;
-}
+```
+protected [propertyChangedCallback]?(
+  propertyName: PropertyKey,
+  oldValue: unknown,
+  newValue: unknown,
+): void;
 ```
 
 A method that is invoked when a [regular](#property) property is assigned. The
@@ -92,13 +108,10 @@ check `===`).
 
 Nothing.
 
-### render
+#### render
 
-<!-- prettier-ignore -->
-```typescript
-class {
-  protected [render]?(): unknown;
-}
+```
+protected [render]?(): unknown;
 ```
 
 A method that is invoked each time any of the component properties (either
@@ -116,13 +129,10 @@ None.
 
 Nothing.
 
-### updatedCallback
+#### updatedCallback
 
-<!-- prettier-ignore -->
-```typescript
-class A {
-  protected [updatedCallback]?(): void;
-}
+```
+protected [updatedCallback]?(): void;
 ```
 
 A method that is invoked each time the rendering is over and the component
@@ -139,12 +149,26 @@ Nothing.
 
 ### ElementDecoratorOptions
 
+```typescript
+type ElementDecoratorOptions = {
+  readonly extends?: keyof HTMLElementTagNameMap;
+
+  readonly lightDOM?: boolean;
+
+  readonly renderer?: (
+    renderingResult: unknown,
+    container: Element | DocumentFragment,
+    context: unknown,
+  ) => void;
+
+  readonly scheduler?: (task: () => void) => Promise<void>;
+}
+```
+
 #### extends
 
-```typescript
-interface {
-  readonly extends?: keyof HTMLElementTagNameMap;
-}
+```
+readonly extends?: keyof HTMLElementTagNameMap;
 ```
 
 This option allows constructing the [Customized built-in element](https://developers.google.com/web/fundamentals/web-components/customelements#extendhtml).
@@ -182,15 +206,12 @@ class MyAnchor extends HTMLAnchorElement {}
 
 #### lightDOM
 
-```typescript
-interface {
-  readonly lightDOM?: boolean;
-}
+```
+readonly lightDOM?: boolean;
 ```
 
-If this option is enabled, the [Light
-DOM](https://developers.google.com/web/fundamentals/web-components/shadowdom#lightdom)
-will be used instead of the Shadow DOM; a result of the [[render]]
+If this option is enabled, the [Light DOM](https://developers.google.com/web/fundamentals/web-components/shadowdom#lightdom)
+will be used instead of the Shadow DOM; a result of the [render](#render)
 function will be written directly to the element.
 
 > ##### Warning
@@ -205,14 +226,12 @@ function will be written directly to the element.
 
 #### renderer
 
-```typescript
-interface {
-  readonly renderer?: (
-    renderingResult: unknown,
-    container: Element | DocumentFragment,
-    context: unknown,
-  ) => void;
-}
+```
+readonly renderer?: (
+  renderingResult: unknown,
+  container: Element | DocumentFragment,
+  context: unknown,
+) => void;
 ```
 
 This option defines the rendering function that applies result returned from the
@@ -236,17 +255,15 @@ Nothing.
 
 #### scheduler
 
-```typescript
-interface {
-  readonly scheduler?: (task: () => void) => Promise<void>;
-}
+```
+readonly scheduler?: (task: () => void) => Promise<void>;
 ```
 
-This option defines the function that schedules the rendering process.
-Since each component renders independently and synchronously, it requires
-a scheduling system to run the update at the right time and not freeze the
-user interface. Using this option you can specify your own scheduling
-function instead of the default one.
+This option defines the function that schedules the rendering process. Since
+each component renders independently and synchronously, it requires a scheduling
+system to run the update at the right time and not freeze the user interface.
+Using this option you can specify your own scheduling function instead of the
+default one.
 
 By default, the [schedule](../../utils/docs/scheduler.md#schedule) is used.
 
