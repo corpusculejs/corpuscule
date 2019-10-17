@@ -323,7 +323,7 @@ function fieldAdvanced(token: Token, options?: FieldDecoratorOptions): ClassDeco
 ```
 
 A decorator that makes a class declaration a 🏁 FinalForm field with a form
-instance as a context value. The [@consumer](../../context/docs/context.md#consumer)
+instance as a context value. The [@consumer](../../context/docs/index.md#consumer)
 is used internally.
 
 ##### Parameters
@@ -339,7 +339,7 @@ function formAdvanced(token: Token, options?: FormDecoratorOptions): ClassDecora
 ```
 
 A decorator that makes a class declaration a 🏁 FinalForm provider with a
-form instance as a context value. The [@provider](../../context/docs/context.md#provider)
+form instance as a context value. The [@provider](../../context/docs/index.md#provider)
 decorator is used internally.
 
 - `token` - a token issued by a [createFormToken](#createformtoken) function
@@ -400,7 +400,7 @@ already provided.
 function isFormAdvanced(token: Token, klass: unknown): boolean;
 ```
 
-Works as a [isProvider](../../context/docs/context.md#isprovider) for the
+Works as a [isProvider](../../context/docs/index.md#isprovider) for the
 [@form](#formadvanced).
 
 ##### Parameters
