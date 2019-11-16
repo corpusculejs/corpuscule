@@ -8,8 +8,9 @@ const internal = ({constructor: klass}, propertyKey, descriptor) => {
     configurable: true,
     get,
     set(value) {
-      this[$internalChangedCallback](propertyKey, get.call(this), value);
+      const oldValue = get.call(this);
       set.call(this, value);
+      this[$internalChangedCallback](propertyKey, oldValue, value);
     },
   };
 };

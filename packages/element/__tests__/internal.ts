@@ -77,5 +77,24 @@ describe('@corpuscule/element', () => {
       expect(internalChangedCallbackSpy).toHaveBeenCalledWith('accessor', 'str', 'test');
       expect(internalChangedCallbackSpy).toHaveBeenCalledTimes(1);
     });
+
+    it('runs [internalChangedCallback] after the property is set', () => {
+      const internalChangedCallbackSpy = jasmine.createSpy('onInternalChanged');
+
+      class Test extends CorpusculeElementMock {
+        @internal
+        public prop: number = 10;
+
+        public [internalChangedCallback](_name: string, _oldValue: number, newValue: number): void {
+          internalChangedCallbackSpy();
+          expect(this.prop).toBe(newValue);
+        }
+      }
+
+      const test = new Test();
+      test.prop = 20;
+
+      expect(internalChangedCallbackSpy).toHaveBeenCalledTimes(1);
+    });
   });
 });

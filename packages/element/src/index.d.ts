@@ -106,6 +106,8 @@ export interface ElementGears {
    * `attributeChangedCallback`. It does trigger an update each time it is
    * invoked.
    *
+   * The callback is called right AFTER the property is assigned.
+   *
    * @param propertyName a property name (either string or symbolic).
    * @param oldValue a value of the property that was before the update started.
    * @param newValue a new value to set to the property.
@@ -117,6 +119,8 @@ export interface ElementGears {
    * property is assigned. The behavior is identical to
    * `attributeChangedCallback`. It does not trigger a re-rendering if the
    * `oldValue` is equal to `newValue` (by the strict equality check `===`).
+   *
+   * The callback is called right AFTER the property is assigned.
    *
    * @param propertyName a property name (either string or symbolic).
    * @param oldValue a value of the property that was before the update started.
