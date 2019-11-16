@@ -233,6 +233,14 @@ export interface ElementDecoratorOptions {
 
 export type PropertyGuard = (value: unknown) => boolean;
 
+export interface QueryOptions {
+  /**
+   * This option allows query selector to perform searching not in the Light
+   * DOM instead of Shadow DOM.
+   */
+  readonly lightDOM?: boolean;
+}
+
 /**
  * A decorator that binds a class property to an appropriate attribute and
  * provides a transformation to the property value to and from the attribute
@@ -468,8 +476,9 @@ export function property(guard?: PropertyGuard): PropertyDecorator;
  * ```
  *
  * @param selector a selector of the desired element.
+ * @param options a set of decorator options
  */
-export function query(selector: string): PropertyDecorator;
+export function query(selector: string, options?: QueryOptions): PropertyDecorator;
 
 /**
  * A decorator that converts a property to a getter that finds all elements
@@ -495,8 +504,9 @@ export function query(selector: string): PropertyDecorator;
  * ```
  *
  * @param selector a selector of the desired set of elements.
+ * @param options a set of decorator options
  */
-export function queryAll(selector: string): PropertyDecorator;
+export function queryAll(selector: string, options?: QueryOptions): PropertyDecorator;
 
 /**
  * By default, [computed]{@link computer} and [observed]{@link observer}
