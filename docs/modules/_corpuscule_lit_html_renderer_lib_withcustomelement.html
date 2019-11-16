@@ -100,7 +100,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/b920534/packages/lit-html-renderer/src/withCustomElement.d.ts#L59">lit-html-renderer/src/withCustomElement.d.ts:59</a></li>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/c305f78/packages/lit-html-renderer/src/withCustomElement.d.ts#L59">packages/lit-html-renderer/src/withCustomElement.d.ts:59</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -138,7 +138,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/b920534/packages/lit-html-renderer/src/withCustomElement.d.ts#L104">lit-html-renderer/src/withCustomElement.d.ts:104</a></li>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/c305f78/packages/lit-html-renderer/src/withCustomElement.d.ts#L104">packages/lit-html-renderer/src/withCustomElement.d.ts:104</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -155,7 +155,9 @@
 								<p>You can also send any custom element class as a value and its registered name
 									will be used as a tag name. The behavior of custom elements classes are equal
 								to the unsafe static values behavior.</p>
-								<h3 id="example">Example</h3>
+								<a href="#example" id="example" style="color: inherit; text-decoration: none;">
+									<h3>Example</h3>
+								</a>
 								<pre><code class="language-typescript"><span class="hljs-comment">// index.js</span>
 <span class="hljs-keyword">import</span> <span class="hljs-string">'@corpuscule/lit-html-renderer/lib/init'</span>;
 <span class="hljs-keyword">import</span> <span class="hljs-string">'./app.js'</span>;
@@ -170,10 +172,10 @@ customElements.define(<span class="hljs-string">'x-foo'</span>, Foo);
 <span class="hljs-keyword">const</span> shtml = withCustomElement(html);
 <span class="hljs-keyword">const</span> barTag = unsafeStatic(<span class="hljs-string">'x-bar'</span>);
 
-render(shtml<span class="hljs-string">`
-  &lt;<span class="hljs-subst">${Foo}</span>&gt;
-    &lt;<span class="hljs-subst">${barTag}</span>&gt;&lt;/<span class="hljs-subst">${barTag}</span>&gt;
-  &lt;/<span class="hljs-subst">${Foo}</span>&gt;
+render(shtml`<span class="xml">
+  <span class="hljs-tag">&lt;</span></span><span class="hljs-subst">${Foo}</span><span class="xml"><span class="hljs-tag">&gt;</span>
+    <span class="hljs-tag">&lt;</span></span><span class="hljs-subst">${barTag}</span><span class="xml"><span class="hljs-tag">&gt;</span><span class="hljs-tag">&lt;/</span></span><span class="hljs-subst">${barTag}</span><span class="xml"><span class="hljs-tag">&gt;</span>
+  <span class="hljs-tag">&lt;/</span></span><span class="hljs-subst">${Foo}</span><span class="xml"><span class="hljs-tag">&gt;</span>
 `</span>); <span class="hljs-comment">// Will render &lt;x-foo&gt;&lt;x-bar&gt;&lt;/x-bar&gt;&lt;/x-foo&gt;</span></code></pre>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -330,6 +332,7 @@ render(shtml<span class="hljs-string">`
 				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
@@ -378,7 +381,7 @@ render(shtml<span class="hljs-string">`
 	</div>
 </footer>
 <div class="container tsd-generator">
-	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
 </div>
 <div class="overlay"></div>
 <script src="../assets/js/main.js"></script>

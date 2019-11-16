@@ -63,33 +63,49 @@
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
 				<blockquote>
-					<h2 id="-status-in-development">🛠 Status: In Development</h2>
+					<a href="#🛠-status-in-development" id="🛠-status-in-development" style="color: inherit; text-decoration: none;">
+						<h2>🛠 Status: In Development</h2>
+					</a>
 					<p>Corpuscule is currently under heavy development. Feedback is always welcome, but be careful with
 					using it in production. API is not ready yet and can receive large changes.</p>
 				</blockquote>
-				<h1 id="corpuscule">Corpuscule</h1>
-				<p><a href="https://travis-ci.org/corpusculejs/corpuscule"><img src="https://img.shields.io/travis/corpusculejs/corpuscule/master.svg" alt="Build Status"></a>
+				<a href="#corpuscule" id="corpuscule" style="color: inherit; text-decoration: none;">
+					<h1>Corpuscule</h1>
+				</a>
+				<p><a href="https://github.com/corpusculejs/corpuscule/actions"><img src="https://github.com/corpusculejs/corpuscule/workflows/CI/badge.svg" alt="CI Status"></a>
 					<a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="GitHub license"></a>
-				<a href="https://codecov.io/gh/corpusculejs/corpuscule"><img src="https://img.shields.io/codecov/c/github/corpusculejs/corpuscule/master.svg" alt="Test Coverage"></a></p>
+					<a href="https://sonarcloud.io/dashboard?id=corpusculejs_custom-builtin-elements"><img src="https://sonarcloud.io/api/project_badges/measure?project=corpusculejs_custom-builtin-elements&metric=coverage" alt="Coverage"></a>
+					<a href="https://sonarcloud.io/dashboard?id=corpusculejs_custom-builtin-elements"><img src="https://sonarcloud.io/api/project_badges/measure?project=corpusculejs_custom-builtin-elements&metric=bugs" alt="Bugs"></a>
+				<a href="https://sonarcloud.io/dashboard?id=corpusculejs_custom-builtin-elements"><img src="https://sonarcloud.io/api/project_badges/measure?project=corpusculejs_custom-builtin-elements&metric=vulnerabilities" alt="Vulnerabilities"></a></p>
 				<p>Corpuscule is a set of libraries built on top of Web Components standard. It provides all necessary
 				tools to built whole application from scratch including redux connector, router and form utils.</p>
-				<h2 id="principles">Principles</h2>
-				<h3 id="be-universal">Be universal</h3>
+				<a href="#principles" id="principles" style="color: inherit; text-decoration: none;">
+					<h2>Principles</h2>
+				</a>
+				<a href="#be-universal" id="be-universal" style="color: inherit; text-decoration: none;">
+					<h3>Be universal</h3>
+				</a>
 				<p>You can use almost all Corpuscule tools with any Web Component based system, like <a href="https://www.polymer-project.org/">Polymer</a>,
 					<a href="https://lit-element.polymer-project.org/">LitElement</a> or <a href="https://skatejs.netlify.com/">SkateJS</a>.
 					They are not bound to <code>@corpuscule/element</code> and implemented with only web components lifecycle
 					hooks. Also, <code>@corpuscule/element</code> can use any renderer you want: <a href="https://lit-html.polymer-project.org/">lit-html</a>,
 					<a href="https://github.com/WebReflection/hyperHTML">hyperHTML</a>, <a href="https://preactjs.com/">preact</a> or even
 				<a href="https://reactjs.org/">React</a>.</p>
-				<h3 id="be-small-yet-powerful">Be small yet powerful</h3>
+				<a href="#be-small-yet-powerful" id="be-small-yet-powerful" style="color: inherit; text-decoration: none;">
+					<h3>Be small yet powerful</h3>
+				</a>
 				<p>Bundle size matters. It becomes critical for people with a slow internet connection. Corpuscule
 					already uses Web Components standard that takes care of the component system, so everything it needs
 				is to have as many useful features as possible in smallest size as possible. </p>
-				<h3 id="be-at-the-bleeding-edge-of-javascript">Be at the bleeding edge of JavaScript</h3>
+				<a href="#be-at-the-bleeding-edge-of-javascript" id="be-at-the-bleeding-edge-of-javascript" style="color: inherit; text-decoration: none;">
+					<h3>Be at the bleeding edge of JavaScript</h3>
+				</a>
 				<p>Features adding to the JavaScript language simplify developer&#39;s life, give new opportunities and
 					solve problems like security holes. That&#39;s why Corpuscule is trying to be on the bleeding edge of
 				language development and use the latest features.</p>
-				<h3 id="separate-semantics-from-logic">Separate semantics from logic</h3>
+				<a href="#separate-semantics-from-logic" id="separate-semantics-from-logic" style="color: inherit; text-decoration: none;">
+					<h3>Separate semantics from logic</h3>
+				</a>
 				<p>Semantics is a keystone of the web for a long time now. We used to make our markup as meaningful as
 					possible. We use <code>&lt;article&gt;</code> instead of <code>&lt;div&gt;</code> to wrap our articles because <code>&lt;article&gt;</code> makes way
 					more sense than a simple <code>&lt;div&gt;</code>. We have <code>&lt;header&gt;</code>, <code>&lt;section&gt;</code> and <code>&lt;footer&gt;</code> tags to split our
@@ -105,10 +121,14 @@
 					it to semantic web components using decorators and class properties. It means that single web
 					component could be a component connected to Redux, custom context provider and router outlet at the
 				same time.</p>
-				<h2 id="technologies">Technologies</h2>
+				<a href="#technologies" id="technologies" style="color: inherit; text-decoration: none;">
+					<h2>Technologies</h2>
+				</a>
 				<p>Some technological solutions of Corpuscule could be surprising and confusing. This section provides
 				explanation of why this or that solution has been chosen.  </p>
-				<h3 id="decorators-stage-2-">Decorators (stage 2)</h3>
+				<a href="#decorators-stage-2" id="decorators-stage-2" style="color: inherit; text-decoration: none;">
+					<h3>Decorators (stage 2)</h3>
+				</a>
 				<p>The <a href="https://github.com/tc39/proposal-decorators">new decorators specification</a>
 					could become a game-changer in the JavaScript world (along with <a href="https://github.com/tc39/proposal-private-fields">private class fields/methods</a>
 					). Decorators add a powerful system of metaprogramming to the JS language allowing to step into all
@@ -123,7 +143,9 @@
 					ideas of the proposal. Emulation uses the legacy decorator proposal (stage 1) that is well-supported
 					by Babel and Typescript supplemented with a custom solution: a <a href="https://github.com/corpusculejs/babel-preset/README.md#babel-plugin-inject-decorator-initializer%60">Babel plugin</a>
 				that adds missing parts to the code generated by the legacy plugin. </p>
-				<h3 id="symbols">Symbols</h3>
+				<a href="#symbols" id="symbols" style="color: inherit; text-decoration: none;">
+					<h3>Symbols</h3>
+				</a>
 				<p>This solution of Corpuscule may confuse you. You may rarely meet using the regular string-named
 					class fields in Corpuscule tools. Why? Well, the best answer is to avoid naming conflicts. Web
 					components are not React. They won&#39;t pack component properties into a separate object <code>this.props</code>.
@@ -132,15 +154,21 @@
 					declares all its field names as Symbols. So you are free to use <code>render</code> property along with
 					<code>[render]</code> method, and you are free to create another Symbol named <code>render</code> and use it in the same
 				class. Symbols are unique, and that is their power. </p>
-				<h2 id="how-to-use">How to use</h2>
+				<a href="#how-to-use" id="how-to-use" style="color: inherit; text-decoration: none;">
+					<h2>How to use</h2>
+				</a>
 				<p>To work with the Corpuscule project, you have to transpile it using <a href="https://babeljs.io">Babel</a>
 				because decorators are not a part of the language yet. </p>
 				<p>Along with the Babel you have to install <a href="https://github.com/corpusculejs/babel-preset"><code>@corpuscule/babel-preset</code></a>
 					that should be used in Babel configuration. This preset contains everything to compile decorators in
 				a way Corpuscule need to work.</p>
-				<h2 id="documentation">Documentation</h2>
+				<a href="#documentation" id="documentation" style="color: inherit; text-decoration: none;">
+					<h2>Documentation</h2>
+				</a>
 				<p>API documentation is available <a href="https://corpusculejs.github.io/corpuscule">here</a>.</p>
-				<h2 id="list-of-tools">List of tools</h2>
+				<a href="#list-of-tools" id="list-of-tools" style="color: inherit; text-decoration: none;">
+					<h2>List of tools</h2>
+				</a>
 				<p>Corpuscule consists of following tools:</p>
 				<ul>
 					<li><a href="https://github.com/corpusculejs/corpuscule/tree/master/packages/context">@corpuscule/context</a>.
@@ -173,7 +201,9 @@
 						This package contains a lot of utilities used in almost all Corpuscule packages. Doesn&#39;t have single
 					entrypoint; each util should be loaded separately.</li>
 				</ul>
-				<h2 id="future">Future</h2>
+				<a href="#future" id="future" style="color: inherit; text-decoration: none;">
+					<h2>Future</h2>
+				</a>
 				<p>When the <a href="(https://github.com/tc39/proposal-decorators)">static decorator specification</a> reaches
 					stage 3, Corpuscule will be rewritten using it. The current implementation of Corpuscule is done
 					with the basic ideas of the new proposal in mind (that is why it does not use some obvious ideas
@@ -268,6 +298,7 @@
 				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
@@ -316,7 +347,7 @@
 	</div>
 </footer>
 <div class="container tsd-generator">
-	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
 </div>
 <div class="overlay"></div>
 <script src="assets/js/main.js"></script>

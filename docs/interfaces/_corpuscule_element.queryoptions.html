@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>@corpuscule/utils/lib/asserts | Corpuscule API</title>
+	<title>QueryOptions | Corpuscule API</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -54,138 +54,57 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="_corpuscule_utils_lib_asserts.html">@corpuscule/utils/lib/asserts</a>
+					<a href="../modules/_corpuscule_element.html">@corpuscule/element</a>
+				</li>
+				<li>
+					<a href="_corpuscule_element.queryoptions.html">QueryOptions</a>
 				</li>
 			</ul>
-			<h1>External module @corpuscule/utils/lib/asserts</h1>
+			<h1>Interface QueryOptions</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-comment">
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>This module contains assertion functions that can be used to verify the
-						correctness of the decorator application.</p>
-					</div>
-					<p>For example, you want to make sure that the user applies class decorators to
-						classes and property decorators to properties. Or you have two decorators:
-						<code>@classDecorator</code> and <code>@propertyDecorator</code> and at least one property of the
-						class marked with the <code>@classDecorator</code> should be marked with the
-					<code>@propertyDecorator</code>.</p>
-					<p>This module contains assertions to check these cases.</p>
-					<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
-						<h3>Usage</h3>
-					</a>
-					<pre><code class="language-typescript"><span class="hljs-keyword">import</span> {assertRequiredProperty} <span class="hljs-keyword">from</span> <span class="hljs-string">'@corpuscule/utils/lib/asserts'</span></code></pre>
-				</div>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">QueryOptions</span>
+					</li>
+				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Functions</h3>
+							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_corpuscule_utils_lib_asserts.html#assertrequiredproperty" class="tsd-kind-icon">assert<wbr>Required<wbr>Property</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_corpuscule_element.queryoptions.html#lightdom" class="tsd-kind-icon">lightDOM</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Functions</h2>
-				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
-					<a name="assertrequiredproperty" class="tsd-anchor"></a>
-					<h3>assert<wbr>Required<wbr>Property</h3>
-					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
-						<li class="tsd-signature tsd-kind-icon">assert<wbr>Required<wbr>Property<span class="tsd-signature-symbol">(</span>classDecoratorName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, propertyDecoratorName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, propertyName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, propertyValue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-						<li class="tsd-signature tsd-kind-icon">assert<wbr>Required<wbr>Property<span class="tsd-signature-symbol">(</span>classDecoratorName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, propertyDecoratorName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, propertyValue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/c305f78/packages/utils/src/asserts.d.ts#L44">packages/utils/src/asserts.d.ts:44</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Checks if the property decorator actually applied to a property of a class
-										marked with class decorator by checking the value of this property and
-									creates a formatted error if it does not.</p>
-								</div>
-								<dl class="tsd-comment-tags">
-									<dt>overload</dt>
-									<dd><p>This overload should be used if the property of the class required to be
-											marked with the property decorator has a specific name. The function will
-										throw an error like:</p>
-									<pre><code><span class="hljs-attribute">Error</span>: <span class="hljs-variable">@foo</span> requires bar property marked with <span class="hljs-variable">@baz</span></code></pre></dd>
-								</dl>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>classDecoratorName: <span class="tsd-signature-type">string</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>a name of the base class decorator that requires
-										some property marked with some property decorator.</p>
-									</div>
-								</li>
-								<li>
-									<h5>propertyDecoratorName: <span class="tsd-signature-type">string</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>a name of the decorator the class decorator
-										requires to mark the property with.</p>
-									</div>
-								</li>
-								<li>
-									<h5>propertyName: <span class="tsd-signature-type">string</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>a name of the property the assertion is applied to.</p>
-									</div>
-								</li>
-								<li>
-									<h5>propertyValue: <span class="tsd-signature-type">unknown</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>a value of the property.</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/c305f78/packages/utils/src/asserts.d.ts#L59">packages/utils/src/asserts.d.ts:59</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<dl class="tsd-comment-tags">
-									<dt>overload</dt>
-									<dd><p>This overload should be used if any property of the class required to be
-										marked with the property decorator. The function will throw an error like</p>
-										<pre><code><span class="hljs-attribute">Error</span>: <span class="hljs-variable">@foo</span> requires property marked with <span class="hljs-variable">@baz</span>
-<span class="hljs-built_in">``</span>`.</code></pre></dd>
-								</dl>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>classDecoratorName: <span class="tsd-signature-type">string</span></h5>
-								</li>
-								<li>
-									<h5>propertyDecoratorName: <span class="tsd-signature-type">string</span></h5>
-								</li>
-								<li>
-									<h5>propertyValue: <span class="tsd-signature-type">unknown</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="lightdom" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> lightDOM</h3>
+					<div class="tsd-signature tsd-kind-icon">lightDOM<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/c305f78/packages/element/src/index.d.ts#L245">packages/element/src/index.d.ts:245</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>This option allows query selector to perform searching not in the Light
+							DOM instead of the Shadow DOM.</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -196,71 +115,128 @@
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_context.html">@corpuscule/context</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_element.html">@corpuscule/element</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_form.html">@corpuscule/form</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_lit_html_renderer.html">@corpuscule/lit-<wbr>html-<wbr>renderer</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_lit_html_renderer_lib_init.html">@corpuscule/lit-<wbr>html-<wbr>renderer/lib/init</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_lit_html_renderer_lib_shady.html">@corpuscule/lit-<wbr>html-<wbr>renderer/lib/shady</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_lit_html_renderer_lib_withcustomelement.html">@corpuscule/lit-<wbr>html-<wbr>renderer/lib/with<wbr>Custom<wbr>Element</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_redux.html">@corpuscule/redux</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_router.html">@corpuscule/router</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_storeon.html">@corpuscule/storeon</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_styles.html">@corpuscule/styles</a>
+						<a href="../modules/_corpuscule_context.html">@corpuscule/context</a>
 					</li>
 					<li class="current tsd-kind-external-module">
-						<a href="_corpuscule_utils_lib_asserts.html">@corpuscule/utils/lib/asserts</a>
+						<a href="../modules/_corpuscule_element.html">@corpuscule/element</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_utils_lib_defineextendable.html">@corpuscule/utils/lib/define<wbr>Extendable</a>
+						<a href="../modules/_corpuscule_form.html">@corpuscule/form</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_utils_lib_makeaccessor.html">@corpuscule/utils/lib/make<wbr>Accessor</a>
+						<a href="../modules/_corpuscule_lit_html_renderer.html">@corpuscule/lit-<wbr>html-<wbr>renderer</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_utils_lib_propertyutils.html">@corpuscule/utils/lib/property<wbr>Utils</a>
+						<a href="../modules/_corpuscule_lit_html_renderer_lib_init.html">@corpuscule/lit-<wbr>html-<wbr>renderer/lib/init</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_utils_lib_reflectclassmethods.html">@corpuscule/utils/lib/reflect<wbr>Class<wbr>Methods</a>
+						<a href="../modules/_corpuscule_lit_html_renderer_lib_shady.html">@corpuscule/lit-<wbr>html-<wbr>renderer/lib/shady</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_utils_lib_scheduler.html">@corpuscule/utils/lib/scheduler</a>
+						<a href="../modules/_corpuscule_lit_html_renderer_lib_withcustomelement.html">@corpuscule/lit-<wbr>html-<wbr>renderer/lib/with<wbr>Custom<wbr>Element</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_utils_lib_setters.html">@corpuscule/utils/lib/setters</a>
+						<a href="../modules/_corpuscule_redux.html">@corpuscule/redux</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_utils_lib_shallowequal.html">@corpuscule/utils/lib/shallow<wbr>Equal</a>
+						<a href="../modules/_corpuscule_router.html">@corpuscule/router</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_corpuscule_utils_lib_tokenregistry.html">@corpuscule/utils/lib/token<wbr>Registry</a>
+						<a href="../modules/_corpuscule_storeon.html">@corpuscule/storeon</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_styles.html">@corpuscule/styles</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_utils_lib_asserts.html">@corpuscule/utils/lib/asserts</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_utils_lib_defineextendable.html">@corpuscule/utils/lib/define<wbr>Extendable</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_utils_lib_makeaccessor.html">@corpuscule/utils/lib/make<wbr>Accessor</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_utils_lib_propertyutils.html">@corpuscule/utils/lib/property<wbr>Utils</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_utils_lib_reflectclassmethods.html">@corpuscule/utils/lib/reflect<wbr>Class<wbr>Methods</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_utils_lib_scheduler.html">@corpuscule/utils/lib/scheduler</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_utils_lib_setters.html">@corpuscule/utils/lib/setters</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_utils_lib_shallowequal.html">@corpuscule/utils/lib/shallow<wbr>Equal</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_corpuscule_utils_lib_tokenregistry.html">@corpuscule/utils/lib/token<wbr>Registry</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+						<a href="_corpuscule_element.elementdecoratoroptions.html" class="tsd-kind-icon">Element<wbr>Decorator<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+						<a href="_corpuscule_element.elementgears.html" class="tsd-kind-icon">Element<wbr>Gears</a>
+					</li>
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-interface tsd-parent-kind-external-module">
+						<a href="_corpuscule_element.queryoptions.html" class="tsd-kind-icon">Query<wbr>Options</a>
+						<ul>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_corpuscule_element.queryoptions.html#lightdom" class="tsd-kind-icon">lightDOM</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#propertyguard" class="tsd-kind-icon">Property<wbr>Guard</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#internal" class="tsd-kind-icon">internal</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#internalchangedcallback" class="tsd-kind-icon">internal<wbr>Changed<wbr>Callback</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#propertychangedcallback" class="tsd-kind-icon">property<wbr>Changed<wbr>Callback</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#render" class="tsd-kind-icon">render</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#updatedcallback" class="tsd-kind-icon">updated<wbr>Callback</a>
+					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module">
-						<a href="_corpuscule_utils_lib_asserts.html#assertrequiredproperty" class="tsd-kind-icon">assert<wbr>Required<wbr>Property</a>
+						<a href="../modules/_corpuscule_element.html#attribute" class="tsd-kind-icon">attribute</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#computer" class="tsd-kind-icon">computer</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#createcomputingtoken" class="tsd-kind-icon">create<wbr>Computing<wbr>Token</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#element" class="tsd-kind-icon">element</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#observer" class="tsd-kind-icon">observer</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#property" class="tsd-kind-icon">property</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#query" class="tsd-kind-icon">query</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="../modules/_corpuscule_element.html#queryall" class="tsd-kind-icon">query<wbr>All</a>
 					</li>
 				</ul>
 			</nav>

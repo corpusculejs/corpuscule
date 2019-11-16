@@ -86,7 +86,7 @@
 					UnsafeStatic value.</p>
 					<p>An example would be a <code>tag()</code> directive that lets a template contain tags
 					whose names aren&#39;t known until runtime, like:</p>
-					<pre><code class="language-typescript">html<span class="hljs-string">`&lt;<span class="hljs-subst">${tag(myTagName)}</span>&gt;Whoa&lt;/<span class="hljs-subst">${tag(MyElement)}</span>&gt;`</span></code></pre>
+					<pre><code class="language-typescript">html`<span class="xml"><span class="hljs-tag">&lt;</span></span><span class="hljs-subst">${tag(myTagName)}</span><span class="xml"><span class="hljs-tag">&gt;</span>Whoa<span class="hljs-tag">&lt;/</span></span><span class="hljs-subst">${tag(MyElement)}</span><span class="xml"><span class="hljs-tag">&gt;</span>`</span></code></pre>
 					<p>Here, <code>tag()</code> should validate that <code>myTagName</code> is a valid HTML tag name,
 					and throw if it contains any illegal characters.</p>
 				</div>
@@ -130,7 +130,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/b920534/packages/lit-html-renderer/src/withCustomElement.d.ts#L41">lit-html-renderer/src/withCustomElement.d.ts:41</a></li>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/c305f78/packages/lit-html-renderer/src/withCustomElement.d.ts#L41">packages/lit-html-renderer/src/withCustomElement.d.ts:41</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -152,7 +152,7 @@
 					<div class="tsd-signature tsd-kind-icon">value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">unknown</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/b920534/packages/lit-html-renderer/src/withCustomElement.d.ts#L41">lit-html-renderer/src/withCustomElement.d.ts:41</a></li>
+							<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/c305f78/packages/lit-html-renderer/src/withCustomElement.d.ts#L41">packages/lit-html-renderer/src/withCustomElement.d.ts:41</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -266,6 +266,7 @@
 				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
@@ -314,7 +315,7 @@
 	</div>
 </footer>
 <div class="container tsd-generator">
-	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
 </div>
 <div class="overlay"></div>
 <script src="../assets/js/main.js"></script>

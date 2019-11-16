@@ -107,7 +107,7 @@
 					<div class="tsd-signature tsd-kind-icon">styles<wbr>Attached<wbr>Callback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">keyof symbol</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/b920534/packages/styles/src/index.d.ts#L22">styles/src/index.d.ts:22</a></li>
+							<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/c305f78/packages/styles/src/index.d.ts#L22">packages/styles/src/index.d.ts:22</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -135,7 +135,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/b920534/packages/styles/src/index.d.ts#L165">styles/src/index.d.ts:165</a></li>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/c305f78/packages/styles/src/index.d.ts#L165">packages/styles/src/index.d.ts:165</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -143,7 +143,9 @@
 									<p>A default version of <a href="_corpuscule_styles.html#stylesadvanced">stylesAdvanced</a> decorator with automatically
 									detected options from <a href="../interfaces/_corpuscule_styles.stylesdecoratoroptions.html">StylesDecoratorOptions</a>.</p>
 								</div>
-								<h3 id="detection-algorithm">Detection algorithm</h3>
+								<a href="#detection-algorithm" id="detection-algorithm" style="color: inherit; text-decoration: none;">
+									<h3>Detection algorithm</h3>
+								</a>
 								<ul>
 									<li><a href="../interfaces/_corpuscule_styles.stylesdecoratoroptions.html#adoptedstylesheets">adoptedStyleSheets</a> is
 									enabled if the browser supports Constructible Stylesheet proposal.</li>
@@ -172,14 +174,16 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/b920534/packages/styles/src/index.d.ts#L149">styles/src/index.d.ts:149</a></li>
+									<li>Defined in <a href="https://github.com/corpusculejs/corpuscule/blob/c305f78/packages/styles/src/index.d.ts#L149">packages/styles/src/index.d.ts:149</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>A decorator to add styles to a web component. There are four ways to do it.</p>
 								</div>
-								<h3 id="url-instances">URL instances</h3>
+								<a href="#url-instances" id="url-instances" style="color: inherit; text-decoration: none;">
+									<h3>URL instances</h3>
+								</a>
 								<p>Using an <code>URL</code> instance, you can define the path to the CSS file you want to
 									use for your web component. A <code>&lt;link&gt;</code> tag is created in the <code>ShadowRoot</code>
 									and the file is loaded; when the loading is over, the styles are applied to
@@ -213,28 +217,38 @@
 
 customElements.define(<span class="hljs-string">'styled-component'</span>, StyledComponent);</code></pre>
 								<p>This approach is used if the element is an <code>URL</code> instance.</p>
-								<h3 id="constructible-stylesheets">Constructible Stylesheets</h3>
+								<a href="#constructible-stylesheets" id="constructible-stylesheets" style="color: inherit; text-decoration: none;">
+									<h3>Constructible Stylesheets</h3>
+								</a>
 								<p>The Constructible Stylesheets proposal allows attaching styles directly to a
 									component <code>ShadowRoot</code> as if a browser defined it. No intermediate <code>&lt;style&gt;</code>
 								tag is required.</p>
 								<p>There are two approaches this function supports.</p>
-								<h4 id="adopt-existing-stylesheet">Adopt existing stylesheet</h4>
+								<a href="#adopt-existing-stylesheet" id="adopt-existing-stylesheet" style="color: inherit; text-decoration: none;">
+									<h4>Adopt existing stylesheet</h4>
+								</a>
 								<p>If you provide a <code>CSSStyleSheet</code> object as an element of the <code>pathsOrStyles</code>
 								array, it will just be adopted.</p>
 								<p>This approach will be used whether the <a href="../interfaces/_corpuscule_styles.stylesdecoratoroptions.html#adoptedstylesheets">adoptedStyleSheets</a>
 								is enabled or not. Providing <code>CSSStyleSheet</code> object is enough.</p>
-								<h4 id="create-new-stylesheet">Create new stylesheet</h4>
+								<a href="#create-new-stylesheet" id="create-new-stylesheet" style="color: inherit; text-decoration: none;">
+									<h4>Create new stylesheet</h4>
+								</a>
 								<p>If you provide a string as an element of the <code>pathsOrStyles</code> array, the new
 								<code>CSSStyleSheet</code> object will be created and adopted.</p>
 								<p>This approach will be used if <a href="../interfaces/_corpuscule_styles.stylesdecoratoroptions.html#adoptedstylesheets">adoptedStyleSheets</a>
 								is enabled.</p>
-								<h3 id="shadycss">ShadyCSS</h3>
+								<a href="#shadycss" id="shadycss" style="color: inherit; text-decoration: none;">
+									<h3>ShadyCSS</h3>
+								</a>
 								<p><code>ShadyCSS</code> provides support for a Constructible Stylesheets proposal, so
 									this approach does not differ a lot from the previous one; just the polyfill
 								is used.</p>
 								<p>This approach is used if the element is a string and the
 								<a href="../interfaces/_corpuscule_styles.stylesdecoratoroptions.html#shadycss">shadyCSS</a> is enabled.</p>
-								<h3 id="htmlstyleelement">HTMLStyleElement</h3>
+								<a href="#htmlstyleelement" id="htmlstyleelement" style="color: inherit; text-decoration: none;">
+									<h3>HTMLStyleElement</h3>
+								</a>
 								<p>If no approach described above works, the fallback to a <code>&lt;style&gt;</code> tag in the
 								top of <code>ShadowRoot</code> will be used.</p>
 								<pre><code class="language-typescript"><span class="hljs-keyword">import</span> styles, {stylesAttachedCallback} <span class="hljs-keyword">from</span> <span class="hljs-string">'@corpuscule/styles'</span>;
@@ -374,6 +388,7 @@ customElements.define(<span class="hljs-string">'styled-component'</span>, Style
 				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
@@ -422,7 +437,7 @@ customElements.define(<span class="hljs-string">'styled-component'</span>, Style
 	</div>
 </footer>
 <div class="container tsd-generator">
-	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
 </div>
 <div class="overlay"></div>
 <script src="../assets/js/main.js"></script>
