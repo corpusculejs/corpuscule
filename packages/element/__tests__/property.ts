@@ -91,6 +91,25 @@ describe('@corpuscule/element', () => {
       expect(propertyChangedCallbackSpy).toHaveBeenCalledTimes(1);
     });
 
+    it('runs [propertyChangedCallback] after the property is set', () => {
+      const propertyChangedCallbackSpy = jasmine.createSpy('onPropertyChanged');
+
+      class Test extends CorpusculeElementMock {
+        @property()
+        public prop: number = 10;
+
+        public [propertyChangedCallback](_name: string, _oldValue: number, newValue: number): void {
+          propertyChangedCallbackSpy();
+          expect(this.prop).toBe(newValue);
+        }
+      }
+
+      const test = new Test();
+      test.prop = 20;
+
+      expect(propertyChangedCallbackSpy).toHaveBeenCalledTimes(1);
+    });
+
     it('throws an error if value does not fit guard', () => {
       class Test extends CorpusculeElementMock {
         @property((v: any) => typeof v === 'number')

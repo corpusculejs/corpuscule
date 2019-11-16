@@ -12,8 +12,9 @@ const property = (guard = () => true) => ({constructor: klass}, propertyKey, des
         throw new TypeError(`Value applied to "${propertyKey}" has wrong type`);
       }
 
-      this[$propertyChangedCallback](propertyKey, get.call(this), value);
+      const oldValue = get.call(this);
       set.call(this, value);
+      this[$propertyChangedCallback](propertyKey, oldValue, value);
     },
   };
 };
