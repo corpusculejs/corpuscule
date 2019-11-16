@@ -32,7 +32,7 @@ describe('@corpuscule/element', () => {
       expect(test.target.textContent).toBe('Test text');
     });
 
-    it('finds element in lightDOM', async () => {
+    it('finds element in Light DOM', async () => {
       class Test extends HTMLElement {
         @query('#target')
         public target!: HTMLElement;
@@ -55,7 +55,7 @@ describe('@corpuscule/element', () => {
       expect(test.target.textContent).toBe('Test text');
     });
 
-    it('can work in the light DOM even if Shadow DOM is enabled', async () => {
+    it('can work in the Light DOM even if Shadow DOM is enabled', async () => {
       class Test extends HTMLElement {
         @query('#target', {lightDOM: true})
         public target!: HTMLElement;
@@ -123,7 +123,7 @@ describe('@corpuscule/element', () => {
       expect(test.targets[2].textContent).toBe('Test 3');
     });
 
-    it('finds all elements in light DOM', async () => {
+    it('finds all elements in Light DOM', async () => {
       class Test extends HTMLElement {
         @queryAll('.target')
         public targets!: NodeList;
@@ -151,7 +151,7 @@ describe('@corpuscule/element', () => {
       expect(test.targets[2].textContent).toBe('Test 3');
     });
 
-    it('can work with lightDOM even if ShadowDOM is enabled', async () => {
+    it('can work with Light DOM even if Shadow DOM is enabled', async () => {
       class Test extends HTMLElement {
         @queryAll('.target', {lightDOM: true})
         public targets!: NodeList;

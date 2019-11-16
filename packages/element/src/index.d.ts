@@ -236,7 +236,7 @@ export type PropertyGuard = (value: unknown) => boolean;
 export interface QueryOptions {
   /**
    * This option allows query selector to perform searching not in the Light
-   * DOM instead of Shadow DOM.
+   * DOM instead of the Shadow DOM.
    */
   readonly lightDOM?: boolean;
 }
