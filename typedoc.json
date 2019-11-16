@@ -1,5 +1,5 @@
 {
-  "exclude": ["**/+(__tests__|lib|node_modules)/**"],
+  "exclude": ["**/+(__tests__|lib|node_modules)/**", "**/src/**/*.js"],
   "excludeNotExported": true,
   "excludePrivate": true,
   "ignoreCompilerErrors": true,

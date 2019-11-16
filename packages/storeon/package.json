@@ -26,7 +26,7 @@
     "@corpuscule/utils": "^0.14.0"
   },
   "peerDependencies": {
-    "storeon": "^0.8.0"
+    "storeon": "^0.9.0"
   },
   "publishConfig": {
     "access": "public"
