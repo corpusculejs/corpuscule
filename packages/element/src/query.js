@@ -1,9 +1,11 @@
-const executeQuery = callback => ({
+const executeQuery = (callback, {lightDOM = false} = {}) => ({
   configurable: true,
   get() {
-    return callback(this.shadowRoot || this);
+    return callback(this.shadowRoot && !lightDOM ? this.shadowRoot : this);
   },
 });
 
-export const query = selector => () => executeQuery(root => root.querySelector(selector));
-export const queryAll = selector => () => executeQuery(root => root.querySelectorAll(selector));
+export const query = (selector, options) => () =>
+  executeQuery(root => root.querySelector(selector), options);
+export const queryAll = (selector, options) => () =>
+  executeQuery(root => root.querySelectorAll(selector), options);
