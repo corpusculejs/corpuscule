@@ -6,9 +6,9 @@ using it in production. API is not ready yet and can receive large changes.
 
 [![CI Status](https://github.com/corpusculejs/corpuscule/workflows/CI/badge.svg)](https://github.com/corpusculejs/corpuscule/actions)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=corpusculejs_custom-builtin-elements&metric=coverage)](https://sonarcloud.io/dashboard?id=corpusculejs_custom-builtin-elements)
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=corpusculejs_custom-builtin-elements&metric=bugs)](https://sonarcloud.io/dashboard?id=corpusculejs_custom-builtin-elements)
-[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=corpusculejs_custom-builtin-elements&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=corpusculejs_custom-builtin-elements)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=corpusculejs_corpuscule&metric=coverage)](https://sonarcloud.io/dashboard?id=corpusculejs_corpuscule)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=corpusculejs_corpuscule&metric=bugs)](https://sonarcloud.io/dashboard?id=corpusculejs_corpuscule)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=corpusculejs_corpuscule&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=corpusculejs_corpuscule)
 
 Corpuscule is a set of libraries built on top of Web Components standard. It provides all necessary
 tools to built whole application from scratch including redux connector, router and form utils.
