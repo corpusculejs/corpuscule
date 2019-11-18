@@ -33,8 +33,8 @@ on:
       - 'sonar-project.properties'
       - 'tsconfig.json'
       - 'tslint.json'
-      paths-ignore:
-        - 'packages/**/README.md'
+    paths-ignore:
+      - 'packages/**/README.md'
 
 jobs:
   testing:
