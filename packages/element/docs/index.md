@@ -18,263 +18,13 @@ There are the following decorators that makes the system work:
 
 ## Element Lifecycle
 
-Each custom element marked with an [@element](#element) decorator has the
-following lifecycle (including standard JS class and custom element lifecycle).
-
-@note A rendering system is able to wait until multiple properties are set
-synchronously; only then the single rendering will be performed. However, be
-careful with the asynchronous setting: it may cause re-rendering on each
-assignment.
-
-| Name                                                | Hook Type      | Stage      | Description                                                                                                                                                                                                                                        |
-| --------------------------------------------------- | -------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| constructor                                         | JS Class       | Creation   | Since DOM element can be created with the `document.createElement` method, this hook is separate.                                                                                                                                                  |
-| connectedCallback                                   | Custom Element | Connecting | This callback is invoked whenever the element is connected to the DOM. During the connection, Corpuscule performs the initial rendering, and then user-defined `connectedCallback` is fired. Can be invoked multiple times for the single element. |
-| disconnectedCallback                                | Custom Element | Connecting | This callback is invoked after the element is disconnected from DOM. Since there is nothing for Corpuscule to do at this time, user-defined `disconnectedCallback` will be invoked directly. Can be invoked multiple times for the single element. |
-| attributeChangedCallback                            | Custom Element | Update     | This callback is invoked each time the [attribute](#attribute-property) property is changed. The method receives a string name of the changed property, its old and new value (in a string form).                                                  |
-| [propertyChangedCallback](#propertychangedcallback) | Corpuscule     | Update     | See the hook description.                                                                                                                                                                                                                          |
-| [internalChangedCallback](#internalchangedcallback) | Corpuscule     | Update     | See the hook description.                                                                                                                                                                                                                          |
-| [updatedCallback](#updatedcallback)                 | Corpuscule     | Update     | See the hook description.                                                                                                                                                                                                                          |
-| [render](#render)                                   | Corpuscule     | Rendering  | See the hook description.                                                                                                                                                                                                                          |
+See [Corpuscule Element Lifecycle Hooks](./hooks.md)).
 
 ## API
 
-### Lifecycle Hooks
+### Decorators
 
-<!-- prettier-ignore -->
-```typescript
-class extends HTMLElement {
-  protected [internalChangedCallback]?(
-    propertyName: PropertyKey,
-    oldValue: unknown,
-    newValue: unknown,
-  ): void;
-
-  protected [propertyChangedCallback]?(
-    propertyName: PropertyKey,
-    oldValue: unknown,
-    newValue: unknown,
-  ): void;
-  
-  protected [render]?(): unknown;
-
-  protected [updatedCallback]?(): void;
-}
-```
-
-#### internalChangedCallback
-
-```
-protected [internalChangedCallback]?(
-  propertyName: PropertyKey,
-  oldValue: unknown,
-  newValue: unknown,
-): void;
-```
-
-A method that is invoked when an [internal](#internal) property is assigned. The
-behavior is identical to `attributeChangedCallback`. It does trigger an update
-each time it is invoked.
-
-##### Parameters
-
-- `propertyName` - a property name (either string or symbolic).
-- `oldValue` - a value of the property that was before the update started.
-- `newValue` - a new value to set to the property.
-
-##### Returns
-
-Nothing.
-
-#### propertyChangedCallback
-
-```
-protected [propertyChangedCallback]?(
-  propertyName: PropertyKey,
-  oldValue: unknown,
-  newValue: unknown,
-): void;
-```
-
-A method that is invoked when a [regular](#property) property is assigned. The
-behavior is identical to `attributeChangedCallback`. It does not trigger a
-re-rendering if the `oldValue` is equal to `newValue` (by the strict equality
-check `===`).
-
-##### Parameters
-
-- `propertyName` - a property name (either string or symbolic).
-- `oldValue` - a value of the property that was before the update started.
-- `newValue` - a new value to set to the property.
-
-##### Returns
-
-Nothing.
-
-#### render
-
-```
-protected [render]?(): unknown;
-```
-
-A method that is invoked each time any of the component properties (either
-[attribute](#attribute), [regular](#property) or [internal](#internal)) causes
-re-rendering. The method work synchronously; returned result of its work will be
-handled by a [renderer](#renderer) function.
-
-If you do not define this method, rendering won't ever happen on your element.
-
-##### Parameters
-
-None.
-
-##### Returns
-
-Nothing.
-
-#### updatedCallback
-
-```
-protected [updatedCallback]?(): void;
-```
-
-A method that is invoked each time the rendering is over and the component
-acquires the new state. This method is not called during the initial render
-(`connectedCallback` is invoked instead).
-
-##### Parameters
-
-None.
-
-##### Returns
-
-Nothing.
-
-### ElementDecoratorOptions
-
-```typescript
-type ElementDecoratorOptions = ``{
-  readonly extends?: keyof HTMLElementTagNameMap;
-
-  readonly lightDOM?: boolean;
-
-  readonly renderer?: (
-    renderingResult: unknown,
-    container: Element | DocumentFragment,
-    context: unknown,
-  ) => void;
-
-  readonly scheduler?: (task: () => void) => Promise<void>;
-}
-```
-
-#### extends
-
-```
-readonly extends?: keyof HTMLElementTagNameMap;
-```
-
-This option allows constructing the [Customized built-in element](https://developers.google.com/web/fundamentals/web-components/customelements#extendhtml).
-Customized built-in elements differ from regular custom elements in many ways.
-E.g., many native elements cannot be extended by creating Shadow Root on them;
-by default, LightDOM will be created for these elements.
-
-To create a customized built-in element, you also have to extend a proper class
-(e.g. `HTMLAnchorElement` for `<a>`).
-
-> ##### Note
->
-> Do not forget that using a customized built-in element requires a polyfill
-> for Safari that does not support this part of the specification.
-
-```typescript
-@element('my-anchor', {extends: 'a'})
-class MyAnchor extends HTMLAnchorElement {}
-```
-
-##### List of native elements allowed to create the Shadow Root
-
-- `<article>`
-- `<aside>`
-- `<blockquote>`
-- `<body>`
-- `<div>`
-- `<footer>`
-- `<header>`
-- `<main>`
-- `<nav>`
-- `<p>`
-- `<section>`
-- `<span>`
-
-#### lightDOM
-
-```
-readonly lightDOM?: boolean;
-```
-
-If this option is enabled, the [Light DOM](https://developers.google.com/web/fundamentals/web-components/shadowdom#lightdom)
-will be used instead of the Shadow DOM; a result of the [render](#render)
-function will be written directly to the element.
-
-> ##### Warning
->
-> Be careful, rendering to the Light DOM will erase any existing markup and make
-> setting it from the outside buggy.
-
-> ##### Note
->
-> This option is enabled automatically if Shadow Root is not allowed for this
-> element. See [extends](#extends) option.
-
-#### renderer
-
-```
-readonly renderer?: (
-  renderingResult: unknown,
-  container: Element | DocumentFragment,
-  context: unknown,
-) => void;
-```
-
-This option defines the rendering function that applies result returned from the
-[render](#render) function to the component body.
-
-If you omit this property, rendering won't ever happen on your element.
-
-##### Parameters
-
-- `renderingResult` - a result returned by a [render](#render) function.
-- `container` - a component root to which result should be applied. It can be
-  either the component shadow root or a component itself if the [lightDOM](#lightdom)
-  is enabled.
-- `context` - a component instance; it can be used in specific cases like
-  setting the [eventContext](https://lit-html.polymer-project.org/api/interfaces/lit_html.renderoptions.html#eventcontext)
-  of lit-html.
-
-##### Returns
-
-Nothing.
-
-#### scheduler
-
-```
-readonly scheduler?: (task: () => void) => Promise<void>;
-```
-
-This option defines the function that schedules the rendering process. Since
-each component renders independently and synchronously, it requires a scheduling
-system to run the update at the right time and not freeze the user interface.
-Using this option you can specify your own scheduling function instead of the
-default one.
-
-By default, the [schedule](../../utils/docs/scheduler.md#schedule) is used.
-
-##### Parameters
-
-- `task` - a callback that will be run at the scheduled time.
-
-### @attribute
+#### @attribute
 
 ```typescript
 function attribute(
@@ -338,7 +88,7 @@ Corpuscule allows it to have three primitive types: `String`, `Boolean`, and
 - `attributeName` - a name of the attribute to bind.
 - `guard` - a type of the property value that should be converted.
 
-### @computer
+#### @computer
 
 ```typescript
 function computer(token: Token): PropertyDecorator;
@@ -354,7 +104,7 @@ the class properties the getter depends on are changed.
 - `token` - a token produced by a [createComputingToken](#createcomputingtoken)
   to bind this decorator with [@observer](#observer).
 
-### @element
+#### @element
 
 ```typescript
 function element(name: string, options?: ElementDecoratorOptions): ClassDecorator;
@@ -377,7 +127,7 @@ class MyComponent extends HTMLElement {
 }
 ```
 
-> ##### Note
+> **Note**
 >
 > New custom element definition with `@element` decorator is an
 > asynchronous operation. You cannot use it immediately. If you need to do
@@ -393,7 +143,7 @@ class MyComponent extends HTMLElement {
 > });
 > ```
 
-> ##### Advice
+> **Advice**
 >
 > To avoid setting `renderer` each time you can create a wrapper decorator:
 >
@@ -409,10 +159,11 @@ class MyComponent extends HTMLElement {
 - `name` - a name of the new Custom Element. According to the standard, it
   should contain a dash symbol.
 
-- `options` - a [list of options](#elementdecoratoroptions) that tunes the
-  custom element according to the requirements.
+- `options` (optional) - a list of options that tunes the custom element
+  according to the requirements.
+  - [ElementDecoratorOptions](./ElementDecoratorOptions.md).
 
-### @internal
+#### @internal
 
 ```typescript
 const internal: PropertyDecorator;
@@ -452,7 +203,7 @@ class MyComponentWithModal extends HTMLElement {
 - Each internal property update calls [[internalChangedCallback]] with internal
   property name, old and new value.
 
-### @observer
+#### @observer
 
 ```typescript
 function observer(token: Token): PropertyDecorator;
@@ -468,7 +219,7 @@ remembered again.
 Each computed property will observe all the observed properties at once and
 will drop the remembered result on any of their change.
 
-> ##### Note
+> **Note**
 >
 > Be accurate with [internal properties](#internal), they will
 > change (and invalidate the computation result) even if they have the same
@@ -479,7 +230,7 @@ will drop the remembered result on any of their change.
 - `token` - a token produced by a [createComputingToken](#createcomputingtoken)
   to bind this decorator with [@computer](#computer).
 
-### @property
+#### @property
 
 ```typescript
 function property(guard?: PropertyGuard): PropertyDecorator;
@@ -524,18 +275,23 @@ customElements.whenDefined('my-component').then(() => {
 
 ##### Parameters
 
-- `guard` - a function that checks the type of the assigned value; if it
-  returns `false`, the error will be thrown.
+- `guard` (optional) - a function that checks the type of the assigned value; if
+  it returns `false`, the error will be thrown.
 
-### @query
+#### @query
 
 ```typescript
-function query(selector: string): PropertyDecorator;
+function query(selector: string, options?: QueryOptions): PropertyDecorator;
 ```
 
 A decorator that converts a property to a getter that finds an element with the
 `selector` in the Light or Shadow DOM of your element using the `querySelector`
 method.
+
+By default the search is performed in the either Shadow DOM (if enabled) or
+Light DOM (if Shadow DOM is disabled). However, you can force selector to search
+in the Light DOM even if Shadow DOM is enabled. To achieve it, send a
+`{ lightDOM: true }` option as the second parameter of the decorator.
 
 ```typescript
 @element('my-element', {renderer})
@@ -555,16 +311,23 @@ class MyElement extends HTMLElement {
 ##### Parameters
 
 - `selector` - a selector of the desired element.
+- `options` (optional) - a set of decorator options.
+  - [QueryOptions](./QueryOptions.md).
 
-### @queryAll
+#### @queryAll
 
 ```typescript
-function queryAll(selector: string): PropertyDecorator;
+function queryAll(selector: string, options?: QueryOptions): PropertyDecorator;
 ```
 
 A decorator that converts a property to a getter that finds all elements with
 the `selector` in the Light or Shadow DOM of your element using the
 `querySelectorAll` method.
+
+By default the search is performed in the either Shadow DOM (if enabled) or
+Light DOM (if Shadow DOM is disabled). However, you can force selector to search
+in the Light DOM even if Shadow DOM is enabled. To achieve it, send a
+`{ lightDOM: true }` option as the second parameter of the decorator.
 
 ```typescript
 @element('my-element', {renderer})
@@ -586,8 +349,12 @@ class MyElement extends HTMLElement {
 ##### Parameters
 
 - `selector` - a selector of the desired set of elements.
+- `options` (optional) - a set of decorator options.
+  - [QueryOptions](./QueryOptions.md).
 
-### createComputingToken
+### Functions
+
+#### createComputingToken
 
 ```typescript
 function createComputingToken(): Token;
