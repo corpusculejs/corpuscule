@@ -4,9 +4,37 @@ on:
   push:
     branches:
       - master
+    paths:
+      - '.github/workflows/ci.yml'
+      - 'packages/**'
+      - 'scripts/**'
+      - 'test/**'
+      - '.eslintignore'
+      - '.eslintrc'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'sonar-project.properties'
+      - 'tsconfig.json'
+      - 'tslint.json'
+    paths-ignore:
+      - 'packages/**/README.md'
   pull_request:
     branches:
       - master
+    paths:
+      - '.github/workflows/ci.yml'
+      - 'packages/**'
+      - 'scripts/**'
+      - 'test/**'
+      - '.eslintignore'
+      - '.eslintrc'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'sonar-project.properties'
+      - 'tsconfig.json'
+      - 'tslint.json'
+      paths-ignore:
+        - 'packages/**/README.md'
 
 jobs:
   testing:
