@@ -7,22 +7,17 @@ type FormDecoratorOptions = {
 };
 ```
 
-#### decorators
+### Fields
 
-```
-readonly decorators?: ReadonlyArray<Decorator>;
-```
+#### decorators <sub>[optional]</sub>
 
-A list of [🏁 FinalForm decorators](https://final-form.org/docs/final-form/types/Decorator)
-to apply to the form.
+**Type**: **ReadonlyArray<[Decorator](https://final-form.org/docs/final-form/types/Decorator)>**
 
-#### subscription
+A list of 🏁 FinalForm decorators to apply to the form.
 
-```
-readonly subscription?: Record<keyof FormState, boolean>;
-```
+#### subscription <sub>[optional]</sub>
 
-A list of form channels to notify when a part of the form is changed. All
-channels are described in the [`FormState`](https://final-form.org/docs/final-form/types/FormState)
-interface. If this property is omitted, the subscription will be issued on
-all channels.
+**Type**: _Record<keyof [FormState](https://final-form.org/docs/final-form/types/FormState), boolean>_
+
+A list of form channels to notify when a part of the form is changed. If this
+property is omitted, the subscription will be issued on all channels.

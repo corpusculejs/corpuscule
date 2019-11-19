@@ -11,6 +11,22 @@ import {form, field} from '@corpuscule/form';
 
 ## API
 
+### Structures
+
+#### Form
+
+- [FormDecoratorOptions](./FormDecoratorOptions.md).
+- [FormGears](./FormGears.md).
+- [FormOptions](./FormOptions.md).
+
+#### Field
+
+- [FieldDecoratorOptions](./FieldDecoratorOptions.md).
+- [FieldGears](./FieldGears.md).
+- [FieldInputProps](./FieldInputProps.md).
+- [FieldMetaProps](./FieldMetaProps.md).
+- [FieldOptions](./FieldOptions.md).
+
 ### Decorators
 
 #### @gear
@@ -62,7 +78,7 @@ function gearAdvanced(
 
 A decorator that converts a class property to a part of the 🏁 Final Form
 interface. Both [@form](#formadvanced) and [@field](#fieldadvanced) decorators
-require several specific @gear properties to exist.
+require several specific `@gear` properties to exist.
 
 - Properties of the [@form](#formadvanced) are described in the
   [FormGears](./FormGears.md) interface.
@@ -75,11 +91,14 @@ for the field.
 
 ##### Parameters
 
-- `token` - a token issued by a [createFormToken](#createformtoken) function
-  that connects all decorators in a single working system.
-- `responsibilityKey` (optional) - a specific name of a gear that describes the
-  responsibility of the property this decorator is applied to. If it is omitted,
-  the name (or the description if it is a symbol) of the property will be used.
+- **token**: _[Token](../../utils/docs/tokenRegistry.md#token)_ - a token issued
+  by a [createFormToken](#createformtoken) function that connects all decorators
+  in a single working system.
+- <sub>[optional]</sub> **responsibilityKey**: _keyof [FormGears](./FormGears.md)
+  | keyof [FieldGears](./FieldGears.md)_ - a specific name of a gear that
+  describes the responsibility of the property this decorator is applied to. If
+  it is omitted, the name (or the description if it is a symbol) of the property
+  will be used.
 
 #### @fieldAdvanced
 
@@ -93,11 +112,11 @@ is used internally.
 
 ##### Parameters
 
-- `token` - a token issued by a [createFormToken](#createformtoken) function
-  that connects all decorators in a single working system.
-- `options` (optional) - an object that contains options to tune the field
-  behavior.
-  - [FieldDecoratorOptions](./FieldDecoratorOptions.md).
+- **token**: _[Token](../../utils/docs/tokenRegistry.md#token)_ - a token issued
+  by a [createFormToken](#createformtoken) function that connects all decorators
+  in a single working system.
+- <sub>[optional]</sub> **options**: [FieldDecoratorOptions](./FieldDecoratorOptions.md) -
+  an object that contains options to tune the field behavior.
 
 #### @formAdvanced
 
@@ -109,11 +128,11 @@ A decorator that makes a class declaration a 🏁 FinalForm provider with a
 form instance as a context value. The [@provider](../../context/docs/index.md#provider)
 decorator is used internally.
 
-- `token` - a token issued by a [createFormToken](#createformtoken) function
-  that connects all decorators in a single working system.
-- `options` (optional) - an object that contains options to tune the form
-  behavior.
-  - [FormDecoratorOptions](./FormDecoratorOptions.md).
+- **token**: _[Token](../../utils/docs/tokenRegistry.md#token)_ - a token issued
+  by a [createFormToken](#createformtoken) function that connects all decorators
+  in a single working system.
+- <sub>[optional]</sub> **options**: [FormDecoratorOptions](./FormDecoratorOptions.md) -
+  an object that contains options to tune the form behavior.
 
 #### optionAdvanced
 
@@ -134,17 +153,19 @@ options are required; others can be omitted.
   interface.
 
 If you do not plan to use the specific properties names, you can implement
-the [FormGears](./FormGears.md) interface for the form or [FieldGears](./FieldGears.md)
+the [FormOptions](./FormOptions.md) interface for the form or [FieldOptions](./FieldOptions.md)
 for the field.
 
 ##### Parameters
 
-- `token` - a token issued by a [createFormToken](#createformtoken) function
-  that connects all decorators in a single working system.
-- `responsibilityKey` (optional) - a specific name of an option that describes
-  the responsibility of the property this decorator is applied to. If it is
-  omitted, the name (or the description if it is a symbol) of the property will
-  be used.
+- **token**: _[Token](../../utils/docs/tokenRegistry.md#token)_ - a token issued
+  by a [createFormToken](#createformtoken) function that connects all decorators
+  in a single working system.
+- <sub>[optional]</sub> **responsibilityKey**: _keyof [FormOptions](./FormOptions.md)
+  | keyof [FieldOptions](./FieldOptions.md)_ - a specific name of an option that
+  describes the responsibility of the property this decorator is applied to. If
+  it is omitted, the name (or the description if it is a symbol) of the property
+  will be used.
 
 ### Functions
 
@@ -154,8 +175,11 @@ for the field.
 function createFormToken(): Token;
 ```
 
-Creates [tokens](../../utils/docs/tokenRegistry.md#token) to bind decorators
-with each other.
+Creates tokens to bind decorators with each other.
+
+##### Returns
+
+**Type**: _[Token](../../utils/docs/tokenRegistry.md#token)_
 
 #### isForm
 
@@ -177,9 +201,10 @@ Works as a [isProvider](../../context/docs/index.md#isprovider) for the
 
 ##### Parameters
 
-- `token` - a [Token](../../utils/docs/tokenRegistry.md#token) object.
-- `klass` - a class declaration to check.
+- **token**: _[Token](../../utils/docs/tokenRegistry.md#token)_ - a token
+  object.
+- **klass**: _unknown_ - a class declaration to check.
 
 ##### Returns
 
-A `boolean` result of the check.
+**Type**: _boolean_

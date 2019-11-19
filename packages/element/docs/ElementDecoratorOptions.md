@@ -13,14 +13,14 @@ type ElementDecoratorOptions = {
   ) => void;
 
   readonly scheduler?: (task: () => void) => Promise<void>;
-}
+};
 ```
 
-#### extends
+### Fields
 
-```
-readonly extends?: keyof HTMLElementTagNameMap;
-```
+#### extends <sub>[optional]</sub>
+
+**Type**: _keyof HTMLElementTagNameMap_
 
 This option allows constructing the [Customized built-in element](https://developers.google.com/web/fundamentals/web-components/customelements#extendhtml).
 Customized built-in elements differ from regular custom elements in many ways.
@@ -55,11 +55,9 @@ class MyAnchor extends HTMLAnchorElement {}
 - `<section>`
 - `<span>`
 
-#### lightDOM
+#### lightDOM <sub>[optional]</sub>
 
-```
-readonly lightDOM?: boolean;
-```
+**Type**: _boolean_
 
 If this option is enabled, the [Light DOM](https://developers.google.com/web/fundamentals/web-components/shadowdom#lightdom)
 will be used instead of the Shadow DOM; a result of the [render](#render)
@@ -75,14 +73,12 @@ function will be written directly to the element.
 > This option is enabled automatically if Shadow Root is not allowed for this
 > element. See [extends](#extends) option.
 
-#### renderer
+### Methods
 
-```
-readonly renderer?: (
-  renderingResult: unknown,
-  container: Element | DocumentFragment,
-  context: unknown,
-) => void;
+#### renderer <sub>[optional]</sub>
+
+```typescript
+(renderingResult: unknown, container: Element | DocumentFragment, context: unknown) => void;
 ```
 
 This option defines the rendering function that applies result returned from the
@@ -92,22 +88,23 @@ If you omit this property, rendering won't ever happen on your element.
 
 ##### Parameters
 
-- `renderingResult` - a result returned by a [render](#render) function.
-- `container` - a component root to which result should be applied. It can be
-  either the component shadow root or a component itself if the [lightDOM](#lightdom)
-  is enabled.
-- `context` - a component instance; it can be used in specific cases like
-  setting the [eventContext](https://lit-html.polymer-project.org/api/interfaces/lit_html.renderoptions.html#eventcontext)
+- **renderingResult**: _unknown_ - a result returned by a [render](#render)
+  function.
+- **container**: _Element | DocumentFragment_ - a component root to which result
+  should be applied. It can be either the component shadow root or a component
+  itself if the [lightDOM](#lightdom) is enabled.
+- **context**: _unknown_ - a component instance; it can be used in specific
+  cases like setting the [eventContext](https://lit-html.polymer-project.org/api/interfaces/lit_html.renderoptions.html#eventcontext)
   of lit-html.
 
 ##### Returns
 
 Nothing.
 
-#### scheduler
+#### scheduler <sub>[optional]</sub>
 
-```
-readonly scheduler?: (task: () => void) => Promise<void>;
+```typescript
+(task: () => void) => Promise<void>;
 ```
 
 This option defines the function that schedules the rendering process. Since
@@ -120,5 +117,12 @@ By default, the [schedule](../../utils/docs/scheduler.md#schedule) is used.
 
 ##### Parameters
 
-- `task` - a callback that will be run at the scheduled time.
+- **task**: _function_ - a callback that will be run at the scheduled time.
 
+  ```typescript
+  () => void;
+  ```
+
+##### Returns
+
+**Type**: _Promise<void>_

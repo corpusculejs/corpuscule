@@ -1,27 +1,28 @@
 # FieldInputProps
 
 ```typescript
-interface FieldInputProps<TFieldValue> {
+interface FieldInputProps<FieldValue> {
   readonly name: string;
-  readonly value: TFieldValue;
+  readonly value: FieldValue;
 }
 ```
 
 Contains the general field data that can be provided directly to the
 `HTMLInputElement`.
 
-#### name
+### Type Parameters
 
-```
-readonly name: string;
-```
+- **FieldValue** - a type of the current field value.
+
+### Fields
+
+#### name
+**Type**: _string_
 
 A name of the field.
 
 #### value
 
-```
-readonly value: TFieldValue;
-```
+**Type**: _[FieldValue](#type-parameters)_
 
 A current value of the field.

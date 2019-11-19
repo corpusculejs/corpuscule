@@ -16,11 +16,11 @@ There are the following decorators that makes the system work:
 - [@property](#property),
 - [@internal](#internal).
 
-## Element Lifecycle
-
-See [Corpuscule Element Lifecycle Hooks](./hooks.md)).
-
 ## API
+
+### Structures
+
+- [CorpusculeElement](CorpusculeElement.md).
 
 ### Decorators
 
@@ -85,8 +85,9 @@ Corpuscule allows it to have three primitive types: `String`, `Boolean`, and
 
 ##### Parameters
 
-- `attributeName` - a name of the attribute to bind.
-- `guard` - a type of the property value that should be converted.
+- **attributeName**: _string_ - a name of the attribute to bind.
+- **guard**: _BooleanConstructor | NumberConstructor | StringConstructor_ - a type
+  of the property value that should be converted.
 
 #### @computer
 
@@ -101,8 +102,9 @@ the class properties the getter depends on are changed.
 
 ##### Parameters
 
-- `token` - a token produced by a [createComputingToken](#createcomputingtoken)
-  to bind this decorator with [@observer](#observer).
+- **token**: _[Token](../../utils/docs/tokenRegistry.md#token)_ - a token produced
+  by a [createComputingToken](#createcomputingtoken) to bind this decorator with
+  [@observer](#observer).
 
 #### @element
 
@@ -156,12 +158,11 @@ class MyComponent extends HTMLElement {
 
 ##### Parameters
 
-- `name` - a name of the new Custom Element. According to the standard, it
-  should contain a dash symbol.
+- **name**: _string_ - a name of the new Custom Element. According to the
+  standard, it should contain a dash symbol.
 
-- `options` (optional) - a list of options that tunes the custom element
-  according to the requirements.
-  - [ElementDecoratorOptions](./ElementDecoratorOptions.md).
+- <sub>[optional]</sub> **options**: _[ElementDecoratorOptions](./ElementDecoratorOptions.md)_ -
+  a list of options that tunes the custom element according to the requirements.
 
 #### @internal
 
@@ -200,8 +201,8 @@ class MyComponentWithModal extends HTMLElement {
 - Any change of the internal property initiates rendering; the equality check of
   the old and the new value is not performed.
 - The internal property doesn't have any guard on it.
-- Each internal property update calls [[internalChangedCallback]] with internal
-  property name, old and new value.
+- Each internal property update calls [internalChangedCallback](CorpusculeElement.md#internalchangedcallback)
+  with internal property name, old and new value.
 
 #### @observer
 
@@ -227,13 +228,14 @@ will drop the remembered result on any of their change.
 
 ##### Parameters
 
-- `token` - a token produced by a [createComputingToken](#createcomputingtoken)
-  to bind this decorator with [@computer](#computer).
+- **token**: _[Token](../../utils/docs/tokenRegistry.md#token)_ - a token produced
+  by a [createComputingToken](#createcomputingtoken) to bind this decorator with
+  [@computer](#computer).
 
 #### @property
 
 ```typescript
-function property(guard?: PropertyGuard): PropertyDecorator;
+function property(guard?: (value: unknown) => boolean): PropertyDecorator;
 ```
 
 A decorator that converts a class property to a component regular property.
@@ -275,14 +277,18 @@ customElements.whenDefined('my-component').then(() => {
 
 ##### Parameters
 
-- `guard` (optional) - a function that checks the type of the assigned value; if
-  it returns `false`, the error will be thrown.
+- <sub>[optional]</sub> **guard**: _function_ - a
+  function that checks the type of the assigned value; if it returns `false`,
+  the error will be thrown.
+  ```typescript
+  (value: unknown) => boolean;
+  ```
 
 #### @query
 
 ```typescript
 function query(selector: string, options?: QueryOptions): PropertyDecorator;
-```
+````
 
 A decorator that converts a property to a getter that finds an element with the
 `selector` in the Light or Shadow DOM of your element using the `querySelector`
@@ -310,9 +316,9 @@ class MyElement extends HTMLElement {
 
 ##### Parameters
 
-- `selector` - a selector of the desired element.
-- `options` (optional) - a set of decorator options.
-  - [QueryOptions](./QueryOptions.md).
+- **selector**: _string_ - a selector of the desired element.
+- <sub>[optional]</sub> **options**: [QueryOptions](./QueryOptions.md) - a
+  set of decorator options.
 
 #### @queryAll
 
@@ -348,9 +354,9 @@ class MyElement extends HTMLElement {
 
 ##### Parameters
 
-- `selector` - a selector of the desired set of elements.
-- `options` (optional) - a set of decorator options.
-  - [QueryOptions](./QueryOptions.md).
+- **selector**: _string_ - a selector of the desired element.
+- <sub>[optional]</sub> **options**: [QueryOptions](./QueryOptions.md) - a
+  set of decorator options.
 
 ### Functions
 
@@ -366,5 +372,4 @@ token created via this function and send it to the decorators of computed and
 observed properties you want to connect.
 
 ##### Returns
-
-A [Token](../../utils/docs/tokenRegistry.md#token) object.
+**Type**: _[Token](../../utils/docs/tokenRegistry.md#token)_

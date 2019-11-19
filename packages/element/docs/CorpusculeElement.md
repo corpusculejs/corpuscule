@@ -1,7 +1,28 @@
-# Corpuscule Element Lifecycle Hooks
+# CorpusculeElement
 
-Each custom element marked with an [@element](#element) decorator has the
-following lifecycle (including standard JS class and custom element lifecycle).
+```typescript
+interface CorpusculeElement extends CustomElement {
+  protected [internalChangedCallback]?(
+    propertyName: PropertyKey,
+    oldValue: unknown,
+    newValue: unknown,
+  ): void;
+
+  protected [propertyChangedCallback]?(
+    propertyName: PropertyKey,
+    oldValue: unknown,
+    newValue: unknown,
+  ): void;
+
+  protected [render]?(): unknown;
+
+  protected [updatedCallback]?(): void;
+}
+```
+
+Each custom element marked with an [@element](#element) decorator becomes an
+implementation of the `CorpusculeElement` and gain the following lifecycle
+(including standard JS class and custom element lifecycle).
 
 > **Note**
 >
@@ -21,51 +42,28 @@ following lifecycle (including standard JS class and custom element lifecycle).
 | [updatedCallback](#updatedcallback)                 | Corpuscule     | Update     | Invoked each time after the [render](#render) is over (except for the first time when the `connectedCallback` is called).                                                                                                         |
 | [render](#render)                                   | Corpuscule     | Rendering  | Invoked each time the [attribute](./index.md#attribute), [property](./index.md#property) or [internal](./index.md#internal) is changed. Runs as the next microtask, so is able to accumulate property changes.                    |
 
-### CustomElement
+##### Extends
 
-See [@corpuscule/typings](../../typings/docs/index.md#customelement) for the
-full description.
+- [CustomElement](../../typings/docs/index.md#customelement).
 
-### CorpusculeElement
-
-An interface that contains all the lifecycle hooks. It also extends the
-[CustomElement](#customelement) interface to gain all the standard hooks.
-
-```typescript
-interface CorpusculeElement<RenderingResult> extends CustomElement {
-  protected [internalChangedCallback]?(
-    propertyName: PropertyKey,
-    oldValue: unknown,
-    newValue: unknown,
-  ): void;
-
-  protected [propertyChangedCallback]?(
-    propertyName: PropertyKey,
-    oldValue: unknown,
-    newValue: unknown,
-  ): void;
-
-  protected [render]?(): RenderingResult;
-
-  protected [updatedCallback]?(): void;
-}
-```
+### Methods
 
 #### internalChangedCallback
 
+```typescript
+(propertyName: PropertyKey, oldValue: unknown, newValue: unknown) => void;
 ```
-protected [internalChangedCallback]?(
-  propertyName: PropertyKey,
-  oldValue: unknown,
-  newValue: unknown,
-): void;
-```
+
+A method that is invoked when an [internal](./index.md#internal) property is
+assigned. The behavior is identical to `attributeChangedCallback`. It does
+trigger an update each time it is invoked.
 
 ##### Parameters
 
-- `propertyName` - a property name (either string or symbolic).
-- `oldValue` - a value of the property that was before the update started.
-- `newValue` - a new value to set to the property.
+- **propertyName**: _PropertyKey_ - a property name (either string or symbolic).
+- **oldValue**: _unknown_ - a value of the property that was before the update
+  started.
+- **newValue**: _unknown_ - a new value to set to the property.
 
 ##### Returns
 
@@ -73,12 +71,8 @@ Nothing.
 
 #### propertyChangedCallback
 
-```
-protected [propertyChangedCallback]?(
-  propertyName: PropertyKey,
-  oldValue: unknown,
-  newValue: unknown,
-): void;
+```typescript
+(propertyName: PropertyKey, oldValue: unknown, newValue: unknown) => void;
 ```
 
 A method that is invoked when a [regular](#property) property is assigned. The
@@ -88,9 +82,10 @@ check `===`).
 
 ##### Parameters
 
-- `propertyName` - a property name (either string or symbolic).
-- `oldValue` - a value of the property that was before the update started.
-- `newValue` - a new value to set to the property.
+- **propertyName**: _PropertyKey_ - a property name (either string or symbolic).
+- **oldValue**: _unknown_ - a value of the property that was before the update
+  started.
+- **newValue**: _unknown_ - a new value to set to the property.
 
 ##### Returns
 
@@ -98,8 +93,8 @@ Nothing.
 
 #### render
 
-```
-protected [render]?(): unknown;
+```typescript
+() => unknown;
 ```
 
 A method that is invoked each time any of the component properties (either
@@ -119,8 +114,8 @@ Nothing.
 
 #### updatedCallback
 
-```
-protected [updatedCallback]?(): void;
+```typescript
+() => void;
 ```
 
 A method that is invoked each time the rendering is over and the component
@@ -134,4 +129,3 @@ None.
 ##### Returns
 
 Nothing.
-

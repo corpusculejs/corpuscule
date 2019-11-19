@@ -113,8 +113,8 @@ becomes able to receive the shared date sent by a provider.
 
 ##### Parameters
 
-- `token` - a token created by [createContextToken](#createcontexttoken)
-  function.
+- **token**: _[Token](../../utils/docs/tokenRegistry.md#token)_ - a token
+  created by [createContextToken](#createcontexttoken) function.
 
 #### @provider
 
@@ -128,10 +128,10 @@ becomes able to send the shared data down the DOM branch to consumers.
 
 ##### Parameters
 
-- `token` - a token created by [createContextToken](#createcontexttoken)
-  function.
-- `defaultValue` (optional) - if the [@value](#value) property is
-  undefined, this value will be sent instead.
+- **token**: _[Token](../../utils/docs/tokenRegistry.md#token)_ - a token
+  created by [createContextToken](#createcontexttoken) function.
+- <sub>[optional]</sub> **defaultValue**: _unknown_ - if the [@value](#value)
+  property is undefined, this value will be sent instead.
 
 #### @value
 
@@ -145,8 +145,9 @@ requires to have one property marked with this decorator.
 
 ##### Parameters
 
-- `token` - a token created by [createContextToken](#createcontexttoken)
-  function. It should be the same for this decorator and the class-level one.
+- **token**: _[Token](../../utils/docs/tokenRegistry.md#token)_ - a token
+  created by [createContextToken](#createcontexttoken) function. It should be
+  the same for this decorator and the class-level one.
 
 ### Functions
 
@@ -164,7 +165,7 @@ None
 
 ##### Returns
 
-[Token]()
+**Type**: _[Token](../../utils/docs/tokenRegistry.md#token)_
 
 #### isProvider
 
@@ -181,10 +182,11 @@ Detects if the class declaration plays the provider role in the context system.
 
 ##### Parameters
 
-- `token` - a token created by [createContextToken](#createcontexttoken)
-  function and sent to the [@provider](#provider) decorator applied to the class declaration.
-- `klass` - a class declaration to check.
+- **token**: _[Token](../../utils/docs/tokenRegistry.md#token)_ - a token
+  created by [createContextToken](#createcontexttoken) function and sent to the
+  [@provider](#provider) decorator applied to the class declaration.
+- **klass**: _unknown_ - a class declaration to check.
 
 ##### Returns
 
-A `boolean` result of the check.
+**Type**: _boolean_
