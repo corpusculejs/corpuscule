@@ -2,6 +2,26 @@
 
 This module provides tools to define web components in a declarative way.
 
+## Usage
+
+Install the package via one of the following command:
+
+```bash
+$ npm install @corpuscule/element
+```
+
+or
+
+```bash
+$ yarn add @corpuscule/element
+```
+
+Then import it:
+
+```typescript
+import {attribute, element, internal, property} from '@corpuscule/element';
+```
+
 ## How it works
 
 By default, web components are too low-level to define them directly. They
@@ -288,7 +308,7 @@ customElements.whenDefined('my-component').then(() => {
 
 ```typescript
 function query(selector: string, options?: QueryOptions): PropertyDecorator;
-````
+```
 
 A decorator that converts a property to a getter that finds an element with the
 `selector` in the Light or Shadow DOM of your element using the `querySelector`
@@ -372,4 +392,5 @@ token created via this function and send it to the decorators of computed and
 observed properties you want to connect.
 
 ##### Returns
+
 **Type**: _[Token](../../utils/docs/tokenRegistry.md#token)_

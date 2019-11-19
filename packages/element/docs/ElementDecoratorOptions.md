@@ -60,7 +60,7 @@ class MyAnchor extends HTMLAnchorElement {}
 **Type**: _boolean_
 
 If this option is enabled, the [Light DOM](https://developers.google.com/web/fundamentals/web-components/shadowdom#lightdom)
-will be used instead of the Shadow DOM; a result of the [render](#render)
+will be used instead of the Shadow DOM; a result of the [render](./CorpusculeElement.md#render)
 function will be written directly to the element.
 
 > ##### Warning
@@ -71,14 +71,14 @@ function will be written directly to the element.
 > **Note**
 >
 > This option is enabled automatically if Shadow Root is not allowed for this
-> element. See [extends](#extends) option.
+> element. See [extends](#extends-suboptionalsub) option.
 
 ### Methods
 
 #### renderer <sub>[optional]</sub>
 
 ```typescript
-(renderingResult: unknown, container: Element | DocumentFragment, context: unknown) => void;
+(result: unknown, container: Element | DocumentFragment, context: unknown) => void;
 ```
 
 This option defines the rendering function that applies result returned from the
@@ -88,11 +88,11 @@ If you omit this property, rendering won't ever happen on your element.
 
 ##### Parameters
 
-- **renderingResult**: _unknown_ - a result returned by a [render](#render)
+- **result**: _unknown_ - a result returned by a [render](./CorpusculeElement.md#render)
   function.
 - **container**: _Element | DocumentFragment_ - a component root to which result
-  should be applied. It can be either the component shadow root or a component
-  itself if the [lightDOM](#lightdom) is enabled.
+  should be applied. It can be either a component `ShadowRoot` or a component
+  itself if the [lightDOM](#lightdom-suboptionalsub) is enabled.
 - **context**: _unknown_ - a component instance; it can be used in specific
   cases like setting the [eventContext](https://lit-html.polymer-project.org/api/interfaces/lit_html.renderoptions.html#eventcontext)
   of lit-html.

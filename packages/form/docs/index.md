@@ -5,6 +5,20 @@ This module provides tools to handle web forms. Works as a connector to a
 
 ## Usage
 
+Install the package via one of the following command:
+
+```bash
+$ npm install @corpuscule/form
+```
+
+or
+
+```bash
+$ yarn add @corpuscule/form
+```
+
+Then import it:
+
 ```typescript
 import {form, field} from '@corpuscule/form';
 ```

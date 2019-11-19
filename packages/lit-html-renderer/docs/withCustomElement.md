@@ -39,13 +39,9 @@ and throw if it contains any illegal characters.
 
 #### constructor
 
-```
-constructor(value: unknown)
-```
-
 ##### Parameters
 
-- `value` - a value you want to make static.
+- **value**: _unknown_ - a value you want to make static.
 
 ### unsafeStatic
 
@@ -64,11 +60,13 @@ such as tag and attribute names.
 
 ##### Parameters
 
-- `value` - a value you want to make static.
+- **value**: _unknown_ - a value you want to make static.
 
 ##### Returns
 
-A value wrapped with [UnsafeStatic](#unsafestatic).
+**Type**: _[UnsafeStatic](#unsafestatic)_
+
+A value wrapped with UnsafeStatic.
 
 ### withCustomElement
 
@@ -94,8 +92,6 @@ You can also send any custom element class as a value and its registered name
 will be used as a tag name. The behavior of custom elements classes are equal to
 the unsafe static values behavior.
 
-### Example
-
 ```typescript
 // index.js
 import '@corpuscule/lit-html-renderer/lib/init';
@@ -120,10 +116,19 @@ render(shtml`
 
 ##### Parameters
 
-- `processor` - a [html](https://lit-html.polymer-project.org/api/modules/lit_html.html#html)
+- **processor**: _function_ - a [html](https://lit-html.polymer-project.org/api/modules/lit_html.html#html)
   function
+  ```typescript
+  (strings: TemplateStringsArray, ...values: unknown[]) => TemplateResult;
+  ```
 
 ##### Returns
 
+**Type**: _function_
+
 A decorated [html](https://lit-html.polymer-project.org/api/modules/lit_html.html#html)
 function.
+
+```typescript
+(strings: TemplateStringsArray, ...values: unknown[]) => TemplateResult;
+```

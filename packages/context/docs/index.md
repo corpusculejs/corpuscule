@@ -9,6 +9,20 @@ necessary properties through all the component tree to the desired descendant.
 
 ## Usage
 
+Install the package via one of the following command:
+
+```bash
+$ npm install @corpuscule/context
+```
+
+or
+
+```bash
+$ yarn add @corpuscule/context
+```
+
+Then import it:
+
 ```typescript
 import {createContextToken, consumer, provider, value} from '@corpuscule/context';
 ```
