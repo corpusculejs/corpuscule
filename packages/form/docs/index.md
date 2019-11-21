@@ -90,9 +90,9 @@ function gearAdvanced(
 ): PropertyDecorator;
 ```
 
-A decorator that converts a class property to a part of the 🏁 Final Form
-interface. Both [@form](#formadvanced) and [@field](#fieldadvanced) decorators
-require several specific `@gear` properties to exist.
+Converts a class property to a part of the 🏁 Final Form interface. Both [@form](#formadvanced)
+and [@field](#fieldadvanced) decorators require several specific `@gear`
+properties to exist.
 
 - Properties of the [@form](#formadvanced) are described in the
   [FormGears](./FormGears.md) interface.
@@ -120,9 +120,9 @@ for the field.
 function fieldAdvanced(token: Token, options?: FieldDecoratorOptions): ClassDecorator;
 ```
 
-A decorator that makes a class declaration a 🏁 FinalForm field with a form
-instance as a context value. The [@consumer](../../context/docs/index.md#consumer)
-is used internally.
+Makes a class declaration a 🏁 FinalForm field with a form instance as a context
+value. The [@consumer](../../context/docs/index.md#consumer) is used
+internally.
 
 ##### Parameters
 
@@ -138,9 +138,9 @@ is used internally.
 function formAdvanced(token: Token, options?: FormDecoratorOptions): ClassDecorator;
 ```
 
-A decorator that makes a class declaration a 🏁 FinalForm provider with a
-form instance as a context value. The [@provider](../../context/docs/index.md#provider)
-decorator is used internally.
+Makes a class declaration a 🏁 FinalForm provider with a form instance as a
+context value. The [@provider](../../context/docs/index.md#provider) decorator
+is used internally.
 
 - **token**: _[Token](../../utils/docs/tokenRegistry.md#token)_ - a token issued
   by a [createFormToken](#createformtoken) function that connects all decorators
@@ -157,9 +157,9 @@ function optionAdvanced(
 ): PropertyDecorator;
 ```
 
-A decorator that converts a class property to a 🏁 Final Form option. Both
-[@form](#formadvanced) and [@field](#fieldadvanced) have their options. Some
-options are required; others can be omitted.
+Converts a class property to a 🏁 Final Form option. Both [@form](#formadvanced)
+and [@field](#fieldadvanced) have their options. Some options are required;
+others can be omitted.
 
 - Properties of the [@form](#formadvanced) are described in the [FormOptions](./FormOptions.md)
   interface.

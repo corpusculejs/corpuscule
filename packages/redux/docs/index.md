@@ -5,6 +5,20 @@ components.
 
 ## Usage
 
+Install the package via one of the following command:
+
+```bash
+$ npm install @corpuscule/redux
+```
+
+or
+
+```bash
+$ yarn add @corpuscule/redux
+```
+
+Then import it:
+
 ```typescript
 import {dispatcher, provider, redux, unit} from '@corpuscule/redux';
 ```
@@ -64,9 +78,9 @@ provided.
 function dispatcherAdvanced(token: Token): PropertyDecorator;
 ```
 
-A decorator that converts a class method or field (with an action creator
-assigned) to a redux [dispatcher](https://redux.js.org/api/store#dispatch).
-Redux will dispatch everything the wrapped function returns.
+Converts a class method or field (with an action creator assigned) to a redux
+[dispatcher](https://redux.js.org/api/store#dispatch). Redux will dispatch
+everything the wrapped function returns.
 
 ```typescript
 const someExternalAction = (value: string) => ({
@@ -99,8 +113,11 @@ class ReduxExample extends HTMLElement {
 function gearAdvanced(token: Token): PropertyDecorator;
 ```
 
-A decorator that works as a [@value](../../context/docs/index.md#value) for the
-[@provider](#provideradvanced).
+Works similar to the `@value` context decorator.
+
+##### Extends
+
+- [@value](../../context/docs/index.md#value).
 
 ##### Parameter
 
@@ -110,14 +127,14 @@ A decorator that works as a [@value](../../context/docs/index.md#value) for the
 #### providerAdvanced
 
 ```typescript
-function provider(token: Token, defaultValue?: unknown): ClassDecorator;
+function providerAdvanced(token: Token, defaultValue?: unknown): ClassDecorator;
 ```
 
-A decorator that works as a Redux store provider.
+Makes class declaration a Redux store provider.
 
 ##### Extends
 
-- [contextProvider](../../context/docs/index.md#provider).
+- [@provider](../../context/docs/index.md#provider).
 
 #### reduxAdvanced
 
@@ -125,8 +142,7 @@ A decorator that works as a Redux store provider.
 function reduxAdvanced(token: Token): ClassDecorator;
 ```
 
-A decorator that makes a class declaration a Redux provider with a store as a
-context value.
+Makes a class declaration a Redux store consumer.
 
 > **Note**
 >
@@ -152,9 +168,8 @@ function unitAdvanced<Store extends object>(
 ): PropertyDecorator;
 ```
 
-A decorator that makes a class property a reflection for the specific store
-value. Whenever the value is changed, the property receives an update as
-well.
+Makes a class property a reflection for the specific store value. Whenever the
+value is changed, the property receives an update as well.
 
 ```typescript
 @redux
@@ -209,11 +224,11 @@ token already provided.
 #### isProviderAdvanced
 
 ```typescript
-function provider(token: Token, defaultValue?: unknown): ClassDecorator;
+function isProviderAdvanced(token: Token, klass: unknown): boolean;
 ```
 
-A decorator that works as a Redux store provider.
+Detects if the class declaration is a [@provider](#provideradvanced).
 
 ##### Extends
 
-- [@provider](../../context/docs/index.md#provider).
+- [isProvider](../../context/docs/index.md#isprovider).

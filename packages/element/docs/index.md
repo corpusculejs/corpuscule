@@ -53,8 +53,8 @@ function attribute(
 ): PropertyDecorator;
 ```
 
-A decorator that binds a class property to an appropriate attribute and provides
-a transformation to the property value to and from the attribute string.
+Binds a class property to an appropriate attribute and provides a transformation
+to the property value to and from the attribute string.
 
 An attribute is the most well-known property type and also the most complex type
 to work with. Standard requires that it should only be a string type, but
@@ -115,10 +115,10 @@ Corpuscule allows it to have three primitive types: `String`, `Boolean`, and
 function computer(token: Token): PropertyDecorator;
 ```
 
-A decorator that transforms a class getter to a computed property. It is an
-approach that can be used to reduce the number of expensive calculations by
-remembering the latest result produced by the getter and providing it until all
-the class properties the getter depends on are changed.
+Transforms a class getter to a computed property. It is an approach that can be
+used to reduce the number of expensive calculations by remembering the latest
+result produced by the getter and providing it until all the class properties
+the getter depends on are changed.
 
 ##### Parameters
 
@@ -132,8 +132,8 @@ the class properties the getter depends on are changed.
 function element(name: string, options?: ElementDecoratorOptions): ClassDecorator;
 ```
 
-A decorator that converts a class declaration to a Custom Element and unites
-all other decorators making a complete working system from them.
+Converts a class declaration to a Custom Element and unites all other decorators
+making a complete working system from them.
 
 ```typescript
 import {element, render} from '@corpuscule/element';
@@ -190,7 +190,7 @@ class MyComponent extends HTMLElement {
 const internal: PropertyDecorator;
 ```
 
-A decorator that transforms a class property to a component internal property.
+Transforms a class property to a component internal property.
 
 An internal property is a property that works under the hood. Its role is to be
 an intrinsic mechanism, so it would be better to avoid sharing and reusing it
@@ -230,12 +230,11 @@ class MyComponentWithModal extends HTMLElement {
 function observer(token: Token): PropertyDecorator;
 ```
 
-A decorator that makes a class property observed. It works together with the
-computed property created via [@computer](#computer) decorator to reset
-the remembered getter result. When a value of one of the observed properties
-is changed, the remembered result of the computed one is reset, and the next
-call to the getter will start the recalculation which result will be
-remembered again.
+Makes a class property observed. It works together with the computed property
+created via [@computer](#computer) decorator to reset the remembered getter
+result. When a value of one of the observed properties is changed, the
+remembered result of the computed one is reset, and the next call to the getter
+will start the recalculation which result will be remembered again.
 
 Each computed property will observe all the observed properties at once and
 will drop the remembered result on any of their change.
@@ -258,7 +257,7 @@ will drop the remembered result on any of their change.
 function property(guard?: (value: unknown) => boolean): PropertyDecorator;
 ```
 
-A decorator that converts a class property to a component regular property.
+Converts a class property to a component regular property.
 
 A regular property of the component is a property that can be set only
 imperatively by assigning the component instance filed.
@@ -310,9 +309,8 @@ customElements.whenDefined('my-component').then(() => {
 function query(selector: string, options?: QueryOptions): PropertyDecorator;
 ```
 
-A decorator that converts a property to a getter that finds an element with the
-`selector` in the Light or Shadow DOM of your element using the `querySelector`
-method.
+Converts a property to a getter that finds an element with the `selector` in the
+Light or Shadow DOM of your element using the `querySelector` method.
 
 By default the search is performed in the either Shadow DOM (if enabled) or
 Light DOM (if Shadow DOM is disabled). However, you can force selector to search
@@ -346,9 +344,8 @@ class MyElement extends HTMLElement {
 function queryAll(selector: string, options?: QueryOptions): PropertyDecorator;
 ```
 
-A decorator that converts a property to a getter that finds all elements with
-the `selector` in the Light or Shadow DOM of your element using the
-`querySelectorAll` method.
+Converts a property to a getter that finds all elements with the `selector` in
+the Light or Shadow DOM of your element using the `querySelectorAll` method.
 
 By default the search is performed in the either Shadow DOM (if enabled) or
 Light DOM (if Shadow DOM is disabled). However, you can force selector to search

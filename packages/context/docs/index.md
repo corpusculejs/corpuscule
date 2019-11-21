@@ -121,9 +121,9 @@ Schema for this idea is following:
 function consumer(token: Token): ClassDecorator;
 ```
 
-A decorator that makes the class declaration the context consumer. Now the
-property of the class declaration marked with the [@value](#value)
-becomes able to receive the shared date sent by a provider.
+Makes the class declaration the context consumer. Now the property of the class
+declaration marked with the [@value](#value) becomes able to receive the shared
+date sent by a provider.
 
 ##### Parameters
 
@@ -136,9 +136,9 @@ becomes able to receive the shared date sent by a provider.
 function provider(token: Token, defaultValue?: unknown): ClassDecorator;
 ```
 
-A decorator that makes the class declaration the context provider. Now the
-property of the class declaration marked with the [@value](#value)
-becomes able to send the shared data down the DOM branch to consumers.
+Makes the class declaration the context provider. Now the property of the class
+declaration marked with the [@value](#value) becomes able to send the shared
+data down the DOM branch to consumers.
 
 ##### Parameters
 
