@@ -117,7 +117,7 @@ By default, the [schedule](../../utils/docs/scheduler.md#schedule) is used.
 
 ##### Parameters
 
-- **task**: _function_ - a callback that will be run at the scheduled time.
+- **task**: _Function_ - a callback that will be run at the scheduled time.
 
   ```typescript
   () => void;

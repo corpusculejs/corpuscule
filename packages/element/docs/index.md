@@ -296,9 +296,8 @@ customElements.whenDefined('my-component').then(() => {
 
 ##### Parameters
 
-- <sub>[optional]</sub> **guard**: _function_ - a
-  function that checks the type of the assigned value; if it returns `false`,
-  the error will be thrown.
+- <sub>[optional]</sub> **guard**: _Function_ - a function that checks the type
+  of the assigned value; if it returns `false`, the error will be thrown.
   ```typescript
   (value: unknown) => boolean;
   ```

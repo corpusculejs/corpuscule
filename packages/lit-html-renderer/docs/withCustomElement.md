@@ -116,7 +116,7 @@ render(shtml`
 
 ##### Parameters
 
-- **processor**: _function_ - a [html](https://lit-html.polymer-project.org/api/modules/lit_html.html#html)
+- **processor**: _Function_ - a [html](https://lit-html.polymer-project.org/api/modules/lit_html.html#html)
   function
   ```typescript
   (strings: TemplateStringsArray, ...values: unknown[]) => TemplateResult;
@@ -124,7 +124,7 @@ render(shtml`
 
 ##### Returns
 
-**Type**: _function_
+**Type**: _Function_
 
 A decorated [html](https://lit-html.polymer-project.org/api/modules/lit_html.html#html)
 function.

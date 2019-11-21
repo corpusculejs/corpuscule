@@ -122,7 +122,7 @@ Works similar to the `@value` context decorator.
 ##### Parameter
 
 - **token**: _[Token](../../utils/docs/tokenRegistry.md#token)_ - a token object
-  produced by a [createReduxToken](#createreduxtoken).
+  issued by a [createReduxToken](#createreduxtoken).
 
 #### providerAdvanced
 
@@ -188,7 +188,7 @@ class ReduxExample extends HTMLElement {
 - **token**: _[Token](../../utils/docs/tokenRegistry.md#token)_ - a token issued
   by a [createReduxToken](#createreduxtoken) function that connects all
   decorators in a single working system.
-- **getter**: _function_ - a function that extracts the value to reflect from
+- **getter**: _Function_ - a function that extracts the value to reflect from
   the store.
   ```typescript
   (state: Store) => any;
