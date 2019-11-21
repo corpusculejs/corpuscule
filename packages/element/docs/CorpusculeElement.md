@@ -20,7 +20,7 @@ interface CorpusculeElement extends CustomElement {
 }
 ```
 
-Each custom element marked with an [@element](#element) decorator becomes an
+Each custom element marked with an [@element](./index.md#element) decorator becomes an
 implementation of the `CorpusculeElement` and gain the following lifecycle
 (including standard JS class and custom element lifecycle).
 
