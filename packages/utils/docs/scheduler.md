@@ -8,6 +8,25 @@ web components that could schedule rendering of nested components recursively.
 
 ## Usage
 
+This module provides tools to work with restrictions of the Custom Elements
+spec.
+
+## Usage
+
+Install the package via one of the following command:
+
+```bash
+$ npm install @corpuscule/utils
+```
+
+or
+
+```bash
+$ yarn add @corpuscule/utils
+```
+
+Then import it:
+
 ```typescript
 import schedule from '@corpuscule/utils/lib/scheduler';
 ```
@@ -32,9 +51,15 @@ top.
 
 ##### Parameters
 
-- `task` - a function to schedule.
+- **task**: Function - a function to schedule.
+
+  ```typescript
+  () => void;
+  ```
 
 ##### Returns
+
+**Type**: _Promise<void>_
 
 A Promise which resolves when the task is completed or rejects if there is any
 error.

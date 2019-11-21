@@ -5,6 +5,20 @@ spec.
 
 ## Usage
 
+Install the package via one of the following command:
+
+```bash
+$ npm install @corpuscule/utils
+```
+
+or
+
+```bash
+$ yarn add @corpuscule/utils
+```
+
+Then import it:
+
 ```typescript
 import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
 ```
@@ -14,10 +28,10 @@ import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
 ### defineExtendable
 
 ```typescript
-function defineExtendable<N extends PropertyKey>(
+function defineExtendable<PropertyNames extends PropertyKey>(
   klass: any,
-  baseClassMethods: Record<N, Function>,
-  extendedClassMethods: Record<N, Function>,
+  baseClassMethods: Record<PropertyNames, Function>,
+  extendedClassMethods: Record<PropertyNames, Function>,
   initializers: Array<(self: object) => void>,
 ): void;
 ```
@@ -34,19 +48,27 @@ wrapper that calls two different methods depending on whether the class is
 extended or not. If the class is not extended, the Corpuscule worker is called;
 otherwise, the original user-defined method is used.
 
+##### Type Parameters
+
+- **PropertyNames**: PropertyKey - a name of properties that needs to be
+  extendable.
+
 ##### Parameters
 
-- `klass` - a class declaration which lifecycle hooks should be redefined
+- **klass**: _any_ - a class declaration which lifecycle hooks should be redefined
   to be extendable.
 
-- `baseClassMethods` - an object with methods that should be used in case
-  the class is not extended.
+- **baseClassMethods**: _Record<PropertyName, Function>_ - an object with
+  methods that should be used in case the class is not extended.
 
-- `extendedClassMethods` - an object with methods that should be used in
-  case the class is extended.
+- **extendedClassMethods**: _Record<PropertyName, Function>_ - an object with
+  methods that should be used in case the class is extended.
 
-- `initializers` - an array of functions to register the function to
-  execute during the class instantiation.
+- **initializers**: _Function[]_ - an array of functions to register the
+  function to execute during the class instantiation.
+  ```typescript
+  (self: object) => void;
+  ```
 
 ##### Returns
 

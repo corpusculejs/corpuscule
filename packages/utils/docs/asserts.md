@@ -13,6 +13,20 @@ This module contains assertions to check these cases.
 
 ## Usage
 
+Install the package via one of the following command:
+
+```bash
+$ npm install @corpuscule/utils
+```
+
+or
+
+```bash
+$ yarn add @corpuscule/utils
+```
+
+Then import it:
+
 ```typescript
 import {assertRequiredProperty} from '@corpuscule/utils/lib/asserts';
 ```
@@ -63,12 +77,13 @@ Error: @foo requires property marked with @baz
 
 ##### Parameters
 
-- `classDecoratorName` - a name of the base class decorator that requires
-  some property marked with some property decorator.
-- `propertyDecoratorName` - a name of the decorator the class decorator
-  requires to mark the property with.
-- `propertyName` - a name of the property the assertion is applied to.
-- `propertyValue` - a value of the property.
+- **classDecoratorName**: _string_ - a name of the base class decorator that
+  requires some property marked with some property decorator.
+- **propertyDecoratorName**: _string_ - a name of the decorator the class
+  decorator requires to mark the property with.
+- **propertyName**: _string_ - a name of the property the assertion is applied
+  to.
+- **propertyValue**: _unknown_ - a value of the property.
 
 ##### Returns
 

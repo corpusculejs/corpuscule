@@ -5,6 +5,25 @@ descriptors.
 
 ## Usage
 
+This module provides tools to work with restrictions of the Custom Elements
+spec.
+
+## Usage
+
+Install the package via one of the following command:
+
+```bash
+$ npm install @corpuscule/utils
+```
+
+or
+
+```bash
+$ yarn add @corpuscule/utils
+```
+
+Then import it:
+
 ```typescript
 import makeAccessor from '@corpuscule/utils/lib/makeAccessor';
 ```
@@ -26,10 +45,16 @@ accessor, it will be returned as is.
 
 ##### Parameters
 
-- `descriptor` - a property or an accessor descriptor.
-- `initializers` - an array of functions to register the initial value
-  initializer.
+- **descriptor**: _Babel [PropertyDescriptor](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty#Description)_ -
+  a property or an accessor descriptor.
+- **initializers**: _Function[]_ - an array of functions to register the initial
+  value initializer.
+  ```typescript
+  (self: object) => void;
+  ```
 
 ##### Returns
+
+**Type**: _[PropertyDescriptor](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty#Description)_
 
 An accessor descriptor of the property with `get` & `set` properties set.

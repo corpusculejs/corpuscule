@@ -5,6 +5,25 @@ symbolic, and private, — identically.
 
 ## Usage
 
+This module provides tools to work with restrictions of the Custom Elements
+spec.
+
+## Usage
+
+Install the package via one of the following command:
+
+```bash
+$ npm install @corpuscule/utils
+```
+
+or
+
+```bash
+$ yarn add @corpuscule/utils
+```
+
+Then import it:
+
 ```typescript
 import {getName} from '@corpuscule/utils/lib/propertyUtils';
 ```
@@ -14,7 +33,9 @@ import {getName} from '@corpuscule/utils/lib/propertyUtils';
 ### getName
 
 ```typescript
-function getName<P extends PropertyKey>(property: P): P extends number ? number : string;
+function getName<PropertyName extends PropertyKey>(
+  property: PropertyName,
+): PropertyName extends number ? number : string;
 ```
 
 Extracts string name from a class property. If the property is a symbol, its
@@ -28,9 +49,16 @@ getName(foo); // foo
 getName(bar); // bar
 ```
 
+##### Type Parameters
+
+- **PropertyName**: _PropertyKey_
+
 ##### Parameters
 
-- `property` - a string or a symbol property.
+- **property**: _PropertyKey_ - a string or a symbol property.
 
 ##### Returns
+
+**Type**: _string_
+
 A string name of the property.

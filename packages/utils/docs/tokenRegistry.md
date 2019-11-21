@@ -4,6 +4,25 @@ This module provides tools to connect separate decorators together.
 
 ## Usage
 
+This module provides tools to work with restrictions of the Custom Elements
+spec.
+
+## Usage
+
+Install the package via one of the following command:
+
+```bash
+$ npm install @corpuscule/utils
+```
+
+or
+
+```bash
+$ yarn add @corpuscule/utils
+```
+
+Then import it:
+
 ```typescript
 import createTokenRegistry from '@corpuscule/utils/lib/tokenRegistry';
 ```
@@ -34,7 +53,7 @@ that have to be linked with each other.
 ```typescript
 function createTokenRegistry<Store>(
   createDataStore: () => Store,
-  createRawToken?: TokenCreator,
+  createRawToken?: () => Token,
 ): [() => Token, WeakMap<Token, Store>];
 ```
 
@@ -54,15 +73,27 @@ const arr = registry.get(token);
 arr.push('test'); // ['test']
 ```
 
+##### Type Parameters
+
+- **Store** - a type of the store.
+
 ##### Parameters
 
-- `createDataStore` - a function to create a new data store for the new token.
-  The function will be called during the `createToken` function call.
-- `createRawToken` - a function that will be used to generate a new token
-  during the `createToken` call. It is optional, but you can use it to inherit
-  an already existing token system. To do it, send the `createToken` you want
-  to inherit as this argument.
+- **createDataStore**: Function - a function to create a new data store for the
+  new token. The function will be called during the `createToken` function call.
+  ```typescript
+  () => Store;
+  ```
+- <sub>[optional]</sub> **createRawToken**: Function - a function that will be
+  used to generate a new token during the `createToken` call. It is optional, but
+  you can use it to inherit an already existing token system. To do it, send the
+  `createToken` you want to inherit as this argument.
+  ```typescript
+  () => Token;
+  ```
 
 ##### Returns
+
+**Type**: _[Function, WeakMap<Token, Store>]_
 
 A tuple which contains the new `createToken` function and the registry instance.

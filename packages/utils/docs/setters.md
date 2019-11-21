@@ -6,6 +6,25 @@ If the value does not exist, it will be created.
 
 ## Usage
 
+This module provides tools to work with restrictions of the Custom Elements
+spec.
+
+## Usage
+
+Install the package via one of the following command:
+
+```bash
+$ npm install @corpuscule/utils
+```
+
+or
+
+```bash
+$ yarn add @corpuscule/utils
+```
+
+Then import it:
+
 ```typescript
 import {setArray, setObject} from '@corpuscule/utils/lib/setters';
 ```
@@ -58,12 +77,17 @@ setArray(store, key, ['baz']);
 store.get(key); // ['bar', 'baz']
 ```
 
+##### Type Parameters
+
+- **K** - a type of the store key.
+- **V** - a type of the store value.
+
 ##### Parameters
 
-- `store` - a `Map` instance which contains or should contain the target
-  array.
-- `key` - a key to access the target array.
-- `array` - an array with new elements to add to the target array.
+- **store**: _Map<K, V>_ - a `Map` instance which contains or should contain the
+  target array.
+- **key**: _K_ - a key to access the target array.
+- **array**: _V_ - an array with new elements to add to the target array.
 
 ##### Returns
 
@@ -119,11 +143,16 @@ setArray(store, key, {baz: 2});
 store.get(key); // {bar: 1, baz: 2}
 ```
 
+##### Type Parameters
+
+- **K**: _object_ - a type of the store key.
+- **V**: _object_ - a type of the store value.
+
 ##### Parameters
 
-- `store` - a `Map` instance which contains or should contain the target object.
-- `key` - a key to access the target object.
-- `object` - an object with new properties to add to the target object.
+- **store**: _Map<K, V>_ - a `Map` instance which contains or should contain the target object.
+- **key**: _K_ - a key to access the target object.
+- **object**: _V_ - an object with new properties to add to the target object.
 
 ##### Returns
 
