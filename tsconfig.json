@@ -25,7 +25,9 @@
   },
   "include": [
     "packages/**/*",
-    "node_modules/@open-wc/**/*.js"
+    "node_modules/@open-wc/**/*.js",
+    "scripts/**/*",
+    "test/**/*"
   ],
   "exclude": [
     "packages/**/lib",
