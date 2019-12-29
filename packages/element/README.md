@@ -32,7 +32,7 @@ $ yarn add @corpuscule/element
 
 ## Documentation
 API documentation is available for the following modules:
-* [@corpuscule/element](docs/index.md).
+* [@corpuscule/element](./docs/index.md).
 
 ## Future
 There are plans to create Babel plugin that will remove `guard`s from the production builds.

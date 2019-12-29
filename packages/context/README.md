@@ -37,4 +37,4 @@ $ yarn add @corupuscule/context
 
 ## Documentation
 API documentation is available for the following modules:
-* [@corpuscule/context](docs/index.md).
+* [@corpuscule/context](./docs/index.md).

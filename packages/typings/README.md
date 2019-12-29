@@ -7,4 +7,6 @@ using it in production. API is not ready yet and can receive large changes.
 
 Typings for all Corpuscule projects.
 
-> Documentation in development
+## Documentation
+API documentation is available for the following modules:
+* [@corpuscule/typings](./docs/index.md).
