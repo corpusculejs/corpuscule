@@ -26,4 +26,4 @@ $ yarn add universal-router @corpuscule/router
 
 ## Documentation
 API documentation is available for the following modules:
-* [@corpuscule/router](https://corpusculejs.github.io/corpuscule/modules/_corpuscule_router.html).
+* [@corpuscule/router](./docs/index.md).

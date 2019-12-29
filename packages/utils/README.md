@@ -9,12 +9,12 @@ Utilities for all Corpuscule projects.
 
 ## Documentation
 API documentation is available for the following modules:
-* [@corpuscule/utils/lib/asserts](https://corpusculejs.github.io/corpuscule/modules/_corpuscule_utils_lib_asserts.html).
-* [@corpuscule/utils/lib/defineExtendable](https://corpusculejs.github.io/corpuscule/modules/_corpuscule_utils_lib_defineextendable.html).
-* [@corpuscule/utils/lib/makeAccessor](https://corpusculejs.github.io/corpuscule/modules/_corpuscule_utils_lib_makeaccessor.html).
-* [@corpuscule/utils/lib/propertyUtils](https://corpusculejs.github.io/corpuscule/modules/_corpuscule_utils_lib_propertyutils.html).
-* [@corpuscule/utils/lib/reflectClassMethods](https://corpusculejs.github.io/corpuscule/modules/_corpuscule_utils_lib_reflectclassmethods.html).
-* [@corpuscule/utils/lib/scheduler](https://corpusculejs.github.io/corpuscule/modules/_corpuscule_utils_lib_scheduler.html).
-* [@corpuscule/utils/lib/setters](https://corpusculejs.github.io/corpuscule/modules/_corpuscule_utils_lib_setters.html).
-* [@corpuscule/utils/lib/shallowEqual](https://corpusculejs.github.io/corpuscule/modules/_corpuscule_utils_lib_shallowequal.html).
-* [@corpuscule/utils/lib/tokenRegistry](https://corpusculejs.github.io/corpuscule/modules/_corpuscule_utils_lib_tokenregistry.html).
+* [@corpuscule/utils/lib/asserts](./docs/asserts.md).
+* [@corpuscule/utils/lib/defineExtendable](./docs/defineExtendable.md).
+* [@corpuscule/utils/lib/makeAccessor](./docs/makeAccessors.md).
+* [@corpuscule/utils/lib/propertyUtils](./docs/propertyUtils.md).
+* [@corpuscule/utils/lib/reflectClassMethods](./docs/reflectClassMethods.md).
+* [@corpuscule/utils/lib/scheduler](./docs/scheduler.md).
+* [@corpuscule/utils/lib/setters](./docs/setters.md).
+* [@corpuscule/utils/lib/shallowEqual](./docs/shallowEqual.md).
+* [@corpuscule/utils/lib/tokenRegistry](./docs/tokenRegistry.md).

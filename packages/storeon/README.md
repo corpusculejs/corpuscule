@@ -26,4 +26,4 @@ $ yarn add storeon @corpuscule/storeon
 
 ## Documentation
 API documentation is available for the following modules:
-* [@corpuscule/storeon](https://corpusculejs.github.io/corpuscule/modules/_corpuscule_storeon.html).
+* [@corpuscule/storeon](./docs/index.md).
