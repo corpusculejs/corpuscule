@@ -1,17 +1,20 @@
 {
-  "extends": ["eslint-config-poetez", "plugin:prettier/recommended"],
+  "extends": ["eslint-config-poetez/typescript", "plugin:prettier/recommended"],
   "env": {
     "browser": true,
     "node": true,
-    "es6": true
+    "es6": true,
+    "jasmine": true
   },
   "rules": {
-    "callback-return": "off",
-    "global-require": "off",
+    "@typescript-eslint/await-thenable": "off",
+    "@typescript-eslint/indent": "off",
+    "@typescript-eslint/member-delimiter-style": "off",
+    "@typescript-eslint/no-extra-parens": "off",
+    "@typescript-eslint/quotes": "off",
+    "class-methods-use-this": "off",
     "func-names": "off",
-    "no-bitwise": "off",
-    "no-extra-parens": "off",
-    "no-invalid-this": "off",
-    "prefer-arrow-callback": "off"
+    "max-nested-callbacks": "off",
+    "no-invalid-this": "off"
   }
 }

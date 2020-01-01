@@ -7,19 +7,19 @@
     "emitDecoratorMetadata": true,
     "lib": [
       "dom",
-      "es2018"
+      "es2020"
     ],
     "mapRoot": "dist",
     "module": "esnext",
     "moduleResolution": "node",
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "outDir": "dist",
+    "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "strictFunctionTypes": false,
     "stripInternal": true,
     "target": "esnext"
   },
