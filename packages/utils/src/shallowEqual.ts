@@ -7,12 +7,17 @@
  * @source https://github.com/facebook/fbjs/blob/master/packages/fbjs/src/core/shallowEqual.js
  */
 
-const shallowEqual = (objA, objB) => {
+const shallowEqual = (objA: any, objB: any): boolean => {
   if (Object.is(objA, objB)) {
     return true;
   }
 
-  if (typeof objA !== 'object' || objA === null || typeof objB !== 'object' || objB === null) {
+  if (
+    typeof objA !== 'object' ||
+    objA === null ||
+    typeof objB !== 'object' ||
+    objB === null
+  ) {
     return false;
   }
 
@@ -24,6 +29,7 @@ const shallowEqual = (objA, objB) => {
   }
 
   // Test for A's keys different from B.
+  // eslint-disable-next-line @typescript-eslint/prefer-for-of
   for (let i = 0; i < keysA.length; i++) {
     if (
       !Object.prototype.hasOwnProperty.call(objB, keysA[i]) ||

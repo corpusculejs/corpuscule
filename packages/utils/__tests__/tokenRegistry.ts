@@ -11,7 +11,10 @@ describe('@corpuscule/utils', () => {
 
     it('allows inheritance for token creators', () => {
       const [createToken1, tokenRegistry1] = createTokenRegistry(() => []);
-      const [createToken2, tokenRegistry2] = createTokenRegistry(() => ({}), createToken1);
+      const [createToken2, tokenRegistry2] = createTokenRegistry(
+        () => ({}),
+        createToken1,
+      );
 
       const token = createToken2();
 

@@ -1,4 +1,5 @@
-// tslint:disable:no-unnecessary-class
+/* eslint-disable @typescript-eslint/no-extraneous-class, max-classes-per-file */
+
 import defineExtendable from '../src/defineExtendable';
 
 describe('@corpuscule/utils', () => {
@@ -26,19 +27,19 @@ describe('@corpuscule/utils', () => {
       defineExtendable(
         Test,
         {
-          test(...args: any[]): void {
-            stringMethodSpy(...args);
-          },
           [symbolMethodName](...args: any[]): void {
             symbolMethodSpy(...args);
           },
+          test(...args: any[]): void {
+            stringMethodSpy(...args);
+          },
         },
         {
-          test(...args: any[]): void {
-            stringMethodSuperSpy(...args);
-          },
           [symbolMethodName](...args: any[]): void {
             symbolMethodSuperSpy(...args);
+          },
+          test(...args: any[]): void {
+            stringMethodSuperSpy(...args);
           },
         },
         initializers,
@@ -66,19 +67,19 @@ describe('@corpuscule/utils', () => {
       defineExtendable(
         Parent,
         {
-          test(...args: any[]): void {
-            stringMethodSpy(...args);
-          },
           [symbolMethodName](...args: any[]): void {
             symbolMethodSpy(...args);
           },
+          test(...args: any[]): void {
+            stringMethodSpy(...args);
+          },
         },
         {
-          test(...args: any[]): void {
-            stringMethodSuperSpy(...args);
-          },
           [symbolMethodName](...args: any[]): void {
             symbolMethodSuperSpy(...args);
+          },
+          test(...args: any[]): void {
+            stringMethodSuperSpy(...args);
           },
         },
         initializers,

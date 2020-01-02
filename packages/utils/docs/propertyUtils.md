@@ -32,21 +32,37 @@ import {getName} from '@corpuscule/utils/lib/propertyUtils';
 
 ### getName
 
-```typescript
-function getName<PropertyName extends PropertyKey>(
-  property: PropertyName,
-): PropertyName extends number ? number : string;
-```
-
 Extracts string name from a class property. If the property is a symbol, its
 description will be returned.
+
+##### Overload #1
+
+```typescript
+function getName(property: number): number;
+```
+
+This overload accepts `number` as a property name.
+
+```typescript
+const foo = 1;
+
+getName(foo); // 1
+```
+
+##### Overload #2
+
+```typescript
+function getName(property: symbol | string): string;
+```
+
+This overload accepts `string` or `symbol` as a property name.
 
 ```typescript
 const foo = 'foo';
 const bar = Symbol('bar');
 
-getName(foo); // foo
-getName(bar); // bar
+getName(foo); // 'foo'
+getName(bar); // 'bar'
 ```
 
 ##### Type Parameters
@@ -55,10 +71,10 @@ getName(bar); // bar
 
 ##### Parameters
 
-- **property**: _PropertyKey_ - a string or a symbol property.
+- **property**: _PropertyKey_ - a string, a number, or a symbol property.
 
 ##### Returns
 
-**Type**: _string_
+**Type**: _string | number_
 
-A string name of the property.
+A string/number name of the property.

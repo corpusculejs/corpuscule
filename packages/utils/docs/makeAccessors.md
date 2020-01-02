@@ -35,8 +35,9 @@ import makeAccessor from '@corpuscule/utils/lib/makeAccessor';
 ```typescript
 function makeAccessor(
   descriptor: PropertyDescriptor & {initializer?: () => unknown},
-  initializers: Array<(self: object) => void>,
-): Required<Pick<PropertyDescriptor, 'get' | 'set'>> & Omit<PropertyDescriptor, 'get' | 'set'>;
+  initializers: Initializer[],
+): Required<Pick<PropertyDescriptor, 'get' | 'set'>> &
+  Omit<PropertyDescriptor, 'get' | 'set'>;
 ```
 
 Converts the regular property to an accessor and registers the initializer
@@ -47,11 +48,9 @@ accessor, it will be returned as is.
 
 - **descriptor**: _Babel [PropertyDescriptor](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty#Description)_ -
   a property or an accessor descriptor.
-- **initializers**: _Function[]_ - an array of functions to register the initial
-  value initializer.
-  ```typescript
-  (self: object) => void;
-  ```
+- **initializers**: _[Initializer](../../typings/docs/index.md#initializer)[]_ -
+  an array of functions to register the function to execute during the class
+  instantiation.
 
 ##### Returns
 

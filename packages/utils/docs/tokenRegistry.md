@@ -79,15 +79,16 @@ arr.push('test'); // ['test']
 
 ##### Parameters
 
-- **createDataStore**: Function - a function to create a new data store for the
-  new token. The function will be called during the `createToken` function call.
+- **createDataStore**: _Function_ - a function to create a new data store for
+  the new token. The function will be called during the `createToken` function
+  call.
   ```typescript
   () => Store;
   ```
-- <sub>[optional]</sub> **createRawToken**: Function - a function that will be
-  used to generate a new token during the `createToken` call. It is optional, but
-  you can use it to inherit an already existing token system. To do it, send the
-  `createToken` you want to inherit as this argument.
+- <sub>[optional]</sub> **createRawToken**: _Function_ - a function that will be
+  used to generate a new token during the `createToken` call. It is optional,
+  but you can use it to inherit an already existing token system. To do it, send
+  the `createToken` you want to inherit as this argument.
   ```typescript
   () => Token;
   ```
@@ -97,3 +98,7 @@ arr.push('test'); // ['test']
 **Type**: _[Function, WeakMap<Token, Store>]_
 
 A tuple which contains the new `createToken` function and the registry instance.
+
+```typescript
+() => Token;
+```

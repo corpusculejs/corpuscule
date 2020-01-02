@@ -28,11 +28,14 @@ import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
 ### defineExtendable
 
 ```typescript
-function defineExtendable<PropertyNames extends PropertyKey>(
-  klass: any,
-  baseClassMethods: Record<PropertyNames, Function>,
-  extendedClassMethods: Record<PropertyNames, Function>,
-  initializers: Array<(self: object) => void>,
+function defineExtendable<
+  Class extends object,
+  PropertyName extends PropertyKey
+>(
+  klass: Constructor<Class>,
+  baseClassMethods: Record<PropertyName, Function>,
+  extendedClassMethods: Record<PropertyName, Function>,
+  initializers: Initializer[],
 ): void;
 ```
 
@@ -50,13 +53,15 @@ otherwise, the original user-defined method is used.
 
 ##### Type Parameters
 
-- **PropertyNames**: PropertyKey - a name of properties that needs to be
+- **Class**: object - a type of the class the function is applied to.
+
+- **PropertyName**: PropertyKey - a name of property that needs to be
   extendable.
 
 ##### Parameters
 
-- **klass**: _any_ - a class declaration which lifecycle hooks should be redefined
-  to be extendable.
+- **klass**: _[Constructor](../../typings/docs/Constructor.md)<Class>_ - a class
+  declaration which lifecycle hooks should be redefined to be extendable.
 
 - **baseClassMethods**: _Record<PropertyName, Function>_ - an object with
   methods that should be used in case the class is not extended.
@@ -64,11 +69,9 @@ otherwise, the original user-defined method is used.
 - **extendedClassMethods**: _Record<PropertyName, Function>_ - an object with
   methods that should be used in case the class is extended.
 
-- **initializers**: _Function[]_ - an array of functions to register the
-  function to execute during the class instantiation.
-  ```typescript
-  (self: object) => void;
-  ```
+- **initializers**: _[Initializer](../../typings/docs/index.md#initializer)[]_ -
+  an array of functions to register the function to execute during the class
+  instantiation.
 
 ##### Returns
 

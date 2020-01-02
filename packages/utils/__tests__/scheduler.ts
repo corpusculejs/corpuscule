@@ -1,12 +1,11 @@
-// tslint:disable:no-floating-promises
 import {createTestingPromise} from '../../../test/utils';
 import schedule from '../src/scheduler';
 
-interface TaskObject {
-  readonly children: ReadonlyArray<TaskObject>;
+type TaskObject = {
+  readonly children: readonly TaskObject[];
   readonly task: () => void;
   readonly throws?: boolean;
-}
+};
 
 describe('@corpuscule/utils', () => {
   describe('schedule', () => {
@@ -51,6 +50,7 @@ describe('@corpuscule/utils', () => {
       const tree = createTaskObject(function task(this: TaskObject): void {
         taskSpy();
         for (const child of this.children) {
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
           schedule(child.task.bind(child));
         }
       });

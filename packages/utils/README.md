@@ -13,7 +13,7 @@ API documentation is available for the following modules:
 * [@corpuscule/utils/lib/defineExtendable](./docs/defineExtendable.md).
 * [@corpuscule/utils/lib/makeAccessor](./docs/makeAccessors.md).
 * [@corpuscule/utils/lib/propertyUtils](./docs/propertyUtils.md).
-* [@corpuscule/utils/lib/reflectClassMethods](./docs/reflectClassMethods.md).
+* [@corpuscule/utils/lib/reflectClassMethods](docs/reflectMethods.md).
 * [@corpuscule/utils/lib/scheduler](./docs/scheduler.md).
 * [@corpuscule/utils/lib/setters](./docs/setters.md).
 * [@corpuscule/utils/lib/shallowEqual](./docs/shallowEqual.md).

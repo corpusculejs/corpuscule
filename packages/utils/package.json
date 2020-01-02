@@ -6,7 +6,11 @@
     "lib"
   ],
   "scripts": {
-    "build": "node ../../scripts/build.js"
+    "build": "npm run build:remove && run-p build:babel build:dts",
+    "build:babel": "babel src -d lib -x .ts --config-file ../../.babelrc",
+    "build:dts": "tsc -p tsconfig.build.json --emitDeclarationOnly",
+    "build:remove": "rimraf lib",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "author": "Vlad Rindevich <rindevich.vs@gmail.com> (https://github.com/Lodin)",
   "bugs": {

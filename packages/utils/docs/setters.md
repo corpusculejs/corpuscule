@@ -39,7 +39,11 @@ under the `key`. If the array does not exist yet, it will be created.
 ##### Overload #1
 
 ```typescript
-function setArray<K, V>(store: Map<K, V[]>, key: K, array: ReadonlyArray<V>): void;
+function setArray<Key, Value>(
+  store: Map<Key, Value[]>,
+  key: Key,
+  array: ReadonlyArray<Value>,
+): void;
 ```
 
 This overload accepts `Map` instance as a store.
@@ -57,10 +61,10 @@ store.get('foo'); // ['bar', 'baz']
 ##### Overload #2
 
 ```typescript
-export function setArray<K extends object, V>(
-  store: WeakMap<K, V[]>,
-  key: K,
-  array: ReadonlyArray<V>,
+function setArray<Key extends object, Value>(
+  store: WeakMap<Key, Value[]>,
+  key: Key,
+  array: ReadonlyArray<Value>,
 ): void;
 ```
 
@@ -79,15 +83,15 @@ store.get(key); // ['bar', 'baz']
 
 ##### Type Parameters
 
-- **K** - a type of the store key.
-- **V** - a type of the store value.
+- **Key** - a type of the store key.
+- **Value** - a type of the store value.
 
 ##### Parameters
 
-- **store**: _Map<K, V>_ - a `Map` instance which contains or should contain the
+- **store**: _Map<Key, Value>_ - a `Map` instance which contains or should contain the
   target array.
-- **key**: _K_ - a key to access the target array.
-- **array**: _V_ - an array with new elements to add to the target array.
+- **key**: _Key_ - a key to access the target array.
+- **array**: _Value_ - an array with new elements to add to the target array.
 
 ##### Returns
 
@@ -101,10 +105,10 @@ Adds new properties listed in the `object` parameter to the object in the
 ##### Overload #1
 
 ```typescript
-function setObject<K, V extends object>(
-  store: Map<K, V>,
-  key: K,
-  object: Readonly<Partial<V>>,
+function setObject<Key, Value extends object>(
+  store: Map<Key, Value>,
+  key: Key,
+  object: Readonly<Partial<Value>>,
 ): void;
 ```
 
@@ -123,10 +127,10 @@ store.get('foo'); // {bar: 1, baz: 2}
 ##### Overload #2
 
 ```typescript
-function setObject<K extends object, V extends object>(
-  store: WeakMap<K, V>,
-  key: K,
-  object: Readonly<Partial<V>>,
+function setObject<Key extends object, Value extends object>(
+  store: WeakMap<Key, Value>,
+  key: Key,
+  object: Readonly<Partial<Value>>,
 ): void;
 ```
 
@@ -145,14 +149,14 @@ store.get(key); // {bar: 1, baz: 2}
 
 ##### Type Parameters
 
-- **K**: _object_ - a type of the store key.
-- **V**: _object_ - a type of the store value.
+- **Key**: _object_ - a type of the store key.
+- **Value**: _object_ - a type of the store value.
 
 ##### Parameters
 
-- **store**: _Map<K, V>_ - a `Map` instance which contains or should contain the target object.
-- **key**: _K_ - a key to access the target object.
-- **object**: _V_ - an object with new properties to add to the target object.
+- **store**: _Map<Key, Value>_ - a `Map` instance which contains or should contain the target object.
+- **key**: _Key_ - a key to access the target object.
+- **object**: _Value_ - an object with new properties to add to the target object.
 
 ##### Returns
 

@@ -1,5 +1,15 @@
-let currentNode;
-let newNode;
+type Node = {
+  child?: Node;
+  executed: boolean;
+  parent?: Node;
+  reject: (reason: Error) => void;
+  resolve: () => void;
+  sibling?: Node;
+  task: () => void;
+};
+
+let currentNode: Node | undefined;
+let newNode: Node | undefined;
 
 /**
  * The function schedules tree-structured tasks where one task could generate a
@@ -11,8 +21,8 @@ let newNode;
  *
  * If task execution runs into an error, it rejects all promises until the top one.
  */
-const walk = () => {
-  let rejectionReason;
+const walk = (): void => {
+  let rejectionReason: Error | undefined;
 
   while (currentNode) {
     const {executed, resolve, reject, task} = currentNode;
@@ -23,7 +33,7 @@ const walk = () => {
         currentNode = currentNode.parent;
       } else {
         resolve();
-        currentNode = currentNode.sibling || currentNode.parent;
+        currentNode = currentNode.sibling ?? currentNode.parent;
       }
 
       continue;
@@ -37,20 +47,13 @@ const walk = () => {
       continue;
     }
 
-    currentNode = currentNode.child || currentNode;
+    currentNode = currentNode.child ?? currentNode;
   }
 
   newNode = currentNode;
 };
 
-/**
- * The function schedules execution of a task.
- *
- * @param {Function} task function to schedule
- * @returns {Promise<void>} a Promise which resolves when the task is completed or rejects if there
- * is any error.
- */
-const schedule = async task =>
+const schedule = async (task: () => void): Promise<void> =>
   new Promise((resolve, reject) => {
     const previousNode = newNode;
 

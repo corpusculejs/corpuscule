@@ -1,5 +1,5 @@
-// tslint:disable:no-unbound-method
-import reflectClassMethods from '../src/reflectClassMethods';
+/* eslint-disable @typescript-eslint/unbound-method, @typescript-eslint/no-empty-function, max-classes-per-file */
+import reflectMethods from '../src/reflectMethods';
 
 describe('@corpuscule/utils', () => {
   describe('reflectClassMethods', () => {
@@ -12,7 +12,7 @@ describe('@corpuscule/utils', () => {
         public method3(): void {}
       }
 
-      expect(reflectClassMethods(Test.prototype, ['method', 'method2'])).toEqual({
+      expect(reflectMethods(Test.prototype, ['method', 'method2'])).toEqual({
         method: Test.prototype.method,
         method2: Test.prototype.method2,
       });
@@ -23,10 +23,12 @@ describe('@corpuscule/utils', () => {
         public method(): void {}
       }
 
-      const fallbackForMethod2 = () => {};
+      const fallbackForMethod2 = (): void => {};
 
       expect(
-        reflectClassMethods(Test.prototype, ['method', 'method2'], {method2: fallbackForMethod2}),
+        reflectMethods(Test.prototype, ['method', 'method2'], {
+          method2: fallbackForMethod2,
+        }),
       ).toEqual({
         method: Test.prototype.method,
         method2: fallbackForMethod2,
@@ -38,7 +40,7 @@ describe('@corpuscule/utils', () => {
         public method(): void {}
       }
 
-      expect(reflectClassMethods(Test.prototype, ['method', 'method2'])).toEqual({
+      expect(reflectMethods(Test.prototype, ['method', 'method2'])).toEqual({
         method: Test.prototype.method,
         method2: jasmine.any(Function),
       });

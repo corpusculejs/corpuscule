@@ -17,7 +17,10 @@ describe('@corpuscule/utils', () => {
         }
       }
 
-      const descriptor = Object.getOwnPropertyDescriptor(Test.prototype, 'foo')!;
+      const descriptor = Object.getOwnPropertyDescriptor(
+        Test.prototype,
+        'foo',
+      )!;
 
       const accessorParts = makeAccessor(descriptor, initializers);
 
