@@ -34,7 +34,7 @@ import makeAccessor from '@corpuscule/utils/lib/makeAccessor';
 
 ```typescript
 function makeAccessor(
-  descriptor: PropertyDescriptor & {initializer?: () => unknown},
+  descriptor: BabelPropertyDescriptor,
   initializers: Initializer[],
 ): Required<Pick<PropertyDescriptor, 'get' | 'set'>> &
   Omit<PropertyDescriptor, 'get' | 'set'>;
@@ -46,7 +46,7 @@ accessor, it will be returned as is.
 
 ##### Parameters
 
-- **descriptor**: _Babel [PropertyDescriptor](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty#Description)_ -
+- **descriptor**: _[BabelPropertyDescriptor](../../typings/docs/BabelPropertyDescriptor.md)_ -
   a property or an accessor descriptor.
 - **initializers**: _[Initializer](../../typings/docs/index.md#initializer)[]_ -
   an array of functions to register the function to execute during the class

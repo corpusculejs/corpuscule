@@ -2,7 +2,7 @@ import './asserts';
 import './defineExtendable';
 import './makeAccessor';
 import './propertyUtils';
-import './reflectClassMethods';
+import './reflectMethods';
 import './scheduler';
 import './setters';
 import './shallowEqual';

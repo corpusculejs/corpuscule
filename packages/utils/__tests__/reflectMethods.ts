@@ -2,7 +2,7 @@
 import reflectMethods from '../src/reflectMethods';
 
 describe('@corpuscule/utils', () => {
-  describe('reflectClassMethods', () => {
+  describe('reflectMethods', () => {
     it('creates an object with specified target methods if exist', () => {
       class Test {
         public method(): void {}

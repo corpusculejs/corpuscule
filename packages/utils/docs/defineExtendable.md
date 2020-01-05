@@ -28,13 +28,16 @@ import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
 ### defineExtendable
 
 ```typescript
+type BasicMethod = (this: any, ...args: any[]) => any;
+
 function defineExtendable<
-  Class extends object,
-  PropertyName extends PropertyKey
+  C,
+  B extends Record<PropertyKey, BasicMethod>,
+  E extends B
 >(
-  klass: Constructor<Class>,
-  baseClassMethods: Record<PropertyName, Function>,
-  extendedClassMethods: Record<PropertyName, Function>,
+  klass: Constructor<C, Partial<B>>,
+  baseClassMethods: B,
+  extendedClassMethods: Exact<E, B>,
   initializers: Initializer[],
 ): void;
 ```
@@ -51,23 +54,17 @@ wrapper that calls two different methods depending on whether the class is
 extended or not. If the class is not extended, the Corpuscule worker is called;
 otherwise, the original user-defined method is used.
 
-##### Type Parameters
-
-- **Class**: object - a type of the class the function is applied to.
-
-- **PropertyName**: PropertyKey - a name of property that needs to be
-  extendable.
-
 ##### Parameters
 
-- **klass**: _[Constructor](../../typings/docs/Constructor.md)<Class>_ - a class
+- **klass**: _[Constructor](../../typings/docs/Constructor.md)_ - a class
   declaration which lifecycle hooks should be redefined to be extendable.
 
-- **baseClassMethods**: _Record<PropertyName, Function>_ - an object with
-  methods that should be used in case the class is not extended.
+- **basicMethods**: _object_ - an object with methods that should be used in
+  case the class is not extended.
 
-- **extendedClassMethods**: _Record<PropertyName, Function>_ - an object with
-  methods that should be used in case the class is extended.
+- **extendedMethods**: _object_ - an object with methods that should be used in
+  case the class is extended. It should have methods with same signatures as
+  `basicMethods` object.
 
 - **initializers**: _[Initializer](../../typings/docs/index.md#initializer)[]_ -
   an array of functions to register the function to execute during the class

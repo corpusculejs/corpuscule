@@ -1,19 +1,30 @@
 /* istanbul ignore next */
+import {Exact} from '@corpuscule/typings';
+
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const noop = (): void => {};
 
+export type Reflection<O, F, K extends PropertyKey> = {
+  [P in K]: P extends keyof O
+    ? Exclude<O[P], undefined>
+    : P extends keyof F
+    ? Exclude<F[P], undefined>
+    : typeof noop;
+};
+
 const reflectMethods = <
-  PropertyName extends PropertyKey,
-  ObjectToReflect extends Partial<Record<PropertyName, Function>>
+  O,
+  F extends Record<K, Function>,
+  K extends PropertyKey
 >(
-  objectToReflect: ObjectToReflect,
-  methodNames: readonly PropertyName[],
-  fallbacks: Partial<Record<PropertyName, Function>> = {},
-): Record<PropertyName, Function> =>
-  methodNames.reduce<Record<PropertyName, Function>>((reflection, name) => {
-    reflection[name] = objectToReflect[name] ?? fallbacks[name] ?? noop;
+  object: O & Partial<Record<K, Function>>,
+  methodNames: K[],
+  fallbacks: Partial<Exact<F, Record<K, Function>>> = {},
+): Reflection<O, F, K> =>
+  methodNames.reduce<Partial<Record<K, Function>>>((reflection, name) => {
+    reflection[name] = object[name] ?? fallbacks[name] ?? noop;
 
     return reflection;
-  }, {} as Record<PropertyName, Function>);
+  }, {}) as Reflection<O, F, K>;
 
 export default reflectMethods;

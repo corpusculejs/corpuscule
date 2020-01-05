@@ -33,21 +33,32 @@ import reflectMethods from '@corpuscule/utils/lib/reflectMethods';
 ### reflectMethods
 
 ```typescript
+function noop(): void {}
+
+type Reflection<O, F, K extends PropertyKey> = {
+  [P in K]: P extends keyof O
+    ? Exclude<O[P], undefined>
+    : P extends keyof F
+    ? Exclude<F[P], undefined>
+    : typeof noop;
+};
+
 function reflectMethods<
-  PropertyName extends PropertyKey,
-  ObjectToReflect extends Partial<Record<PropertyName, Function>>
+  O,
+  F extends Record<K, Function>,
+  K extends PropertyKey
 >(
-  objectToReflect: ObjectToReflect,
-  methodNames: readonly PropertyName[],
-  fallbacks: Partial<Record<PropertyName, Function>> = {},
-): Record<PropertyName, Function>;
+  object: O & Partial<Record<K, Function>>,
+  methodNames: K[],
+  fallbacks?: Partial<Exact<F, Record<K, Function>>>,
+): Reflection<O, F, K>;
 ```
 
-Extracts all methods mentioned in `names` from the `objectToReflect`, puts them
+Extracts all methods mentioned in `methodNames` from the `object`, puts them
 together into the separate object and returns it. If the method does not exist
-in the `objectToReflect`, the function from the `fallbacks` under the same name
-will be used. If there is no appropriate element in the `objectToReflect` or the
-`fallbacks`, the method will be a noop function.
+in the `object`, the function from the `fallbacks` under the same name
+will be used. If there is no appropriate element in the `object` or the
+`fallbacks`, the method will be a `noop` function.
 
 ```typescript
 class Foo {
@@ -78,25 +89,17 @@ reflection.baz(); // baz called
 reflection.boo(); // <nothing happens>
 ```
 
-##### Type Parameters
-
-- **PropertyName**: PropertyKey - a name of property that needs to be
-  extendable.
-
-- **ObjectToReflect**: object - a type of the object the function is applied to.
-
 ##### Parameters
 
-- **object**: _ObjectToReflect_ - an object with methods to reflect.
-- **methodNames**: _PropertyName[]_ - a list of names of methods to extract.
-- <sub>[optional]</sub> **fallbacks**: _Partial<Record<PropertyName, Function>>_ -
-  a list of fallback functions to replace methods which are missing in the
-  `objectToReflect`.
+- **object**: _object_ - an object with methods to reflect.
+- **methodNames**: _PropertyKey[]_ - a list of names of methods to extract.
+- <sub>[optional]</sub> **fallbacks**: _object_ - a list of fallback functions
+  to replace methods which are missing in the `object`.
 
 ##### Returns
 
-**Types**: _Record<PropertyName, Function>_
+**Types**: _object_
 
-An object that has a method for all keys mentioned in the `names` array. Method
-could be an originl method (both own or inherited), a fallback or a noop
+An object that has a method for all keys mentioned in the `methodNames` array.
+Method could be an originl method (both own or inherited), a fallback or a noop
 function.

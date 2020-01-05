@@ -1,10 +1,10 @@
-import {Initializer} from '@corpuscule/typings';
+import {BabelPropertyDescriptor, Initializer} from '@corpuscule/typings';
 
 export type NewAccessor = Required<Pick<PropertyDescriptor, 'get' | 'set'>> &
   Omit<PropertyDescriptor, 'get' | 'set'>;
 
 const makeAccessor = (
-  descriptor: PropertyDescriptor & {initializer?: () => unknown},
+  descriptor: BabelPropertyDescriptor,
   initializers: Initializer[],
 ): NewAccessor => {
   const {get, initializer, set} = descriptor;
