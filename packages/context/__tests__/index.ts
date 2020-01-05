@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars, max-classes-per-file */
+import {Token} from '@corpuscule/utils/lib/tokenRegistry';
 import {defineCE, fixture} from '@open-wc/testing-helpers';
 import {createSimpleContext, CustomElement} from '../../../test/utils';
 import {
@@ -9,20 +11,20 @@ import {
 } from '../src';
 
 describe('@corpuscule/context', () => {
-  let consumer;
-  let provider;
-  let token;
-  let value;
+  let consumer: ClassDecorator;
+  let provider: (defaultValue?: unknown) => ClassDecorator;
+  let token: Token;
+  let value: PropertyDecorator;
 
   beforeEach(() => {
     token = createContextToken();
     consumer = basicConsumer(token);
-    provider = basicProvider(token);
+    provider = defaultValue => basicProvider(token, defaultValue);
     value = basicValue(token);
   });
 
   it('creates context', async () => {
-    @provider
+    @provider()
     class Provider extends CustomElement {
       @value public providingValue: number = 2;
     }
@@ -38,7 +40,7 @@ describe('@corpuscule/context', () => {
   });
 
   it('provides context for all consumers', async () => {
-    @provider
+    @provider()
     class Provider extends CustomElement {
       @value public providingValue: number = 2;
     }
@@ -67,9 +69,7 @@ describe('@corpuscule/context', () => {
   });
 
   it('allows to use default value for context', async () => {
-    provider = basicProvider(token, 2);
-
-    @provider
+    @provider(2)
     class Provider extends CustomElement {
       @value public providingValue!: number;
     }
@@ -79,16 +79,17 @@ describe('@corpuscule/context', () => {
       @value public contextValue!: number;
     }
 
-    const [providerElement, consumerElement] = await createSimpleContext(Provider, Consumer);
+    const [providerElement, consumerElement] = await createSimpleContext(
+      Provider,
+      Consumer,
+    );
 
     expect(providerElement.providingValue).toBe(2);
     expect(consumerElement.contextValue).toBe(2);
   });
 
   it('allows to set value dynamically', async () => {
-    provider = basicProvider(token, 2);
-
-    @provider
+    @provider(2)
     class Provider extends CustomElement {
       @value public providingValue!: number;
     }
@@ -98,7 +99,10 @@ describe('@corpuscule/context', () => {
       @value public contextValue!: number;
     }
 
-    const [providerElement, consumerElement] = await createSimpleContext(Provider, Consumer);
+    const [providerElement, consumerElement] = await createSimpleContext(
+      Provider,
+      Consumer,
+    );
 
     providerElement.providingValue = 10;
 
@@ -109,7 +113,7 @@ describe('@corpuscule/context', () => {
     const connectedSpy = jasmine.createSpy('onConnect');
     const disconnectedSpy = jasmine.createSpy('onDisconnect');
 
-    @provider
+    @provider()
     class Provider extends CustomElement {
       @value public providingValue!: number;
 
@@ -135,7 +139,10 @@ describe('@corpuscule/context', () => {
       }
     }
 
-    const [providerElement, consumerElement] = await createSimpleContext(Provider, Consumer);
+    const [providerElement, consumerElement] = await createSimpleContext(
+      Provider,
+      Consumer,
+    );
 
     consumerElement.remove();
     providerElement.remove();
@@ -145,7 +152,7 @@ describe('@corpuscule/context', () => {
   });
 
   it('stops providing value to disconnected consumers', async () => {
-    @provider
+    @provider()
     class Provider extends CustomElement {
       @value public providingValue: number = 2;
     }
@@ -155,7 +162,10 @@ describe('@corpuscule/context', () => {
       @value public contextValue!: number;
     }
 
-    const [providerElement, consumerElement] = await createSimpleContext(Provider, Consumer);
+    const [providerElement, consumerElement] = await createSimpleContext(
+      Provider,
+      Consumer,
+    );
 
     consumerElement.remove();
 
@@ -167,7 +177,7 @@ describe('@corpuscule/context', () => {
   it("removes any default consumer's value", async () => {
     const constructorSpy = jasmine.createSpy('constructor');
 
-    @provider
+    @provider()
     class Provider extends CustomElement {
       @value public providingValue: number = 2;
     }
@@ -189,7 +199,7 @@ describe('@corpuscule/context', () => {
   });
 
   it('allows to use accessors for a value', async () => {
-    @provider
+    @provider()
     class Provider extends CustomElement {
       public storage: number = 10;
 
@@ -217,16 +227,17 @@ describe('@corpuscule/context', () => {
       }
     }
 
-    const [providerElement, consumerElement] = await createSimpleContext(Provider, Consumer);
+    const [providerElement, consumerElement] = await createSimpleContext(
+      Provider,
+      Consumer,
+    );
 
     expect(providerElement.providingValue).toBe(10);
     expect(consumerElement.contextValue).toBe(10);
   });
 
   it('sets default value for provider value with accessors if it is not defined', async () => {
-    provider = basicProvider(token, 2);
-
-    @provider
+    @provider(2)
     class Provider extends CustomElement {
       public storage!: number;
 
@@ -254,14 +265,17 @@ describe('@corpuscule/context', () => {
       }
     }
 
-    const [providerElement, consumerElement] = await createSimpleContext(Provider, Consumer);
+    const [providerElement, consumerElement] = await createSimpleContext(
+      Provider,
+      Consumer,
+    );
 
     expect(providerElement.providingValue).toBe(2);
     expect(consumerElement.contextValue).toBe(2);
   });
 
   it('detects provider', () => {
-    @provider
+    @provider()
     class Provider extends CustomElement {
       @value public providingValue: number = 2;
     }
@@ -276,7 +290,7 @@ describe('@corpuscule/context', () => {
   });
 
   it('sends undefined if there is not value set', async () => {
-    @provider
+    @provider()
     class Provider extends CustomElement {
       @value public providingValue: undefined;
     }
@@ -290,7 +304,7 @@ describe('@corpuscule/context', () => {
     expect(consumerElement.contextValue).toBeUndefined();
   });
 
-  it('throws an error if no provider exists for context', done => {
+  it('throws an error if no provider exists for context', async done => {
     @consumer
     class Consumer extends CustomElement {
       @value public contextValue!: number;
@@ -303,15 +317,15 @@ describe('@corpuscule/context', () => {
       done();
     };
 
-    fixture(`<${tag}></${tag}>`);
+    await fixture(`<${tag}></${tag}>`);
   });
 
   it('throws an error if no value is marked with @value', () => {
     expect(() => {
-      @provider
+      @provider()
       // @ts-ignore
       class Provider extends CustomElement {}
-    }).toThrowError('@provider requires any property marked with @value');
+    }).toThrowError('@provider() requires any property marked with @value');
 
     expect(() => {
       @consumer
@@ -322,8 +336,9 @@ describe('@corpuscule/context', () => {
 
   it('does not throw an error if class already have own lifecycle element', () => {
     expect(() => {
-      @provider
+      @provider()
       // @ts-ignore
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class Provider extends CustomElement {
         @value
         public providingValue: number = 2;
@@ -334,9 +349,9 @@ describe('@corpuscule/context', () => {
           this.disconnectedCallback = this.connectedCallback.bind(this);
         }
 
-        public connectedCallback(): void {} // tslint:disable-line:no-empty
+        public connectedCallback(): void {}
 
-        public disconnectedCallback(): void {} // tslint:disable-line:no-empty
+        public disconnectedCallback(): void {}
       }
     }).not.toThrow();
 
@@ -353,9 +368,10 @@ describe('@corpuscule/context', () => {
           this.disconnectedCallback = this.connectedCallback.bind(this);
         }
 
-        public connectedCallback(): void {} // tslint:disable-line:no-empty
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        public connectedCallback(): void {}
 
-        public disconnectedCallback(): void {} // tslint:disable-line:no-empty
+        public disconnectedCallback(): void {}
       }
     }).not.toThrow();
   });

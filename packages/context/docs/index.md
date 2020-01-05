@@ -24,7 +24,12 @@ $ yarn add @corpuscule/context
 Then import it:
 
 ```typescript
-import {createContextToken, consumer, provider, value} from '@corpuscule/context';
+import {
+  createContextToken,
+  consumer,
+  provider,
+  value,
+} from '@corpuscule/context';
 ```
 
 ## How it works
@@ -84,7 +89,12 @@ Schema for this idea is following:
 
 ```html
 <script type="module">
-  import {createContextToken, consumer, provider, value} from '@corpuscule/context';
+  import {
+    createContextToken,
+    consumer,
+    provider,
+    value,
+  } from '@corpuscule/context';
 
   const token = createContextToken();
 
@@ -184,7 +194,7 @@ None
 #### isProvider
 
 ```typescript
-function isProvider(token: Token, klass: unknown): boolean;
+function isProvider(token: Token, klass: Constructor<object>): boolean;
 ```
 
 Detects if the class declaration plays the provider role in the context system.
@@ -199,7 +209,8 @@ Detects if the class declaration plays the provider role in the context system.
 - **token**: _[Token](../../utils/docs/tokenRegistry.md#token)_ - a token
   created by [createContextToken](#createcontexttoken) function and sent to the
   [@provider](#provider) decorator applied to the class declaration.
-- **klass**: _unknown_ - a class declaration to check.
+- **klass**: _[Constructor](../../typings/docs/Constructor.md)_ - a class
+  declaration to check.
 
 ##### Returns
 
