@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import {defineCE, fixture} from '@open-wc/testing-helpers';
 import {query, queryAll} from '../src';
 
@@ -15,7 +16,6 @@ describe('@corpuscule/element', () => {
         }
 
         public connectedCallback(): void {
-          // tslint:disable-next-line:no-inner-html
           this.shadowRoot!.innerHTML = `
             <div></div>
             <div class="wrapper">
@@ -38,7 +38,6 @@ describe('@corpuscule/element', () => {
         public target!: HTMLElement;
 
         public connectedCallback(): void {
-          // tslint:disable-next-line:no-inner-html
           this.innerHTML = `
             <div></div>
             <div class="wrapper">
@@ -67,7 +66,6 @@ describe('@corpuscule/element', () => {
         }
 
         public connectedCallback(): void {
-          // tslint:disable-next-line:no-inner-html
           this.innerHTML = `
             <div></div>
             <div class="wrapper">
@@ -75,7 +73,6 @@ describe('@corpuscule/element', () => {
             </div>
           `;
 
-          // tslint:disable-next-line:no-inner-html
           this.shadowRoot!.innerHTML = `<div id="target">Another text</div>`;
         }
       }
@@ -101,7 +98,6 @@ describe('@corpuscule/element', () => {
         }
 
         public connectedCallback(): void {
-          // tslint:disable-next-line:no-inner-html
           this.shadowRoot!.innerHTML = `
             <div></div>
             <div class="wrapper">
@@ -129,7 +125,6 @@ describe('@corpuscule/element', () => {
         public targets!: NodeList;
 
         public connectedCallback(): void {
-          // tslint:disable-next-line:no-inner-html
           this.innerHTML = `
             <div></div>
             <div class="wrapper">
@@ -163,7 +158,6 @@ describe('@corpuscule/element', () => {
         }
 
         public connectedCallback(): void {
-          // tslint:disable-next-line:no-inner-html
           this.innerHTML = `
             <div></div>
             <div class="wrapper">

@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import {defineCE, fixture} from '@open-wc/testing-helpers';
 import {CustomElement} from '../../../test/utils';
 import {attribute} from '../src';
@@ -6,7 +7,7 @@ describe('@corpuscule/element', () => {
   describe('@attribute', () => {
     it('gets string attribute', async () => {
       class Test extends CustomElement {
-        public static readonly observedAttributes: ReadonlyArray<string> = [];
+        public static readonly observedAttributes: readonly string[] = [];
 
         @attribute('attr', String)
         public attribute: string | null = null;
@@ -20,7 +21,7 @@ describe('@corpuscule/element', () => {
 
     it('properly gets boolean attribute', async () => {
       class Test extends CustomElement {
-        public static readonly observedAttributes: ReadonlyArray<string> = [];
+        public static readonly observedAttributes: readonly string[] = [];
 
         @attribute('a1', Boolean)
         public attr1: boolean | null = null;
@@ -38,7 +39,7 @@ describe('@corpuscule/element', () => {
 
     it('properly gets number attributes', async () => {
       class Test extends CustomElement {
-        public static readonly observedAttributes: ReadonlyArray<string> = [];
+        public static readonly observedAttributes: readonly string[] = [];
 
         @attribute('num', Number)
         public numAttribute: number | null = null;
@@ -52,7 +53,7 @@ describe('@corpuscule/element', () => {
 
     it('sets string attribute', async () => {
       class Test extends CustomElement {
-        public static readonly observedAttributes: ReadonlyArray<string> = [];
+        public static readonly observedAttributes: readonly string[] = [];
 
         @attribute('attr', String)
         public attribute: string | null = null;
@@ -68,7 +69,7 @@ describe('@corpuscule/element', () => {
 
     it('properly sets boolean attributes', async () => {
       class Test extends CustomElement {
-        public static readonly observedAttributes: ReadonlyArray<string> = [];
+        public static readonly observedAttributes: readonly string[] = [];
 
         @attribute('a1', Boolean)
         public attr1: boolean | null = null;
@@ -89,7 +90,7 @@ describe('@corpuscule/element', () => {
 
     it('properly sets number attribute', async () => {
       class Test extends CustomElement {
-        public static readonly observedAttributes: ReadonlyArray<string> = [];
+        public static readonly observedAttributes: readonly string[] = [];
 
         @attribute('num', Number)
         public numAttribute: number | null = null;
@@ -105,7 +106,7 @@ describe('@corpuscule/element', () => {
 
     it('initializes and fills "observedAttributes"', () => {
       class Test extends CustomElement {
-        public static readonly observedAttributes: ReadonlyArray<string> = [];
+        public static readonly observedAttributes: readonly string[] = [];
 
         @attribute('a1', Boolean)
         public attr1: boolean | null = null;
@@ -119,10 +120,12 @@ describe('@corpuscule/element', () => {
     });
 
     it('runs "attributeChangedCallback" on change', async () => {
-      const attributeChangedCallbackSpy = jasmine.createSpy('onAttributeChange');
+      const attributeChangedCallbackSpy = jasmine.createSpy(
+        'onAttributeChange',
+      );
 
       class Test extends CustomElement {
-        public static readonly observedAttributes: ReadonlyArray<string> = [];
+        public static readonly observedAttributes: readonly string[] = [];
 
         @attribute('attr', String)
         public attribute: string | null = null;
@@ -141,7 +144,11 @@ describe('@corpuscule/element', () => {
 
       test.attribute = 'test';
 
-      expect(attributeChangedCallbackSpy).toHaveBeenCalledWith('attr', null, 'test');
+      expect(attributeChangedCallbackSpy).toHaveBeenCalledWith(
+        'attr',
+        null,
+        'test',
+      );
       expect(attributeChangedCallbackSpy).toHaveBeenCalledTimes(1);
     });
 
@@ -152,12 +159,16 @@ describe('@corpuscule/element', () => {
           @attribute('attr', Object as any)
           public attribute: object | null = null;
         }
-      }).toThrow(new TypeError('Guard for @attribute should be either Number, Boolean or String'));
+      }).toThrow(
+        new TypeError(
+          'Guard for @attribute should be either Number, Boolean or String',
+        ),
+      );
     });
 
     it('throws an error if value does not fit guard', async () => {
       class Test extends CustomElement {
-        public static readonly observedAttributes: ReadonlyArray<string> = [];
+        public static readonly observedAttributes: readonly string[] = [];
 
         @attribute('num', Number)
         public numAttribute: number | null = null;
@@ -168,12 +179,16 @@ describe('@corpuscule/element', () => {
 
       expect(() => {
         (test as any).numAttribute = 'str';
-      }).toThrow(new TypeError('Value applied to "numAttribute" is not Number or undefined'));
+      }).toThrow(
+        new TypeError(
+          'Value applied to "numAttribute" is not Number or undefined',
+        ),
+      );
     });
 
     it('gets null if no attribute exist', async () => {
       class Test extends CustomElement {
-        public static readonly observedAttributes: ReadonlyArray<string> = [];
+        public static readonly observedAttributes: readonly string[] = [];
 
         @attribute('num', Number)
         public numAttribute: number | null = null;
@@ -187,7 +202,7 @@ describe('@corpuscule/element', () => {
 
     it('accepts both null and undefined as a value of attribute', async () => {
       class Test extends CustomElement {
-        public static readonly observedAttributes: ReadonlyArray<string> = [];
+        public static readonly observedAttributes: readonly string[] = [];
 
         @attribute('a1', Number)
         public a1: number | null = 10;
@@ -207,7 +222,7 @@ describe('@corpuscule/element', () => {
 
     it('delays setting observedAttributes to the end of class creation', () => {
       class Test extends CustomElement {
-        public static readonly observedAttributes: ReadonlyArray<string> = [];
+        public static readonly observedAttributes: readonly string[] = [];
         @attribute('attr', Boolean) public attribute: boolean = false;
       }
 

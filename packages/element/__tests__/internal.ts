@@ -1,4 +1,4 @@
-// tslint:disable:max-classes-per-file
+/* eslint-disable @typescript-eslint/no-empty-function, max-classes-per-file */
 import {internal, internalChangedCallback} from '../src';
 
 class CorpusculeElementMock {
@@ -6,9 +6,7 @@ class CorpusculeElementMock {
     _key: PropertyKey,
     _oldValue: unknown,
     _newValue: unknown,
-  ): void {
-    // tslint:disable-line:no-empty
-  }
+  ): void {}
 }
 
 describe('@corpuscule/element', () => {
@@ -74,7 +72,11 @@ describe('@corpuscule/element', () => {
       internalChangedCallbackSpy.calls.reset();
 
       test.accessor = 'test';
-      expect(internalChangedCallbackSpy).toHaveBeenCalledWith('accessor', 'str', 'test');
+      expect(internalChangedCallbackSpy).toHaveBeenCalledWith(
+        'accessor',
+        'str',
+        'test',
+      );
       expect(internalChangedCallbackSpy).toHaveBeenCalledTimes(1);
     });
 
@@ -85,7 +87,11 @@ describe('@corpuscule/element', () => {
         @internal
         public prop: number = 10;
 
-        public [internalChangedCallback](_name: string, _oldValue: number, newValue: number): void {
+        public [internalChangedCallback](
+          _name: string,
+          _oldValue: number,
+          newValue: number,
+        ): void {
           internalChangedCallbackSpy();
           expect(this.prop).toBe(newValue);
         }

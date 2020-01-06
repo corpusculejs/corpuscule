@@ -40,7 +40,7 @@ There are the following decorators that makes the system work:
 
 ### Structures
 
-- [CorpusculeElement](CorpusculeElement.md).
+- [CorpusculeElement](./CorpusculeElement.md).
 
 ### Decorators
 

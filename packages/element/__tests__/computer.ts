@@ -1,5 +1,10 @@
+/* eslint-disable max-classes-per-file */
 import {Token} from '@corpuscule/utils/lib/tokenRegistry';
-import {computer as basicComputer, createComputingToken, observer as basicObserver} from '../src';
+import {
+  computer as basicComputer,
+  createComputingToken,
+  observer as basicObserver,
+} from '../src';
 
 const repeatGetTenTimes = <C extends object, M extends keyof C, T extends C[M]>(
   instance: C,
@@ -7,7 +12,6 @@ const repeatGetTenTimes = <C extends object, M extends keyof C, T extends C[M]>(
 ): T => {
   let res: any;
 
-  // tslint:disable-next-line:increment-decrement
   for (let i = 0; i < 10; i++) {
     res = instance[method];
   }
