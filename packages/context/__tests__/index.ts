@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars, max-classes-per-file */
+import {CustomElement} from '@corpuscule/typings';
 import {Token} from '@corpuscule/utils/lib/tokenRegistry';
 import {defineCE, fixture} from '@open-wc/testing-helpers';
-import {createSimpleContext, CustomElement} from '../../../test/utils';
+import {createSimpleContext} from '../../../test/utils';
 import {
   consumer as basicConsumer,
   createContextToken,
@@ -25,12 +26,12 @@ describe('@corpuscule/context', () => {
 
   it('creates context', async () => {
     @provider()
-    class Provider extends CustomElement {
+    class Provider extends HTMLElement implements CustomElement {
       @value public providingValue: number = 2;
     }
 
     @consumer
-    class Consumer extends CustomElement {
+    class Consumer extends HTMLElement implements CustomElement {
       @value public contextValue!: number;
     }
 
@@ -41,12 +42,12 @@ describe('@corpuscule/context', () => {
 
   it('provides context for all consumers', async () => {
     @provider()
-    class Provider extends CustomElement {
+    class Provider extends HTMLElement implements CustomElement {
       @value public providingValue: number = 2;
     }
 
     @consumer
-    class Consumer extends CustomElement {
+    class Consumer extends HTMLElement implements CustomElement {
       @value public contextValue!: number;
     }
 
@@ -70,12 +71,12 @@ describe('@corpuscule/context', () => {
 
   it('allows to use default value for context', async () => {
     @provider(2)
-    class Provider extends CustomElement {
+    class Provider extends HTMLElement implements CustomElement {
       @value public providingValue!: number;
     }
 
     @consumer
-    class Consumer extends CustomElement {
+    class Consumer extends HTMLElement implements CustomElement {
       @value public contextValue!: number;
     }
 
@@ -90,12 +91,12 @@ describe('@corpuscule/context', () => {
 
   it('allows to set value dynamically', async () => {
     @provider(2)
-    class Provider extends CustomElement {
+    class Provider extends HTMLElement implements CustomElement {
       @value public providingValue!: number;
     }
 
     @consumer
-    class Consumer extends CustomElement {
+    class Consumer extends HTMLElement implements CustomElement {
       @value public contextValue!: number;
     }
 
@@ -114,7 +115,7 @@ describe('@corpuscule/context', () => {
     const disconnectedSpy = jasmine.createSpy('onDisconnect');
 
     @provider()
-    class Provider extends CustomElement {
+    class Provider extends HTMLElement implements CustomElement {
       @value public providingValue!: number;
 
       public connectedCallback(): void {
@@ -127,7 +128,7 @@ describe('@corpuscule/context', () => {
     }
 
     @consumer
-    class Consumer extends CustomElement {
+    class Consumer extends HTMLElement implements CustomElement {
       @value public contextValue!: number;
 
       public connectedCallback(): void {
@@ -153,12 +154,12 @@ describe('@corpuscule/context', () => {
 
   it('stops providing value to disconnected consumers', async () => {
     @provider()
-    class Provider extends CustomElement {
+    class Provider extends HTMLElement implements CustomElement {
       @value public providingValue: number = 2;
     }
 
     @consumer
-    class Consumer extends CustomElement {
+    class Consumer extends HTMLElement implements CustomElement {
       @value public contextValue!: number;
     }
 
@@ -178,12 +179,12 @@ describe('@corpuscule/context', () => {
     const constructorSpy = jasmine.createSpy('constructor');
 
     @provider()
-    class Provider extends CustomElement {
+    class Provider extends HTMLElement implements CustomElement {
       @value public providingValue: number = 2;
     }
 
     @consumer
-    class Consumer extends CustomElement {
+    class Consumer extends HTMLElement implements CustomElement {
       @value public contextValue: number = 3;
 
       public constructor() {
@@ -200,7 +201,7 @@ describe('@corpuscule/context', () => {
 
   it('allows to use accessors for a value', async () => {
     @provider()
-    class Provider extends CustomElement {
+    class Provider extends HTMLElement implements CustomElement {
       public storage: number = 10;
 
       @value
@@ -214,7 +215,7 @@ describe('@corpuscule/context', () => {
     }
 
     @consumer
-    class Consumer extends CustomElement {
+    class Consumer extends HTMLElement implements CustomElement {
       public storage!: number;
 
       @value
@@ -238,7 +239,7 @@ describe('@corpuscule/context', () => {
 
   it('sets default value for provider value with accessors if it is not defined', async () => {
     @provider(2)
-    class Provider extends CustomElement {
+    class Provider extends HTMLElement implements CustomElement {
       public storage!: number;
 
       @value
@@ -252,7 +253,7 @@ describe('@corpuscule/context', () => {
     }
 
     @consumer
-    class Consumer extends CustomElement {
+    class Consumer extends HTMLElement implements CustomElement {
       public storage!: number;
 
       @value
@@ -276,12 +277,12 @@ describe('@corpuscule/context', () => {
 
   it('detects provider', () => {
     @provider()
-    class Provider extends CustomElement {
+    class Provider extends HTMLElement implements CustomElement {
       @value public providingValue: number = 2;
     }
 
     @consumer
-    class Consumer extends CustomElement {
+    class Consumer extends HTMLElement implements CustomElement {
       @value public contextValue!: number;
     }
 
@@ -291,12 +292,12 @@ describe('@corpuscule/context', () => {
 
   it('sends undefined if there is not value set', async () => {
     @provider()
-    class Provider extends CustomElement {
+    class Provider extends HTMLElement implements CustomElement {
       @value public providingValue: undefined;
     }
 
     @consumer
-    class Consumer extends CustomElement {
+    class Consumer extends HTMLElement implements CustomElement {
       @value public contextValue: undefined;
     }
 
@@ -306,7 +307,7 @@ describe('@corpuscule/context', () => {
 
   it('throws an error if no provider exists for context', async done => {
     @consumer
-    class Consumer extends CustomElement {
+    class Consumer extends HTMLElement implements CustomElement {
       @value public contextValue!: number;
     }
 
@@ -324,13 +325,13 @@ describe('@corpuscule/context', () => {
     expect(() => {
       @provider()
       // @ts-ignore
-      class Provider extends CustomElement {}
+      class Provider extends HTMLElement implements CustomElement {}
     }).toThrowError('@provider() requires any property marked with @value');
 
     expect(() => {
       @consumer
       // @ts-ignore
-      class Consumer extends CustomElement {}
+      class Consumer extends HTMLElement implements CustomElement {}
     }).toThrowError('@consumer requires any property marked with @value');
   });
 
@@ -339,7 +340,7 @@ describe('@corpuscule/context', () => {
       @provider()
       // @ts-ignore
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      class Provider extends CustomElement {
+      class Provider extends HTMLElement implements CustomElement {
         @value
         public providingValue: number = 2;
 
@@ -358,7 +359,7 @@ describe('@corpuscule/context', () => {
     expect(() => {
       @consumer
       // @ts-ignore
-      class Consumer extends CustomElement {
+      class Consumer extends HTMLElement implements CustomElement {
         @value
         public contextValue!: number;
 

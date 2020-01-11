@@ -1,54 +1,41 @@
 import {BabelPropertyDescriptor, CustomElement} from '@corpuscule/typings';
-import makeAccessor from '@corpuscule/utils/lib/makeAccessor';
-import {setObject} from '@corpuscule/utils/lib/setters';
 import {Token} from '@corpuscule/utils/lib/tokenRegistry';
-import {Consume, ContextClassPrototype, tokenRegistry} from './utils';
+import {$consumers, ContextClassPrototype, tokenRegistry} from './utils';
 
 const value = (token: Token): PropertyDecorator =>
   (<C extends CustomElement>(
     {constructor: klass}: ContextClassPrototype<C>,
-    key: PropertyKey,
-    {initializer, ...descriptor}: BabelPropertyDescriptor = {},
+    _: PropertyKey,
+    {initializer}: BabelPropertyDescriptor = {},
   ) => {
-    let $consumers: PropertyKey | undefined;
-    let isProvider: boolean | undefined;
-
-    type ValueClass = {
-      ['consumers']: readonly Consume[];
-    };
-
-    const [, values, providers] = tokenRegistry.get(token)!;
-
-    setObject(values, klass, {
-      value: key,
-    });
+    const [, $value, $providers] = tokenRegistry.get(token)!;
+    let isProvider = false;
 
     klass.__registrations.push(() => {
-      $consumers = values.get(klass)?.consumers;
-      isProvider = providers.has(klass);
+      isProvider = $providers.has(klass);
     });
 
-    const {get, set} = makeAccessor(
-      {
-        ...descriptor,
-        initializer() {
-          return isProvider && initializer ? initializer.call(this) : undefined;
-        },
-      },
-      klass.__initializers,
-    );
+    klass.__initializers.push(self => {
+      if (isProvider && initializer) {
+        $value.set(self, initializer.call(self));
+      }
+    });
 
     return {
       configurable: true,
-      get,
-      set(this: ValueClass, v: unknown) {
-        set.call(this, v);
-
+      get(): unknown | undefined {
+        return $value.get(this);
+      },
+      set(this: C, v: unknown) {
         if (isProvider) {
-          for (const callback of this[$consumers as 'consumers']) {
+          $value.set(this, v);
+
+          for (const callback of $consumers.get(this)!) {
             // eslint-disable-next-line callback-return
             callback(v);
           }
+        } else {
+          throw new Error('Setting value for context consumer is forbidden');
         }
       },
     };

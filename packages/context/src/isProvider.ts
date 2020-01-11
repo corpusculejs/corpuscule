@@ -1,11 +1,14 @@
-import {Constructor} from '@corpuscule/typings';
+import {Constructor, CustomElement} from '@corpuscule/typings';
 import {Token} from '@corpuscule/utils/lib/tokenRegistry';
-import {tokenRegistry} from './utils';
+import {tokenRegistry} from '../lib/utils';
 
-const isProvider = (token: Token, klass: Constructor<object>): boolean => {
-  const [, , providers] = tokenRegistry.get(token)!;
+const isProvider = (
+  token: Token,
+  klass: Constructor<CustomElement>,
+): boolean => {
+  const [, , $providers] = tokenRegistry.get(token)!;
 
-  return providers.has(klass);
+  return $providers.has(klass);
 };
 
 export default isProvider;

@@ -40,13 +40,14 @@ const randomString = (): string => {
 };
 
 export const [createContextToken, tokenRegistry] = createTokenRegistry<
-  [
-    string,
-    WeakMap<Constructor<object>, RegistryValues>,
-    Set<Constructor<object>>,
-  ]
+  [string, WeakMap<object, unknown>, Set<object>]
 >(() => [randomString(), new WeakMap(), new Set()]);
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const reflectMethods = <C extends CustomElement>(object: C) =>
   basicReflectMethods(object, ['connectedCallback', 'disconnectedCallback']);
+
+export const $consume = new WeakMap<object, Consume>();
+export const $consumers = new WeakMap<object, Consume[]>();
+export const $subscribe = new WeakMap<object, Subscribe<object>>();
+export const $unsubscribe = new WeakMap<object, Unsubscribe>();
