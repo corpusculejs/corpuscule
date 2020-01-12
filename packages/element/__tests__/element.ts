@@ -1,19 +1,9 @@
 /* eslint-disable @typescript-eslint/no-empty-function, max-classes-per-file */
+import {Constructor} from '@corpuscule/typings';
 import {fixture, fixtureSync} from '@open-wc/testing-helpers';
-import {
-  Constructor,
-  createTestingPromise,
-  CustomElement,
-  genName,
-} from '../../../test/utils';
-import {
-  element as basicElement,
-  ElementDecoratorOptions,
-  internalChangedCallback,
-  propertyChangedCallback,
-  render,
-  updatedCallback,
-} from '../src';
+import {createTestingPromise, genName} from '../../../test/utils';
+import {element as basicElement, ElementDecoratorOptions} from '../src';
+import {CorpusculeElement} from '../src/utils';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const fixtureMixin = <T extends Constructor<Element>>(base: T) =>
@@ -27,12 +17,18 @@ const fixtureMixin = <T extends Constructor<Element>>(base: T) =>
       [this.updateComplete, this.resolve] = createTestingPromise();
     }
 
+    public attributeChangedCallback(
+      _attrName: string,
+      _oldVal: string,
+      _newVal: string,
+    ): void {}
+
     public connectedCallback(): void {
       this.resolve();
       [this.updateComplete, this.resolve] = createTestingPromise();
     }
 
-    public [updatedCallback](): void {
+    public updatedCallback(): void {
       this.resolve();
       [this.updateComplete, this.resolve] = createTestingPromise();
     }
@@ -73,8 +69,9 @@ describe('@corpuscule/element', () => {
       const name = genName();
 
       @element(name)
-      class Test extends fixtureMixin(CustomElement) {
-        protected [render](): null {
+      class Test extends fixtureMixin(HTMLElement)
+        implements CorpusculeElement {
+        public renderCallback(): null {
           return null;
         }
       }
@@ -88,10 +85,11 @@ describe('@corpuscule/element', () => {
       const name = genName();
 
       @element(name)
-      class Test extends fixtureMixin(CustomElement) {
+      class Test extends fixtureMixin(HTMLElement)
+        implements CorpusculeElement {
         public static readonly is: string;
 
-        protected [render](): null {
+        public renderCallback(): null {
           return null;
         }
       }
@@ -99,12 +97,13 @@ describe('@corpuscule/element', () => {
       expect(Test.is).toBe(name);
     });
 
-    it('defines invalidate function only if [render] is present', async () => {
+    it('defines invalidate function only if renderCallback is present', async () => {
       const tag = genName();
 
       @element(tag)
       // @ts-ignore
-      class Test extends fixtureMixin(CustomElement) {}
+      class Test extends fixtureMixin(HTMLElement)
+        implements CorpusculeElement {}
 
       await fixture(`<${tag}></${tag}>`);
 
@@ -118,13 +117,14 @@ describe('@corpuscule/element', () => {
 
       @element(tag)
       // @ts-ignore
-      class Test extends fixtureMixin(CustomElement) {
+      class Test extends fixtureMixin(HTMLElement)
+        implements CorpusculeElement {
         public connectedCallback(): void {
           super.connectedCallback();
           connectedCallbackSpy();
         }
 
-        protected [render](): null {
+        public renderCallback(): null {
           return null;
         }
       }
@@ -143,12 +143,13 @@ describe('@corpuscule/element', () => {
       const tag = genName();
 
       @element(tag)
-      class Test extends fixtureMixin(CustomElement) {
+      class Test extends fixtureMixin(HTMLElement)
+        implements CorpusculeElement {
         public attributeChangedCallback(...args: unknown[]): void {
           attributeChangedCallbackSpy(...args);
         }
 
-        protected [render](): null {
+        public renderCallback(): null {
           return null;
         }
       }
@@ -164,25 +165,26 @@ describe('@corpuscule/element', () => {
       expect(schedulerSpy).toHaveBeenCalledTimes(2);
     });
 
-    it('re-renders on each [propertyChangedCallback]', async () => {
+    it('re-renders on each propertyChangedCallback', async () => {
       const propertyChangedCallbackSpy = jasmine.createSpy('onPropertyChange');
 
       const tag = genName();
 
       @element(tag)
-      class Test extends fixtureMixin(CustomElement) {
-        public [propertyChangedCallback](...args: unknown[]): void {
+      class Test extends fixtureMixin(HTMLElement)
+        implements CorpusculeElement {
+        public propertyChangedCallback(...args: unknown[]): void {
           propertyChangedCallbackSpy(...args);
         }
 
-        protected [render](): null {
+        public renderCallback(): null {
           return null;
         }
       }
 
       const test = await fixture<Test>(`<${tag}></${tag}>`);
 
-      test[propertyChangedCallback]('test', 'old', 'new');
+      test.propertyChangedCallback('test', 'old', 'new');
       expect(propertyChangedCallbackSpy).toHaveBeenCalledWith(
         'test',
         'old',
@@ -191,25 +193,26 @@ describe('@corpuscule/element', () => {
       expect(schedulerSpy).toHaveBeenCalledTimes(2);
     });
 
-    it('re-renders on each [internalChangedCallback]', async () => {
+    it('re-renders on each internalChangedCallback', async () => {
       const internalChangedCallbackSpy = jasmine.createSpy('onInternalChange');
 
       const tag = genName();
 
       @element(tag)
-      class Test extends fixtureMixin(CustomElement) {
-        public [internalChangedCallback](...args: unknown[]): void {
+      class Test extends fixtureMixin(HTMLElement)
+        implements CorpusculeElement {
+        public internalChangedCallback(...args: unknown[]): void {
           internalChangedCallbackSpy(...args);
         }
 
-        protected [render](): null {
+        public renderCallback(): null {
           return null;
         }
       }
 
       const test = await fixture<Test>(`<${tag}></${tag}>`);
 
-      test[internalChangedCallback]('test', 'old', 'new');
+      test.internalChangedCallback('test', 'old', 'new');
       expect(internalChangedCallbackSpy).toHaveBeenCalledWith(
         'test',
         'old',
@@ -218,19 +221,20 @@ describe('@corpuscule/element', () => {
       expect(schedulerSpy).toHaveBeenCalledTimes(2);
     });
 
-    it('calls [updatedCallback] on each re-render', async () => {
+    it('calls updatedCallback on each re-render', async () => {
       const updatedCallbackSpy = jasmine.createSpy('onUpdate');
 
       const tag = genName();
 
       @element(tag)
-      class Test extends fixtureMixin(CustomElement) {
-        public [updatedCallback](): void {
-          super[updatedCallback]();
+      class Test extends fixtureMixin(HTMLElement)
+        implements CorpusculeElement {
+        public updatedCallback(): void {
+          super.updatedCallback();
           updatedCallbackSpy();
         }
 
-        public [render](): null {
+        public renderCallback(): null {
           return null;
         }
       }
@@ -245,12 +249,13 @@ describe('@corpuscule/element', () => {
       expect(updatedCallbackSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('sends to the renderer function result of [render]', async () => {
+    it('sends to the renderer function result of renderCallback', async () => {
       const tag = genName();
 
       @element(tag)
-      class Test extends fixtureMixin(CustomElement) {
-        public [render](): string {
+      class Test extends fixtureMixin(HTMLElement)
+        implements CorpusculeElement {
+        public renderCallback(): string {
           return 'rendered string';
         }
       }
@@ -274,20 +279,21 @@ describe('@corpuscule/element', () => {
       const tag = genName();
 
       @element(tag)
-      class Test extends fixtureMixin(CustomElement) {
+      class Test extends fixtureMixin(HTMLElement)
+        implements CorpusculeElement {
         public attributeChangedCallback(...args: unknown[]): void {
           attributeChangedCallbackSpy(...args);
         }
 
-        public [propertyChangedCallback](...args: unknown[]): void {
+        public propertyChangedCallback(...args: unknown[]): void {
           propertyChangedCallbackSpy(...args);
         }
 
-        public [internalChangedCallback](...args: unknown[]): void {
+        public internalChangedCallback(...args: unknown[]): void {
           internalChangedCallbackSpy(...args);
         }
 
-        protected [render](): null {
+        public renderCallback(): null {
           return null;
         }
       }
@@ -297,8 +303,8 @@ describe('@corpuscule/element', () => {
       schedulerSpy.calls.reset();
 
       test.attributeChangedCallback('attr', 'same', 'same');
-      test[propertyChangedCallback]('prop', 'same', 'same');
-      test[internalChangedCallback]('internal', 'same', 'same');
+      test.propertyChangedCallback('prop', 'same', 'same');
+      test.internalChangedCallback('internal', 'same', 'same');
 
       expect(attributeChangedCallbackSpy).not.toHaveBeenCalled();
       expect(propertyChangedCallbackSpy).not.toHaveBeenCalled();
@@ -307,7 +313,7 @@ describe('@corpuscule/element', () => {
       expect(schedulerSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('does not allow to use [updatedCallback] and changed callbacks when not connected', async () => {
+    it('does not allow to use updatedCallback and changed callbacks when not connected', async () => {
       const attributeChangedCallbackSpy = jasmine.createSpy(
         'onAttributeChange',
       );
@@ -317,20 +323,21 @@ describe('@corpuscule/element', () => {
       const tag = genName();
 
       @element(tag)
-      class Test extends fixtureMixin(CustomElement) {
+      class Test extends fixtureMixin(HTMLElement)
+        implements CorpusculeElement {
         public attributeChangedCallback(...args: unknown[]): void {
           attributeChangedCallbackSpy(...args);
         }
 
-        public [propertyChangedCallback](...args: unknown[]): void {
+        public propertyChangedCallback(...args: unknown[]): void {
           propertyChangedCallbackSpy(...args);
         }
 
-        public [internalChangedCallback](...args: unknown[]): void {
+        public internalChangedCallback(...args: unknown[]): void {
           internalChangedCallbackSpy(...args);
         }
 
-        protected [render](): null {
+        public renderCallback(): null {
           return null;
         }
       }
@@ -340,8 +347,8 @@ describe('@corpuscule/element', () => {
       const test = fixtureSync<Test>(`<${tag}></${tag}>`);
 
       test.attributeChangedCallback('attr', 'old', 'new');
-      test[propertyChangedCallback]('attr', 'old', 'new');
-      test[internalChangedCallback]('attr', 'old', 'new');
+      test.propertyChangedCallback('attr', 'old', 'new');
+      test.internalChangedCallback('attr', 'old', 'new');
 
       await test.updateComplete;
 
@@ -360,12 +367,13 @@ describe('@corpuscule/element', () => {
       const tag = genName();
 
       @element(tag)
-      class Test extends fixtureMixin(CustomElement) {
+      class Test extends fixtureMixin(HTMLElement)
+        implements CorpusculeElement {
         public attributeChangedCallback(...args: unknown[]): void {
           attributeChangedCallbackSpy(...args);
         }
 
-        protected [render](): null {
+        public renderCallback(): null {
           return null;
         }
       }
@@ -389,8 +397,9 @@ describe('@corpuscule/element', () => {
 
       @element(tag, {lightDOM: true})
       // @ts-ignore
-      class Test extends fixtureMixin(CustomElement) {
-        public [render](): string {
+      class Test extends fixtureMixin(HTMLElement)
+        implements CorpusculeElement {
+        public renderCallback(): string {
           return 'render';
         }
       }
@@ -408,7 +417,8 @@ describe('@corpuscule/element', () => {
       expect(() => {
         @element(genName())
         // @ts-ignore
-        class Test extends fixtureMixin(CustomElement) {
+        class Test extends fixtureMixin(HTMLElement)
+          implements CorpusculeElement {
           public constructor() {
             super();
             this.connectedCallback = this.connectedCallback.bind(this);
@@ -421,7 +431,7 @@ describe('@corpuscule/element', () => {
 
           public attributeChangedCallback(): void {}
 
-          public [render](): string {
+          public renderCallback(): string {
             return 'render';
           }
         }
@@ -433,8 +443,9 @@ describe('@corpuscule/element', () => {
 
       @basicElement(tag, {scheduler: schedulerSpy})
       // @ts-ignore
-      class Test extends fixtureMixin(CustomElement) {
-        public [render](): string {
+      class Test extends fixtureMixin(HTMLElement)
+        implements CorpusculeElement {
+        public renderCallback(): string {
           return 'render';
         }
       }
@@ -450,8 +461,9 @@ describe('@corpuscule/element', () => {
         const tag2 = genName();
 
         @element(tag1)
-        class Parent extends fixtureMixin(CustomElement) {
-          public [render](): null {
+        class Parent extends fixtureMixin(HTMLElement)
+          implements CorpusculeElement {
+          public renderCallback(): null {
             return null;
           }
         }
@@ -459,7 +471,7 @@ describe('@corpuscule/element', () => {
         @element(tag2)
         // @ts-ignore
         class Child extends Parent {
-          public [render](): null {
+          public renderCallback(): null {
             return null;
           }
         }
@@ -477,13 +489,14 @@ describe('@corpuscule/element', () => {
         const connectedSpyChild = jasmine.createSpy('connectedCallbackChild');
 
         @element(genName())
-        class Parent extends fixtureMixin(CustomElement) {
+        class Parent extends fixtureMixin(HTMLElement)
+          implements CorpusculeElement {
           public connectedCallback(): void {
             super.connectedCallback();
             connectedSpyParent();
           }
 
-          public [render](): null {
+          public renderCallback(): null {
             return null;
           }
         }
@@ -498,7 +511,7 @@ describe('@corpuscule/element', () => {
             connectedSpyChild();
           }
 
-          public [render](): null {
+          public renderCallback(): null {
             return null;
           }
         }

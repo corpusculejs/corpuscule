@@ -1,8 +1,8 @@
 /* eslint-disable max-classes-per-file,@typescript-eslint/no-empty-function */
-import {property, propertyChangedCallback} from '../src';
+import {property} from '../src';
 
 class CorpusculeElementMock {
-  public [propertyChangedCallback](
+  public propertyChangedCallback(
     _key: PropertyKey,
     _oldValue: unknown,
     _newValue: unknown,
@@ -51,7 +51,7 @@ describe('@corpuscule/element', () => {
       expect(test.prop).toBeUndefined();
     });
 
-    it('runs [propertyChangedCallback] on property change', () => {
+    it('runs propertyChangedCallback on property change', () => {
       const propertyChangedCallbackSpy = jasmine.createSpy('onPropertyChanged');
 
       class Test extends CorpusculeElementMock {
@@ -69,7 +69,7 @@ describe('@corpuscule/element', () => {
 
         private storage: string = 'str';
 
-        public [propertyChangedCallback](...args: unknown[]): void {
+        public propertyChangedCallback(...args: unknown[]): void {
           propertyChangedCallbackSpy(...args);
         }
       }
@@ -93,14 +93,14 @@ describe('@corpuscule/element', () => {
       expect(propertyChangedCallbackSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('runs [propertyChangedCallback] after the property is set', () => {
+    it('runs propertyChangedCallback after the property is set', () => {
       const propertyChangedCallbackSpy = jasmine.createSpy('onPropertyChanged');
 
       class Test extends CorpusculeElementMock {
         @property()
         public prop: number = 10;
 
-        public [propertyChangedCallback](
+        public propertyChangedCallback(
           _name: string,
           _oldValue: number,
           newValue: number,

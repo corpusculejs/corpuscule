@@ -1,12 +1,11 @@
 import {BabelPropertyDescriptor, CustomElement} from '@corpuscule/typings';
 import makeAccessor from '@corpuscule/utils/lib/makeAccessor';
-import {setArray} from '@corpuscule/utils/lib/setters';
 import createTokenRegistry, {Token} from '@corpuscule/utils/lib/tokenRegistry';
 import {ElementPrototype} from './utils';
 
 const [createComputingToken, tokenRegistry] = createTokenRegistry<
-  WeakMap<object, PropertyKey[]>
->(() => new WeakMap());
+  [Array<WeakMap<object, boolean>>, WeakMap<object, unknown | null>]
+>(() => [[], new WeakMap()]);
 
 export {createComputingToken};
 
@@ -16,36 +15,25 @@ export const computer = (token: Token): PropertyDecorator =>
     _: PropertyKey,
     {get}: BabelPropertyDescriptor,
   ) => {
-    const correct = Symbol();
-    const memoized = Symbol();
+    const [$corrects, $memoized] = tokenRegistry.get(token)!;
+    const $correct = new WeakMap<object, boolean>();
 
-    klass.__initializers.push(
-      (
-        self: C & {
-          [correct]: boolean;
-          [memoized]: unknown | null;
-        },
-      ) => {
-        self[correct] = false;
-        self[memoized] = null;
-      },
-    );
-    setArray(tokenRegistry.get(token)!, klass, [correct]);
+    $corrects.push($correct);
+
+    klass.__initializers.push(self => {
+      $correct.set(self, false);
+      $memoized.set(self, null);
+    });
 
     return {
       configurable: true,
-      get(
-        this: C & {
-          [correct]: boolean;
-          [memoized]: unknown;
-        },
-      ): unknown {
-        if (!this[correct]) {
-          this[memoized] = get!.call(this);
-          this[correct] = true;
+      get(this: C): unknown {
+        if (!$correct.get(this)) {
+          $memoized.set(this, get!.call(this));
+          $correct.set(this, true);
         }
 
-        return this[memoized];
+        return $memoized.get(this);
       },
     };
   }) as any;
@@ -56,22 +44,17 @@ export const observer = (token: Token): PropertyDecorator =>
     _: PropertyKey,
     descriptor: BabelPropertyDescriptor,
   ) => {
+    const [$corrects] = tokenRegistry.get(token)!;
     const {get, set} = makeAccessor(descriptor, klass.__initializers);
-
-    let corrects: PropertyKey[];
-
-    klass.__registrations.push(() => {
-      corrects = tokenRegistry.get(token)!.get(klass)!;
-    });
 
     return {
       configurable: true,
       get,
-      set(this: C & {['correct']: boolean}, value: unknown) {
+      set(this: C, value: unknown) {
         set.call(this, value);
 
-        for (const correct of corrects) {
-          this[correct as 'correct'] = false;
+        for (const $correct of $corrects) {
+          $correct.set(this, false);
         }
       },
     };

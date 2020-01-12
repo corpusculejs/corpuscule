@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-empty-function, max-classes-per-file */
-import {internal, internalChangedCallback} from '../src';
+import {internal} from '../src';
 
 class CorpusculeElementMock {
-  public [internalChangedCallback](
+  public internalChangedCallback(
     _key: PropertyKey,
     _oldValue: unknown,
     _newValue: unknown,
@@ -40,7 +40,7 @@ describe('@corpuscule/element', () => {
       expect(test.accessor).toBe('test');
     });
 
-    it('runs [internalChangedCallback] on internal property change', () => {
+    it('runs internalChangedCallback on internal property change', () => {
       const internalChangedCallbackSpy = jasmine.createSpy('onInternalChanged');
 
       class Test extends CorpusculeElementMock {
@@ -58,7 +58,7 @@ describe('@corpuscule/element', () => {
 
         private storage: string = 'str';
 
-        public [internalChangedCallback](...args: unknown[]): void {
+        public internalChangedCallback(...args: unknown[]): void {
           internalChangedCallbackSpy(...args);
         }
       }
@@ -80,14 +80,14 @@ describe('@corpuscule/element', () => {
       expect(internalChangedCallbackSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('runs [internalChangedCallback] after the property is set', () => {
+    it('runs internalChangedCallback after the property is set', () => {
       const internalChangedCallbackSpy = jasmine.createSpy('onInternalChanged');
 
       class Test extends CorpusculeElementMock {
         @internal
         public prop: number = 10;
 
-        public [internalChangedCallback](
+        public internalChangedCallback(
           _name: string,
           _oldValue: number,
           newValue: number,

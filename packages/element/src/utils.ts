@@ -4,18 +4,12 @@ import {
   CustomElementClassProperties,
   DecoratedClassProperties,
 } from '@corpuscule/typings';
-import {
-  internalChangedCallback as $internalChangedCallback,
-  propertyChangedCallback as $propertyChangedCallback,
-  render as $render,
-  updatedCallback as $updatedCallback,
-} from './tokens';
 
 export type PropertyGuard = (value: unknown) => boolean;
 
 export type ElementClass<C> = Constructor<
   C,
-  CustomElement,
+  CorpusculeElement,
   CustomElementClassProperties & DecoratedClassProperties
 >;
 
@@ -23,20 +17,21 @@ export type ElementPrototype<C> = {
   constructor: ElementClass<C>;
 };
 
-export type ElementGears = {
-  [$internalChangedCallback]?(
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+export interface CorpusculeElement extends CustomElement {
+  internalChangedCallback?(
     propertyName: PropertyKey,
     oldValue: unknown,
     newValue: unknown,
   ): void;
-  [$propertyChangedCallback]?(
+  propertyChangedCallback?(
     propertyName: PropertyKey,
     oldValue: unknown,
     newValue: unknown,
   ): void;
-  [$render]?(): unknown;
-  [$updatedCallback]?(): void;
-};
+  renderCallback?(): unknown;
+  updatedCallback?(): void;
+}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export const noop = (): void => {};
@@ -55,3 +50,11 @@ export const shadowElements = [
   'section',
   'span',
 ];
+
+export const $connected = new WeakMap<object, boolean>();
+export const $invalidate = new WeakMap<object, (this: object) => void>();
+export const $root = new WeakMap<
+  object,
+  HTMLElement | DocumentFragment | ShadowRoot
+>();
+export const $valid = new WeakMap<object, boolean>();

@@ -1,9 +1,8 @@
-import {BabelPropertyDescriptor, CustomElement} from '@corpuscule/typings';
+import {BabelPropertyDescriptor} from '@corpuscule/typings';
 import makeAccessor from '@corpuscule/utils/lib/makeAccessor';
-import {internalChangedCallback as $internalChangedCallback} from './tokens';
-import {ElementGears, ElementPrototype} from './utils';
+import {CorpusculeElement, ElementPrototype} from './utils';
 
-const internal: PropertyDecorator = (<C extends CustomElement>(
+const internal: PropertyDecorator = (<C extends CorpusculeElement>(
   {constructor: klass}: ElementPrototype<C>,
   key: PropertyKey,
   descriptor: BabelPropertyDescriptor,
@@ -13,10 +12,10 @@ const internal: PropertyDecorator = (<C extends CustomElement>(
   return {
     configurable: true,
     get,
-    set(this: C & Required<ElementGears>, value: unknown) {
+    set(this: C & Required<CorpusculeElement>, value: unknown) {
       const oldValue = get.call(this);
       set.call(this, value);
-      this[$internalChangedCallback](key, oldValue, value);
+      this.internalChangedCallback(key, oldValue, value);
     },
   };
 }) as any;

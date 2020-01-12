@@ -1,15 +1,17 @@
 /* eslint-disable no-invalid-this, prefer-arrow-callback */
-import {CustomElement} from '@corpuscule/typings';
 import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
 import reflectMethods from '@corpuscule/utils/lib/reflectMethods';
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
 import {
-  internalChangedCallback as $internalChangedCallback,
-  propertyChangedCallback as $propertyChangedCallback,
-  render as $render,
-  updatedCallback as $updatedCallback,
-} from './tokens';
-import {ElementClass, ElementGears, noop, shadowElements} from './utils';
+  $connected,
+  $invalidate,
+  $root,
+  $valid,
+  CorpusculeElement,
+  ElementClass,
+  noop,
+  shadowElements,
+} from './utils';
 
 const readonlyPropertyDescriptor = {
   configurable: true,
@@ -28,6 +30,14 @@ export type ElementDecoratorOptions = {
   scheduler?: (task: () => void) => Promise<void>;
 };
 
+const methodNames = [
+  'attributeChangedCallback',
+  'connectedCallback',
+  'internalChangedCallback',
+  'propertyChangedCallback',
+  'updatedCallback',
+] as const;
+
 const element = (
   name: string,
   {
@@ -37,29 +47,11 @@ const element = (
     scheduler = defaultScheduler,
   }: Readonly<ElementDecoratorOptions> = {},
 ): ClassDecorator =>
-  (<C extends CustomElement>(klass: ElementClass<C>) => {
+  (<C extends CorpusculeElement>(klass: ElementClass<C>) => {
     const {prototype} = klass;
     const isLight = lightDOM || (builtin && !shadowElements.includes(builtin));
 
-    const $$connected = Symbol();
-    const $$invalidate = Symbol();
-    const $$root = Symbol();
-    const $$valid = Symbol();
-
-    type ElementClassWithPrivateMethods = {
-      [$$connected]: boolean;
-      [$$invalidate]: (this: C) => Promise<void>;
-      [$$root]: HTMLElement | DocumentFragment | ShadowRoot;
-      [$$valid]: boolean;
-    };
-
-    const supers = reflectMethods(prototype, [
-      'attributeChangedCallback',
-      'connectedCallback',
-      $internalChangedCallback,
-      $propertyChangedCallback,
-      $updatedCallback,
-    ]);
+    const supers = reflectMethods(prototype, methodNames);
 
     Object.defineProperties(klass, {
       is: {
@@ -76,12 +68,12 @@ const element = (
       klass,
       {
         async attributeChangedCallback(
-          this: C & ElementClassWithPrivateMethods,
+          this: C,
           attributeName: string,
           oldValue: string,
           newValue: string,
-        ) {
-          if (oldValue === newValue || !this[$$connected]) {
+        ): Promise<void> {
+          if (oldValue === newValue || !$connected.get(this)) {
             return;
           }
 
@@ -91,11 +83,11 @@ const element = (
             oldValue,
             newValue,
           );
-          await this[$$invalidate]();
+          await $invalidate.get(this.constructor)!.call(this);
         },
-        async connectedCallback(this: C & ElementClassWithPrivateMethods) {
-          await this[$$invalidate]();
-          this[$$connected] = true;
+        async connectedCallback(this: C): Promise<void> {
+          await $invalidate.get(this.constructor)!.call(this);
+          $connected.set(this, true);
           supers.connectedCallback.call(this);
         },
       },
@@ -103,76 +95,79 @@ const element = (
       klass.__initializers,
     );
 
-    Object.assign(prototype, {
-      [$$invalidate]:
-        $render in prototype && renderer
-          ? async function(
-              this: C & Required<ElementGears> & ElementClassWithPrivateMethods,
-            ) {
-              if (!this[$$valid]) {
-                return;
-              }
-
-              this[$$valid] = false;
-
-              await scheduler(() => {
-                renderer(this[$render](), this[$$root], this);
-                this[$$valid] = true;
-              });
-
-              if (this[$$connected]) {
-                this[$updatedCallback]();
-              }
+    $invalidate.set(
+      klass,
+      'renderCallback' in prototype && renderer
+        ? async function(this: C) {
+            if (!$valid.get(this)) {
+              return;
             }
-          : noop,
-      async [$internalChangedCallback](
-        this: C & Required<ElementGears> & ElementClassWithPrivateMethods,
+
+            $valid.set(this, false);
+
+            await scheduler(() => {
+              renderer(this.renderCallback!(), $root.get(this)!, this);
+              $valid.set(this, true);
+            });
+
+            if ($connected.get(this)) {
+              this.updatedCallback!();
+            }
+          }
+        : noop,
+    );
+
+    Object.assign(prototype, {
+      async internalChangedCallback(
+        this: C,
         internalName: PropertyKey,
         oldValue: unknown,
         newValue: unknown,
       ) {
-        if (!this[$$connected]) {
+        if (!$connected.get(this)) {
           return;
         }
 
-        supers[$internalChangedCallback].call(
+        supers.internalChangedCallback.call(
           this,
           internalName,
           oldValue,
           newValue,
         );
-        await this[$$invalidate]();
+        await $invalidate.get(this)!.call(this);
       },
-      async [$propertyChangedCallback](
-        this: C & Required<ElementGears> & ElementClassWithPrivateMethods,
+      async propertyChangedCallback(
+        this: C,
         propertyName: PropertyKey,
         oldValue: unknown,
         newValue: unknown,
       ) {
-        if (oldValue === newValue || !this[$$connected]) {
+        if (oldValue === newValue || !$connected.get(this)) {
           return;
         }
 
-        supers[$propertyChangedCallback].call(
+        supers.propertyChangedCallback.call(
           this,
           propertyName,
           oldValue,
           newValue,
         );
-        await this[$$invalidate]();
+        await $invalidate.get(this)!.call(this);
       },
-      [$updatedCallback]: supers[$updatedCallback],
+      updatedCallback: supers.updatedCallback,
     });
 
     klass.__initializers.push(self => {
-      self[$$connected] = false;
-      self[$$root] =
+      $connected.set(self, false);
+      $root.set(
+        self,
         self.constructor !== klass
           ? null
           : isLight
           ? self
-          : self.attachShadow({mode: 'open'});
-      self[$$valid] = true;
+          : self.attachShadow({mode: 'open'}),
+      );
+      $valid.set(self, true);
     });
 
     // Deferring custom element definition allows to run it at the end of all

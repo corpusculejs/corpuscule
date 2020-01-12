@@ -1,7 +1,6 @@
 import {BabelPropertyDescriptor, CustomElement} from '@corpuscule/typings';
 import makeAccessor from '@corpuscule/utils/lib/makeAccessor';
-import {propertyChangedCallback as $propertyChangedCallback} from './tokens';
-import {ElementGears, ElementPrototype, PropertyGuard} from './utils';
+import {CorpusculeElement, ElementPrototype, PropertyGuard} from './utils';
 
 const property = (guard: PropertyGuard = () => true): PropertyDecorator =>
   (<C extends CustomElement>(
@@ -14,7 +13,7 @@ const property = (guard: PropertyGuard = () => true): PropertyDecorator =>
     return {
       configurable: true,
       get,
-      set(this: C & Required<ElementGears>, value: unknown) {
+      set(this: C & Required<CorpusculeElement>, value: unknown) {
         if (!guard(value)) {
           throw new TypeError(
             `Value applied to "${String(key)}" has wrong type`,
@@ -23,7 +22,7 @@ const property = (guard: PropertyGuard = () => true): PropertyDecorator =>
 
         const oldValue = get.call(this);
         set.call(this, value);
-        this[$propertyChangedCallback](key, oldValue, value);
+        this.propertyChangedCallback(key, oldValue, value);
       },
     };
   }) as any;
