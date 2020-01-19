@@ -1,6 +1,6 @@
 import {BabelPropertyDescriptor, CustomElement} from '@corpuscule/typings';
 import {Token} from '@corpuscule/utils/lib/tokenRegistry';
-import {$consumers, ContextClassPrototype, tokenRegistry} from './utils';
+import {ContextClassPrototype, tokenRegistry} from './utils';
 
 const value = (token: Token): PropertyDecorator =>
   (<C extends CustomElement>(
@@ -8,7 +8,11 @@ const value = (token: Token): PropertyDecorator =>
     _: PropertyKey,
     {initializer}: BabelPropertyDescriptor = {},
   ) => {
-    const [, $value, $providers] = tokenRegistry.get(token)!;
+    const {
+      consumers: $consumers,
+      providers: $providers,
+      value: $value,
+    } = tokenRegistry.get(token)!;
     let isProvider = false;
 
     klass.__registrations.push(() => {

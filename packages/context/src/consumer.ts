@@ -2,8 +2,6 @@ import {CustomElement} from '@corpuscule/typings';
 import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
 import {Token} from '@corpuscule/utils/lib/tokenRegistry';
 import {
-  $consume,
-  $unsubscribe,
   ContextClass,
   ContextEventDetails,
   reflectMethods,
@@ -12,7 +10,12 @@ import {
 
 const consumer = (token: Token): ClassDecorator =>
   (<C extends CustomElement>(klass: ContextClass<C>) => {
-    const [$eventName, $value] = tokenRegistry.get(token)!;
+    const {
+      consume: $consume,
+      eventName: $eventName,
+      unsubscribe: $unsubscribe,
+      value: $value,
+    } = tokenRegistry.get(token)!;
     const {prototype} = klass;
     const supers = reflectMethods(prototype);
 
@@ -46,7 +49,7 @@ const consumer = (token: Token): ClassDecorator =>
       klass.__initializers,
     );
 
-    klass.__initializers.push((self: C) => {
+    klass.__initializers.push(self => {
       $consume.set(self, v => {
         $value.set(self, v);
       });

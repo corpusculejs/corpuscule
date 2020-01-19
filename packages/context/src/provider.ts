@@ -1,20 +1,18 @@
 import {CustomElement} from '@corpuscule/typings';
 import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
 import {Token} from '@corpuscule/utils/lib/tokenRegistry';
-import {
-  $consumers,
-  $subscribe,
-  $unsubscribe,
-  Consume,
-  ContextClass,
-  ContextEventDetails,
-  reflectMethods,
-  tokenRegistry,
-} from './utils';
+import {ContextClass, reflectMethods, tokenRegistry} from './utils';
 
 const provider = (token: Token, defaultValue?: unknown): ClassDecorator =>
   (<C extends CustomElement>(klass: ContextClass<C>) => {
-    const [$eventName, $value, $providers] = tokenRegistry.get(token)!;
+    const {
+      consumers: $consumers,
+      eventName: $eventName,
+      providers: $providers,
+      subscribe: $subscribe,
+      unsubscribe: $unsubscribe,
+      value: $value,
+    } = tokenRegistry.get(token)!;
 
     const {prototype} = klass;
     const supers = reflectMethods(prototype);
@@ -42,10 +40,10 @@ const provider = (token: Token, defaultValue?: unknown): ClassDecorator =>
       klass.__initializers,
     );
 
-    klass.__initializers.push((self: C) => {
+    klass.__initializers.push(self => {
       $consumers.set(self, []);
 
-      $subscribe.set(self, (event: CustomEvent<ContextEventDetails>) => {
+      $subscribe.set(self, event => {
         const {consume} = event.detail;
 
         $consumers.get(self)!.push(consume);
@@ -55,7 +53,7 @@ const provider = (token: Token, defaultValue?: unknown): ClassDecorator =>
         event.stopPropagation();
       });
 
-      $unsubscribe.set(self, (consume: Consume) => {
+      $unsubscribe.set(self, consume => {
         $consumers.set(
           self,
           $consumers.get(self)!.filter(p => p !== consume),
