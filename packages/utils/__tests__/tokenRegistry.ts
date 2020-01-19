@@ -22,4 +22,20 @@ describe('@corpuscule/utils', () => {
       expect(tokenRegistry2.get(token)).toEqual(jasmine.any(Object));
     });
   });
+
+  describe('share', () => {
+    it('allows to share a part of store', () => {
+      const sharedStorePart: never[] = [];
+
+      const [createToken, , share] = createTokenRegistry(
+        () => [{}, sharedStorePart],
+        undefined,
+        ([, sharingPart]) => sharingPart,
+      );
+
+      const token = createToken();
+
+      expect(share(token)).toBe(sharedStorePart);
+    });
+  });
 });

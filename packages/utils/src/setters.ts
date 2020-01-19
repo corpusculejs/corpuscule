@@ -1,13 +1,9 @@
 export const setArray: {
-  <Key, Value>(
-    store: Map<Key, Value[]>,
-    key: Key,
-    array: readonly Value[],
-  ): void;
-  <Key extends object, Value>(
-    store: WeakMap<Key, Value[]>,
-    key: Key,
-    array: readonly Value[],
+  <K, V>(store: Map<K, V[]>, key: K, array: readonly V[]): void;
+  <K extends object, V>(
+    store: WeakMap<K, V[]>,
+    key: K,
+    array: readonly V[],
   ): void;
 } = (
   store: Map<any, any> | WeakMap<object, any>,
@@ -22,15 +18,15 @@ export const setArray: {
 };
 
 export const setObject: {
-  <Key, Value extends object>(
-    store: Map<Key, Value>,
-    key: Key,
-    object: Readonly<Partial<Value>>,
+  <K, V extends object>(
+    store: Map<K, V>,
+    key: K,
+    object: Readonly<Partial<V>>,
   ): void;
-  <Key extends object, Value extends object>(
-    store: WeakMap<Key, Value>,
-    key: Key,
-    object: Readonly<Partial<Value>>,
+  <K extends object, V extends object>(
+    store: WeakMap<K, V>,
+    key: K,
+    object: Readonly<Partial<V>>,
   ): void;
 } = (store: Map<any, any> | WeakMap<object, any>, key: any, object: any) => {
   if (store.has(key)) {

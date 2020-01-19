@@ -1,10 +1,15 @@
 export type Token = {};
 
-const createTokenRegistry = <Store>(
-  createDataStore: () => Store,
+const createTokenRegistry = <S, P = never>(
+  createDataStore: () => S,
   createRawToken: () => Token = () => ({}),
-): [() => Token, WeakMap<Token, Store>] => {
-  const tokenRegistry = new WeakMap<Token, Store>();
+  shareStorePart?: (store: S) => P,
+): [
+  () => Token,
+  WeakMap<Token, S>,
+  P extends never ? null : (token: Token) => P | undefined,
+] => {
+  const tokenRegistry = new WeakMap<Token, S>();
 
   const createToken = (): Token => {
     const token = createRawToken();
@@ -15,7 +20,14 @@ const createTokenRegistry = <Store>(
     return token;
   };
 
-  return [createToken, tokenRegistry];
+  const share = shareStorePart
+    ? (token: Token): P | undefined =>
+        tokenRegistry.has(token)
+          ? shareStorePart(tokenRegistry.get(token)!)
+          : undefined
+    : null;
+
+  return [createToken, tokenRegistry, share as any];
 };
 
 export default createTokenRegistry;
