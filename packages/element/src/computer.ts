@@ -3,9 +3,10 @@ import makeAccessor from '@corpuscule/utils/lib/makeAccessor';
 import createTokenRegistry, {Token} from '@corpuscule/utils/lib/tokenRegistry';
 import {ElementPrototype} from './utils';
 
-const [createComputingToken, tokenRegistry] = createTokenRegistry<
-  [Array<WeakMap<object, boolean>>, WeakMap<object, unknown | null>]
->(() => [[], new WeakMap()]);
+const [createComputingToken, tokenRegistry] = createTokenRegistry(() => ({
+  corrects: [] as Array<WeakMap<object, boolean>>,
+  memoized: new WeakMap<object, unknown | null>(),
+}));
 
 export {createComputingToken};
 
@@ -15,7 +16,9 @@ export const computer = (token: Token): PropertyDecorator =>
     _: PropertyKey,
     {get}: BabelPropertyDescriptor,
   ) => {
-    const [$corrects, $memoized] = tokenRegistry.get(token)!;
+    const {corrects: $corrects, memoized: $memoized} = tokenRegistry.get(
+      token,
+    )!;
     const $correct = new WeakMap<object, boolean>();
 
     $corrects.push($correct);
@@ -44,7 +47,7 @@ export const observer = (token: Token): PropertyDecorator =>
     _: PropertyKey,
     descriptor: BabelPropertyDescriptor,
   ) => {
-    const [$corrects] = tokenRegistry.get(token)!;
+    const {corrects: $corrects} = tokenRegistry.get(token)!;
     const {get, set} = makeAccessor(descriptor, klass.__initializers);
 
     return {

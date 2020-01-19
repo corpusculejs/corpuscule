@@ -2,16 +2,7 @@
 import defineExtendable from '@corpuscule/utils/lib/defineExtendable';
 import reflectMethods from '@corpuscule/utils/lib/reflectMethods';
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
-import {
-  $connected,
-  $invalidate,
-  $root,
-  $valid,
-  CorpusculeElement,
-  ElementClass,
-  noop,
-  shadowElements,
-} from './utils';
+import {CorpusculeElement, ElementClass, noop, shadowElements} from './utils';
 
 const readonlyPropertyDescriptor = {
   configurable: true,
@@ -37,6 +28,14 @@ const methodNames = [
   'propertyChangedCallback',
   'updatedCallback',
 ] as const;
+
+const $connected = new WeakMap<object, boolean>();
+const $invalidate = new WeakMap<object, (self: any) => Promise<void> | void>();
+const $root = new WeakMap<
+  object,
+  HTMLElement | DocumentFragment | ShadowRoot
+>();
+const $valid = new WeakMap<object, boolean>();
 
 const element = (
   name: string,
@@ -83,10 +82,10 @@ const element = (
             oldValue,
             newValue,
           );
-          await $invalidate.get(this.constructor)!.call(this);
+          await $invalidate.get(this.constructor)!(this);
         },
         async connectedCallback(this: C): Promise<void> {
-          await $invalidate.get(this.constructor)!.call(this);
+          await $invalidate.get(this.constructor)!(this);
           $connected.set(this, true);
           supers.connectedCallback.call(this);
         },
@@ -98,20 +97,20 @@ const element = (
     $invalidate.set(
       klass,
       'renderCallback' in prototype && renderer
-        ? async function(this: C) {
-            if (!$valid.get(this)) {
+        ? async (self: C) => {
+            if (!$valid.get(self)) {
               return;
             }
 
-            $valid.set(this, false);
+            $valid.set(self, false);
 
             await scheduler(() => {
-              renderer(this.renderCallback!(), $root.get(this)!, this);
-              $valid.set(this, true);
+              renderer(self.renderCallback!(), $root.get(self)!, self);
+              $valid.set(self, true);
             });
 
-            if ($connected.get(this)) {
-              this.updatedCallback!();
+            if ($connected.get(self)) {
+              self.updatedCallback!();
             }
           }
         : noop,
@@ -134,7 +133,7 @@ const element = (
           oldValue,
           newValue,
         );
-        await $invalidate.get(this)!.call(this);
+        await $invalidate.get(this)!(this);
       },
       async propertyChangedCallback(
         this: C,
@@ -152,7 +151,7 @@ const element = (
           oldValue,
           newValue,
         );
-        await $invalidate.get(this)!.call(this);
+        await $invalidate.get(this)!(this);
       },
       updatedCallback: supers.updatedCallback,
     });

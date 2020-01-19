@@ -50,11 +50,3 @@ export const shadowElements = [
   'section',
   'span',
 ];
-
-export const $connected = new WeakMap<object, boolean>();
-export const $invalidate = new WeakMap<object, (this: object) => void>();
-export const $root = new WeakMap<
-  object,
-  HTMLElement | DocumentFragment | ShadowRoot
->();
-export const $valid = new WeakMap<object, boolean>();
