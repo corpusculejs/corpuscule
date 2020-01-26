@@ -1,5 +1,11 @@
+export type HTMLRoot = HTMLElement | DocumentFragment | ShadowRoot;
+
 export type Exact<T extends U, U> = {
-  [P in keyof T]: P extends keyof U ? T[P] : never;
+  [P in keyof T]: U[P] extends never ? never : T[P];
+};
+
+export type Replace<T, U> = {
+  [P in keyof T]: U;
 };
 
 export type Constructor<C, P extends object = Object, S extends object = {}> = {
@@ -13,34 +19,25 @@ export interface CustomElement extends HTMLElement {
     attrName: string,
     oldVal: string,
     newVal: string,
-  ): void;
-  connectedCallback?(this: CustomElement): void;
-  disconnectedCallback?(this: CustomElement): void;
-  adoptedCallback?(this: CustomElement): void;
+  ): void | Promise<void>;
+
+  connectedCallback?(this: CustomElement): void | Promise<void>;
+  disconnectedCallback?(this: CustomElement): void | Promise<void>;
+  adoptedCallback?(this: CustomElement): void | Promise<void>;
 }
+
+export type CustomElementClassProperties = {
+  readonly observedAttributes: string[];
+};
 
 export type BabelPropertyDescriptor<T = unknown> = PropertyDescriptor & {
   initializer?: () => T;
 };
 
-export type Initializer = (self: any) => void;
+export type Initializer<S = any> = (self: S) => void;
 export type Registration = () => void;
 
-export type DecoratedClassProperties = {
-  __initializers: Initializer[];
+export type DecoratedClassProperties<C = any> = {
+  __initializers: Initializer<C>[];
   __registrations: Registration[];
-};
-
-export type DecoratedClassConstructor<
-  C,
-  P extends object = Object,
-  S extends object = {}
-> = Constructor<C, P, DecoratedClassProperties & S>;
-
-export type DecoratedClassPrototype<
-  C,
-  P extends object = Object,
-  S extends object = {}
-> = {
-  constructor: DecoratedClassConstructor<C, P, S>;
 };
