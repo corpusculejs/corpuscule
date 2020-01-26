@@ -11,8 +11,12 @@
     "@typescript-eslint/indent": "off",
     "@typescript-eslint/member-delimiter-style": "off",
     "@typescript-eslint/no-extra-parens": "off",
+    "@typescript-eslint/no-floating-promises": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/unbound-method": "off",
     "@typescript-eslint/quotes": "off",
     "class-methods-use-this": "off",
+    "no-unused-expressions": "off",
     "func-names": "off",
     "max-nested-callbacks": "off",
     "no-invalid-this": "off"
