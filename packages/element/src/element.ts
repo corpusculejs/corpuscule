@@ -9,7 +9,7 @@ import {
   render as $render,
   updatedCallback as $updatedCallback,
 } from './tokens';
-import {ElementClass, ElementGears, noop, shadowElements} from './utils';
+import {CorpusculeElement, ElementClass, noop, shadowElements} from './utils';
 
 const readonlyPropertyDescriptor = {
   configurable: true,
@@ -107,7 +107,9 @@ const element = (
       [$$invalidate]:
         $render in prototype && renderer
           ? async function(
-              this: C & Required<ElementGears> & ElementClassWithPrivateMethods,
+              this: C &
+                Required<CorpusculeElement> &
+                ElementClassWithPrivateMethods,
             ) {
               if (!this[$$valid]) {
                 return;
@@ -126,7 +128,7 @@ const element = (
             }
           : noop,
       async [$internalChangedCallback](
-        this: C & Required<ElementGears> & ElementClassWithPrivateMethods,
+        this: C & Required<CorpusculeElement> & ElementClassWithPrivateMethods,
         internalName: PropertyKey,
         oldValue: unknown,
         newValue: unknown,
@@ -144,7 +146,7 @@ const element = (
         await this[$$invalidate]();
       },
       async [$propertyChangedCallback](
-        this: C & Required<ElementGears> & ElementClassWithPrivateMethods,
+        this: C & Required<CorpusculeElement> & ElementClassWithPrivateMethods,
         propertyName: PropertyKey,
         oldValue: unknown,
         newValue: unknown,

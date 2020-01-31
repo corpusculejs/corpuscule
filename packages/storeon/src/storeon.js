@@ -49,11 +49,16 @@ const storeon = token => klass => {
       if (units.length !== 0) {
         this[$$unsubscribe]();
 
-        units.forEach(callback => callback(this, this[$$contextProperty].get()));
+``        units.forEach(callback =>
+          callback(this, this[$$contextProperty].get()),
+        );
 
-        this[$$unsubscribe] = this[$$contextProperty].on('@changed', (_, changed) => {
-          units.forEach(callback => callback(this, changed));
-        });
+        this[$$unsubscribe] = this[$$contextProperty].on(
+          '@changed',
+          (_, changed) => {
+            units.forEach(callback => callback(this, changed));
+          },
+        );
       }
     },
   });

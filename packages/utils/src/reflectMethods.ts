@@ -18,7 +18,7 @@ const reflectMethods = <
   K extends PropertyKey
 >(
   object: O & Partial<Record<K, Function>>,
-  methodNames: K[],
+  methodNames: readonly K[],
   fallbacks: Partial<Exact<F, Record<K, Function>>> = {},
 ): Reflection<O, F, K> =>
   methodNames.reduce<Partial<Record<K, Function>>>((reflection, name) => {

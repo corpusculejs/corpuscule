@@ -48,16 +48,16 @@ const provider = (token: Token, defaultValue?: unknown): ClassDecorator =>
     defineExtendable(
       klass,
       {
-        connectedCallback(this: ProviderClass) {
+        async connectedCallback(this: ProviderClass): Promise<void> {
           this.addEventListener(eventName, this[$$subscribe] as EventListener);
-          supers.connectedCallback.call(this);
+          await supers.connectedCallback.call(this);
         },
-        disconnectedCallback(this: ProviderClass) {
+        async disconnectedCallback(this: ProviderClass): Promise<void> {
           this.removeEventListener(
             eventName,
             this[$$subscribe] as EventListener,
           );
-          supers.disconnectedCallback.call(this);
+          await supers.disconnectedCallback.call(this);
         },
       },
       supers,

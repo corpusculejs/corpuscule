@@ -3,6 +3,8 @@ import {BabelPropertyDescriptor, Initializer} from '@corpuscule/typings';
 export type NewAccessor = Required<Pick<PropertyDescriptor, 'get' | 'set'>> &
   Omit<PropertyDescriptor, 'get' | 'set'>;
 
+const $$storage = new WeakMap<object, unknown>();
+
 const makeAccessor = (
   descriptor: BabelPropertyDescriptor,
   initializers: Initializer[],
@@ -13,18 +15,16 @@ const makeAccessor = (
     return descriptor as NewAccessor;
   }
 
-  const storage = Symbol();
-
-  initializers.push((self: any) => {
-    self[storage] = initializer ? initializer.call(self) : undefined;
+  initializers.push(self => {
+    $$storage.set(self, initializer ? initializer.call(self) : undefined);
   });
 
   return {
-    get(this: any) {
-      return this[storage];
+    get(this: object) {
+      return $$storage.get(this);
     },
-    set(this: any, value: any) {
-      this[storage] = value;
+    set(this: object, value: unknown) {
+      $$storage.set(this, value);
     },
   };
 };

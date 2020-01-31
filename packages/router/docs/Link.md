@@ -16,7 +16,7 @@ correctly.
 ##### Extends
 
 - [HTMLAnchorElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLAnchorElement).
-- [CustomElement](../../typings/docs/index.md#customelement).
+- [CustomElement](../../typings/docs/CustomElement.md).
 
 ### Static Fields
 
@@ -29,6 +29,8 @@ A name of the element registered in the custom element registry.
 ### Fields
 
 #### contextData <sub>[optional]</sub>
+
+**Type**: _any_
 
 A custom context data that will be send as a second parameter to the
 [navigate](./index.md#navigate) function.

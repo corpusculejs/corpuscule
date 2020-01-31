@@ -1,5 +1,9 @@
 {
-  "extends": ["eslint-config-poetez/typescript", "plugin:prettier/recommended"],
+  "extends": [
+    "eslint-config-poetez/typescript",
+    "eslint-config-prettier/@typescript-eslint",
+    "plugin:prettier/recommended"
+  ],
   "env": {
     "browser": true,
     "node": true,
@@ -7,14 +11,7 @@
     "jasmine": true
   },
   "rules": {
-    "@typescript-eslint/await-thenable": "off",
-    "@typescript-eslint/indent": "off",
-    "@typescript-eslint/member-delimiter-style": "off",
-    "@typescript-eslint/no-extra-parens": "off",
-    "@typescript-eslint/no-floating-promises": "off",
-    "@typescript-eslint/no-unused-vars": "off",
     "@typescript-eslint/unbound-method": "off",
-    "@typescript-eslint/quotes": "off",
     "class-methods-use-this": "off",
     "no-unused-expressions": "off",
     "func-names": "off",

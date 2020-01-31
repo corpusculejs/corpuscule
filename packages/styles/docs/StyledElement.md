@@ -6,8 +6,9 @@ type StyledElement = {
 };
 ```
 
-Each custom element marked with an [@element](#element) decorator becomes an
-implementation of the `StyledElement` and gain the following lifecycle.
+Each custom element marked with an [@styles](./index.md#styles) decorator
+becomes an implementation of the `StyledElement` and gain the following
+lifecycle.
 
 | Name                                              | Hook Type  | Stage      | Description                                           |
 | ------------------------------------------------- | ---------- | ---------- | ----------------------------------------------------- |

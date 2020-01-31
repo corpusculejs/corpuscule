@@ -13,17 +13,6 @@
 - [Constructor](./Constructor.md).
 - [Exact](./Exact.md).
 
-### Specialized Types
-
-#### DecoratedClassConstructor
-
-A subset of [Constructor](./Constructor.md) that has [DecoratedClassProperties](./DecoratedClassProperties.md)
-in the class definition by default.
-
-#### DecoratedClassPrototype
-
-A type that describes the prototype of [DecoratedClassConstructor](#decoratedclassconstructor).
-
 ### Function Types
 
 #### Initializer

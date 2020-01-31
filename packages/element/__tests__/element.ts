@@ -1,11 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function, max-classes-per-file */
+import {Constructor} from '@corpuscule/typings';
 import {fixture, fixtureSync} from '@open-wc/testing-helpers';
-import {
-  Constructor,
-  createTestingPromise,
-  CustomElement,
-  genName,
-} from '../../../test/utils';
+import {createTestingPromise, genName} from '../../../test/utils';
 import {
   element as basicElement,
   ElementDecoratorOptions,
@@ -14,6 +10,7 @@ import {
   render,
   updatedCallback,
 } from '../src';
+import {CorpusculeElement} from '../src/utils';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const fixtureMixin = <T extends Constructor<Element>>(base: T) =>
@@ -26,6 +23,12 @@ const fixtureMixin = <T extends Constructor<Element>>(base: T) =>
       super(...args);
       [this.updateComplete, this.resolve] = createTestingPromise();
     }
+
+    public attributeChangedCallback(
+      _attrName: string,
+      _oldVal: string,
+      _newVal: string,
+    ): void {}
 
     public connectedCallback(): void {
       this.resolve();
@@ -73,8 +76,9 @@ describe('@corpuscule/element', () => {
       const name = genName();
 
       @element(name)
-      class Test extends fixtureMixin(CustomElement) {
-        protected [render](): null {
+      class Test extends fixtureMixin(HTMLElement)
+        implements CorpusculeElement {
+        public [render](): null {
           return null;
         }
       }
@@ -88,10 +92,11 @@ describe('@corpuscule/element', () => {
       const name = genName();
 
       @element(name)
-      class Test extends fixtureMixin(CustomElement) {
+      class Test extends fixtureMixin(HTMLElement)
+        implements CorpusculeElement {
         public static readonly is: string;
 
-        protected [render](): null {
+        public [render](): null {
           return null;
         }
       }
@@ -103,10 +108,10 @@ describe('@corpuscule/element', () => {
       const tag = genName();
 
       @element(tag)
-      // @ts-ignore
-      class Test extends fixtureMixin(CustomElement) {}
+      class Test extends fixtureMixin(HTMLElement)
+        implements CorpusculeElement {}
 
-      await fixture(`<${tag}></${tag}>`);
+      await fixture<Test>(`<${tag}></${tag}>`);
 
       expect(schedulerSpy).not.toHaveBeenCalled();
     });
@@ -117,19 +122,19 @@ describe('@corpuscule/element', () => {
       const tag = genName();
 
       @element(tag)
-      // @ts-ignore
-      class Test extends fixtureMixin(CustomElement) {
+      class Test extends fixtureMixin(HTMLElement)
+        implements CorpusculeElement {
         public connectedCallback(): void {
           super.connectedCallback();
           connectedCallbackSpy();
         }
 
-        protected [render](): null {
+        public [render](): null {
           return null;
         }
       }
 
-      await fixture(`<${tag}></${tag}>`);
+      await fixture<Test>(`<${tag}></${tag}>`);
 
       expect(connectedCallbackSpy).toHaveBeenCalled();
       expect(schedulerSpy).toHaveBeenCalled();
@@ -143,12 +148,13 @@ describe('@corpuscule/element', () => {
       const tag = genName();
 
       @element(tag)
-      class Test extends fixtureMixin(CustomElement) {
+      class Test extends fixtureMixin(HTMLElement)
+        implements CorpusculeElement {
         public attributeChangedCallback(...args: unknown[]): void {
           attributeChangedCallbackSpy(...args);
         }
 
-        protected [render](): null {
+        public [render](): null {
           return null;
         }
       }
@@ -170,12 +176,13 @@ describe('@corpuscule/element', () => {
       const tag = genName();
 
       @element(tag)
-      class Test extends fixtureMixin(CustomElement) {
+      class Test extends fixtureMixin(HTMLElement)
+        implements CorpusculeElement {
         public [propertyChangedCallback](...args: unknown[]): void {
           propertyChangedCallbackSpy(...args);
         }
 
-        protected [render](): null {
+        public [render](): null {
           return null;
         }
       }
@@ -197,12 +204,13 @@ describe('@corpuscule/element', () => {
       const tag = genName();
 
       @element(tag)
-      class Test extends fixtureMixin(CustomElement) {
+      class Test extends fixtureMixin(HTMLElement)
+        implements CorpusculeElement {
         public [internalChangedCallback](...args: unknown[]): void {
           internalChangedCallbackSpy(...args);
         }
 
-        protected [render](): null {
+        public [render](): null {
           return null;
         }
       }
@@ -224,7 +232,8 @@ describe('@corpuscule/element', () => {
       const tag = genName();
 
       @element(tag)
-      class Test extends fixtureMixin(CustomElement) {
+      class Test extends fixtureMixin(HTMLElement)
+        implements CorpusculeElement {
         public [updatedCallback](): void {
           super[updatedCallback]();
           updatedCallbackSpy();
@@ -249,7 +258,8 @@ describe('@corpuscule/element', () => {
       const tag = genName();
 
       @element(tag)
-      class Test extends fixtureMixin(CustomElement) {
+      class Test extends fixtureMixin(HTMLElement)
+        implements CorpusculeElement {
         public [render](): string {
           return 'rendered string';
         }
@@ -274,7 +284,8 @@ describe('@corpuscule/element', () => {
       const tag = genName();
 
       @element(tag)
-      class Test extends fixtureMixin(CustomElement) {
+      class Test extends fixtureMixin(HTMLElement)
+        implements CorpusculeElement {
         public attributeChangedCallback(...args: unknown[]): void {
           attributeChangedCallbackSpy(...args);
         }
@@ -287,7 +298,7 @@ describe('@corpuscule/element', () => {
           internalChangedCallbackSpy(...args);
         }
 
-        protected [render](): null {
+        public [render](): null {
           return null;
         }
       }
@@ -317,7 +328,8 @@ describe('@corpuscule/element', () => {
       const tag = genName();
 
       @element(tag)
-      class Test extends fixtureMixin(CustomElement) {
+      class Test extends fixtureMixin(HTMLElement)
+        implements CorpusculeElement {
         public attributeChangedCallback(...args: unknown[]): void {
           attributeChangedCallbackSpy(...args);
         }
@@ -330,7 +342,7 @@ describe('@corpuscule/element', () => {
           internalChangedCallbackSpy(...args);
         }
 
-        protected [render](): null {
+        public [render](): null {
           return null;
         }
       }
@@ -360,12 +372,13 @@ describe('@corpuscule/element', () => {
       const tag = genName();
 
       @element(tag)
-      class Test extends fixtureMixin(CustomElement) {
+      class Test extends fixtureMixin(HTMLElement)
+        implements CorpusculeElement {
         public attributeChangedCallback(...args: unknown[]): void {
           attributeChangedCallbackSpy(...args);
         }
 
-        protected [render](): null {
+        public [render](): null {
           return null;
         }
       }
@@ -389,7 +402,8 @@ describe('@corpuscule/element', () => {
 
       @element(tag, {lightDOM: true})
       // @ts-ignore
-      class Test extends fixtureMixin(CustomElement) {
+      class Test extends fixtureMixin(HTMLElement)
+        implements CorpusculeElement {
         public [render](): string {
           return 'render';
         }
@@ -408,7 +422,9 @@ describe('@corpuscule/element', () => {
       expect(() => {
         @element(genName())
         // @ts-ignore
-        class Test extends fixtureMixin(CustomElement) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        class Test extends fixtureMixin(HTMLElement)
+          implements CorpusculeElement {
           public constructor() {
             super();
             this.connectedCallback = this.connectedCallback.bind(this);
@@ -432,14 +448,14 @@ describe('@corpuscule/element', () => {
       const tag = genName();
 
       @basicElement(tag, {scheduler: schedulerSpy})
-      // @ts-ignore
-      class Test extends fixtureMixin(CustomElement) {
+      class Test extends fixtureMixin(HTMLElement)
+        implements CorpusculeElement {
         public [render](): string {
           return 'render';
         }
       }
 
-      await fixture(`<${tag}></${tag}>`);
+      await fixture<Test>(`<${tag}></${tag}>`);
 
       expect(schedulerSpy).not.toHaveBeenCalled();
     });
@@ -450,7 +466,8 @@ describe('@corpuscule/element', () => {
         const tag2 = genName();
 
         @element(tag1)
-        class Parent extends fixtureMixin(CustomElement) {
+        class Parent extends fixtureMixin(HTMLElement)
+          implements CorpusculeElement {
           public [render](): null {
             return null;
           }
@@ -458,6 +475,7 @@ describe('@corpuscule/element', () => {
 
         @element(tag2)
         // @ts-ignore
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         class Child extends Parent {
           public [render](): null {
             return null;
@@ -477,7 +495,8 @@ describe('@corpuscule/element', () => {
         const connectedSpyChild = jasmine.createSpy('connectedCallbackChild');
 
         @element(genName())
-        class Parent extends fixtureMixin(CustomElement) {
+        class Parent extends fixtureMixin(HTMLElement)
+          implements CorpusculeElement {
           public connectedCallback(): void {
             super.connectedCallback();
             connectedSpyParent();
@@ -491,7 +510,6 @@ describe('@corpuscule/element', () => {
         const tag = genName();
 
         @element(tag)
-        // @ts-ignore
         class Child extends Parent {
           public connectedCallback(): void {
             super.connectedCallback();
@@ -503,7 +521,7 @@ describe('@corpuscule/element', () => {
           }
         }
 
-        await fixture(`<${tag}></${tag}>`);
+        await fixture<Child>(`<${tag}></${tag}>`);
 
         expect(schedulerSpy).toHaveBeenCalledTimes(1);
         expect(connectedSpyChild).toHaveBeenCalled();
@@ -529,10 +547,9 @@ describe('@corpuscule/element', () => {
         const tag = genName();
 
         @element(tag, {extends: 'a'})
-        // @ts-ignore
         class Test extends fixtureMixin(HTMLAnchorElement) {}
 
-        await fixture(`<a is="${tag}"></a>`);
+        await fixture<Test>(`<a is="${tag}"></a>`);
 
         expect(schedulerSpy).not.toHaveBeenCalled();
       });

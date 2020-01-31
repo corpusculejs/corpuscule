@@ -38,7 +38,7 @@ const consumer = (token: Token): ClassDecorator =>
     defineExtendable(
       klass,
       {
-        connectedCallback(this: ConsumerClass): void {
+        async connectedCallback(this: ConsumerClass): Promise<void> {
           const event = new CustomEvent<ContextEventDetails>(eventName, {
             bubbles: true,
             cancelable: true,
@@ -54,11 +54,11 @@ const consumer = (token: Token): ClassDecorator =>
 
           this[$$unsubscribe] = event.detail.unsubscribe;
 
-          supers.connectedCallback!.call(this);
+          await supers.connectedCallback!.call(this);
         },
-        disconnectedCallback(this: ConsumerClass): void {
+        async disconnectedCallback(this: ConsumerClass): Promise<void> {
           this[$$unsubscribe]?.(this[$$consume]);
-          supers.disconnectedCallback!.call(this);
+          await supers.disconnectedCallback!.call(this);
         },
       },
       supers,

@@ -1,15 +1,14 @@
-import {Constructor, Exact, Initializer} from '@corpuscule/typings';
+import {Constructor, Initializer, Replace} from '@corpuscule/typings';
 
-export type BasicMethod = (this: any, ...args: any[]) => any;
+export type ExtendableMethod = (this: any, ...args: any[]) => any;
 
 const defineExtendable = <
-  C,
-  B extends Record<PropertyKey, BasicMethod>,
-  E extends B
+  C extends object,
+  B extends Record<PropertyKey, ExtendableMethod>
 >(
-  klass: Constructor<C, Partial<B>>,
+  klass: Constructor<C, Partial<Replace<B, ExtendableMethod>>>,
   basicMethods: B,
-  extendedMethods: Exact<E, B>,
+  extendedMethods: Replace<B, ExtendableMethod>,
   initializers: Initializer[],
 ): void => {
   for (const key of Reflect.ownKeys(basicMethods) as ReadonlyArray<keyof B>) {

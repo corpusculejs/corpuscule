@@ -15,7 +15,7 @@ export type PropertyGuard = (value: unknown) => boolean;
 
 export type ElementClass<C> = Constructor<
   C,
-  CustomElement,
+  CorpusculeElement,
   CustomElementClassProperties & DecoratedClassProperties
 >;
 
@@ -23,7 +23,8 @@ export type ElementPrototype<C> = {
   constructor: ElementClass<C>;
 };
 
-export type ElementGears = {
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+export interface CorpusculeElement extends CustomElement {
   [$internalChangedCallback]?(
     propertyName: PropertyKey,
     oldValue: unknown,
@@ -36,7 +37,7 @@ export type ElementGears = {
   ): void;
   [$render]?(): unknown;
   [$updatedCallback]?(): void;
-};
+}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export const noop = (): void => {};

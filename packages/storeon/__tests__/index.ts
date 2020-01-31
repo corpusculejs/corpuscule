@@ -2,13 +2,19 @@ import {Dispatch, Store} from 'storeon';
 import {createSimpleContext, CustomElement} from '../../../test/utils';
 import {dispatcher, gear, provider, storeon, unit} from '../src';
 
-interface State {
-  readonly test: number;
-}
+type State = {
+  test: number;
+};
+
+type EventMap = {
+  inc: number;
+  inc1: number;
+  inc2: number;
+};
 
 describe('@corpuscule/storeon', () => {
   let storeonState: State;
-  let storeonStore: jasmine.SpyObj<Store<State>>;
+  let storeonStore: jasmine.SpyObj<Store<State, EventMap>>;
   let unsubscribe: jasmine.Spy;
 
   beforeEach(() => {
@@ -72,7 +78,10 @@ describe('@corpuscule/storeon', () => {
         @unit<State>('test') public readonly test!: number;
       }
 
-      const [, connectedElement] = await createSimpleContext(Provider, Connected);
+      const [, connectedElement] = await createSimpleContext(
+        Provider,
+        Connected,
+      );
 
       connectedElement.disconnectedCallback();
 
@@ -129,7 +138,10 @@ describe('@corpuscule/storeon', () => {
         @unit<State>('test') public readonly test!: number;
       }
 
-      const [, connectedElement] = await createSimpleContext(Provider, Connected);
+      const [, connectedElement] = await createSimpleContext(
+        Provider,
+        Connected,
+      );
 
       expect(storeonStore.get).toHaveBeenCalled();
       expect(connectedElement.test).toBe(10);
@@ -146,10 +158,13 @@ describe('@corpuscule/storeon', () => {
         @unit<State>('test') public readonly test!: number;
       }
 
-      const [, connectedElement] = await createSimpleContext(Provider, Connected);
+      const [, connectedElement] = await createSimpleContext(
+        Provider,
+        Connected,
+      );
 
-      const [, subscription] = storeonStore.on.calls.argsFor(0);
-      subscription(storeonState, {test: 20});
+      const [, handler] = storeonStore.on.calls.argsFor(0);
+      handler(storeonState, {test: 20});
 
       expect(connectedElement.test).toBe(20);
     });
@@ -208,7 +223,10 @@ describe('@corpuscule/storeon', () => {
         }
       }
 
-      const [, connectedElement] = await createSimpleContext(Provider, Connected);
+      const [, connectedElement] = await createSimpleContext(
+        Provider,
+        Connected,
+      );
 
       connectedElement.dispatch('inc', 10);
       connectedElement.increment(20);
