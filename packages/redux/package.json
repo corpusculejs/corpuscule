@@ -9,7 +9,11 @@
     "lib"
   ],
   "scripts": {
-    "build": "node ../../scripts/build.js"
+    "build": "npm run build:remove && npm run build:babel",
+    "build:babel": "babel src -d lib -x .ts,.js --ignore src/*.d.ts -D",
+    "build:remove": "rimraf lib",
+    "test": "karma start ../../test/karma.conf.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "author": "Vlad Rindevich <rindevich.vs@gmail.com> (https://github.com/Lodin)",
   "bugs": {

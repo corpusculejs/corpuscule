@@ -12,6 +12,10 @@
     "jasmine": true
   },
   "rules": {
+    "@typescript-eslint/no-unnecessary-condition": [
+      "error",
+      {"ignoreRhs": true}
+    ],
     "@typescript-eslint/unbound-method": "off",
     "class-methods-use-this": "off",
     "func-names": "off",

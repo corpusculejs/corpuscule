@@ -1,29 +1,54 @@
-/* eslint-disable sort-keys */
-const webpack = require('./webpack.config');
+/* eslint-disable sort-keys,@typescript-eslint/no-require-imports */
+
+const karmaEsm = require('@open-wc/karma-esm');
+const cjsTransformer = require('es-dev-commonjs-transformer');
+const karmaChromeLauncher = require('karma-chrome-launcher');
+const karmaCoverageIstanbulReporter = require('karma-coverage-istanbul-reporter');
+const karmaDetectBrowsers = require('karma-detect-browsers');
+const karmaFirefoxLauncher = require('karma-firefox-launcher');
+const karmaJasmine = require('karma-jasmine');
+const karmaSafarinativeLauncher = require('karma-safarinative-launcher');
+const {sep} = require('path');
+const babelPluginImportRedirect = require('./babelPluginImportRedirect');
+
+process.env.NODE_ENV = 'test';
 
 const isCI = !!process.env.CI;
-const watch = !!process.argv.find(arg => arg.includes('watch')) && !isCI;
+const cwd = process.cwd();
+// eslint-disable-next-line no-sparse-arrays
+const [, pack] = new RegExp(`\\${sep}packages\\${sep}(\\w+)`).exec(cwd) || [
+  ,
+  '*',
+];
+
+const babelConfig = {
+  presets: ['@babel/preset-typescript', '@corpuscule/babel-preset'],
+  plugins: [babelPluginImportRedirect],
+};
 
 module.exports = config => {
   config.set({
     basePath: '..',
 
     plugins: [
-      require('karma-webpack'),
-      require('karma-jasmine'),
-      require('karma-detect-browsers'),
-      require('karma-chrome-launcher'),
-      require('karma-firefox-launcher'),
-      require('karma-coverage-istanbul-reporter'),
-      require('karma-safarinative-launcher'),
+      karmaChromeLauncher,
+      karmaCoverageIstanbulReporter,
+      karmaDetectBrowsers,
+      karmaEsm,
+      karmaFirefoxLauncher,
+      karmaJasmine,
+      karmaSafarinativeLauncher,
     ],
 
-    frameworks: ['jasmine', 'detectBrowsers'],
+    frameworks: ['detectBrowsers', 'esm', 'jasmine'],
 
     files: [
-      'test/test.js',
       {
-        pattern: './test/assets/**/*',
+        pattern: config.grep || `packages/${pack}/__tests__/**/*`,
+        type: 'module',
+      },
+      {
+        pattern: 'test/assets/**/*',
         watched: false,
         included: false,
         nocache: false,
@@ -33,17 +58,32 @@ module.exports = config => {
 
     exclude: [],
 
-    preprocessors: {'test/test.js': ['webpack']},
     reporters: ['progress', 'coverage-istanbul'],
 
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
-    autoWatch: watch,
-    singleRun: !watch,
+    autoWatch: !!config.watch,
+    singleRun: !config.watch,
     concurrency: Infinity,
 
-    webpack,
+    esm: {
+      babel: false,
+      babelConfig,
+      coverage: !!config.coverage,
+      compatibility: 'none',
+      dedupe: true,
+      fileExtensions: ['.ts'],
+      nodeResolve: true,
+      responseTransformers: [
+        cjsTransformer([
+          '**/node_modules/@open-wc/**/*',
+          '**/node_modules/jasmine-core/**/*',
+          '**/node_modules/karma-jasmine/**/*',
+          '**/packages/*/src/**',
+        ]),
+      ],
+    },
 
     proxies: {
       '/assets/': '/base/test/assets/',
