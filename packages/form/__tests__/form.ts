@@ -1,7 +1,11 @@
 // tslint:disable:no-unbound-method
 import {defineCE, fixture, html, unsafeStatic} from '@open-wc/testing-helpers';
 import {FormApi, FormState} from 'final-form';
-import {createForm, formSpyObject, unsubscribe} from '../../../test/mocks/finalForm';
+import {
+  createForm,
+  formSpyObject,
+  unsubscribe,
+} from '../../../test/mocks/finalForm';
 import {CustomElement} from '../../../test/utils';
 import {form, gear, option} from '../src';
 import {all} from '../src/form';
@@ -159,7 +163,11 @@ describe('@corpuscule/form', () => {
           @option()
           public onSubmit(): void {}
         }
-      }).toThrow(new TypeError('"test" is not one of the Final Form or Field configuration keys'));
+      }).toThrow(
+        new TypeError(
+          '"test" is not one of the Final Form or Field configuration keys',
+        ),
+      );
     });
 
     it('initializes form if new "initialValues" are set', async () => {
@@ -234,7 +242,10 @@ describe('@corpuscule/form', () => {
         };
 
         @option()
-        public compareInitialValues<T extends {foo: number}>(a: T, b: T): boolean {
+        public compareInitialValues<T extends {foo: number}>(
+          a: T,
+          b: T,
+        ): boolean {
           compareInitialValuesSpy();
 
           return a.foo === b.foo;
@@ -320,7 +331,10 @@ describe('@corpuscule/form', () => {
       const tag = defineCE(Test);
       const test = await fixture<Test>(`<${tag}></${tag}>`);
 
-      expect(formSpyObject.subscribe).toHaveBeenCalledWith(jasmine.any(Function), all);
+      expect(formSpyObject.subscribe).toHaveBeenCalledWith(
+        jasmine.any(Function),
+        all,
+      );
 
       const state = {};
 

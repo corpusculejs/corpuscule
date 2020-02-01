@@ -52,7 +52,9 @@ describe('@corpuscule/router', () => {
       await createSimpleContext(Provider, Outlet);
       router.resolve.calls.reset();
 
-      window.dispatchEvent(new PopStateEvent('popstate', {state: {data, path: '/foo/bar'}}));
+      window.dispatchEvent(
+        new PopStateEvent('popstate', {state: {data, path: '/foo/bar'}}),
+      );
 
       expect(router.resolve).toHaveBeenCalledWith({
         chain: [],
@@ -85,7 +87,9 @@ describe('@corpuscule/router', () => {
       }
 
       await createSimpleContext(Provider, Outlet);
-      window.dispatchEvent(new PopStateEvent('popstate', {state: {data, path: '/foo/bar'}}));
+      window.dispatchEvent(
+        new PopStateEvent('popstate', {state: {data, path: '/foo/bar'}}),
+      );
 
       expect(outputSpy).not.toHaveBeenCalled();
     });

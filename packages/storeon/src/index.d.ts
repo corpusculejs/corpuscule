@@ -132,7 +132,10 @@ export function createStoreonToken(): Token;
  *
  * @param eventName a name of the event this dispatcher will trigger on call.
  */
-export function dispatcherAdvanced(token: Token, eventName?: PropertyKey): PropertyDecorator;
+export function dispatcherAdvanced(
+  token: Token,
+  eventName?: PropertyKey,
+): PropertyDecorator;
 
 /**
  * A decorator that works as a [@value]{@link @corpuscule/context.value} for the
@@ -184,4 +187,7 @@ export function storeonAdvanced(token: Token): ClassDecorator;
  *
  * @param storeKey a key to extract a value to reflect from the store.
  */
-export function unitAdvanced<S extends object>(token: Token, storeKey: keyof S): PropertyDecorator;
+export function unitAdvanced<S extends object>(
+  token: Token,
+  storeKey: keyof S,
+): PropertyDecorator;

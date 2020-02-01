@@ -15,4 +15,7 @@ export const [createContextToken, tokenRegistry] = createTokenRegistry(() => [
 ]);
 
 export const reflectClassMethods = target =>
-  basicReflectClassMethods(target, ['connectedCallback', 'disconnectedCallback']);
+  basicReflectClassMethods(target, [
+    'connectedCallback',
+    'disconnectedCallback',
+  ]);

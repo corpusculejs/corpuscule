@@ -24,7 +24,12 @@ $ yarn add @corpuscule/context
 Then import it:
 
 ```typescript
-import {createContextToken, consumer, provider, value} from '@corpuscule/context';
+import {
+  createContextToken,
+  consumer,
+  provider,
+  value,
+} from '@corpuscule/context';
 ```
 
 ## How it works
@@ -84,7 +89,12 @@ Schema for this idea is following:
 
 ```html
 <script type="module">
-  import {createContextToken, consumer, provider, value} from '@corpuscule/context';
+  import {
+    createContextToken,
+    consumer,
+    provider,
+    value,
+  } from '@corpuscule/context';
 
   const token = createContextToken();
 

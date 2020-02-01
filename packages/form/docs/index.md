@@ -46,7 +46,9 @@ import {form, field} from '@corpuscule/form';
 #### @gear
 
 ```typescript
-function gear(responsibilityKey?: keyof FormGears | keyof FieldGears<unknown>): PropertyDecorator;
+function gear(
+  responsibilityKey?: keyof FormGears | keyof FieldGears<unknown>,
+): PropertyDecorator;
 ```
 
 A default version of the [@gearAdvanced](#gearadvanced) with the token already
@@ -117,7 +119,10 @@ for the field.
 #### @fieldAdvanced
 
 ```typescript
-function fieldAdvanced(token: Token, options?: FieldDecoratorOptions): ClassDecorator;
+function fieldAdvanced(
+  token: Token,
+  options?: FieldDecoratorOptions,
+): ClassDecorator;
 ```
 
 Makes a class declaration a 🏁 FinalForm field with a form instance as a context
@@ -135,7 +140,10 @@ internally.
 #### @formAdvanced
 
 ```typescript
-function formAdvanced(token: Token, options?: FormDecoratorOptions): ClassDecorator;
+function formAdvanced(
+  token: Token,
+  options?: FormDecoratorOptions,
+): ClassDecorator;
 ```
 
 Makes a class declaration a 🏁 FinalForm provider with a form instance as a

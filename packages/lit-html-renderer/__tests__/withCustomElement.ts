@@ -28,7 +28,9 @@ const testWithCustomElement = () => {
         const template = chtml`<${div}><${span} ${cls}="test">Test</${span}></${div}>`;
         render(template, container);
 
-        expect(container.innerHTML).toContain('<div><span class="test">Test</span></div>');
+        expect(container.innerHTML).toContain(
+          '<div><span class="test">Test</span></div>',
+        );
       });
 
       it('throws an error if static value is changed to dynamic', () => {

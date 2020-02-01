@@ -1,7 +1,11 @@
 import makeAccessor from '@corpuscule/utils/lib/makeAccessor';
 import {propertyChangedCallback as $propertyChangedCallback} from './tokens';
 
-const property = (guard = () => true) => ({constructor: klass}, propertyKey, descriptor) => {
+const property = (guard = () => true) => (
+  {constructor: klass},
+  propertyKey,
+  descriptor,
+) => {
   const {get, set} = makeAccessor(descriptor, klass.__initializers);
 
   return {

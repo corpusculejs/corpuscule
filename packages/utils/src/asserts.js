@@ -7,7 +7,12 @@ export const assertRequiredProperty = (...args) => {
   if (args.length === 3) {
     [classDecoratorName, propertyDecoratorName, propertyValue] = args;
   } else {
-    [classDecoratorName, propertyDecoratorName, propertyName, propertyValue] = args;
+    [
+      classDecoratorName,
+      propertyDecoratorName,
+      propertyName,
+      propertyValue,
+    ] = args;
   }
 
   if (propertyValue === undefined) {

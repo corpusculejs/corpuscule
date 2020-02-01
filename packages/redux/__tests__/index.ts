@@ -11,7 +11,11 @@ describe('@corpuscule/redux', () => {
   beforeEach(() => {
     reduxState = {test: 10};
     unsubscribe = jasmine.createSpy('unsubscribe');
-    reduxStore = jasmine.createSpyObj('store', ['dispatch', 'getState', 'subscribe']);
+    reduxStore = jasmine.createSpyObj('store', [
+      'dispatch',
+      'getState',
+      'subscribe',
+    ]);
     reduxStore.subscribe.and.returnValue(unsubscribe);
 
     // callFake allows to change reduxState during the test
@@ -48,7 +52,10 @@ describe('@corpuscule/redux', () => {
         public readonly store!: Store;
       }
 
-      const nextStore = jasmine.createSpyObj('nextStore', ['getState', 'subscribe']);
+      const nextStore = jasmine.createSpyObj('nextStore', [
+        'getState',
+        'subscribe',
+      ]);
       nextStore.getState.and.returnValue(reduxState);
       nextStore.subscribe.and.returnValue(unsubscribe);
 
@@ -74,7 +81,10 @@ describe('@corpuscule/redux', () => {
         public readonly store!: Store;
       }
 
-      const [, connectedElement] = await createSimpleContext(Provider, Connected);
+      const [, connectedElement] = await createSimpleContext(
+        Provider,
+        Connected,
+      );
 
       connectedElement.disconnectedCallback();
 
@@ -132,7 +142,10 @@ describe('@corpuscule/redux', () => {
         public test?: number;
       }
 
-      const [, connectedElement] = await createSimpleContext(Provider, Connected);
+      const [, connectedElement] = await createSimpleContext(
+        Provider,
+        Connected,
+      );
 
       expect(reduxStore.getState).toHaveBeenCalled();
       expect(connectedElement.test).toBe(10);
@@ -150,7 +163,10 @@ describe('@corpuscule/redux', () => {
         public test?: number;
       }
 
-      const [, connectedElement] = await createSimpleContext(Provider, Connected);
+      const [, connectedElement] = await createSimpleContext(
+        Provider,
+        Connected,
+      );
 
       const [subscription] = reduxStore.subscribe.calls.argsFor(0);
       reduxState = {test: 20};
@@ -222,7 +238,10 @@ describe('@corpuscule/redux', () => {
         }
       }
 
-      const [, connectedElement] = await createSimpleContext(Provider, Connected);
+      const [, connectedElement] = await createSimpleContext(
+        Provider,
+        Connected,
+      );
 
       connectedElement.external(20);
       connectedElement.test(10);
@@ -246,7 +265,11 @@ describe('@corpuscule/redux', () => {
           @dispatcher
           public external: number = 1;
         }
-      }).toThrow(new TypeError('@dispatcher "external" should be initialized with a function'));
+      }).toThrow(
+        new TypeError(
+          '@dispatcher "external" should be initialized with a function',
+        ),
+      );
 
       expect(() => {
         // @ts-ignore
@@ -254,7 +277,11 @@ describe('@corpuscule/redux', () => {
           @dispatcher
           public nothing?: unknown;
         }
-      }).toThrow(new TypeError('@dispatcher "nothing" should be initialized with a function'));
+      }).toThrow(
+        new TypeError(
+          '@dispatcher "nothing" should be initialized with a function',
+        ),
+      );
     });
   });
 });

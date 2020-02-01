@@ -119,7 +119,9 @@ describe('@corpuscule/element', () => {
     });
 
     it('runs "attributeChangedCallback" on change', async () => {
-      const attributeChangedCallbackSpy = jasmine.createSpy('onAttributeChange');
+      const attributeChangedCallbackSpy = jasmine.createSpy(
+        'onAttributeChange',
+      );
 
       class Test extends CustomElement {
         public static readonly observedAttributes: ReadonlyArray<string> = [];
@@ -141,7 +143,11 @@ describe('@corpuscule/element', () => {
 
       test.attribute = 'test';
 
-      expect(attributeChangedCallbackSpy).toHaveBeenCalledWith('attr', null, 'test');
+      expect(attributeChangedCallbackSpy).toHaveBeenCalledWith(
+        'attr',
+        null,
+        'test',
+      );
       expect(attributeChangedCallbackSpy).toHaveBeenCalledTimes(1);
     });
 
@@ -152,7 +158,11 @@ describe('@corpuscule/element', () => {
           @attribute('attr', Object as any)
           public attribute: object | null = null;
         }
-      }).toThrow(new TypeError('Guard for @attribute should be either Number, Boolean or String'));
+      }).toThrow(
+        new TypeError(
+          'Guard for @attribute should be either Number, Boolean or String',
+        ),
+      );
     });
 
     it('throws an error if value does not fit guard', async () => {
@@ -168,7 +178,11 @@ describe('@corpuscule/element', () => {
 
       expect(() => {
         (test as any).numAttribute = 'str';
-      }).toThrow(new TypeError('Value applied to "numAttribute" is not Number or undefined'));
+      }).toThrow(
+        new TypeError(
+          'Value applied to "numAttribute" is not Number or undefined',
+        ),
+      );
     });
 
     it('gets null if no attribute exist', async () => {

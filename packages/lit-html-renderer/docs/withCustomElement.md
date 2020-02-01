@@ -72,7 +72,10 @@ A value wrapped with UnsafeStatic.
 
 ```typescript
 function withCustomElement(
-  processor: (strings: TemplateStringsArray, ...values: unknown[]) => TemplateResult,
+  processor: (
+    strings: TemplateStringsArray,
+    ...values: unknown[]
+  ) => TemplateResult,
 ): (strings: TemplateStringsArray, ...values: unknown[]) => TemplateResult;
 ```
 

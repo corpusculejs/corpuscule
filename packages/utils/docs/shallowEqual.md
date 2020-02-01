@@ -32,7 +32,10 @@ import shallowEqual from '@corpuscule/utils/lib/shallowEqual';
 ### shallowEqual
 
 ```typescript
-function shallowEqual<T1 extends any, T2 extends any>(objA: T1, objB: T2): boolean;
+function shallowEqual<T1 extends any, T2 extends any>(
+  objA: T1,
+  objB: T2,
+): boolean;
 ```
 
 Compares two objects following the idea that one object is shallowly equal to

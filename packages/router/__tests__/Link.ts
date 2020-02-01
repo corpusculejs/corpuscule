@@ -4,7 +4,10 @@ import {Link} from '../src';
 describe('@corpuscule/router', () => {
   describe('Link', () => {
     const waitForDocumentUpdate = () =>
-      waitForMutationObserverChange(document.body, {childList: true, subtree: true});
+      waitForMutationObserverChange(document.body, {
+        childList: true,
+        subtree: true,
+      });
     let historyPushStateSpy: jasmine.Spy;
     let historyStateSpy: jasmine.Spy;
     let link: Link;
@@ -22,7 +25,9 @@ describe('@corpuscule/router', () => {
       link = document.createElement('a', {is: Link.is}) as Link;
       link.href = '/test';
       historyPushStateSpy = spyOn(history, 'pushState');
-      historyStateSpy = spyOnProperty(history, 'state').and.returnValue('/test');
+      historyStateSpy = spyOnProperty(history, 'state').and.returnValue(
+        '/test',
+      );
     });
 
     it("accessible through 'document.createElement'", () => {

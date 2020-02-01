@@ -139,4 +139,7 @@ export function reduxAdvanced(token: Token): ClassDecorator;
  *
  * @param getter a function that extracts the value to reflect from the store.
  */
-export function unitAdvanced<S>(token: Token, getter: (state: S) => any): PropertyDecorator;
+export function unitAdvanced<S>(
+  token: Token,
+  getter: (state: S) => any,
+): PropertyDecorator;

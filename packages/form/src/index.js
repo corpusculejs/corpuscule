@@ -16,8 +16,10 @@ export {
 
 const defaultToken = createFormToken();
 
-export const gear = responsibilityKey => gearAdvanced(defaultToken, responsibilityKey);
+export const gear = responsibilityKey =>
+  gearAdvanced(defaultToken, responsibilityKey);
 export const field = options => fieldAdvanced(defaultToken, options);
 export const form = options => formAdvanced(defaultToken, options);
 export const isForm = klass => isProvider(defaultToken, klass);
-export const option = responsibilityKey => optionAdvanced(defaultToken, responsibilityKey);
+export const option = responsibilityKey =>
+  optionAdvanced(defaultToken, responsibilityKey);

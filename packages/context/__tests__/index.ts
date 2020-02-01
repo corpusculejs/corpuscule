@@ -1,3 +1,4 @@
+import {Token} from '@corpuscule/utils/lib/tokenRegistry';
 import {defineCE, fixture} from '@open-wc/testing-helpers';
 import {createSimpleContext, CustomElement} from '../../../test/utils';
 import {
@@ -9,10 +10,10 @@ import {
 } from '../src';
 
 describe('@corpuscule/context', () => {
-  let consumer;
-  let provider;
-  let token;
-  let value;
+  let consumer: ClassDecorator;
+  let provider: ClassDecorator;
+  let token: Token;
+  let value: PropertyDecorator;
 
   beforeEach(() => {
     token = createContextToken();
@@ -79,7 +80,10 @@ describe('@corpuscule/context', () => {
       @value public contextValue!: number;
     }
 
-    const [providerElement, consumerElement] = await createSimpleContext(Provider, Consumer);
+    const [providerElement, consumerElement] = await createSimpleContext(
+      Provider,
+      Consumer,
+    );
 
     expect(providerElement.providingValue).toBe(2);
     expect(consumerElement.contextValue).toBe(2);
@@ -98,7 +102,10 @@ describe('@corpuscule/context', () => {
       @value public contextValue!: number;
     }
 
-    const [providerElement, consumerElement] = await createSimpleContext(Provider, Consumer);
+    const [providerElement, consumerElement] = await createSimpleContext(
+      Provider,
+      Consumer,
+    );
 
     providerElement.providingValue = 10;
 
@@ -135,7 +142,10 @@ describe('@corpuscule/context', () => {
       }
     }
 
-    const [providerElement, consumerElement] = await createSimpleContext(Provider, Consumer);
+    const [providerElement, consumerElement] = await createSimpleContext(
+      Provider,
+      Consumer,
+    );
 
     consumerElement.remove();
     providerElement.remove();
@@ -155,7 +165,10 @@ describe('@corpuscule/context', () => {
       @value public contextValue!: number;
     }
 
-    const [providerElement, consumerElement] = await createSimpleContext(Provider, Consumer);
+    const [providerElement, consumerElement] = await createSimpleContext(
+      Provider,
+      Consumer,
+    );
 
     consumerElement.remove();
 
@@ -217,7 +230,10 @@ describe('@corpuscule/context', () => {
       }
     }
 
-    const [providerElement, consumerElement] = await createSimpleContext(Provider, Consumer);
+    const [providerElement, consumerElement] = await createSimpleContext(
+      Provider,
+      Consumer,
+    );
 
     expect(providerElement.providingValue).toBe(10);
     expect(consumerElement.contextValue).toBe(10);
@@ -254,7 +270,10 @@ describe('@corpuscule/context', () => {
       }
     }
 
-    const [providerElement, consumerElement] = await createSimpleContext(Provider, Consumer);
+    const [providerElement, consumerElement] = await createSimpleContext(
+      Provider,
+      Consumer,
+    );
 
     expect(providerElement.providingValue).toBe(2);
     expect(consumerElement.contextValue).toBe(2);

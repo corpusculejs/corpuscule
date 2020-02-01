@@ -36,7 +36,8 @@ import makeAccessor from '@corpuscule/utils/lib/makeAccessor';
 function makeAccessor(
   descriptor: PropertyDescriptor & {initializer?: () => unknown},
   initializers: Array<(self: object) => void>,
-): Required<Pick<PropertyDescriptor, 'get' | 'set'>> & Omit<PropertyDescriptor, 'get' | 'set'>;
+): Required<Pick<PropertyDescriptor, 'get' | 'set'>> &
+  Omit<PropertyDescriptor, 'get' | 'set'>;
 ```
 
 Converts the regular property to an accessor and registers the initializer

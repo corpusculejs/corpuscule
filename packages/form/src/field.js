@@ -5,7 +5,13 @@ import reflectClassMethods from '@corpuscule/utils/lib/reflectClassMethods';
 import defaultScheduler from '@corpuscule/utils/lib/scheduler';
 import {setObject} from '@corpuscule/utils/lib/setters';
 import {fieldSubscriptionItems} from 'final-form';
-import {getTargetValue, isNativeDefinition, noop, setTargetValues, tokenRegistry} from './utils';
+import {
+  getTargetValue,
+  isNativeDefinition,
+  noop,
+  setTargetValues,
+  tokenRegistry,
+} from './utils';
 
 export const all = fieldSubscriptionItems.reduce((result, key) => {
   result[key] = true;
@@ -15,7 +21,11 @@ export const all = fieldSubscriptionItems.reduce((result, key) => {
 
 const field = (
   token,
-  {auto = false, scheduler = defaultScheduler, childrenSelector = 'input, select, textarea'} = {},
+  {
+    auto = false,
+    scheduler = defaultScheduler,
+    childrenSelector = 'input, select, textarea',
+  } = {},
 ) => klass => {
   let $formApi;
   let $input;
@@ -192,7 +202,9 @@ const field = (
         // We should update form only if it is an auto field or event is custom.
         // By default field does not receive native change events.
         if (isCustomEvent || auto) {
-          const changed = isCustomEvent ? event.detail : getTargetValue(event.target, value);
+          const changed = isCustomEvent
+            ? event.detail
+            : getTargetValue(event.target, value);
           change(parse ? parse(changed, name) : changed);
 
           self[$$selfChange] = !isCustomEvent;
@@ -203,10 +215,20 @@ const field = (
 
         const format = $format && self[$format];
 
-        const {blur: _b, change: _c, focus: _f, name, length: _l, value, ...metadata} = state;
+        const {
+          blur: _b,
+          change: _c,
+          focus: _f,
+          name,
+          length: _l,
+          value,
+          ...metadata
+        } = state;
 
         const finalValue =
-          !($formatOnBlur && self[$formatOnBlur]) && format ? format(value, name) : value;
+          !($formatOnBlur && self[$formatOnBlur]) && format
+            ? format(value, name)
+            : value;
 
         self[$input] = {
           name,

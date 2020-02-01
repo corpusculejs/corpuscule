@@ -87,7 +87,11 @@ describe('@corpuscule/element', () => {
 
       test.accessor = 'test';
 
-      expect(propertyChangedCallbackSpy).toHaveBeenCalledWith('accessor', 'str', 'test');
+      expect(propertyChangedCallbackSpy).toHaveBeenCalledWith(
+        'accessor',
+        'str',
+        'test',
+      );
       expect(propertyChangedCallbackSpy).toHaveBeenCalledTimes(1);
     });
 
@@ -98,7 +102,11 @@ describe('@corpuscule/element', () => {
         @property()
         public prop: number = 10;
 
-        public [propertyChangedCallback](_name: string, _oldValue: number, newValue: number): void {
+        public [propertyChangedCallback](
+          _name: string,
+          _oldValue: number,
+          newValue: number,
+        ): void {
           propertyChangedCallbackSpy();
           expect(this.prop).toBe(newValue);
         }

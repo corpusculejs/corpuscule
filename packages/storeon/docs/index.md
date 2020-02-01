@@ -20,7 +20,13 @@ $ yarn add @corpuscule/storeon
 Then import it:
 
 ```typescript
-import {createStoreonToken, dispatcher, gear, provider, storeon} from '@corpuscule/storeon';
+import {
+  createStoreonToken,
+  dispatcher,
+  gear,
+  provider,
+  storeon,
+} from '@corpuscule/storeon';
 ```
 
 ## API
@@ -75,7 +81,10 @@ provided.
 #### dispatcherAdvanced
 
 ```typescript
-function dispatcherAdvanced(token: Token, eventName?: PropertyKey): PropertyDecorator;
+function dispatcherAdvanced(
+  token: Token,
+  eventName?: PropertyKey,
+): PropertyDecorator;
 ```
 
 Converts a class method or field to a storeon dispatcher. There are three
@@ -200,7 +209,10 @@ a context value.
 #### unitAdvanced
 
 ```typescript
-function unitAdvanced<Store extends object>(token: Token, storeKey: keyof S): PropertyDecorator;
+function unitAdvanced<Store extends object>(
+  token: Token,
+  storeKey: keyof S,
+): PropertyDecorator;
 ```
 
 A decorator that makes a class property a reflection for the specific store

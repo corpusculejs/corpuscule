@@ -33,7 +33,11 @@
  * store.get('foo'); // ['bar', 'baz']
  * ```
  */
-export function setArray<K, V>(store: Map<K, V[]>, key: K, array: ReadonlyArray<V>): void;
+export function setArray<K, V>(
+  store: Map<K, V[]>,
+  key: K,
+  array: ReadonlyArray<V>,
+): void;
 
 /**
  * @overload This overload accepts `WeakMap` instance as a store.

@@ -55,7 +55,12 @@ const element = (
           return;
         }
 
-        supers.attributeChangedCallback.call(this, attributeName, oldValue, newValue);
+        supers.attributeChangedCallback.call(
+          this,
+          attributeName,
+          oldValue,
+          newValue,
+        );
         await this[$$invalidate]();
       },
       async connectedCallback() {
@@ -93,7 +98,12 @@ const element = (
         return;
       }
 
-      supers[$internalChangedCallback].call(this, internalName, oldValue, newValue);
+      supers[$internalChangedCallback].call(
+        this,
+        internalName,
+        oldValue,
+        newValue,
+      );
       await this[$$invalidate]();
     },
     async [$propertyChangedCallback](propertyName, oldValue, newValue) {
@@ -101,7 +111,12 @@ const element = (
         return;
       }
 
-      supers[$propertyChangedCallback].call(this, propertyName, oldValue, newValue);
+      supers[$propertyChangedCallback].call(
+        this,
+        propertyName,
+        oldValue,
+        newValue,
+      );
       await this[$$invalidate]();
     },
     [$updatedCallback]: supers[$updatedCallback],
@@ -110,7 +125,11 @@ const element = (
   klass.__initializers.push(self => {
     self[$$connected] = false;
     self[$$root] =
-      self.constructor !== klass ? null : isLight ? self : self.attachShadow({mode: 'open'});
+      self.constructor !== klass
+        ? null
+        : isLight
+        ? self
+        : self.attachShadow({mode: 'open'});
     self[$$valid] = true;
   });
 

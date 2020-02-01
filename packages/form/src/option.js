@@ -4,14 +4,22 @@ import {getName} from '@corpuscule/utils/lib/propertyUtils';
 import {setObject} from '@corpuscule/utils/lib/setters';
 import shallowEqual from '@corpuscule/utils/lib/shallowEqual';
 import {noop} from '../../element/src/utils';
-import {fieldOptionResponsibilityKeys, formOptionResponsibilityKeys, tokenRegistry} from './utils';
+import {
+  fieldOptionResponsibilityKeys,
+  formOptionResponsibilityKeys,
+  tokenRegistry,
+} from './utils';
 
 const optionsResponsibilityKeys = new Set([
   ...fieldOptionResponsibilityKeys,
   ...formOptionResponsibilityKeys,
 ]);
 
-const option = (token, responsibilityKey) => ({constructor: klass}, propertyKey, descriptor) => {
+const option = (token, responsibilityKey) => (
+  {constructor: klass},
+  propertyKey,
+  descriptor,
+) => {
   const finalResponsibilityKey = responsibilityKey || getName(propertyKey);
   const sharedPropertiesRegistry = tokenRegistry.get(token);
 
@@ -25,7 +33,10 @@ const option = (token, responsibilityKey) => ({constructor: klass}, propertyKey,
     [finalResponsibilityKey]: propertyKey,
   });
 
-  if ('initializer' in descriptor || ('get' in descriptor && 'set' in descriptor)) {
+  if (
+    'initializer' in descriptor ||
+    ('get' in descriptor && 'set' in descriptor)
+  ) {
     let setter;
 
     const {get, set} = makeAccessor(descriptor, klass.__initializers);
@@ -42,11 +53,10 @@ const option = (token, responsibilityKey) => ({constructor: klass}, propertyKey,
           finalResponsibilityKey === 'initialValues'
             ? (self, initialValues) => {
                 if (
-                  !(($compareInitialValues && self[$compareInitialValues]) || shallowEqual).call(
-                    self,
-                    self[propertyKey],
-                    initialValues,
-                  )
+                  !(
+                    ($compareInitialValues && self[$compareInitialValues]) ||
+                    shallowEqual
+                  ).call(self, self[propertyKey], initialValues)
                 ) {
                   self[$formApi].initialize(initialValues);
                 }
@@ -57,7 +67,9 @@ const option = (token, responsibilityKey) => ({constructor: klass}, propertyKey,
                 }
               };
       } else {
-        const {schedule: $scheduleSubscription} = sharedPropertiesRegistry.get(klass);
+        const {schedule: $scheduleSubscription} = sharedPropertiesRegistry.get(
+          klass,
+        );
 
         const areEqual =
           finalResponsibilityKey === 'subscription'
@@ -65,7 +77,8 @@ const option = (token, responsibilityKey) => ({constructor: klass}, propertyKey,
             : (v, oldValue) => v === oldValue;
 
         setter =
-          finalResponsibilityKey === 'name' || finalResponsibilityKey === 'subscription'
+          finalResponsibilityKey === 'name' ||
+          finalResponsibilityKey === 'subscription'
             ? (self, v, originalGet) => {
                 if (!areEqual(v, originalGet.call(self))) {
                   self[$scheduleSubscription]();

@@ -17,7 +17,10 @@ const dispatcher = (token, eventName) => (prototype, _, descriptor) => {
             this[$store].dispatch(eventName, data);
           }
         : function(...args) {
-            this[$store].dispatch(eventName, descriptor.value.apply(this, args));
+            this[$store].dispatch(
+              eventName,
+              descriptor.value.apply(this, args),
+            );
           }
       : function(...args) {
           this[$store].dispatch(...args);

@@ -34,7 +34,10 @@ describe('@corpuscule/router', () => {
       beforeEach(() => {
         createRouter(routes, options);
 
-        [, {resolveRoute}] = universalRouterConstructorSpy.calls.mostRecent().args;
+        [
+          ,
+          {resolveRoute},
+        ] = universalRouterConstructorSpy.calls.mostRecent().args;
       });
 
       it('builds chain of visited routes', async () => {
@@ -43,7 +46,9 @@ describe('@corpuscule/router', () => {
         };
 
         const secondRoute = {
-          action: jasmine.createSpy('secondAction').and.callFake(async () => 'Bar'),
+          action: jasmine
+            .createSpy('secondAction')
+            .and.callFake(async () => 'Bar'),
         };
 
         const chain: readonly RoutingChainElement[] = [];
@@ -64,8 +69,14 @@ describe('@corpuscule/router', () => {
           },
         ]);
 
-        expect(firstRoute.action).toHaveBeenCalledWith({chain, route: firstRoute}, params);
-        expect(secondRoute.action).toHaveBeenCalledWith({chain, route: secondRoute}, params);
+        expect(firstRoute.action).toHaveBeenCalledWith(
+          {chain, route: firstRoute},
+          params,
+        );
+        expect(secondRoute.action).toHaveBeenCalledWith(
+          {chain, route: secondRoute},
+          params,
+        );
       });
 
       it('returns built chain if route does not have children', async () => {

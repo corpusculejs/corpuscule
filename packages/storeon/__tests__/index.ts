@@ -72,7 +72,10 @@ describe('@corpuscule/storeon', () => {
         @unit<State>('test') public readonly test!: number;
       }
 
-      const [, connectedElement] = await createSimpleContext(Provider, Connected);
+      const [, connectedElement] = await createSimpleContext(
+        Provider,
+        Connected,
+      );
 
       connectedElement.disconnectedCallback();
 
@@ -129,7 +132,10 @@ describe('@corpuscule/storeon', () => {
         @unit<State>('test') public readonly test!: number;
       }
 
-      const [, connectedElement] = await createSimpleContext(Provider, Connected);
+      const [, connectedElement] = await createSimpleContext(
+        Provider,
+        Connected,
+      );
 
       expect(storeonStore.get).toHaveBeenCalled();
       expect(connectedElement.test).toBe(10);
@@ -146,7 +152,10 @@ describe('@corpuscule/storeon', () => {
         @unit<State>('test') public readonly test!: number;
       }
 
-      const [, connectedElement] = await createSimpleContext(Provider, Connected);
+      const [, connectedElement] = await createSimpleContext(
+        Provider,
+        Connected,
+      );
 
       const [, subscription] = storeonStore.on.calls.argsFor(0);
       subscription(storeonState, {test: 20});
@@ -208,7 +217,10 @@ describe('@corpuscule/storeon', () => {
         }
       }
 
-      const [, connectedElement] = await createSimpleContext(Provider, Connected);
+      const [, connectedElement] = await createSimpleContext(
+        Provider,
+        Connected,
+      );
 
       connectedElement.dispatch('inc', 10);
       connectedElement.increment(20);

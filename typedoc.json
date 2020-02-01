@@ -6,6 +6,6 @@
   "includeDeclarations": true,
   "mode": "modules",
   "name": "Corpuscule API",
-  "out":"./docs",
+  "out": "./docs",
   "readme": "./README.md"
 }

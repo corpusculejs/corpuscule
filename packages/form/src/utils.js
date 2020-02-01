@@ -9,9 +9,18 @@ export const [createFormToken, tokenRegistry] = createTokenRegistry(
 
 export const noop = () => {}; // eslint-disable-line no-empty-function
 
-export const formOptionResponsibilityKeys = [...configOptions, 'compareInitialValues'];
+export const formOptionResponsibilityKeys = [
+  ...configOptions,
+  'compareInitialValues',
+];
 
-export const gearResponsibilityKeys = ['formApi', 'input', 'meta', 'refs', 'state'];
+export const gearResponsibilityKeys = [
+  'formApi',
+  'input',
+  'meta',
+  'refs',
+  'state',
+];
 
 export const fieldOptionResponsibilityKeys = [
   'format',
@@ -72,19 +81,24 @@ export const getTargetValue = (
 const setSingleValue = (target, formValue) => {
   switch (target.type) {
     case 'checkbox':
-      target.checked = Array.isArray(formValue) ? formValue.includes(target.value) : !!formValue;
+      target.checked = Array.isArray(formValue)
+        ? formValue.includes(target.value)
+        : !!formValue;
       break;
     case 'radio':
       target.checked = formValue === target.value;
       break;
     case 'select-multiple':
       for (const option of target.options) {
-        option.selected = Array.isArray(formValue) && formValue.includes(option.value);
+        option.selected =
+          Array.isArray(formValue) && formValue.includes(option.value);
       }
       break;
     default:
       target.value =
-        isNativeDefinition && (formValue === null || formValue === undefined) ? '' : formValue;
+        isNativeDefinition && (formValue === null || formValue === undefined)
+          ? ''
+          : formValue;
   }
 };
 

@@ -1,6 +1,11 @@
 // tslint:disable:no-unbound-method
 import {fixture, fixtureSync} from '@open-wc/testing-helpers';
-import {Constructor, createTestingPromise, CustomElement, genName} from '../../../test/utils';
+import {
+  Constructor,
+  createTestingPromise,
+  CustomElement,
+  genName,
+} from '../../../test/utils';
 import {
   element as basicElement,
   ElementDecoratorOptions,
@@ -47,13 +52,19 @@ describe('@corpuscule/element', () => {
       rendererSpy = jasmine.createSpy('onTemplateRender');
       schedulerSpy = jasmine.createSpy('onSchedule');
 
-      schedulerSpy.and.callFake((renderCallback: () => void) => renderCallback());
+      schedulerSpy.and.callFake((renderCallback: () => void) =>
+        renderCallback(),
+      );
 
       define = spyOn(customElements, 'define');
       define.and.callThrough();
 
       element = (name, options) =>
-        basicElement(name, {...options, renderer: rendererSpy, scheduler: schedulerSpy});
+        basicElement(name, {
+          ...options,
+          renderer: rendererSpy,
+          scheduler: schedulerSpy,
+        });
     });
 
     it('adds element to a custom elements registry', async () => {
@@ -123,7 +134,9 @@ describe('@corpuscule/element', () => {
     });
 
     it('re-renders on each attribute change', async () => {
-      const attributeChangedCallbackSpy = jasmine.createSpy('onAttributeChange');
+      const attributeChangedCallbackSpy = jasmine.createSpy(
+        'onAttributeChange',
+      );
 
       const tag = genName();
 
@@ -141,7 +154,11 @@ describe('@corpuscule/element', () => {
       const test = await fixture<Test>(`<${tag}></${tag}>`);
 
       test.attributeChangedCallback('test', 'old', 'new');
-      expect(attributeChangedCallbackSpy).toHaveBeenCalledWith('test', 'old', 'new');
+      expect(attributeChangedCallbackSpy).toHaveBeenCalledWith(
+        'test',
+        'old',
+        'new',
+      );
       expect(schedulerSpy).toHaveBeenCalledTimes(2);
     });
 
@@ -164,7 +181,11 @@ describe('@corpuscule/element', () => {
       const test = await fixture<Test>(`<${tag}></${tag}>`);
 
       test[propertyChangedCallback]('test', 'old', 'new');
-      expect(propertyChangedCallbackSpy).toHaveBeenCalledWith('test', 'old', 'new');
+      expect(propertyChangedCallbackSpy).toHaveBeenCalledWith(
+        'test',
+        'old',
+        'new',
+      );
       expect(schedulerSpy).toHaveBeenCalledTimes(2);
     });
 
@@ -187,7 +208,11 @@ describe('@corpuscule/element', () => {
       const test = await fixture<Test>(`<${tag}></${tag}>`);
 
       test[internalChangedCallback]('test', 'old', 'new');
-      expect(internalChangedCallbackSpy).toHaveBeenCalledWith('test', 'old', 'new');
+      expect(internalChangedCallbackSpy).toHaveBeenCalledWith(
+        'test',
+        'old',
+        'new',
+      );
       expect(schedulerSpy).toHaveBeenCalledTimes(2);
     });
 
@@ -230,11 +255,17 @@ describe('@corpuscule/element', () => {
 
       const test = await fixture<Test>(`<${tag}></${tag}>`);
 
-      expect(rendererSpy).toHaveBeenCalledWith('rendered string', jasmine.any(Node), test);
+      expect(rendererSpy).toHaveBeenCalledWith(
+        'rendered string',
+        jasmine.any(Node),
+        test,
+      );
     });
 
     it('does not allow to run re-render if old and new values are identical (except for internal)', async () => {
-      const attributeChangedCallbackSpy = jasmine.createSpy('onAttributeChange');
+      const attributeChangedCallbackSpy = jasmine.createSpy(
+        'onAttributeChange',
+      );
       const propertyChangedCallbackSpy = jasmine.createSpy('onPropertyChange');
       const internalChangedCallbackSpy = jasmine.createSpy('onInternalChange');
 
@@ -275,7 +306,9 @@ describe('@corpuscule/element', () => {
     });
 
     it('does not allow to use [updatedCallback] and changed callbacks when not connected', async () => {
-      const attributeChangedCallbackSpy = jasmine.createSpy('onAttributeChange');
+      const attributeChangedCallbackSpy = jasmine.createSpy(
+        'onAttributeChange',
+      );
       const propertyChangedCallbackSpy = jasmine.createSpy('onPropertyChange');
       const internalChangedCallbackSpy = jasmine.createSpy('onInternalChange');
 
@@ -318,7 +351,9 @@ describe('@corpuscule/element', () => {
     });
 
     it('makes only one render on multiple property change', async () => {
-      const attributeChangedCallbackSpy = jasmine.createSpy('onAttributeChange');
+      const attributeChangedCallbackSpy = jasmine.createSpy(
+        'onAttributeChange',
+      );
 
       const tag = genName();
 
@@ -360,7 +395,11 @@ describe('@corpuscule/element', () => {
 
       const test = await fixture<Test>(`<${tag}></${tag}>`);
 
-      expect(rendererSpy).toHaveBeenCalledWith('render', test, jasmine.any(Object));
+      expect(rendererSpy).toHaveBeenCalledWith(
+        'render',
+        test,
+        jasmine.any(Object),
+      );
     });
 
     it('does not throw an error if class already have own lifecycle element', () => {
@@ -371,7 +410,9 @@ describe('@corpuscule/element', () => {
           public constructor() {
             super();
             this.connectedCallback = this.connectedCallback.bind(this);
-            this.attributeChangedCallback = this.attributeChangedCallback.bind(this);
+            this.attributeChangedCallback = this.attributeChangedCallback.bind(
+              this,
+            );
           }
 
           public connectedCallback(): void {}
@@ -421,7 +462,10 @@ describe('@corpuscule/element', () => {
           }
         }
 
-        await Promise.all([customElements.whenDefined(tag1), customElements.whenDefined(tag2)]);
+        await Promise.all([
+          customElements.whenDefined(tag1),
+          customElements.whenDefined(tag2),
+        ]);
 
         expect(customElements.define).toHaveBeenCalledTimes(2);
       });
@@ -474,7 +518,9 @@ describe('@corpuscule/element', () => {
 
         await customElements.whenDefined(name);
 
-        expect(customElements.define).toHaveBeenCalledWith(name, Test, {extends: 'a'});
+        expect(customElements.define).toHaveBeenCalledWith(name, Test, {
+          extends: 'a',
+        });
       });
 
       it('does not re-render', async () => {
@@ -512,7 +558,9 @@ describe('@corpuscule/element', () => {
       });
 
       it('defines that element is connected for light DOM elements', async () => {
-        const attributeChangedCallbackSpy = jasmine.createSpy('attributeChangedCallback');
+        const attributeChangedCallbackSpy = jasmine.createSpy(
+          'attributeChangedCallback',
+        );
         const tag = genName();
 
         @element(tag, {extends: 'a'})
@@ -528,7 +576,11 @@ describe('@corpuscule/element', () => {
 
         // This test allows to understand was the user-defined attributeChangedCallback
         // was called by the system one.
-        expect(attributeChangedCallbackSpy).toHaveBeenCalledWith('test', '1', '2');
+        expect(attributeChangedCallbackSpy).toHaveBeenCalledWith(
+          'test',
+          '1',
+          '2',
+        );
       });
     });
   });

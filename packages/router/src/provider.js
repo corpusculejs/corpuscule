@@ -17,7 +17,10 @@ const provider = (token, {initialPath = location.pathname} = {}) => klass => {
     assertRequiredProperty('provider', 'gear', $router);
   });
 
-  const supers = reflectClassMethods(prototype, ['connectedCallback', 'disconnectedCallback']);
+  const supers = reflectClassMethods(prototype, [
+    'connectedCallback',
+    'disconnectedCallback',
+  ]);
   const valueDescriptor = value(token)(prototype, $$providingValue);
 
   defineExtendable(
@@ -41,7 +44,9 @@ const provider = (token, {initialPath = location.pathname} = {}) => klass => {
   Object.defineProperty(prototype, $$providingValue, valueDescriptor);
 
   klass.__initializers.push(self => {
-    self[$$updateRoute] = async ({state: {path = initialPath, data} = {}} = {}) => {
+    self[$$updateRoute] = async ({
+      state: {path = initialPath, data} = {},
+    } = {}) => {
       self[$$providingValue] = await self[$router].resolve({
         // This array goes to the resolveRoute function and fills with the
         // passed routes.

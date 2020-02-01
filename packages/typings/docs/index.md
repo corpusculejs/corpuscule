@@ -9,7 +9,11 @@
 ```typescript
 interface CustomElement extends HTMLElement {
   adoptedCallback?(): void;
-  attributeChangedCallback?(attrName: string, oldVal: string, newVal: string): void;
+  attributeChangedCallback?(
+    attrName: string,
+    oldVal: string,
+    newVal: string,
+  ): void;
   connectedCallback?(): void;
   disconnectedCallback?(): void;
 }

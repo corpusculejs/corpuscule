@@ -217,4 +217,7 @@ export function outletAdvanced<C extends Context = Context, R = any>(
  *
  * @param options a list of provider options.
  */
-export function providerAdvanced(token: Token, options?: RouterProviderOptions): ClassDecorator;
+export function providerAdvanced(
+  token: Token,
+  options?: RouterProviderOptions,
+): ClassDecorator;

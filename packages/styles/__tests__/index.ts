@@ -15,7 +15,10 @@ describe('@corpuscule/styles', () => {
 
   beforeEach(() => {
     styles = (...pathsOrStyles) =>
-      stylesAdvanced(pathsOrStyles, {adoptedStyleSheets: false, shadyCSS: false});
+      stylesAdvanced(pathsOrStyles, {
+        adoptedStyleSheets: false,
+        shadyCSS: false,
+      });
   });
 
   describe('file links', () => {
@@ -61,16 +64,23 @@ describe('@corpuscule/styles', () => {
       }
 
       styles = (...pathsOrStyles) =>
-        stylesAdvanced(pathsOrStyles, {adoptedStyleSheets: true, shadyCSS: false});
+        stylesAdvanced(pathsOrStyles, {
+          adoptedStyleSheets: true,
+          shadyCSS: false,
+        });
       replaceSyncSpy = spyOn(CSSStyleSheet.prototype as any, 'replaceSync');
 
       adoptedStyleSheetsSpy = jasmine.createSpy('adoptedStyleSheets');
 
-      Object.defineProperty((window as any).ShadowRoot.prototype, 'adoptedStyleSheets', {
-        configurable: true,
-        enumerable: true,
-        set: adoptedStyleSheetsSpy,
-      });
+      Object.defineProperty(
+        (window as any).ShadowRoot.prototype,
+        'adoptedStyleSheets',
+        {
+          configurable: true,
+          enumerable: true,
+          set: adoptedStyleSheetsSpy,
+        },
+      );
     });
 
     afterEach(() => {
@@ -103,7 +113,9 @@ describe('@corpuscule/styles', () => {
       expect(replaceSyncSpy).toHaveBeenCalledWith(rawStyles);
       expect(adoptedStyleSheetsSpy).toHaveBeenCalledWith([jasmine.any(Object)]);
 
-      const [[constructedStyleSheet]] = adoptedStyleSheetsSpy.calls.mostRecent().args;
+      const [
+        [constructedStyleSheet],
+      ] = adoptedStyleSheetsSpy.calls.mostRecent().args;
       expect(constructedStyleSheet instanceof CSSStyleSheet).toBeTruthy();
     });
 
@@ -132,15 +144,22 @@ describe('@corpuscule/styles', () => {
 
       await promise;
 
-      expect(adoptedStyleSheetsSpy).toHaveBeenCalledWith([constructedStyleSheet]);
+      expect(adoptedStyleSheetsSpy).toHaveBeenCalledWith([
+        constructedStyleSheet,
+      ]);
     });
   });
 
   describe('ShadyCSS', () => {
     beforeEach(() => {
       styles = (...pathsOrStyles) =>
-        stylesAdvanced(pathsOrStyles, {adoptedStyleSheets: false, shadyCSS: true});
-      (window as any).ShadyCSS = jasmine.createSpyObj('ShadyCSS', ['prepareAdoptedCssText']);
+        stylesAdvanced(pathsOrStyles, {
+          adoptedStyleSheets: false,
+          shadyCSS: true,
+        });
+      (window as any).ShadyCSS = jasmine.createSpyObj('ShadyCSS', [
+        'prepareAdoptedCssText',
+      ]);
     });
 
     it('properly appends constructed style sheet', async () => {
@@ -166,10 +185,9 @@ describe('@corpuscule/styles', () => {
 
       await promise;
 
-      expect((window as any).ShadyCSS.prepareAdoptedCssText).toHaveBeenCalledWith(
-        [rawStyles],
-        test.localName,
-      );
+      expect(
+        (window as any).ShadyCSS.prepareAdoptedCssText,
+      ).toHaveBeenCalledWith([rawStyles], test.localName);
     });
   });
 
@@ -196,7 +214,9 @@ describe('@corpuscule/styles', () => {
 
     await promise;
 
-    expect(test.shadowRoot!.innerHTML).toBe(`<style>${rawStyles}</style><div>Bar</div>`);
+    expect(test.shadowRoot!.innerHTML).toBe(
+      `<style>${rawStyles}</style><div>Bar</div>`,
+    );
   });
 
   it('does not throw an error if class already have own lifecycle element', () => {

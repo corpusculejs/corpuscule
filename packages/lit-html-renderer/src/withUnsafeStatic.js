@@ -104,7 +104,9 @@ export const withUnsafeStatic = processor => (strings, ...values) => {
   // If there is static values remove all statics from it. Otherwise,
   // just use original values array.
   const finalValues =
-    finalStrings !== strings ? values.filter(v => !(v instanceof UnsafeStatic)) : values;
+    finalStrings !== strings
+      ? values.filter(v => !(v instanceof UnsafeStatic))
+      : values;
 
   // If user try to replace static value with dynamic one we cannot filter
   // it. It produces different amount of filtered values we have so we can

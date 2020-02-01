@@ -66,7 +66,8 @@ export interface FormGears<TFormValues = object> {
  * one case when all your properties are string and you do not plan to use
  * specific property names.
  */
-export interface FormOptions<TFormValues = object> extends FormConfig<TFormValues> {
+export interface FormOptions<TFormValues = object>
+  extends FormConfig<TFormValues> {
   /**
    * Used to compare new initial values that are received by [initialValues](https://github.com/final-form/final-form#initialvalues-object)
    * option. By default the [shallowEqual]{@link @corpuscule/utils/lib/shallowEqual.shallowEqual}
@@ -75,7 +76,10 @@ export interface FormOptions<TFormValues = object> extends FormConfig<TFormValue
    * @param prevInitialValues
    * @param nextInitialValues
    */
-  compareInitialValues?(prevInitialValues: object, nextInitialValues: object): boolean;
+  compareInitialValues?(
+    prevInitialValues: object,
+    nextInitialValues: object,
+  ): boolean;
 }
 
 export interface FieldDecoratorOptions {
@@ -165,7 +169,10 @@ export interface FieldInputProps<TFieldValue> {
   readonly value: TFieldValue;
 }
 
-export type FieldMetaProps<TFieldValue> = Omit<FieldOptions<TFieldValue>, 'name' | 'value'>;
+export type FieldMetaProps<TFieldValue> = Omit<
+  FieldOptions<TFieldValue>,
+  'name' | 'value'
+>;
 
 /**
  * Creates tokens to bind decorators with each other.
@@ -241,7 +248,10 @@ export function gearAdvanced(
  *
  * @param options an object that contains options to tune the field behavior.
  */
-export function fieldAdvanced(token: Token, options?: FieldDecoratorOptions): ClassDecorator;
+export function fieldAdvanced(
+  token: Token,
+  options?: FieldDecoratorOptions,
+): ClassDecorator;
 
 /**
  * A decorator that makes a class declaration a 🏁 FinalForm provider with a
@@ -253,7 +263,10 @@ export function fieldAdvanced(token: Token, options?: FieldDecoratorOptions): Cl
  *
  * @param options an object that contains options to tune the form behavior.
  */
-export function formAdvanced(token: Token, options?: FormDecoratorOptions): ClassDecorator;
+export function formAdvanced(
+  token: Token,
+  options?: FormDecoratorOptions,
+): ClassDecorator;
 
 /**
  * Works as a [isProvider]{@link @corpuscule/context.isProvider} for the

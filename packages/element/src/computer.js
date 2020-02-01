@@ -2,7 +2,9 @@ import makeAccessor from '@corpuscule/utils/lib/makeAccessor';
 import {setArray} from '@corpuscule/utils/lib/setters';
 import createTokenRegistry from '@corpuscule/utils/lib/tokenRegistry';
 
-const [createComputingToken, tokenRegistry] = createTokenRegistry(() => new WeakMap());
+const [createComputingToken, tokenRegistry] = createTokenRegistry(
+  () => new WeakMap(),
+);
 
 export {createComputingToken};
 

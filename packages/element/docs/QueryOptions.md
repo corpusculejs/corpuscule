@@ -7,6 +7,7 @@ type QueryOptions = {
 ```
 
 #### lightDOM
+
 ```
 readonly lightDOM?: boolean;
 ```

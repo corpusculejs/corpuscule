@@ -4,7 +4,10 @@ const resolveRoute = async (context, params) => {
   const {chain, route} = context;
 
   chain.push({
-    result: typeof route.action === 'function' ? await route.action(context, params) : null,
+    result:
+      typeof route.action === 'function'
+        ? await route.action(context, params)
+        : null,
     route,
   });
 

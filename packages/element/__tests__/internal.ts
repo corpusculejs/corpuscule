@@ -74,7 +74,11 @@ describe('@corpuscule/element', () => {
       internalChangedCallbackSpy.calls.reset();
 
       test.accessor = 'test';
-      expect(internalChangedCallbackSpy).toHaveBeenCalledWith('accessor', 'str', 'test');
+      expect(internalChangedCallbackSpy).toHaveBeenCalledWith(
+        'accessor',
+        'str',
+        'test',
+      );
       expect(internalChangedCallbackSpy).toHaveBeenCalledTimes(1);
     });
 
@@ -85,7 +89,11 @@ describe('@corpuscule/element', () => {
         @internal
         public prop: number = 10;
 
-        public [internalChangedCallback](_name: string, _oldValue: number, newValue: number): void {
+        public [internalChangedCallback](
+          _name: string,
+          _oldValue: number,
+          newValue: number,
+        ): void {
           internalChangedCallbackSpy();
           expect(this.prop).toBe(newValue);
         }

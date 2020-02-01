@@ -3,7 +3,14 @@ import {defineCE, fixture, html, unsafeStatic} from '@open-wc/testing-helpers';
 import {FieldState, FormApi, FormState} from 'final-form';
 import {formSpyObject, unsubscribe} from '../../../test/mocks/finalForm';
 import {createSimpleContext, CustomElement, genName} from '../../../test/utils';
-import {field as basicField, FieldInputProps, FieldMetaProps, form, gear, option} from '../src';
+import {
+  field as basicField,
+  FieldInputProps,
+  FieldMetaProps,
+  form,
+  gear,
+  option,
+} from '../src';
 import {all} from '../src/field';
 
 describe('@corpuscule/form', () => {
@@ -17,7 +24,8 @@ describe('@corpuscule/form', () => {
 
     const getListener = (index: number | null = null) => {
       const {calls} = formSpyObject.registerField;
-      const [, listener] = index !== null ? calls.argsFor(index) : calls.mostRecent().args;
+      const [, listener] =
+        index !== null ? calls.argsFor(index) : calls.mostRecent().args;
 
       return listener;
     };
@@ -151,13 +159,23 @@ describe('@corpuscule/form', () => {
 
       const [, fieldElement] = await createSimpleContext(Form, Field);
 
-      expect(formSpyObject.registerField).toHaveBeenCalledWith('test', jasmine.any(Function), all, {
-        getValidator: jasmine.any(Function),
-        isEqual: fieldElement.isEqual,
-        validateFields: fieldElement.validateFields,
-      });
+      expect(formSpyObject.registerField).toHaveBeenCalledWith(
+        'test',
+        jasmine.any(Function),
+        all,
+        {
+          getValidator: jasmine.any(Function),
+          isEqual: fieldElement.isEqual,
+          validateFields: fieldElement.validateFields,
+        },
+      );
 
-      const [, , , {getValidator}] = formSpyObject.registerField.calls.mostRecent().args;
+      const [
+        ,
+        ,
+        ,
+        {getValidator},
+      ] = formSpyObject.registerField.calls.mostRecent().args;
 
       expect(getValidator()).toBe(fieldElement.validate);
     });
@@ -341,7 +359,9 @@ describe('@corpuscule/form', () => {
         </${formTag}>
       `);
 
-      const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
+      const inputElement = formElement.querySelector<HTMLInputElement>(
+        'input',
+      )!;
 
       inputElement.value = 'test';
       inputElement.dispatchEvent(new Event('input', {bubbles: true}));
@@ -505,7 +525,9 @@ describe('@corpuscule/form', () => {
             public test: string = 'test';
           }
         }).toThrow(
-          new TypeError('"test" is not one of the Final Form or Field configuration keys'),
+          new TypeError(
+            '"test" is not one of the Final Form or Field configuration keys',
+          ),
         );
       });
 
@@ -585,7 +607,12 @@ describe('@corpuscule/form', () => {
 
         const fieldElement = formElement.querySelector<Field>(fieldTag)!;
 
-        const [, , , {getValidator}] = formSpyObject.registerField.calls.mostRecent().args;
+        const [
+          ,
+          ,
+          ,
+          {getValidator},
+        ] = formSpyObject.registerField.calls.mostRecent().args;
 
         expect(getValidator()).toBe(fieldElement.validate);
       });
@@ -760,10 +787,10 @@ describe('@corpuscule/form', () => {
 
           const [, fieldElement] = await createSimpleContext(Form, Field);
 
-          const formatSpy: jasmine.Spy<(value: unknown, name: string) => unknown> = spyOn(
-            fieldElement,
-            'format',
-          ).and.callThrough();
+          const formatSpy: jasmine.Spy<(
+            value: unknown,
+            name: string,
+          ) => unknown> = spyOn(fieldElement, 'format').and.callThrough();
 
           fieldElement.dispatchEvent(new Event('focusout', {bubbles: true}));
 
@@ -794,7 +821,9 @@ describe('@corpuscule/form', () => {
 
           const newFieldValue: object = {};
 
-          fieldElement.dispatchEvent(new CustomEvent('input', {detail: newFieldValue}));
+          fieldElement.dispatchEvent(
+            new CustomEvent('input', {detail: newFieldValue}),
+          );
 
           expect(state.change).toHaveBeenCalledWith(newFieldValue);
         });
@@ -825,14 +854,16 @@ describe('@corpuscule/form', () => {
 
           const [, fieldElement] = await createSimpleContext(Form, Field);
 
-          const parseSpy: jasmine.Spy<(value: string, name: string) => object> = spyOn(
-            fieldElement,
-            'parse',
-          ).and.callThrough();
+          const parseSpy: jasmine.Spy<(
+            value: string,
+            name: string,
+          ) => object> = spyOn(fieldElement, 'parse').and.callThrough();
 
           const newFieldValue = JSON.stringify({});
 
-          fieldElement.dispatchEvent(new CustomEvent('input', {detail: newFieldValue}));
+          fieldElement.dispatchEvent(
+            new CustomEvent('input', {detail: newFieldValue}),
+          );
 
           expect(parseSpy).toHaveBeenCalledWith(newFieldValue, 'test');
           expect(state.change).toHaveBeenCalledWith({});
@@ -895,7 +926,9 @@ describe('@corpuscule/form', () => {
           </${formTag}>
         `);
 
-        const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
+        const inputElement = formElement.querySelector<HTMLInputElement>(
+          'input',
+        )!;
 
         inputElement.dispatchEvent(new Event('focusin', {bubbles: true}));
 
@@ -1019,7 +1052,9 @@ describe('@corpuscule/form', () => {
             </${formTag}>
           `);
 
-          const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
+          const inputElement = formElement.querySelector<HTMLInputElement>(
+            'input',
+          )!;
 
           inputElement.value = 'test';
           inputElement.dispatchEvent(new Event('input', {bubbles: true}));
@@ -1037,7 +1072,9 @@ describe('@corpuscule/form', () => {
             </${formTag}>
           `);
 
-          const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
+          const inputElement = formElement.querySelector<HTMLInputElement>(
+            'input',
+          )!;
           const listener = getListener();
 
           listener({...state, value: 'a2'});
@@ -1056,7 +1093,9 @@ describe('@corpuscule/form', () => {
             </${formTag}>
           `);
 
-          const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
+          const inputElement = formElement.querySelector<HTMLInputElement>(
+            'input',
+          )!;
           const listener = getListener();
 
           // user changes text to a2
@@ -1137,7 +1176,9 @@ describe('@corpuscule/form', () => {
             </${formTag}>
           `);
 
-          const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
+          const inputElement = formElement.querySelector<HTMLInputElement>(
+            'input',
+          )!;
           const listener = getListener();
 
           listener({...state, value: undefined});
@@ -1160,7 +1201,9 @@ describe('@corpuscule/form', () => {
             </${formTag}>
           `);
 
-          const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
+          const inputElement = formElement.querySelector<HTMLInputElement>(
+            'input',
+          )!;
 
           inputElement.checked = true;
           inputElement.dispatchEvent(new Event('input', {bubbles: true}));
@@ -1176,7 +1219,9 @@ describe('@corpuscule/form', () => {
             </${formTag}>
           `);
 
-          const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
+          const inputElement = formElement.querySelector<HTMLInputElement>(
+            'input',
+          )!;
 
           inputElement.checked = true;
           inputElement.dispatchEvent(new Event('input', {bubbles: true}));
@@ -1194,7 +1239,9 @@ describe('@corpuscule/form', () => {
             </${formTag}>
           `);
 
-          const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
+          const inputElement = formElement.querySelector<HTMLInputElement>(
+            'input',
+          )!;
 
           inputElement.checked = true;
           inputElement.dispatchEvent(new Event('input', {bubbles: true}));
@@ -1212,7 +1259,9 @@ describe('@corpuscule/form', () => {
             </${formTag}>
           `);
 
-          const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
+          const inputElement = formElement.querySelector<HTMLInputElement>(
+            'input',
+          )!;
 
           inputElement.checked = false;
           inputElement.dispatchEvent(new Event('input', {bubbles: true}));
@@ -1230,7 +1279,9 @@ describe('@corpuscule/form', () => {
             </${formTag}>
           `);
 
-          const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
+          const inputElement = formElement.querySelector<HTMLInputElement>(
+            'input',
+          )!;
 
           inputElement.checked = false;
           inputElement.dispatchEvent(new Event('input', {bubbles: true}));
@@ -1248,7 +1299,9 @@ describe('@corpuscule/form', () => {
             </${formTag}>
           `);
 
-          const inputElement = formElement.querySelector<HTMLInputElement>('input')!;
+          const inputElement = formElement.querySelector<HTMLInputElement>(
+            'input',
+          )!;
           const listener = getListener();
 
           expect(inputElement.checked).not.toBeTruthy();
@@ -1272,8 +1325,12 @@ describe('@corpuscule/form', () => {
             </${formTag}>
           `);
 
-          const inputElementFoo = formElement.querySelector<HTMLInputElement>('input[value=foo]')!;
-          const inputElementBar = formElement.querySelector<HTMLInputElement>('input[value=bar]')!;
+          const inputElementFoo = formElement.querySelector<HTMLInputElement>(
+            'input[value=foo]',
+          )!;
+          const inputElementBar = formElement.querySelector<HTMLInputElement>(
+            'input[value=bar]',
+          )!;
           const listener = getListener();
 
           expect(inputElementFoo.checked).not.toBeTruthy();
@@ -1359,8 +1416,12 @@ describe('@corpuscule/form', () => {
             </${formTag}>
           `);
 
-          const inputElementFoo = formElement.querySelector<HTMLInputElement>('input[value=foo]')!;
-          const inputElementBar = formElement.querySelector<HTMLInputElement>('input[value=bar]')!;
+          const inputElementFoo = formElement.querySelector<HTMLInputElement>(
+            'input[value=foo]',
+          )!;
+          const inputElementBar = formElement.querySelector<HTMLInputElement>(
+            'input[value=bar]',
+          )!;
 
           expect(inputElementFoo.name).toBe('test');
           expect(inputElementBar.name).toBe('test');
@@ -1378,8 +1439,12 @@ describe('@corpuscule/form', () => {
             </${formTag}>
           `);
 
-          const inputElementFoo = formElement.querySelector<HTMLInputElement>('input[value=foo]')!;
-          const inputElementBar = formElement.querySelector<HTMLInputElement>('input[value=bar]')!;
+          const inputElementFoo = formElement.querySelector<HTMLInputElement>(
+            'input[value=foo]',
+          )!;
+          const inputElementBar = formElement.querySelector<HTMLInputElement>(
+            'input[value=bar]',
+          )!;
 
           inputElementFoo.checked = true;
           inputElementFoo.dispatchEvent(new Event('input', {bubbles: true}));
@@ -1400,8 +1465,12 @@ describe('@corpuscule/form', () => {
             </${formTag}>
           `);
 
-          const inputElementFoo = formElement.querySelector<HTMLInputElement>('input[value=foo]')!;
-          const inputElementBar = formElement.querySelector<HTMLInputElement>('input[value=bar]')!;
+          const inputElementFoo = formElement.querySelector<HTMLInputElement>(
+            'input[value=foo]',
+          )!;
+          const inputElementBar = formElement.querySelector<HTMLInputElement>(
+            'input[value=bar]',
+          )!;
           const listener = getListener();
 
           expect(inputElementFoo.checked).not.toBeTruthy();
@@ -1436,8 +1505,12 @@ describe('@corpuscule/form', () => {
             </${formTag}>
           `);
 
-          const fieldElementFoo = formElement.querySelector<Field>('input[value=foo]')!;
-          const fieldElementBar = formElement.querySelector<Field>('input[value=bar]')!;
+          const fieldElementFoo = formElement.querySelector<Field>(
+            'input[value=foo]',
+          )!;
+          const fieldElementBar = formElement.querySelector<Field>(
+            'input[value=bar]',
+          )!;
 
           fieldElementFoo.checked = true;
           fieldElementFoo.dispatchEvent(new Event('input', {bubbles: true}));
@@ -1468,8 +1541,12 @@ describe('@corpuscule/form', () => {
             </${formTag}>
           `);
 
-          const fieldElementFoo = formElement.querySelector<Field>('input[value=foo]')!;
-          const fieldElementBar = formElement.querySelector<Field>('input[value=bar]')!;
+          const fieldElementFoo = formElement.querySelector<Field>(
+            'input[value=foo]',
+          )!;
+          const fieldElementBar = formElement.querySelector<Field>(
+            'input[value=bar]',
+          )!;
           const fooListener = getListener(0);
           const barListener = getListener(1);
 

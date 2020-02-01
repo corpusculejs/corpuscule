@@ -173,7 +173,10 @@ decorator. This property will contain a content the current router provides.
 #### providerAdvanced
 
 ```typescript
-function providerAdvanced(token: Token, options?: RouterProviderOptions): ClassDecorator;
+function providerAdvanced(
+  token: Token,
+  options?: RouterProviderOptions,
+): ClassDecorator;
 ```
 
 A decorator that creates a router provider.

@@ -1,5 +1,9 @@
 // tslint:disable:no-implicit-dependencies
-import {html, render as originalRender, TemplateResult} from 'lit-html/lit-html';
+import {
+  html,
+  render as originalRender,
+  TemplateResult,
+} from 'lit-html/lit-html';
 
 export {html, TemplateResult};
 

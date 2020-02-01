@@ -25,7 +25,9 @@ import styles from '@corpuscule/styles';
 #### styles
 
 ```typescript
-function styles(...pathsOrStyles: Array<string | URL | CSSStyleSheet>): ClassDecorator;
+function styles(
+  ...pathsOrStyles: Array<string | URL | CSSStyleSheet>
+): ClassDecorator;
 ```
 
 A default version of [stylesAdvanced](#stylesadvanced) decorator with

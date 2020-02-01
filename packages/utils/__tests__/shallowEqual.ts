@@ -32,7 +32,9 @@ describe('@corpuscule/utils', () => {
     it('returns true when comparing NaN', () => {
       expect(shallowEqual(NaN, NaN)).toBe(true);
 
-      expect(shallowEqual({a: 1, b: 2, c: 3, d: NaN}, {a: 1, b: 2, c: 3, d: NaN})).toBe(true);
+      expect(
+        shallowEqual({a: 1, b: 2, c: 3, d: NaN}, {a: 1, b: 2, c: 3, d: NaN}),
+      ).toBe(true);
     });
 
     it('returns false if arguments are not objects and not equal', () => {
@@ -52,7 +54,9 @@ describe('@corpuscule/utils', () => {
     });
 
     it('returns false if arguments are not shallow equal', () => {
-      expect(shallowEqual({a: 1, b: 2, c: {}}, {a: 1, b: 2, c: {}})).toBe(false);
+      expect(shallowEqual({a: 1, b: 2, c: {}}, {a: 1, b: 2, c: {}})).toBe(
+        false,
+      );
     });
   });
 });

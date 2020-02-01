@@ -25,4 +25,6 @@
  * getName(bar); // bar
  * ```
  */
-export function getName<P extends PropertyKey>(property: P): P extends number ? number : string;
+export function getName<P extends PropertyKey>(
+  property: P,
+): P extends number ? number : string;

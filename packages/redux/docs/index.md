@@ -66,7 +66,9 @@ provided.
 #### unit
 
 ```typescript
-function unit<Store extends object>(getter: (state: Store) => any): PropertyDecorator;
+function unit<Store extends object>(
+  getter: (state: Store) => any,
+): PropertyDecorator;
 ```
 
 A default version of the [@unitAdvanced](#unitadvanced) with the token already

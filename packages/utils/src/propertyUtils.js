@@ -1,1 +1,2 @@
-export const getName = property => (typeof property === 'symbol' ? property.description : property);
+export const getName = property =>
+  typeof property === 'symbol' ? property.description : property;

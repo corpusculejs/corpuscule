@@ -1,8 +1,10 @@
 > ## 🛠 Status: In Development
+>
 > This package is currently under heavy development. Feedback is always welcome, but be careful with
-using it in production. API is not ready yet and can receive large changes.
+> using it in production. API is not ready yet and can receive large changes.
 
 # `@corpuscule/context`
+
 [![Latest Stable Version](https://img.shields.io/npm/v/@corpuscule/context.svg)](https://www.npmjs.com/package/@corpuscule/context)
 [![Package size](https://badgen.net/bundlephobia/minzip/@corpuscule/context)](https://bundlephobia.com/result?p=@corpuscule/context)
 
@@ -18,23 +20,29 @@ This package also uses approach to implement context for web components suggeste
 in [his talk](https://youtu.be/6o5zaKHedTE).
 
 ## Features
-* **Zero third-party dependencies**. Package still contains Corpuscule dependencies, but no
-third-party library is used.
-* **Framework agnostic**. You can use package with any Web Components compatible framework/library.
-* **Small**. According to [Bundlephobia](https://bundlephobia.com), it has following sizes:
-  * [![Package size](https://badgen.net/bundlephobia/min/@corpuscule/context)](https://bundlephobia.com/result?p=@corpuscule/context)
-  * [![Package size](https://badgen.net/bundlephobia/minzip/@corpuscule/context)](https://bundlephobia.com/result?p=@corpuscule/context)
-* **Typed**. [Typescript](http://www.typescriptlang.org/) typings are included.
+
+- **Zero third-party dependencies**. Package still contains Corpuscule dependencies, but no
+  third-party library is used.
+- **Framework agnostic**. You can use package with any Web Components compatible framework/library.
+- **Small**. According to [Bundlephobia](https://bundlephobia.com), it has following sizes:
+  - [![Package size](https://badgen.net/bundlephobia/min/@corpuscule/context)](https://bundlephobia.com/result?p=@corpuscule/context)
+  - [![Package size](https://badgen.net/bundlephobia/minzip/@corpuscule/context)](https://bundlephobia.com/result?p=@corpuscule/context)
+- **Typed**. [Typescript](http://www.typescriptlang.org/) typings are included.
 
 ## Installation
+
 ```bash
 $ npm install --save @corupuscule/context
 ```
+
 or
+
 ```bash
 $ yarn add @corupuscule/context
 ```
 
 ## Documentation
+
 API documentation is available for the following modules:
-* [@corpuscule/context](./docs/index.md).
+
+- [@corpuscule/context](./docs/index.md).

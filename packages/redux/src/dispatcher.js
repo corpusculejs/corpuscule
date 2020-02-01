@@ -15,7 +15,9 @@ const dispatcher = token => ({constructor: klass}, propertyKey, descriptor) => {
     const actionCreator = initializer && initializer();
 
     if (!actionCreator || typeof actionCreator !== 'function') {
-      throw new TypeError(`@dispatcher "${propertyKey}" should be initialized with a function`);
+      throw new TypeError(
+        `@dispatcher "${propertyKey}" should be initialized with a function`,
+      );
     }
 
     callback = function(...args) {

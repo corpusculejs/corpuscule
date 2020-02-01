@@ -21,7 +21,8 @@ export {
 const defaultToken = createStoreonToken();
 
 export const gear = gearAdvanced(defaultToken);
-export const dispatcher = eventKey => dispatcherAdvanced(defaultToken, eventKey);
+export const dispatcher = eventKey =>
+  dispatcherAdvanced(defaultToken, eventKey);
 export const isProvider = klass => isProviderAdvanced(defaultToken, klass);
 export const provider = providerAdvanced(defaultToken);
 export const storeon = storeonAdvanced(defaultToken);

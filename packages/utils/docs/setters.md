@@ -39,7 +39,11 @@ under the `key`. If the array does not exist yet, it will be created.
 ##### Overload #1
 
 ```typescript
-function setArray<K, V>(store: Map<K, V[]>, key: K, array: ReadonlyArray<V>): void;
+function setArray<K, V>(
+  store: Map<K, V[]>,
+  key: K,
+  array: ReadonlyArray<V>,
+): void;
 ```
 
 This overload accepts `Map` instance as a store.

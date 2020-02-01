@@ -67,7 +67,11 @@ const fallbacks = {
 
 const bar = new Bar();
 
-const reflection = reflectClassMethods(bar, ['foo', 'bar', 'baz', 'boo'], fallbacks);
+const reflection = reflectClassMethods(
+  bar,
+  ['foo', 'bar', 'baz', 'boo'],
+  fallbacks,
+);
 
 reflection.foo(); // foo called
 reflection.bar(); // bar called

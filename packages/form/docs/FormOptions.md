@@ -2,7 +2,10 @@
 
 ```typescript
 type FormOptions<FormValues = object> = FormConfig<FormValues> & {
-  readonly compareInitialValues?: (prevInitialValues: object, nextInitialValues: object) => boolean;
+  readonly compareInitialValues?: (
+    prevInitialValues: object,
+    nextInitialValues: object,
+  ) => boolean;
 };
 ```
 

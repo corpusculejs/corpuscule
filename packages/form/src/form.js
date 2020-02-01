@@ -24,11 +24,18 @@ const form = (token, {decorators = [], subscription = all} = {}) => klass => {
   const $$submit = Symbol();
   const $$unsubscriptions = Symbol();
 
-  const supers = reflectClassMethods(prototype, ['connectedCallback', 'disconnectedCallback']);
+  const supers = reflectClassMethods(prototype, [
+    'connectedCallback',
+    'disconnectedCallback',
+  ]);
 
   klass.__registrations.push(() => {
     sharedProperties = sharedPropertiesRegistry.get(klass) || {};
-    ({formApi: $formApi, state: $state, onSubmit: $onSubmit} = sharedProperties);
+    ({
+      formApi: $formApi,
+      state: $state,
+      onSubmit: $onSubmit,
+    } = sharedProperties);
     assertRequiredProperty('form', 'gear', 'form', $formApi);
     assertRequiredProperty('form', 'gear', 'state', $state);
     assertRequiredProperty('form', 'option', 'onSubmit', $onSubmit);

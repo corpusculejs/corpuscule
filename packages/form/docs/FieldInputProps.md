@@ -17,6 +17,7 @@ Contains the general field data that can be provided directly to the
 ### Fields
 
 #### name
+
 **Type**: _string_
 
 A name of the field.

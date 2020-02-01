@@ -129,7 +129,10 @@ the getter depends on are changed.
 #### @element
 
 ```typescript
-function element(name: string, options?: ElementDecoratorOptions): ClassDecorator;
+function element(
+  name: string,
+  options?: ElementDecoratorOptions,
+): ClassDecorator;
 ```
 
 Converts a class declaration to a Custom Element and unites all other decorators
@@ -173,7 +176,8 @@ class MyComponent extends HTMLElement {
 > import {element as elementUniversal} from '@corpuscule/element';
 > import renderer from '@coruscule/lit-html-renderer';
 >
-> const element = (name, options) => elementUniversal(name, {...options, renderer});
+> const element = (name, options) =>
+>   elementUniversal(name, {...options, renderer});
 > ```
 
 ##### Parameters

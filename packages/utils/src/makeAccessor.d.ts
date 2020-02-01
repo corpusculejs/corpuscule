@@ -23,4 +23,5 @@
 export default function makeAccessor(
   descriptor: PropertyDescriptor & {initializer?: () => unknown},
   initializers: Array<(self: object) => void>,
-): Required<Pick<PropertyDescriptor, 'get' | 'set'>> & Omit<PropertyDescriptor, 'get' | 'set'>;
+): Required<Pick<PropertyDescriptor, 'get' | 'set'>> &
+  Omit<PropertyDescriptor, 'get' | 'set'>;

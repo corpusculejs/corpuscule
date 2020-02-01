@@ -48,14 +48,20 @@ export const stylesAdvanced = (
     }
   }
 
-  const supers = reflectClassMethods(prototype, ['attachShadow', stylesAttachedCallback]);
+  const supers = reflectClassMethods(prototype, [
+    'attachShadow',
+    stylesAttachedCallback,
+  ]);
 
   klass.prototype.attachShadow = function attachShadow(options) {
     const root = supers.attachShadow.call(this, options);
 
     if (constructedStyles.length > 0) {
       if (shadyCSS) {
-        window.ShadyCSS.prepareAdoptedCssText(constructedStyles, this.localName);
+        window.ShadyCSS.prepareAdoptedCssText(
+          constructedStyles,
+          this.localName,
+        );
       } else {
         root.adoptedStyleSheets = constructedStyles;
       }
@@ -68,7 +74,11 @@ export const stylesAdvanced = (
         if (linkNodes.hasChildNodes()) {
           const nodesToAppend = linkNodes.cloneNode(true);
 
-          for (let i = 0, count = nodesToAppend.children.length; i < count; i++) {
+          for (
+            let i = 0, count = nodesToAppend.children.length;
+            i < count;
+            i++
+          ) {
             // eslint-disable-next-line no-loop-func
             nodesToAppend.children[i].addEventListener('load', () => {
               count -= 1;

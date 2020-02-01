@@ -50,7 +50,9 @@ const redux = token => klass => {
         this[$$unsubscribe]();
 
         const update = () =>
-          units.forEach(callback => callback(this, this[$$contextProperty].getState()));
+          units.forEach(callback =>
+            callback(this, this[$$contextProperty].getState()),
+          );
 
         update();
         this[$$unsubscribe] = this[$$contextProperty].subscribe(update);

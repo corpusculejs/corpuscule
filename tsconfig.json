@@ -5,10 +5,7 @@
     "declaration": false,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "lib": [
-      "dom",
-      "esnext"
-    ],
+    "lib": ["dom", "esnext"],
     "mapRoot": "dist",
     "module": "esnext",
     "moduleResolution": "node",

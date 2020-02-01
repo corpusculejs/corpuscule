@@ -1,4 +1,9 @@
-const defineExtendable = (klass, baseClassMethods, extendedClassMethods, initializers) => {
+const defineExtendable = (
+  klass,
+  baseClassMethods,
+  extendedClassMethods,
+  initializers,
+) => {
   for (const key of Reflect.ownKeys(baseClassMethods)) {
     const selfKey = Symbol();
 
@@ -8,7 +13,9 @@ const defineExtendable = (klass, baseClassMethods, extendedClassMethods, initial
 
     initializers.push(self => {
       self[selfKey] =
-        self.constructor !== klass ? extendedClassMethods[key] : baseClassMethods[key];
+        self.constructor !== klass
+          ? extendedClassMethods[key]
+          : baseClassMethods[key];
     });
   }
 };

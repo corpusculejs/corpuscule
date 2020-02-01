@@ -4,8 +4,6 @@
       "message": "build: %s"
     }
   },
-  "packages": [
-    "packages/*"
-  ],
+  "packages": ["packages/*"],
   "version": "0.14.2"
 }

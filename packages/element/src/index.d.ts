@@ -112,7 +112,11 @@ export interface ElementGears {
    * @param oldValue a value of the property that was before the update started.
    * @param newValue a new value to set to the property.
    */
-  internalChangedCallback?(propertyName: PropertyKey, oldValue: unknown, newValue: unknown): void;
+  internalChangedCallback?(
+    propertyName: PropertyKey,
+    oldValue: unknown,
+    newValue: unknown,
+  ): void;
 
   /**
    * A method that is invoked when a [regular]{@link @corpuscule/element.property}
@@ -126,7 +130,11 @@ export interface ElementGears {
    * @param oldValue a value of the property that was before the update started.
    * @param newValue a new value to set to the property.
    */
-  propertyChangedCallback?(propertyName: PropertyKey, oldValue: unknown, newValue: unknown): void;
+  propertyChangedCallback?(
+    propertyName: PropertyKey,
+    oldValue: unknown,
+    newValue: unknown,
+  ): void;
 
   /**
    * A method that is invoked each time any of the component properties (either
@@ -355,7 +363,10 @@ export function computer(token: Token): PropertyDecorator;
  * @param options a list of options that tunes the custom element according to
  * the requirements.
  */
-export function element(name: string, options?: ElementDecoratorOptions): ClassDecorator;
+export function element(
+  name: string,
+  options?: ElementDecoratorOptions,
+): ClassDecorator;
 
 /**
  * A decorator that transforms a class property to a component internal
@@ -482,7 +493,10 @@ export function property(guard?: PropertyGuard): PropertyDecorator;
  * @param selector a selector of the desired element.
  * @param options a set of decorator options
  */
-export function query(selector: string, options?: QueryOptions): PropertyDecorator;
+export function query(
+  selector: string,
+  options?: QueryOptions,
+): PropertyDecorator;
 
 /**
  * A decorator that converts a property to a getter that finds all elements
@@ -510,7 +524,10 @@ export function query(selector: string, options?: QueryOptions): PropertyDecorat
  * @param selector a selector of the desired set of elements.
  * @param options a set of decorator options
  */
-export function queryAll(selector: string, options?: QueryOptions): PropertyDecorator;
+export function queryAll(
+  selector: string,
+  options?: QueryOptions,
+): PropertyDecorator;
 
 /**
  * By default, [computed]{@link computer} and [observed]{@link observer}

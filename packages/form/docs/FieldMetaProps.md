@@ -1,7 +1,10 @@
 # FieldMetaProps
 
 ```typescript
-type FieldMetaProps<FieldValue> = Omit<FieldOptions<FieldValue>, 'name' | 'value'>;
+type FieldMetaProps<FieldValue> = Omit<
+  FieldOptions<FieldValue>,
+  'name' | 'value'
+>;
 ```
 
 Contains the internal field data that allows making decision about displaying
